@@ -89,7 +89,7 @@ if params['seams_overlap'] == 'calculate':
     params['alignment_plot_checks'] = False
     
 # Logging
-params['json_logging'] = True
+params['json_logging'] = False
 
 # Video and mean-frame png
 params['save_mp4'] = True
@@ -150,7 +150,8 @@ for i_dir in params['raw_data_dirs']:
         if params['fname_must_contain'] in this_tmp_path and params['fname_must_NOT_contain'] not in this_tmp_path:
             path_all_files.append(this_tmp_path)
             
-if params['json_logging']: json_logger.info(json.dumps({'path_all_files': path_all_files}))
+if params['json_logging']:
+    json_logger.info(json.dumps({'path_all_files': path_all_files}))
 
 n_template_files = len(params['list_files_for_template'])
 path_template_files = [path_all_files[file_idx] for file_idx in params['list_files_for_template']]
