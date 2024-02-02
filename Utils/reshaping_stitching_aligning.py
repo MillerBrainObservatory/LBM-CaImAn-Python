@@ -15,10 +15,8 @@ Created on Fri Feb 10 19:02:03 2023
 # - calculates and corrects the X-Y shifts across planes (LBM)
 # - outputs data as x-y-t planes or x-y-z-t volumes)
 
-
-#%%
-
-# If a silent crash happens (and the Terminal closes) despite not reaching 100% RAM, it could be due to the system-oom-process-killer being too sensitive (or acting weird)
+# If a silent crash happens (and the Terminal closes) despite not reaching 100% RAM,
+# it could be due to the system-oom-process-killer being too sensitive (or acting weird)
 # It might be worth trying to increase the thresholds for when to kill processes, or to turn it off altogether...
 # https://askubuntu.com/questions/1404888/how-do-i-disable-the-systemd-oom-process-killer-in-ubuntu-22-04
 # To turned it off:
@@ -28,6 +26,7 @@ Created on Fri Feb 10 19:02:03 2023
 # $ systemctl enable systemd-oomd
 # $ systemctl unmask systemd-oomd
 
+#%%
 import copy
 import cv2
 import datetime
@@ -45,24 +44,30 @@ import skimage
 import sys
 import tifffile
 import time
-
-#%% USER-DEFINED PARAMETERS
+from pathlib import Path
 
 params = dict()
 
+#%% USER-DEFINED PARAMETERS
+params['raw_data_dirs'] = [r'/v-data4/foconnell/data/lbm/'] # Must be a list with 1 or more dirs
+params['fname_must_contain'] = '' # something you want to specify and that the desired filenames should contain
+params['fname_must_NOT_contain'] = 'some_random_stuff' # if not needed, leave something you know it is not in the filename
 params['make_template_seams_and_plane_alignment'] = True
 params['list_files_for_template'] = [0]
-
 params['reconstruct_all_files'] = True
-if not params['reconstruct_all_files']:
-    params['reconstruct_until_this_ifile'] = 10
+params['json_logging'] = False
+params['seams_overlap'] = 'calculate' # Should be either 'calculate', an integer, or a list of integers with length=n_planes
+params['save_output'] = True
+params['make_nonan_volume'] = True # Whether to trim the edges so the output does not have nans. Also affects output as planes if lateral_aligned_planes==True (to compensate for X-Y shifts of MAxiMuM) or params['identical_mroi_overlaps_across_planes']==False (if seams from different planes are merged differently, then some planes will end up being larger than others)
+params['lateral_align_planes'] = False # Calculates and compensates the X-Y of MAxiMuM
+params['add_1000_for_nonegative_volume'] = True
+params['save_mp4'] = True
+params['save_meanf_png'] = True
 
-# Directories
-params['raw_data_dirs'] = [r'/home/freiwald/Data/analysis_2pRAM/Coconut/20230107d/Max30_500umdeep_1p2by1p2mm_3umppix_18p82Hz_250mW/'] # Must be a list with 1 or more dirs
-params['fname_must_contain'] = '' #something you want to specify and that the desired filenames should contain
-params['fname_must_NOT_contain'] = 'some_random_stuff' #if not needed, leave something you know it is not in the filename
+# Plane order in raw files
+# Will only use the one matching your data's number of planes.
+# Requires your filenames to contain either 'SP', 'Max15', or 'Max30'
 
-# Plane order in raw files (it will only use the one matching your data's number of planes). This requires your filenames to contain either 'SP', 'Max15', or 'Max30'
 # TODO: detect the number of planes based on the file metadata and not on the filename
 params['chans_order_1plane'] = np.array([0])
 params['chans_order_15planes'] = np.array([ 1,  3,  4,  5,  6,  7,  2,  8,  9, 10, 11, 12, 13, 14, 15]) - 1
@@ -70,30 +75,19 @@ params['chans_order_30planes'] = np.array([ 1,  5,  6,  7,  8,  9,  2, 10, 11, 1
                             3, 18, 19, 20, 21, 22, 23,  4, 24, 25, 26, 27, 28, 29, 30]) - 1
 
 # Parameters output planes/volumes
-params['save_output'] = True
 if params['save_output']:
     params['save_as_volume_or_planes'] = 'planes' # 'planes' will save individual planes in subfolders -- 'volume' will save a whole 4D hdf5 volume
     if params['save_as_volume_or_planes'] == 'planes':
         params['concatenate_all_h5_to_tif'] = False # If True, it will take all the time-chunked h5 files, concatenate, and save them as a single .tif
-
-params['make_nonan_volume'] = True # Whether to trim the edges so the output does not have nans. Also affects output as planes if lateral_aligned_planes==True (to compensate for X-Y shifts of MAxiMuM) or params['identical_mroi_overlaps_across_planes']==False (if seams from different planes are merged differently, then some planes will end up being larger than others)
-params['lateral_align_planes'] = False # Calculates and compensates the X-Y of MAxiMuM
-params['add_1000_for_nonegative_volume'] = True
-
 # Parameters MROIs seams
-params['seams_overlap'] = 'calculate' # Should be either 'calculate', an integer, or a list of integers with length=n_planes
 if params['seams_overlap'] == 'calculate':
     params['n_ignored_pixels_sides'] = 5 # Useful if there is a delay or incorrect phase for when the EOM turns the laser on/off at the start/end of a resonant-scanner line
     params['min_seam_overlap'] = 5
     params['max_seam_overlap'] = 20 # Used if params['seams_overlap']_setting = 'calculate'
     params['alignment_plot_checks'] = False
-    
-# Logging
-params['json_logging'] = False
-
+if not params['reconstruct_all_files']:
+    params['reconstruct_until_this_ifile'] = 10
 # Video and mean-frame png
-params['save_mp4'] = True
-params['save_meanf_png'] = True
 if params['save_mp4'] or params['save_meanf_png']:
     params['gaps_columns'] = 5
     params['gaps_rows'] = 5
@@ -106,10 +100,9 @@ if params['save_mp4'] or params['save_meanf_png']:
         params['rolling_average_frames'] = 1 
         params['video_duration_secs'] = 20
 
-
 #%%
-        
-# This will check if the pipeline can work with int16, and do it if possible. If NaN handling is required, float32 will be used instead  
+# This will check if the pipeline can work with int16, and do it if possible.
+# If NaN handling is required, float32 will be used instead
 if not params['lateral_align_planes']:
     initialize_volume_with_nans = False
     convert_volume_float32_to_int16 = True
@@ -120,12 +113,10 @@ elif params['make_nonan_volume']:
 else:
     initialize_volume_with_nans = True
     convert_volume_float32_to_int16 = False
-    
 
 #%% Set up logger and log parameters
 
 if params['json_logging']:
-    
     now = datetime.datetime.now()
     date_string = now.strftime("%Y%m%dd_%H%M%St")
     json_filename = f"{params['raw_data_dirs'][0]}log_{date_string}.json"
@@ -181,13 +172,11 @@ for current_pipeline_step in pipeline_steps:
     for i_file in list_files_for_reconstruction:
         tic = time.time()
         path_input_file = path_input_files[i_file]
-        
-            
+
         print('---------------------------------------------------')
         if params['json_logging']: json_logger.debug(json.dumps({'debug_message':'Started working on: ' + str(path_input_file)}))
     
         #%% Determine if it is a single-plane, Max15, or Max30 recording
-        
         if i_file == 0:
             if 'SP' in path_input_file:
                 n_planes = 1
