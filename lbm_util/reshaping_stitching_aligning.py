@@ -6,25 +6,7 @@ Created on Fri Feb 10 19:02:03 2023
 @author: otero
 """
 
-# %%
-# Pre-processing pipeline of 2pRAM and LBM data 
-# Steps:
-# - reshapes the axis to have an x,y,z,t volume (LBM)
-# - sorts the z-planes (LBM)
-# - calculates and corrects the MROI seams
-# - calculates and corrects the X-Y shifts across planes (LBM)
-# - outputs data as x-y-t planes or x-y-z-t volumes)
 
-# If a silent crash happens (and the Terminal closes) despite not reaching 100% RAM,
-# it could be due to the system-oom-process-killer being too sensitive (or acting weird)
-# It might be worth trying to increase the thresholds for when to kill processes, or to turn it off altogether...
-# https://askubuntu.com/questions/1404888/how-do-i-disable-the-systemd-oom-process-killer-in-ubuntu-22-04
-# To turned it off:
-# $ systemctl disable --now systemd-oomd
-# $ systemctl mask systemd-oomd
-# It can be turned back on with:
-# $ systemctl enable systemd-oomd
-# $ systemctl unmask systemd-oomd
 
 # %%
 import copy
@@ -219,7 +201,7 @@ for current_pipeline_step in pipeline_steps:
             if type(mrois_si_raw) != dict:
                 mrois_si = []
                 for roi in mrois_si_raw:
-                    if type(roi['scanfields']) != list:
+                    if type(roi['scanfields']) != list: # TODO: eval
                         scanfield = roi['scanfields']
                     else:
                         scanfield = roi['scanfields'][np.where(np.array(roi['zs']) == 0)[0][0]]
