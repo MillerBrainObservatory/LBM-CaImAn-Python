@@ -1,5 +1,9 @@
 import numpy as np
+from pathlib import Path
 
+# Globals
+RAW_INPUT_DIRS = []
+OUTPUT_DIRS = Path('/v-data4/foconnell/')
 
 def init_params():
     """
@@ -13,16 +17,18 @@ def init_params():
     raw_data_dirs : Absolute path to the folder containing your data. Must be a list of 1 or more directories.
     fname_must_contain : Optional string to match filenames to exclude from the analysis.
     fname_must_NOT_contain: Optional string to match filenames to exclude from the analysis.
-    make_template_seams_and_plane_alignment : True,
-    econstruct_all_files : True,
+    make_template_seams_and_plane_alignment : Flag to start reconstruction.
+    reconstruct_all_files : Whether to iterate over all files
+    reconstruct_until_this_ifile : Iterate over this many files in each raw_data_dirs. Fallback
     list_files_for_template : TBD.
-    json_logging : False,  # replaced with debug param
     seams_overlap : "calculate",
-    make_nonan_volume : True,
-    lateral_align_planes : False,
-    add_1000_for_nonegative_volume : True,
-    save_mp4 : True,
-    save_meanf_png : True,
+    make_nonan_volume :?? Isn't user set, checks for nan's in each plane
+        - False if letaral_align_planes = True because it is going to be no-nan by definition, no need to check for it
+    lateral_align_planes : Check if  the pipeline can work with int16, and do it if so. If NaN
+        handling is required, float32 will be used instead.
+    add_1000_for_nonegative_volume : Correct for the first 1000 planes being used by the resonant scanner?
+    save_mp4 : Saves the plane across time,
+    save_meanf_png : Saves the image of an individual plane.
 
     TODO: Add checks with clear warnings or errors for each parameter
     TODO: detect the number of planes based on the file metadata and not on the filename
@@ -37,6 +43,7 @@ def init_params():
                 17, 3, 18, 19, 20, 21, 22, 23, 4, 24, 25, 26, 27, 28, 29, 30,]) - 1),
         "flynn_temp_param": True,
         "raw_data_dirs": [r"/v-data4/foconnell/data/lbm/"],
+        "output_dir": Path(""),
         "fname_must_contain": "",
         "fname_must_NOT_contain": "some_random_stuff",
         "make_template_seams_and_plane_alignment": True,
