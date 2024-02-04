@@ -8,6 +8,7 @@ Created on Fri Feb 10 19:02:03 2023
 
 # %%
 import copy
+import icecream
 import cv2
 import datetime
 import glob
@@ -26,7 +27,7 @@ import sys
 import tifffile
 import time
 from pathlib import Path
-from . import init_params
+from lbm_util import init_params
 
 params = init_params()
 
@@ -139,11 +140,13 @@ for current_pipeline_step in pipeline_steps:
     else:
         list_files_for_reconstruction = range(params["reconstruct_until_this_ifile"])
 
+    print("---------------------------------------------------")
+    print("Start reconstruction")
+    print("---------------------------------------------------")
     for i_file in list_files_for_reconstruction:
         tic = time.time()
         path_input_file = path_input_files[i_file]
 
-        print("---------------------------------------------------")
         if params["json_logging"]:
             json_logger.debug(
                 json.dumps(
@@ -262,7 +265,7 @@ for current_pipeline_step in pipeline_steps:
                 json.dumps({"debug_message": "Separating tif into individual MROIs"})
             )
 
-        # Divide long stripe into mrois
+        # Divide long stripe into mrois ------------
         planes_mrois = np.empty((n_planes, n_mrois), dtype=np.ndarray)
         for i_plane in range(n_planes):
             y_start = 0
@@ -486,7 +489,6 @@ for current_pipeline_step in pipeline_steps:
                 )
 
         # %% Create a volume container
-
         if (
             current_pipeline_step == "make_template"
         ):  # For templatingMROIs, we will get here when working on the last file
@@ -536,6 +538,7 @@ for current_pipeline_step in pipeline_steps:
                     {"debug_message": "Merging MROIs and placing them into the volume"}
                 )
             )
+
         for i_plane in range(n_planes):
             overlap_seams_this_plane = overlaps_planes[i_plane]
             plane_width = len(
@@ -544,7 +547,7 @@ for current_pipeline_step in pipeline_steps:
             plane_length = len(reconstructed_xy_ranges_si[1])
             plane_canvas = np.zeros((n_f, plane_width, plane_length), dtype=np.float32)
             for i_mroi in range(n_mrois):
-                # The first and last MROIs require different handling
+                # The first and last MROIs require different handling  #TODO: is this because of the dual cavities?
                 if i_mroi == 0:
                     x_start_canvas = (
                         0  # This always works because the MROIs were sorted
