@@ -1,11 +1,5 @@
 # !/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on Fri Feb 10 19:02:03 2023
-
-@author: otero
-"""
-
 # %%
 import copy
 
@@ -35,6 +29,8 @@ import time
 from pathlib import Path
 from lbm_util import init_params
 
+def _init():
+    pass
 
 @argumentToString.register(np.ndarray)
 def _(obj):
@@ -54,7 +50,6 @@ else:
 # # %% USER-DEFINED PARAMETERS
 # TODO: Only params the user actually changes should be held in this dictionary
 if params["save_output"]:
-    # 'planes' will save individual planes in subfolders -- 'volume' will save a whole 4D hdf5 volume
     params["save_as_volume_or_planes"] = "planes"
     if params["save_as_volume_or_planes"] == "planes":
         # If True, it will take all the time-chunked h5 files, concatenate, and save them as a single .tif
