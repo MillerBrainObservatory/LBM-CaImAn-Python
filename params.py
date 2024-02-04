@@ -5,6 +5,7 @@ from pathlib import Path
 RAW_INPUT_DIRS = []
 OUTPUT_DIRS = Path('/v-data4/foconnell/')
 
+
 def init_params():
     """
     Return a dictionary with parameters.
