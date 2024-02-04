@@ -8,7 +8,11 @@ Created on Fri Feb 10 19:02:03 2023
 
 # %%
 import copy
-import icecream
+try:
+    from icecream import ic, install
+    install()
+except ImportError:  # graceful fallback if icecream isn't installed.
+    ic = lambda *a: None if not a else (a[0] if len(a) == 1 else a)  # noqa
 import cv2
 import datetime
 import glob
@@ -30,24 +34,28 @@ from pathlib import Path
 from lbm_util import init_params
 
 params = init_params()
+if params['debug']:
+    ic.enable()
+    ic.configureOutput(prefix='RBO Debugger -> ', includeContext=True, contextAbsPath=True)
+    ic()
+else:
+    ic.disable()
+    ic()
 
 # # %% USER-DEFINED PARAMETERS
+# TODO: Only params the user actually changes should be held in this dictionary
 if params["save_output"]:
-    params[
-        "save_as_volume_or_planes"
-    ] = "planes"  # 'planes' will save individual planes in subfolders -- 'volume' will save a whole 4D hdf5 volume
+    # 'planes' will save individual planes in subfolders -- 'volume' will save a whole 4D hdf5 volume
+    params["save_as_volume_or_planes"] = "planes"
     if params["save_as_volume_or_planes"] == "planes":
         # If True, it will take all the time-chunked h5 files, concatenate, and save them as a single .tif
         params["concatenate_all_h5_to_tif"] = False
 
 if params["seams_overlap"] == "calculate":
-    params[
-        "n_ignored_pixels_sides"
-    ] = 5  # Useful if there is a delay or incorrect phase for when the EOM turns the laser on/off at the start/end of a resonant-scanner line
+    # correct delay or incorrect phase when EOM turns the laser on/off at the start/end of a resonant-scanner line
+    params["n_ignored_pixels_sides"] = 5
     params["min_seam_overlap"] = 5
-    params[
-        "max_seam_overlap"
-    ] = 20  # Used if params['seams_overlap']_setting = 'calculate'
+    params["max_seam_overlap"] = 20
     params["alignment_plot_checks"] = False
 if not params["reconstruct_all_files"]:
     params["reconstruct_until_this_ifile"] = 10
@@ -68,9 +76,8 @@ if params["save_mp4"] or params["save_meanf_png"]:
 if not params["lateral_align_planes"]:
     initialize_volume_with_nans = False
     convert_volume_float32_to_int16 = True
-    params[
-        "make_nonan_volume"
-    ] = False  # It is going to be no-nan by definition, no need to check for it
+    # It is going to be no-nan by definition, no need to check for it
+    params["make_nonan_volume"] = False
 elif params["make_nonan_volume"]:
     initialize_volume_with_nans = True
     convert_volume_float32_to_int16 = True
@@ -78,13 +85,11 @@ else:
     initialize_volume_with_nans = True
     convert_volume_float32_to_int16 = False
 
-if params["json_logging"]:
+if params["debug"]:
     now = datetime.datetime.now()
     date_string = now.strftime("%Y%m%dd_%H%M%St")
     json_filename = f"{params['raw_data_dirs'][0]}log_{date_string}.json"
-    json_formatter = logging.Formatter(
-        '{"time": "%(asctime)s", "level": "%(levelname)s", "message": %(message)s}'
-    )
+    json_formatter = logging.Formatter('{"time": "%(asctime)s", "level": "%(levelname)s", "message": %(message)s}')
 
     json_logger = logging.getLogger(__name__)
     json_logger.setLevel(logging.DEBUG)
@@ -111,9 +116,8 @@ if params["json_logging"]:
     json_logger.info(json.dumps({"path_all_files": path_all_files}))
 
 n_template_files = len(params["list_files_for_template"])
-path_template_files = [
-    path_all_files[file_idx] for file_idx in params["list_files_for_template"]
-]
+ic(n_template_files)
+path_template_files = [path_all_files[file_idx] for file_idx in params["list_files_for_template"]]
 
 del (
     i_dir,
@@ -140,21 +144,11 @@ for current_pipeline_step in pipeline_steps:
     else:
         list_files_for_reconstruction = range(params["reconstruct_until_this_ifile"])
 
-    print("---------------------------------------------------")
-    print("Start reconstruction")
-    print("---------------------------------------------------")
     for i_file in list_files_for_reconstruction:
         tic = time.time()
         path_input_file = path_input_files[i_file]
+        ic("Start Reconstruction", path_input_file)
 
-        if params["json_logging"]:
-            json_logger.debug(
-                json.dumps(
-                    {"debug_message": "Started working on: " + str(path_input_file)}
-                )
-            )
-
-        # %% Determine if it is a single-plane, Max15, or Max30 recording
         if i_file == 0:
             if "SP" in path_input_file:
                 n_planes = 1
@@ -219,28 +213,26 @@ for current_pipeline_step in pipeline_steps:
             x_sorted = np.argsort(mrois_centers_si[:, 0])
             mrois_si_sorted_x = [mrois_si[i] for i in x_sorted]
             mrois_centers_si_sorted_x = [mrois_centers_si[i] for i in x_sorted]
-
+#----
         # %% Load, reshape (so time and planes are 2 independent dimensions) and re-order (planes, fix Jeff's order)
-        if params["json_logging"]:
-            json_logger.debug(
-                json.dumps(
-                    {
-                        "debug_message": "Loading file (expect warning if multi-file recording)"
-                    }
-                )
-            )
+        ic("Loading file (expect warning for multi-file recording)")
+
 
         tiff_file = tifffile.imread(path_input_file)
+        dim1 = tiff_file.shape[0]
+        dim2 = tiff_file.shape[1]
+        dim3 = tiff_file.shape[2]
+
         if n_planes > 1:
-            tiff_file = np.reshape(
-                tiff_file,
-                (
+            ic(tiff_file.shape)
+            ic(f"Reshaping: {int(tiff_file.shape[0])}")
+            tiff_file = np.reshape(tiff_file, (
                     int(tiff_file.shape[0] / n_planes),
                     n_planes,
                     tiff_file.shape[1],
                     tiff_file.shape[2],
                 ),
-                order="A",
+                order="A",  # TODO: Eval
             )  # warnings are expected if the recording is split into many files or incomplete
         else:
             tiff_file = np.expand_dims(tiff_file, 1)
@@ -249,34 +241,27 @@ for current_pipeline_step in pipeline_steps:
 
         if current_pipeline_step == "make_template":
             tiff_file = np.mean(tiff_file, axis=0, keepdims=True)
-
+#----
         # %% Separate tif into MROIs
         # Get the Y coordinates for mrois (and not flybacks)
         if i_file == 0:
             n_mrois = len(mrois_si)
             tif_pixels_Y = tiff_file.shape[2]
             mrois_pixels_Y = np.array([mroi_si["pixXY"][1] for mroi_si in mrois_si])
-            each_flyback_pixels_Y = (tif_pixels_Y - mrois_pixels_Y.sum()) // (
-                n_mrois - 1
-            )
+            each_flyback_pixels_Y = (tif_pixels_Y - mrois_pixels_Y.sum()) // (n_mrois - 1)
 
-        if params["json_logging"]:
-            json_logger.debug(
-                json.dumps({"debug_message": "Separating tif into individual MROIs"})
-            )
+
+        if params["debug"]:
+            ic("Separating tifs")
+            json_logger.debug(json.dumps({"debug_message": "Separating tif into individual MROIs"}))
 
         # Divide long stripe into mrois ------------
         planes_mrois = np.empty((n_planes, n_mrois), dtype=np.ndarray)
         for i_plane in range(n_planes):
             y_start = 0
-            for i_mroi in range(
-                n_mrois
-            ):  # We go over the order in which they were acquired
-                planes_mrois[i_plane, i_mroi] = tiff_file[
-                    :, :, y_start : y_start + mrois_pixels_Y[x_sorted[i_mroi]], i_plane
-                ]
+            for i_mroi in range(n_mrois):  # We go over the order in which they were acquired
+                planes_mrois[i_plane, i_mroi] = tiff_file[:, :, y_start : y_start + mrois_pixels_Y[x_sorted[i_mroi]], i_plane]
                 y_start += mrois_pixels_Y[i_mroi] + each_flyback_pixels_Y
-
         del tiff_file
 
         if current_pipeline_step == "make_template":
@@ -294,16 +279,11 @@ for current_pipeline_step in pipeline_steps:
         # %% Get location of MROIs in final canvas based on MROI metadata
         if current_pipeline_step == "make_template":
             # Get pixel sizes
-            sizes_mrois_pix = np.array(
-                [mroi_pix.shape[1:] for mroi_pix in planes_mrois[0, :]]
-            )
-            sizes_mrois_si = np.array(
-                [mroi_si["sizeXY"] for mroi_si in mrois_si_sorted_x]
-            )
+            sizes_mrois_pix = np.array([mroi_pix.shape[1:] for mroi_pix in planes_mrois[0, :]])
+            sizes_mrois_si = np.array([mroi_si["sizeXY"] for mroi_si in mrois_si_sorted_x])
             pixel_sizes = sizes_mrois_si / sizes_mrois_pix
             psize_x, psize_y = np.mean(pixel_sizes[:, 0]), np.mean(pixel_sizes[:, 1])
-            assert np.product(
-                np.isclose(pixel_sizes[:, 1] - psize_y, 0)
+            assert np.product(np.isclose(pixel_sizes[:, 1] - psize_y, 0)
             ), "Y-pixels resolution not uniform across MROIs"
             assert np.product(
                 np.isclose(pixel_sizes[:, 0] - psize_x, 0)
@@ -311,6 +291,7 @@ for current_pipeline_step in pipeline_steps:
             # assert np.product(np.isclose(pixel_sizes[:,0]-pixel_sizes[:,1], 0)), "Pixels do not have squared resolution"
 
             # Calculate the pixel ranges (with their SI locations) that would fit all MROIs
+            # TODO: unbound local with all of these mrois_sorted
             top_left_corners_si = mrois_centers_si_sorted_x - sizes_mrois_si / 2
             bottom_right_corners_si = mrois_centers_si_sorted_x + sizes_mrois_si / 2
             xmin_si, ymin_si = (
@@ -339,19 +320,8 @@ for current_pipeline_step in pipeline_steps:
                     top_left_corners_pix[i_mroi, i_xy] = int(closest_xy_pix)
                     closest_xy_si = reconstructed_xy_ranges_si[i_xy][closest_xy_pix]
                     if not np.isclose(closest_xy_si, top_left_corners_si[i_mroi, i_xy]):
-                        if params["json_logging"]:
-                            json_logger.debug(
-                                json.dumps(
-                                    {
-                                        "debug_message": "ROI %d x does not fit perfectly into image, corner is %.4f but closest available is %.4f"
-                                        % (
-                                            i_mroi,
-                                            closest_xy_si,
-                                            top_left_corners_si[i_mroi, i_xy],
-                                        )
-                                    }
-                                )
-                            )
+                        if params["debug"]:
+                            ic(f"ROI {i_mroi} x does not fit perfectly into image, corner is {closest_xy_si}.4f but closest available is {top_left_corners_si[i_mroi, i_xy]}.4f")
             # Sometimes an extra pixel is added because of pixel_size rounding
             for i_xy in range(2):
                 if (
@@ -418,15 +388,11 @@ for current_pipeline_step in pipeline_steps:
                             + 2 * params["n_ignored_pixels_sides"]
                         )
                     )
-                if params["json_logging"]:
-                    json_logger.info(json.dumps({"overlaps_planes": overlaps_planes}))
-
+                ic(overlaps_planes)
                 # Plot the scores for the different planes and also potential shifts
                 if params["alignment_plot_checks"]:
                     for i_plane in range(n_planes):
-                        plt.plot(
-                            range(
-                                params["min_seam_overlap"], params["max_seam_overlap"]
+                        plt.plot(range(params["min_seam_overlap"], params["max_seam_overlap"]
                             ),
                             overlaps_planes_scores[i_plane],
                         )
@@ -532,7 +498,8 @@ for current_pipeline_step in pipeline_steps:
             volume = np.empty((n_f, n_x, n_y, n_z), dtype=np.int16)
 
         # %% Merge MROIs and place the plane in the volume (with lateral offsets)
-        if params["json_logging"]:
+        if params["debug"]:
+            ic("merging MROIS and placing them into the volume")
             json_logger.debug(
                 json.dumps(
                     {"debug_message": "Merging MROIs and placing them into the volume"}
