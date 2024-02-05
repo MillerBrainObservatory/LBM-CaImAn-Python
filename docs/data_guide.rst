@@ -49,6 +49,41 @@ The original behavior and CaImAn output files are contained for each mouse in /v
 - ./pulse_config*.mat contains the LBM configuration file
 - ./YYYY-MM-DD-HH-MM timestamped folders contain the stimulation log for visual experiments
 
+
+Metadata for sample LBM dataset
+-------------------------------
+
+path_template_files = ['/v-data4/foconnell/data/lbm/raw/mh89_hemisphere_FOV_50_550um_depth_250mW_dual_stimuli_30min_00001_00001.tif']
+
+XResolution = (1073741824, 447392)
+YResolution = (1073741824, 536870)
+pixelResolutionXY = (144, 1000)
+RowsPerStrip = 5104
+
+<tifffle.Pages> pages @18918
+--> first / keyframes (5104, 145)
+--> dtype = int16
+
+Input data shape:
+dim1 = {int} 25320
+dim2 = {int} 5104
+dim3 = {int} 145
+n_planes = 30
+
+Reshape:
+dim1 = dim1 / n_planes  .. t
+dim2 = n_planes # .. z 
+dim3 = dim1  # .. x
+dim4 = dim2  # .. y
+
+
+.. warning:: 
+   Avoid using `.width` and `.height` attributes as they are inconsistent accross (and within) tiff readers.
+   
+
+Resources
+---------
+
 .. [4] Code used in this analysis is available at the internal 
    Vaziri Github Account: VaziriGithub_.
 ▎
