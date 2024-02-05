@@ -175,8 +175,7 @@ for current_pipeline_step in pipeline_steps:
                 chans_order = params["chans_order_30planes"]
                 rows, columns = 6, 5
 
-            if params["debug"]:
-                ic(n_planes)
+            ic(n_planes)
 
             # %% Get MROI info from tif metadata
             with tifffile.TiffFile(path_input_file) as tif:
@@ -231,7 +230,8 @@ for current_pipeline_step in pipeline_steps:
                 n_planes,
                 tiff_file.shape[1],
                 tiff_file.shape[2],
-            ), order="A")  # TODO: Eval
+            ), order="C")  # TODO: Eval, I believe this should be 'C'
+            ic(tiff_file)
         else:
             tiff_file = np.expand_dims(tiff_file, 1)
         tiff_file = np.swapaxes(tiff_file, 1, 3)
@@ -249,8 +249,7 @@ for current_pipeline_step in pipeline_steps:
             mrois_pixels_Y = np.array([mroi_si["pixXY"][1] for mroi_si in mrois_si])
             each_flyback_pixels_Y = (tif_pixels_Y - mrois_pixels_Y.sum()) // (n_mrois - 1)
 
-        if params["debug"]:
-            ic("Separating tifs")
+        ic("Separating tifs")
 
         # Divide long stripe into mrois ------------
         planes_mrois = np.empty((n_planes, n_mrois), dtype=np.ndarray)
