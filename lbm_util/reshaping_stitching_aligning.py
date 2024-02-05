@@ -207,12 +207,13 @@ for current_pipeline_step in pipeline_steps:
                 roi_dict["pixXY"] = np.array(scanfield["pixelResolutionXY"])
                 mrois_si = [roi_dict]
 
-            # Sort MROIs so they go from left-to-right (but keep the un-sorted because that matches how they were acquired and saved in the long-tif-strip)
+            # Sort MROIs so they go from left-to-right
+            # (but keep the un-sorted because that matches how they were acquired and saved in the long-tif-strip)
             mrois_centers_si = np.array([mroi_si["center"] for mroi_si in mrois_si])
             x_sorted = np.argsort(mrois_centers_si[:, 0])
             mrois_si_sorted_x = [mrois_si[i] for i in x_sorted]
             mrois_centers_si_sorted_x = [mrois_centers_si[i] for i in x_sorted]
-        # ----
+
         # %% Load, reshape (so time and planes are 2 independent dimensions) and re-order (planes, fix Jeff's order)
         ic("Loading file (expect warning for multi-file recording)")
 
@@ -255,7 +256,7 @@ for current_pipeline_step in pipeline_steps:
         planes_mrois = np.empty((n_planes, n_mrois), dtype=np.ndarray)
         for i_plane in range(n_planes):
             y_start = 0
-            for i_mroi in range(n_mrois):  # We go over the order in which they were acquired
+            for i_mroi in range(n_mrois):  # go over the order in which they were acquired
                 planes_mrois[i_plane, i_mroi] = tiff_file[:, :, y_start : y_start + mrois_pixels_Y[x_sorted[i_mroi]], i_plane]
                 y_start += mrois_pixels_Y[i_mroi] + each_flyback_pixels_Y
         del tiff_file
@@ -783,7 +784,7 @@ for current_pipeline_step in pipeline_steps:
                                 np.ones(([params["rolling_average_frames"], 1, 1])),
                                 mode="valid",
                             )
-                            # Apply percentile-dynamic-range
+                            # Apply percentile-dynamic-range (normalize pixel intensity
                             pct_low, pct_high = np.nanpercentile(
                                 plane_for_video, params["intensity_percentiles"]
                             )
@@ -837,6 +838,7 @@ for current_pipeline_step in pipeline_steps:
                         )
                         for f in range(canvas_video.shape[0]):
                             out.write(canvas_video[f])
+                            ic(f"{output_filename_video}")
                         out.release()
                         del canvas_video
 
