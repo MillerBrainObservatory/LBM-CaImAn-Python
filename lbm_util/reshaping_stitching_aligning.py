@@ -640,16 +640,14 @@ for current_pipeline_step in pipeline_steps:
         if current_pipeline_step == "reconstruct_all":
             if params["save_output"]:
                 ic("Saving output")
-
-                save_dir = os.path.dirname(path_input_file) + "/Preprocessed/"
+                # TODO: Make outpath a param
+                save_dir = os.path.dirname(path_input_file) + "/Preprocessed_temp/"
                 if params["save_as_volume_or_planes"] == "volume":
                     save_dir = os.path.dirname(path_input_file)
                     path_output_file = path_input_file[:-4] + "_preprocessed.h5"
                     h5file = h5py.File(path_output_file, "w")
                     h5file.create_dataset("mov", data=volume)
-                    h5file.attrs.create(
-                        "metadata", str(metadata)
-                    )  # You can use json to load it as a dictionary
+                    h5file.attrs.create("metadata", str(metadata))  # You can use json to load it as a dictionary
                     h5file.close()
                     del h5file
                 elif params["save_as_volume_or_planes"] == "planes":
