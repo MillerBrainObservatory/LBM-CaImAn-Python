@@ -1,4 +1,6 @@
-""" Utilities for the MaXiMuM project. """
+"""
+Utilities for the MaXiMuM project.
+"""
 
 from .scan import return_scan_offset, fix_scan_phase
 from .get_mroi_from_tiff import get_mroi_data_from_tiff

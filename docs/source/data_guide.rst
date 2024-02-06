@@ -1,4 +1,4 @@
-Merge in meso-processing modulesSpontaneous LBM Data
+Spontaneous LBM Data
 ====================
 
 Collected by Jason Manley and Jeffrey Demas, Aug 2020 - March 2021; and with Sihao Lu, Dec 2022 - April 2023

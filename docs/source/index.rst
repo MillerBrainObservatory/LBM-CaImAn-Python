@@ -11,7 +11,8 @@ Welcome to rbo-lbm's documentation!
    :caption: Contents:
 
    data_guide
-   reST_guide
+   parameters
+   api
 
 
 
