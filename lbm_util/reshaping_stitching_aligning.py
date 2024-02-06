@@ -1,13 +1,14 @@
 # !/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on Fri Feb 10 19:02:03 2023
-
-@author: otero
-"""
-
 # %%
 import copy
+
+try:
+    from icecream import ic, install, argumentToString
+
+    install()
+except ImportError:  # graceful fallback if icecream isn't installed.
+    ic = lambda *a: None if not a else (a[0] if len(a) == 1 else a)  # noqa
 import cv2
 import datetime
 import glob
@@ -26,27 +27,39 @@ import sys
 import tifffile
 import time
 from pathlib import Path
-from . import init_params
+from lbm_util import init_params
+
+def _init():
+    pass
+
+@argumentToString.register(np.ndarray)
+def _(obj):
+    """Format our return for the icecream debug statement."""
+    return f"ndarray, shape={obj.shape}, dtype={obj.dtype}"
+
 
 params = init_params()
+if params['debug']:
+    ic.enable()
+    ic.configureOutput(prefix='RBO Debugger -> ', includeContext=True, contextAbsPath=True)
+    ic()
+else:
+    ic.disable()
+    ic()
 
 # # %% USER-DEFINED PARAMETERS
+# TODO: Only params the user actually changes should be held in this dictionary
 if params["save_output"]:
-    params[
-        "save_as_volume_or_planes"
-    ] = "planes"  # 'planes' will save individual planes in subfolders -- 'volume' will save a whole 4D hdf5 volume
+    params["save_as_volume_or_planes"] = "planes"
     if params["save_as_volume_or_planes"] == "planes":
         # If True, it will take all the time-chunked h5 files, concatenate, and save them as a single .tif
         params["concatenate_all_h5_to_tif"] = False
 
 if params["seams_overlap"] == "calculate":
-    params[
-        "n_ignored_pixels_sides"
-    ] = 5  # Useful if there is a delay or incorrect phase for when the EOM turns the laser on/off at the start/end of a resonant-scanner line
+    # correct delay or incorrect phase when EOM turns the laser on/off at the start/end of a resonant-scanner line
+    params["n_ignored_pixels_sides"] = 5
     params["min_seam_overlap"] = 5
-    params[
-        "max_seam_overlap"
-    ] = 20  # Used if params['seams_overlap']_setting = 'calculate'
+    params["max_seam_overlap"] = 20
     params["alignment_plot_checks"] = False
 if not params["reconstruct_all_files"]:
     params["reconstruct_until_this_ifile"] = 10
@@ -67,9 +80,8 @@ if params["save_mp4"] or params["save_meanf_png"]:
 if not params["lateral_align_planes"]:
     initialize_volume_with_nans = False
     convert_volume_float32_to_int16 = True
-    params[
-        "make_nonan_volume"
-    ] = False  # It is going to be no-nan by definition, no need to check for it
+    # It is going to be no-nan by definition, no need to check for it
+    params["make_nonan_volume"] = False
 elif params["make_nonan_volume"]:
     initialize_volume_with_nans = True
     convert_volume_float32_to_int16 = True
@@ -77,13 +89,11 @@ else:
     initialize_volume_with_nans = True
     convert_volume_float32_to_int16 = False
 
-if params["json_logging"]:
+if params["debug"]:
     now = datetime.datetime.now()
     date_string = now.strftime("%Y%m%dd_%H%M%St")
     json_filename = f"{params['raw_data_dirs'][0]}log_{date_string}.json"
-    json_formatter = logging.Formatter(
-        '{"time": "%(asctime)s", "level": "%(levelname)s", "message": %(message)s}'
-    )
+    json_formatter = logging.Formatter('{"time": "%(asctime)s", "level": "%(levelname)s", "message": %(message)s}')
 
     json_logger = logging.getLogger(__name__)
     json_logger.setLevel(logging.DEBUG)
@@ -101,18 +111,17 @@ for i_dir in params["raw_data_dirs"]:
     tmp_paths = sorted(glob.glob(i_dir + "/**/*.tif", recursive=True))
     for this_tmp_path in tmp_paths:
         if (
-            params["fname_must_contain"] in this_tmp_path
-            and params["fname_must_NOT_contain"] not in this_tmp_path
+                params["fname_must_contain"] in this_tmp_path and
+                params["fname_must_NOT_contain"] not in this_tmp_path
         ):
             path_all_files.append(this_tmp_path)
 
-if params["json_logging"]:
-    json_logger.info(json.dumps({"path_all_files": path_all_files}))
+if params["debug"]:
+    ic(path_all_files)
 
 n_template_files = len(params["list_files_for_template"])
-path_template_files = [
-    path_all_files[file_idx] for file_idx in params["list_files_for_template"]
-]
+ic(n_template_files)
+path_template_files = [path_all_files[file_idx] for file_idx in params["list_files_for_template"]]
 
 del (
     i_dir,
@@ -142,16 +151,8 @@ for current_pipeline_step in pipeline_steps:
     for i_file in list_files_for_reconstruction:
         tic = time.time()
         path_input_file = path_input_files[i_file]
+        ic("Start Reconstruction", path_input_file)
 
-        print("---------------------------------------------------")
-        if params["json_logging"]:
-            json_logger.debug(
-                json.dumps(
-                    {"debug_message": "Started working on: " + str(path_input_file)}
-                )
-            )
-
-        # %% Determine if it is a single-plane, Max15, or Max30 recording
         if i_file == 0:
             if "SP" in path_input_file:
                 n_planes = 1
@@ -174,10 +175,7 @@ for current_pipeline_step in pipeline_steps:
                 chans_order = params["chans_order_30planes"]
                 rows, columns = 6, 5
 
-            if params["json_logging"]:
-                json_logger.debug(
-                    json.dumps({"debug_message": "Number of planes: " + str(n_planes)})
-                )
+            ic(n_planes)
 
             # %% Get MROI info from tif metadata
             with tifffile.TiffFile(path_input_file) as tif:
@@ -186,9 +184,7 @@ for current_pipeline_step in pipeline_steps:
                     tag_name, tag_value = tag.name, tag.value
                     metadata[tag_name] = tag_value
 
-            mrois_si_raw = json.loads(metadata["Artist"])["RoiGroups"][
-                "imagingRoiGroup"
-            ]["rois"]
+            mrois_si_raw = json.loads(metadata["Artist"])["RoiGroups"]["imagingRoiGroup"]["rois"]
             if type(mrois_si_raw) != dict:
                 mrois_si = []
                 for roi in mrois_si_raw:
@@ -211,34 +207,32 @@ for current_pipeline_step in pipeline_steps:
                 roi_dict["pixXY"] = np.array(scanfield["pixelResolutionXY"])
                 mrois_si = [roi_dict]
 
-            # Sort MROIs so they go from left-to-right (but keep the un-sorted because that matches how they were acquired and saved in the long-tif-strip)
+            # Sort MROIs so they go from left-to-right
+            # (but keep the un-sorted because that matches how they were acquired and saved in the long-tif-strip)
             mrois_centers_si = np.array([mroi_si["center"] for mroi_si in mrois_si])
             x_sorted = np.argsort(mrois_centers_si[:, 0])
             mrois_si_sorted_x = [mrois_si[i] for i in x_sorted]
             mrois_centers_si_sorted_x = [mrois_centers_si[i] for i in x_sorted]
 
         # %% Load, reshape (so time and planes are 2 independent dimensions) and re-order (planes, fix Jeff's order)
-        if params["json_logging"]:
-            json_logger.debug(
-                json.dumps(
-                    {
-                        "debug_message": "Loading file (expect warning if multi-file recording)"
-                    }
-                )
-            )
+        ic("Loading file (expect warning for multi-file recording)")
 
         tiff_file = tifffile.imread(path_input_file)
+        dim1 = tiff_file.shape[0]
+        dim2 = tiff_file.shape[1]
+        dim3 = tiff_file.shape[2]
+
         if n_planes > 1:
-            tiff_file = np.reshape(
-                tiff_file,
-                (
-                    int(tiff_file.shape[0] / n_planes),
-                    n_planes,
-                    tiff_file.shape[1],
-                    tiff_file.shape[2],
-                ),
-                order="A",
-            )  # warnings are expected if the recording is split into many files or incomplete
+            ic(tiff_file.shape)
+            ic(f"Reshaping: {int(tiff_file.shape[0])}")
+            # warnings are expected if the recording is split into many files or incomplete
+            tiff_file = np.reshape(tiff_file, (
+                int(tiff_file.shape[0] / n_planes),
+                n_planes,
+                tiff_file.shape[1],
+                tiff_file.shape[2],
+            ), order="C")  # TODO: Eval, I believe this should be 'C'
+            ic(tiff_file)
         else:
             tiff_file = np.expand_dims(tiff_file, 1)
         tiff_file = np.swapaxes(tiff_file, 1, 3)
@@ -247,33 +241,24 @@ for current_pipeline_step in pipeline_steps:
         if current_pipeline_step == "make_template":
             tiff_file = np.mean(tiff_file, axis=0, keepdims=True)
 
+        # ----
         # %% Separate tif into MROIs
         # Get the Y coordinates for mrois (and not flybacks)
         if i_file == 0:
             n_mrois = len(mrois_si)
             tif_pixels_Y = tiff_file.shape[2]
             mrois_pixels_Y = np.array([mroi_si["pixXY"][1] for mroi_si in mrois_si])
-            each_flyback_pixels_Y = (tif_pixels_Y - mrois_pixels_Y.sum()) // (
-                n_mrois - 1
-            )
+            each_flyback_pixels_Y = (tif_pixels_Y - mrois_pixels_Y.sum()) // (n_mrois - 1)
 
-        if params["json_logging"]:
-            json_logger.debug(
-                json.dumps({"debug_message": "Separating tif into individual MROIs"})
-            )
+        ic("Separating tifs")
 
-        # Divide long stripe into mrois
+        # Divide long stripe into mrois ------------
         planes_mrois = np.empty((n_planes, n_mrois), dtype=np.ndarray)
         for i_plane in range(n_planes):
             y_start = 0
-            for i_mroi in range(
-                n_mrois
-            ):  # We go over the order in which they were acquired
-                planes_mrois[i_plane, i_mroi] = tiff_file[
-                    :, :, y_start : y_start + mrois_pixels_Y[x_sorted[i_mroi]], i_plane
-                ]
+            for i_mroi in range(n_mrois):  # go over the order in which they were acquired
+                planes_mrois[i_plane, i_mroi] = tiff_file[:, :, y_start : y_start + mrois_pixels_Y[x_sorted[i_mroi]], i_plane]
                 y_start += mrois_pixels_Y[i_mroi] + each_flyback_pixels_Y
-
         del tiff_file
 
         if current_pipeline_step == "make_template":
@@ -291,16 +276,11 @@ for current_pipeline_step in pipeline_steps:
         # %% Get location of MROIs in final canvas based on MROI metadata
         if current_pipeline_step == "make_template":
             # Get pixel sizes
-            sizes_mrois_pix = np.array(
-                [mroi_pix.shape[1:] for mroi_pix in planes_mrois[0, :]]
-            )
-            sizes_mrois_si = np.array(
-                [mroi_si["sizeXY"] for mroi_si in mrois_si_sorted_x]
-            )
+            sizes_mrois_pix = np.array([mroi_pix.shape[1:] for mroi_pix in planes_mrois[0, :]])
+            sizes_mrois_si = np.array([mroi_si["sizeXY"] for mroi_si in mrois_si_sorted_x])
             pixel_sizes = sizes_mrois_si / sizes_mrois_pix
             psize_x, psize_y = np.mean(pixel_sizes[:, 0]), np.mean(pixel_sizes[:, 1])
-            assert np.product(
-                np.isclose(pixel_sizes[:, 1] - psize_y, 0)
+            assert np.product(np.isclose(pixel_sizes[:, 1] - psize_y, 0)
             ), "Y-pixels resolution not uniform across MROIs"
             assert np.product(
                 np.isclose(pixel_sizes[:, 0] - psize_x, 0)
@@ -308,6 +288,7 @@ for current_pipeline_step in pipeline_steps:
             # assert np.product(np.isclose(pixel_sizes[:,0]-pixel_sizes[:,1], 0)), "Pixels do not have squared resolution"
 
             # Calculate the pixel ranges (with their SI locations) that would fit all MROIs
+            # TODO: unbound local with all of these mrois_sorted
             top_left_corners_si = mrois_centers_si_sorted_x - sizes_mrois_si / 2
             bottom_right_corners_si = mrois_centers_si_sorted_x + sizes_mrois_si / 2
             xmin_si, ymin_si = (
@@ -336,24 +317,13 @@ for current_pipeline_step in pipeline_steps:
                     top_left_corners_pix[i_mroi, i_xy] = int(closest_xy_pix)
                     closest_xy_si = reconstructed_xy_ranges_si[i_xy][closest_xy_pix]
                     if not np.isclose(closest_xy_si, top_left_corners_si[i_mroi, i_xy]):
-                        if params["json_logging"]:
-                            json_logger.debug(
-                                json.dumps(
-                                    {
-                                        "debug_message": "ROI %d x does not fit perfectly into image, corner is %.4f but closest available is %.4f"
-                                        % (
-                                            i_mroi,
-                                            closest_xy_si,
-                                            top_left_corners_si[i_mroi, i_xy],
-                                        )
-                                    }
-                                )
-                            )
+                        if params["debug"]:
+                            ic(f"ROI {i_mroi} x does not fit perfectly into image, corner is {closest_xy_si}.4f but closest available is {top_left_corners_si[i_mroi, i_xy]}.4f")
             # Sometimes an extra pixel is added because of pixel_size rounding
             for i_xy in range(2):
                 if (
-                    len(reconstructed_xy_ranges_si[i_xy])
-                    == np.sum(sizes_mrois_pix[:, 0]) + 1
+                        len(reconstructed_xy_ranges_si[i_xy])
+                        == np.sum(sizes_mrois_pix[:, 0]) + 1
                 ):
                     reconstructed_xy_ranges_si[i_xy] = reconstructed_xy_ranges_si[i_xy][
                         :-1
@@ -365,8 +335,8 @@ for current_pipeline_step in pipeline_steps:
                 # Determine if all the MROIs are adjacent
                 for i_mroi in range(n_mrois - 1):
                     if (
-                        top_left_corners_pix[i_mroi][0] + sizes_mrois_pix[i_mroi][0]
-                        != top_left_corners_pix[i_mroi + 1][0]
+                            top_left_corners_pix[i_mroi][0] + sizes_mrois_pix[i_mroi][0]
+                            != top_left_corners_pix[i_mroi + 1][0]
                     ):
                         raise Exception(
                             "MROIs number "
@@ -377,12 +347,11 @@ for current_pipeline_step in pipeline_steps:
                         )
 
                 # Combine meanf from differete template files:
-                overlaps_planes_seams_scores = np.zeros(
-                    (
-                        n_planes,
-                        n_mrois - 1,
-                        params["max_seam_overlap"] - params["min_seam_overlap"],
-                    )
+                overlaps_planes_seams_scores = np.zeros((
+                    n_planes,
+                    n_mrois - 1,
+                    params["max_seam_overlap"] - params["min_seam_overlap"],
+                )
                 )  # We will avoid i_overlaps = 0
 
                 for i_plane in range(n_planes):
@@ -415,15 +384,11 @@ for current_pipeline_step in pipeline_steps:
                             + 2 * params["n_ignored_pixels_sides"]
                         )
                     )
-                if params["json_logging"]:
-                    json_logger.info(json.dumps({"overlaps_planes": overlaps_planes}))
-
+                ic(overlaps_planes)
                 # Plot the scores for the different planes and also potential shifts
                 if params["alignment_plot_checks"]:
                     for i_plane in range(n_planes):
-                        plt.plot(
-                            range(
-                                params["min_seam_overlap"], params["max_seam_overlap"]
+                        plt.plot(range(params["min_seam_overlap"], params["max_seam_overlap"]
                             ),
                             overlaps_planes_scores[i_plane],
                         )
@@ -447,13 +412,13 @@ for current_pipeline_step in pipeline_steps:
                             x_start = 0
                             for i_mroi in range(n_mrois):
                                 x_start = (
-                                    top_left_corners_pix[i_mroi][0] - i_mroi * i_overlap
+                                        top_left_corners_pix[i_mroi][0] - i_mroi * i_overlap
                                 )
                                 x_end = x_start + sizes_mrois_pix[i_mroi][0]
                                 y_start = top_left_corners_pix[i_mroi][1]
                                 y_end = y_start + sizes_mrois_pix[i_mroi][1]
                                 canvas_alignment_check[
-                                    x_start:x_end, y_start:y_end, i_mroi % 2
+                                x_start:x_end, y_start:y_end, i_mroi % 2
                                 ] = planes_mrois[0, i_plane, i_mroi] - np.min(
                                     planes_mrois[0, i_plane, i_mroi]
                                 )
@@ -486,9 +451,8 @@ for current_pipeline_step in pipeline_steps:
                 )
 
         # %% Create a volume container
-
         if (
-            current_pipeline_step == "make_template"
+                current_pipeline_step == "make_template"
         ):  # For templatingMROIs, we will get here when working on the last file
             n_f = 1
         elif current_pipeline_step == "reconstruct_all":
@@ -496,8 +460,8 @@ for current_pipeline_step in pipeline_steps:
 
             # For template or if no need to align planes, initialize interplane shifts as 0s
         if (
-            current_pipeline_step == "make_template"
-            or not params["lateral_align_planes"]
+                current_pipeline_step == "make_template"
+                or not params["lateral_align_planes"]
         ):
             interplane_shifts = np.zeros((n_planes, 2), dtype=int)
             accumulated_shifts = np.zeros((n_planes, 2), dtype=int)
@@ -506,23 +470,17 @@ for current_pipeline_step in pipeline_steps:
         max_shift_y = max(accumulated_shifts[:, 1])
 
         n_x = (
-            len(reconstructed_xy_ranges_si[0])
-            - min(overlaps_planes) * (n_mrois - 1)
-            + max_shift_x
+                len(reconstructed_xy_ranges_si[0])
+                - min(overlaps_planes) * (n_mrois - 1)
+                + max_shift_x
         )
         n_y = len(reconstructed_xy_ranges_si[1]) + max_shift_y
         n_z = n_planes
 
-        if params["json_logging"]:
-            json_logger.debug(
-                json.dumps(
-                    {
-                        "debug_message": "Creating volume of shape: "
-                        + str([n_f, n_x, n_y, n_z])
-                        + " (f,x,y,z)"
-                    }
-                )
-            )
+        if params["debug"]:
+            print("Creating volume of shape: ")
+            ic(str([n_f, n_x, n_y, n_y]))
+            print(" (f,x,y,z)")
 
         if initialize_volume_with_nans:
             volume = np.full((n_f, n_x, n_y, n_z), np.nan, dtype=np.float32)
@@ -530,12 +488,9 @@ for current_pipeline_step in pipeline_steps:
             volume = np.empty((n_f, n_x, n_y, n_z), dtype=np.int16)
 
         # %% Merge MROIs and place the plane in the volume (with lateral offsets)
-        if params["json_logging"]:
-            json_logger.debug(
-                json.dumps(
-                    {"debug_message": "Merging MROIs and placing them into the volume"}
-                )
-            )
+        if params["debug"]:
+            ic("merging MROIS and placing them into the volume")
+
         for i_plane in range(n_planes):
             overlap_seams_this_plane = overlaps_planes[i_plane]
             plane_width = len(
@@ -544,24 +499,24 @@ for current_pipeline_step in pipeline_steps:
             plane_length = len(reconstructed_xy_ranges_si[1])
             plane_canvas = np.zeros((n_f, plane_width, plane_length), dtype=np.float32)
             for i_mroi in range(n_mrois):
-                # The first and last MROIs require different handling
+                # The first and last MROIs require different handling  #TODO: is this because of the dual cavities?
                 if i_mroi == 0:
                     x_start_canvas = (
                         0  # This always works because the MROIs were sorted
                     )
                     x_end_canvas = (
-                        x_start_canvas
-                        + sizes_mrois_pix[i_mroi][0]
-                        - int(np.trunc(overlap_seams_this_plane / 2))
+                            x_start_canvas
+                            + sizes_mrois_pix[i_mroi][0]
+                            - int(np.trunc(overlap_seams_this_plane / 2))
                     )
                     x_start_mroi = x_start_canvas
                     x_end_mroi = x_end_canvas
                 elif i_mroi != n_mrois - 1:
                     x_start_canvas = copy.deepcopy(x_end_canvas)
                     x_end_canvas = (
-                        x_start_canvas
-                        + sizes_mrois_pix[i_mroi][0]
-                        - overlap_seams_this_plane
+                            x_start_canvas
+                            + sizes_mrois_pix[i_mroi][0]
+                            - overlap_seams_this_plane
                     )
                     x_mroi_width = sizes_mrois_pix[i_mroi][0] - overlap_seams_this_plane
                     x_start_mroi = int(np.ceil(overlap_seams_this_plane / 2))
@@ -617,8 +572,8 @@ for current_pipeline_step in pipeline_steps:
                 min_y, max_y = np.min(coord_nonan_pixels[1]), np.max(
                     coord_nonan_pixels[1]
                 )
-                im1_nonan = im1_copy[min_x : max_x + 1, min_y : max_y + 1]
-                im2_nonan = im2_copy[min_x : max_x + 1, min_y : max_y + 1]
+                im1_nonan = im1_copy[min_x: max_x + 1, min_y: max_y + 1]
+                im2_nonan = im2_copy[min_x: max_x + 1, min_y: max_y + 1]
 
                 im1_nonan -= np.min(im1_nonan)
                 im2_nonan -= np.min(im2_nonan)
@@ -648,18 +603,13 @@ for current_pipeline_step in pipeline_steps:
             for xy in range(2):
                 accumulated_shifts[:, xy] -= min_accumulated_shift[xy]
 
-            if params["json_logging"]:
-                json_logger.info(
-                    json.dumps({"accumulated_shifts": accumulated_shifts.tolist()})
-                )
+            ic(accumulated_shifts.tolist())
             continue
 
         # %% Select X,Y pixels that do not have nans for any plane
         if params["make_nonan_volume"]:
-            if params["json_logging"]:
-                json_logger.debug(
-                    json.dumps({"debug_message": "Trimming volume to remove NaNs"})
-                )
+            ic("Trimming NaNs")
+
             volume_meanp = np.mean(volume[0], axis=2)
             non_nan = ~np.isnan(volume_meanp)
             coord_nonan_pixels = np.where(non_nan)
@@ -672,51 +622,32 @@ for current_pipeline_step in pipeline_steps:
                 np.max(coord_nonan_pixels[1]) + 1,
             )
             volume = volume[:, min_x:max_x, min_y:max_y]
-            if params["json_logging"]:
-                json_logger.debug(
-                    json.dumps(
-                        {
-                            "debug_message": "Shape of trimmed nonan volume: "
-                            + str(volume.shape)
-                        }
-                    )
-                )
+            ic(volume.shape)
 
         # %% Make volume non-negative
         if params["add_1000_for_nonegative_volume"]:
-            if params["json_logging"]:
-                json_logger.debug(
-                    json.dumps({"debug_message": "Adding 1000 to make positive"})
-                )
+            ic("Adding 1000 to make positive")
             volume += 1000
 
         # %% Convert volume from float to int
         if convert_volume_float32_to_int16:
             if volume.dtype != np.int16:
-                if params["json_logging"]:
-                    json_logger.debug(
-                        json.dumps({"debug_message": "Transforming volume to int16"})
-                    )
+                ic("Transforming to int16")
                 volume = volume.astype(np.int16)
-
         volume = np.swapaxes(volume, 1, 2)
 
         # %% Saving outputs
         if current_pipeline_step == "reconstruct_all":
             if params["save_output"]:
-                if params["json_logging"]:
-                    json_logger.debug(
-                        json.dumps({"debug_message": "Saving output file"})
-                    )
-                save_dir = os.path.dirname(path_input_file) + "/Preprocessed/"
+                ic("Saving output")
+                # TODO: Make outpath a param
+                save_dir = os.path.dirname(path_input_file) + "/Preprocessed_temp/"
                 if params["save_as_volume_or_planes"] == "volume":
                     save_dir = os.path.dirname(path_input_file)
                     path_output_file = path_input_file[:-4] + "_preprocessed.h5"
                     h5file = h5py.File(path_output_file, "w")
                     h5file.create_dataset("mov", data=volume)
-                    h5file.attrs.create(
-                        "metadata", str(metadata)
-                    )  # You can use json to load it as a dictionary
+                    h5file.attrs.create("metadata", str(metadata))  # You can use json to load it as a dictionary
                     h5file.close()
                     del h5file
                 elif params["save_as_volume_or_planes"] == "planes":
@@ -726,7 +657,7 @@ for current_pipeline_step in pipeline_steps:
                             os.makedirs(save_dir_this_plane)
                         output_filename = os.path.basename(
                             path_input_file[:-4] + "_plane"
-                            f"{i_plane:02d}_preprocessed.h5"
+                                                   f"{i_plane:02d}_preprocessed.h5"
                         )
                         path_output_file = save_dir_this_plane + output_filename
                         h5file = h5py.File(path_output_file, "w")
@@ -738,8 +669,8 @@ for current_pipeline_step in pipeline_steps:
                         del h5file
 
                         if (
-                            i_file == list_files_for_reconstruction[-1]
-                            and params["concatenate_all_h5_to_tif"]
+                                i_file == list_files_for_reconstruction[-1]
+                                and params["concatenate_all_h5_to_tif"]
                         ):
                             files_to_concatenate = sorted(
                                 glob.glob(save_dir_this_plane + "*preprocessed.h5")
@@ -756,16 +687,12 @@ for current_pipeline_step in pipeline_steps:
                                 data_to_concatenate,
                             )
 
-                if params["json_logging"]:
-                    json_logger.debug(json.dumps({"debug_message": "File(s) saved"}))
+                ic("File(s) saved! --------------- ")
 
                 # %% Save mean frame png
                 if params["save_meanf_png"]:
                     if not params["meanf_png_only_first_file"] or i_file == 0:
-                        if params["json_logging"]:
-                            json_logger.debug(
-                                json.dumps({"debug_message": "Saving png"})
-                            )
+                        ic("Saving mean fl. png")
                         canvas_png = np.zeros(
                             (
                                 (volume.shape[1] + params["gaps_rows"]) * rows
@@ -795,14 +722,14 @@ for current_pipeline_step in pipeline_steps:
                             plane_for_png = plane_for_png.astype(np.uint8)
                             # Place it on canvas
                             x_start = (
-                                i_plane
-                                % columns
-                                * (plane_for_png.shape[1] + params["gaps_columns"])
+                                    i_plane
+                                    % columns
+                                    * (plane_for_png.shape[1] + params["gaps_columns"])
                             )
                             y_start = (
-                                i_plane
-                                // columns
-                                * (plane_for_png.shape[0] + params["gaps_rows"])
+                                    i_plane
+                                    // columns
+                                    * (plane_for_png.shape[0] + params["gaps_rows"])
                             )
                             x_end = x_start + plane_for_png.shape[1]
                             y_end = y_start + plane_for_png.shape[0]
@@ -814,20 +741,14 @@ for current_pipeline_step in pipeline_steps:
                         plt.xticks(fontsize=4)
                         plt.yticks(fontsize=4)
                         fig.tight_layout()
-                        plt.show()
-                        output_filename_meanf_png = (
-                            save_dir + input_filename[:-4] + ".png"
-                        )
+                        output_filename_meanf_png = (save_dir + input_filename[:-4] + ".png")
                         fig.savefig(output_filename_meanf_png, bbox_inches="tight")
                         del canvas_png, volume_meanf
 
                 # %% Save mp4 clip for easy visual inspection
                 if params["save_mp4"]:
                     if not params["video_only_first_file"] or i_file == 0:
-                        if params["json_logging"]:
-                            json_logger.debug(
-                                json.dumps({"debug_message": "Saving mp4"})
-                            )
+                        ic("Saving mp4")
                         metadata_software = metadata["Software"].split()
                         for i_line in range(len(metadata_software)):
                             this_line = metadata_software[i_line]
@@ -836,9 +757,7 @@ for current_pipeline_step in pipeline_steps:
                                 frame_rate = float(metadata_software[i_line + 2])
                         fps = frame_rate * params["video_play_speed"]
                         if params["video_duration_secs"] != 0:
-                            use_until_frame_n = round(
-                                fps * params["video_duration_secs"]
-                            )  # -1 for entire recording
+                            use_until_frame_n = round(fps * params["video_duration_secs"])  # -1 for entire recording
                         else:
                             use_until_frame_n = -1
                         canvas_video = np.zeros(
@@ -863,7 +782,7 @@ for current_pipeline_step in pipeline_steps:
                                 np.ones(([params["rolling_average_frames"], 1, 1])),
                                 mode="valid",
                             )
-                            # Apply percentile-dynamic-range
+                            # Apply percentile-dynamic-range (normalize pixel intensity
                             pct_low, pct_high = np.nanpercentile(
                                 plane_for_video, params["intensity_percentiles"]
                             )
@@ -880,19 +799,19 @@ for current_pipeline_step in pipeline_steps:
                             plane_for_video = plane_for_video.astype(np.uint8)
                             # Place it on canvas
                             x_start = (
-                                i_plane
-                                % columns
-                                * (plane_for_video.shape[2] + params["gaps_columns"])
+                                    i_plane
+                                    % columns
+                                    * (plane_for_video.shape[2] + params["gaps_columns"])
                             )
                             y_start = (
-                                i_plane
-                                // columns
-                                * (plane_for_video.shape[1] + params["gaps_rows"])
+                                    i_plane
+                                    // columns
+                                    * (plane_for_video.shape[1] + params["gaps_rows"])
                             )
                             x_end = x_start + plane_for_video.shape[2]
                             y_end = y_start + plane_for_video.shape[1]
                             canvas_video[
-                                :, y_start:y_end, x_start:x_end
+                            :, y_start:y_end, x_start:x_end
                             ] = plane_for_video
                         size_frame_video = (
                             canvas_video.shape[2],
@@ -900,13 +819,13 @@ for current_pipeline_step in pipeline_steps:
                         )
                         input_filename = os.path.basename(path_input_file)
                         output_filename_video = (
-                            save_dir
-                            + input_filename[:-4]
-                            + "_RollingAvg"
-                            + str(params["rolling_average_frames"])
-                            + "Frames_Speed"
-                            + str(params["video_play_speed"])
-                            + "x.mp4"
+                                save_dir
+                                + input_filename[:-4]
+                                + "_RollingAvg"
+                                + str(params["rolling_average_frames"])
+                                + "Frames_Speed"
+                                + str(params["video_play_speed"])
+                                + "x.mp4"
                         )
                         out = cv2.VideoWriter(
                             output_filename_video,
@@ -917,19 +836,10 @@ for current_pipeline_step in pipeline_steps:
                         )
                         for f in range(canvas_video.shape[0]):
                             out.write(canvas_video[f])
+                            ic(f"{output_filename_video}")
                         out.release()
                         del canvas_video
 
-        # %% This file is done
-
         toc = time.time()
-        if params["json_logging"]:
-            json_logger.debug(
-                json.dumps(
-                    {
-                        "debug_message": "File processed and outputs saved. Time elapsed: "
-                        + str(toc - tic)
-                    }
-                )
-            )
+        ic(toc - tic)
         del volume
