@@ -10,6 +10,10 @@ Welcome to rbo-lbm's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   data_guide
+   reST_guide
+
+
 
 
 Indices and tables
