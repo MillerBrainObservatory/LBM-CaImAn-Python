@@ -14,9 +14,7 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath('.'))
 sys.path.insert(0, os.path.abspath('..'))
-sys.path.insert(0, os.path.abspath('../util'))
-sys.path.insert(0, os.path.abspath('../rbo-lbm'))
-
+sys.path.insert(0, os.path.abspath('../..'))
 
 # -- Project information -----------------------------------------------------
 
@@ -40,11 +38,9 @@ extensions = [
     'sphinx-prompt',
     'sphinxcontrib.apidoc',
     'sphinx_autodoc_typehints',
-
     'sphinx.ext.autosummary',
 ]
 
-htmlhelp_basename = 'rbo-lbm'
 pygments_style = 'sphinx'
 
 # Add any paths that contain templates here, relative to this directory.
@@ -67,7 +63,7 @@ master_doc = 'index'
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'alabaster'
+html_theme = 'pydata_sphinx_theme'
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,

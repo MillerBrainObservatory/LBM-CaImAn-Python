@@ -11,28 +11,27 @@ def return_scan_offset(image_in, dim):
     determines the amount of offset between the lines or columns, which is then used to
     correct for any misalignment in the imaging process.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     image_in : ndarray
         Input image or volume. It can be 2D, 3D, or 4D. The dimensions represent
-        [height, width], [height, width, time], or [height, width, time, channel/plane],
-        respectively.
-    dim : int
-        Dimension along which to compute the scan offset correction.
-        1 for vertical (along height), 2 for horizontal (along width).
 
-    Returns:
-    --------
+        [height, width], [height, width, time], or [height, width, time, channel/plane], respectively.
+    dim : int
+        Dimension along which to compute the scan offset correction. 1 for vertical (along height), 2 for horizontal (along width).
+
+    Returns
+    -------
     int
         The computed correction value, based on the peak of the cross-correlation.
 
-    Examples:
-    ---------
+    Examples
+    --------
     >>> img = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11, 12]])
     >>> return_scan_offset(img, 1)
 
-    Notes:
-    ------
+    Notes
+    -----
     This function assumes that the input image contains interleaved lines or columns that
     need to be analyzed for misalignment. The cross-correlation method is sensitive to
     the similarity in pattern between the interleaved lines or columns. Hence, a strong
@@ -110,8 +109,8 @@ def fix_scan_phase(data_in, offset, dim):
     """
     Corrects the scan phase of the data based on a given offset along a specified dimension.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     dataIn : ndarray
         The input data of shape (sy, sx, sc, sz).
     offset : int
@@ -120,8 +119,8 @@ def fix_scan_phase(data_in, offset, dim):
         Dimension along which to apply the offset.
         1 for vertical (along height/sy), 2 for horizontal (along width/sx).
 
-    Returns:
-    --------
+    Returns
+    -------
     ndarray
         The data with corrected scan phase, of shape (sy, sx, sc, sz).
     """
