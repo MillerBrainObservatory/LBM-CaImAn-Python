@@ -3,18 +3,26 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to rbo-lbm's documentation!
-===================================
+Welcome to the Brain Observatory Hub
+====================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: Contents:
 
    data_guide
-   parameters
    api
+   scanimage_mroi
+   scanimage_roi_hierarchy
+   tips_tricks
 
 
+
+
+Helpful Resources
+=================
+`Training resources (Neubias) for Image Processing <https://neubias.github.io/training-resources/tool_installation/index.html>`_
+`Dask Image Arrays <https://blog.dask.org/2019/06/20/load-image-data>`_
 
 
 Indices and tables

@@ -10,27 +10,20 @@ try:
 except ImportError:  # graceful fallback if icecream isn't installed.
     ic = lambda *a: None if not a else (a[0] if len(a) == 1 else a)  # noqa
 import cv2
-import datetime
 import glob
 import h5py
 import json
-import logging
 import matplotlib.pyplot as plt
 
 plt.rcParams["figure.dpi"] = 900
 import numpy as np
 import os
-import scipy
 import scipy.signal
 import skimage
-import sys
 import tifffile
 import time
-from pathlib import Path
-from lbm_util import init_params
+import params
 
-def _init():
-    pass
 
 @argumentToString.register(np.ndarray)
 def _(obj):
@@ -38,104 +31,135 @@ def _(obj):
     return f"ndarray, shape={obj.shape}, dtype={obj.dtype}"
 
 
-params = init_params()
-if params['debug']:
-    ic.enable()
-    ic.configureOutput(prefix='RBO Debugger -> ', includeContext=True, contextAbsPath=True)
-    ic()
-else:
-    ic.disable()
-    ic()
+params = params.init_params()
 
-# # %% USER-DEFINED PARAMETERS
-# TODO: Only params the user actually changes should be held in this dictionary
-if params["save_output"]:
-    params["save_as_volume_or_planes"] = "planes"
-    if params["save_as_volume_or_planes"] == "planes":
-        # If True, it will take all the time-chunked h5 files, concatenate, and save them as a single .tif
-        params["concatenate_all_h5_to_tif"] = False
 
-if params["seams_overlap"] == "calculate":
-    # correct delay or incorrect phase when EOM turns the laser on/off at the start/end of a resonant-scanner line
-    params["n_ignored_pixels_sides"] = 5
-    params["min_seam_overlap"] = 5
-    params["max_seam_overlap"] = 20
-    params["alignment_plot_checks"] = False
-if not params["reconstruct_all_files"]:
-    params["reconstruct_until_this_ifile"] = 10
-if params["save_mp4"] or params["save_meanf_png"]:
-    params["gaps_columns"] = 5
-    params["gaps_rows"] = 5
-    params["intensity_percentiles"] = [15, 99.5]
-    if params["save_meanf_png"]:
-        params["meanf_png_only_first_file"] = True
-    if params["save_mp4"]:
-        params["video_only_first_file"] = True
-        params["video_play_speed"] = 1
-        params["rolling_average_frames"] = 1
-        params["video_duration_secs"] = 20
-# %%
-# This will check if the pipeline can work with int16, and do it if possible.
-# If NaN handling is required, float32 will be used instead
-if not params["lateral_align_planes"]:
-    initialize_volume_with_nans = False
-    convert_volume_float32_to_int16 = True
-    # It is going to be no-nan by definition, no need to check for it
-    params["make_nonan_volume"] = False
-elif params["make_nonan_volume"]:
-    initialize_volume_with_nans = True
-    convert_volume_float32_to_int16 = True
-else:
-    initialize_volume_with_nans = True
-    convert_volume_float32_to_int16 = False
+def assemble_mroi(path_input_file):
+    # %% Get MROI info from tif metadata
+    with tifffile.TiffFile(path_input_file) as tif:
+        metadata = {}
+        for tag in tif.pages[0].tags.values():
+            tag_name, tag_value = tag.name, tag.value
+            metadata[tag_name] = tag_value
 
-if params["debug"]:
-    now = datetime.datetime.now()
-    date_string = now.strftime("%Y%m%dd_%H%M%St")
-    json_filename = f"{params['raw_data_dirs'][0]}log_{date_string}.json"
-    json_formatter = logging.Formatter('{"time": "%(asctime)s", "level": "%(levelname)s", "message": %(message)s}')
+    mrois_si_raw = json.loads(metadata["Artist"])["RoiGroups"]["imagingRoiGroup"]["rois"]
+    if type(mrois_si_raw) != dict:
+        mrois_si = []
+        for roi in mrois_si_raw:
+            if type(roi["scanfields"]) != list:  # TODO: eval
+                scanfield = roi["scanfields"]
+            else:
+                scanfield = roi["scanfields"][
+                    np.where(np.array(roi["zs"]) == 0)[0][0]
+                ]
+            roi_dict = {}
+            roi_dict["center"] = np.array(scanfield["centerXY"])
+            roi_dict["sizeXY"] = np.array(scanfield["sizeXY"])
+            roi_dict["pixXY"] = np.array(scanfield["pixelResolutionXY"])
+            mrois_si.append(roi_dict)
+    else:
+        scanfield = mrois_si_raw["scanfields"]
+        roi_dict = {}
+        roi_dict["center"] = np.array(scanfield["centerXY"])
+        roi_dict["sizeXY"] = np.array(scanfield["sizeXY"])
+        roi_dict["pixXY"] = np.array(scanfield["pixelResolutionXY"])
+        mrois_si = [roi_dict]
 
-    json_logger = logging.getLogger(__name__)
-    json_logger.setLevel(logging.DEBUG)
-    json_handler = logging.FileHandler(json_filename)
-    print_handler = logging.StreamHandler(sys.stdout)
-    json_handler.setFormatter(json_formatter)
-    json_logger.addHandler(json_handler)
-    json_logger.addHandler(print_handler)
+    # Sort MROIs so they go from left-to-right
+    # (but keep the un-sorted because that matches how they were acquired and saved in the long-tif-strip)
+    mrois_centers_si = np.array([mroi_si["center"] for mroi_si in mrois_si])
+    x_sorted = np.argsort(mrois_centers_si[:, 0])
+    mrois_si_sorted_x = [mrois_si[i] for i in x_sorted]
+    mrois_centers_si_sorted_x = [mrois_centers_si[i] for i in x_sorted]
+    return mrois_si, mrois_centers_si_sorted_x, mrois_centers_si, mrois_si_sorted_x
 
-    json_logger.info(json.dumps(str(params)))
 
-# %% Look for files used to: 1) make a template and do seam-overlap handling and X-Y shift alignment; 2) pre-process
-path_all_files = []
-for i_dir in params["raw_data_dirs"]:
-    tmp_paths = sorted(glob.glob(i_dir + "/**/*.tif", recursive=True))
-    for this_tmp_path in tmp_paths:
-        if (
-                params["fname_must_contain"] in this_tmp_path and
-                params["fname_must_NOT_contain"] not in this_tmp_path
-        ):
-            path_all_files.append(this_tmp_path)
+def set_vars():
+    if params['debug']:
+        ic.enable()
+        ic.configureOutput(prefix='RBO Debugger -> ', includeContext=True, contextAbsPath=True)
+        ic()
+    else:
+        ic.disable()
+        ic()
 
-if params["debug"]:
-    ic(path_all_files)
+    # # %% USER-DEFINED PARAMETERS
+    # TODO: Only params the user actually changes should be held in this dictionary
+    if params["save_output"]:
+        params["save_as_volume_or_planes"] = "planes"
+        if params["save_as_volume_or_planes"] == "planes":
+            # If True, it will take all the time-chunked h5 files, concatenate, and save them as a single .tif
+            params["concatenate_all_h5_to_tif"] = False
 
-n_template_files = len(params["list_files_for_template"])
-ic(n_template_files)
-path_template_files = [path_all_files[file_idx] for file_idx in params["list_files_for_template"]]
+    if params["seams_overlap"] == "calculate":
+        # correct delay or incorrect phase when EOM turns the laser on/off at the start/end of a resonant-scanner line
+        params["n_ignored_pixels_sides"] = 5
+        params["min_seam_overlap"] = 5
+        params["max_seam_overlap"] = 20
+        params["alignment_plot_checks"] = False
+    if not params["reconstruct_all_files"]:
+        params["reconstruct_until_this_ifile"] = 10
+    if params["save_mp4"] or params["save_meanf_png"]:
+        params["gaps_columns"] = 5
+        params["gaps_rows"] = 5
+        params["intensity_percentiles"] = [15, 99.5]
+        if params["save_meanf_png"]:
+            params["meanf_png_only_first_file"] = True
+        if params["save_mp4"]:
+            params["video_only_first_file"] = True
+            params["video_play_speed"] = 1
+            params["rolling_average_frames"] = 1
+            params["video_duration_secs"] = 20
+    # This will check if the pipeline can work with int16, and do it if possible.
+    # If NaN handling is required, float32 will be used instead
+    if not params["lateral_align_planes"]:
+        initialize_volume_with_nans = False
+        convert_volume_float32_to_int16 = True
+        # It is going to be no-nan by definition, no need to check for it
+        params["make_nonan_volume"] = False
+    elif params["make_nonan_volume"]:
+        initialize_volume_with_nans = True
+        convert_volume_float32_to_int16 = True
+    else:
+        initialize_volume_with_nans = True
+        convert_volume_float32_to_int16 = False
 
-del (
-    i_dir,
-    params["raw_data_dirs"],
-    params["fname_must_contain"],
-    params["fname_must_NOT_contain"],
-)
+    # %% Look for files used to: 1) make a template and do seam-overlap handling and X-Y shift alignment; 2) pre-process
+    path_all_files = []
+    for i_dir in params["raw_data_dirs"]:
+        tmp_paths = sorted(glob.glob(i_dir + "/**/*.tif", recursive=True))
+        for this_tmp_path in tmp_paths:
+            if (
+                    params["fname_must_contain"] in this_tmp_path and
+                    params["fname_must_NOT_contain"] not in this_tmp_path
+            ):
+                path_all_files.append(this_tmp_path)
 
-# %%
-pipeline_steps = []
-if params["make_template_seams_and_plane_alignment"]:
-    pipeline_steps.append("make_template")
-if params["reconstruct_all_files"]:
-    pipeline_steps.append("reconstruct_all")
+    if params["debug"]:
+        ic(path_all_files)
+
+    n_template_files = len(params["list_files_for_template"])
+    ic(n_template_files)
+    path_template_files = [path_all_files[file_idx] for file_idx in params["list_files_for_template"]]
+
+    del (
+        i_dir,
+        params["raw_data_dirs"],
+        params["fname_must_contain"],
+        params["fname_must_NOT_contain"],
+    )
+    pipeline_steps = []
+    if params["make_template_seams_and_plane_alignment"]:
+        pipeline_steps.append("make_template")
+    if params["reconstruct_all_files"]:
+        pipeline_steps.append("reconstruct_all")
+
+    return path_template_files, path_all_files, n_template_files, initialize_volume_with_nans, convert_volume_float32_to_int16, pipeline_steps
+
+
+path_input_files = params['raw_data_dirs'][0]
+path_template_files, path_all_files, n_template_files, initialize_volume_with_nans, convert_volume_float32_to_int16, pipeline_steps = set_vars()
+mrois_si, mrois_centers_si_sorted_x, mrois_centers_si, mrois_si_sorted_x = assemble_mroi(path_input_files)
 
 for current_pipeline_step in pipeline_steps:
     if current_pipeline_step == "make_template":
@@ -154,87 +178,27 @@ for current_pipeline_step in pipeline_steps:
         ic("Start Reconstruction", path_input_file)
 
         if i_file == 0:
-            if "SP" in path_input_file:
-                n_planes = 1
-            elif "Max15" in path_input_file:
-                n_planes = 15
-            elif "Max30" in path_input_file:
-                n_planes = 30
-            elif params["flynn_temp_param"]:
-                n_planes = 30
-            else:
+            if n_planes == 30:
                 n_planes = int(input("Check filename... Number of planes?"))
-
-            if n_planes == 1:
-                chans_order = params["chans_order_1plane"]
-                rows, columns = 1, 1  # For png and mp4
-            elif n_planes == 15:
-                chans_order = params["chans_order_15planes"]
-                rows, columns = 3, 5
-            elif n_planes == 30:
                 chans_order = params["chans_order_30planes"]
                 rows, columns = 6, 5
-
-            ic(n_planes)
-
-            # %% Get MROI info from tif metadata
-            with tifffile.TiffFile(path_input_file) as tif:
-                metadata = {}
-                for tag in tif.pages[0].tags.values():
-                    tag_name, tag_value = tag.name, tag.value
-                    metadata[tag_name] = tag_value
-
-            mrois_si_raw = json.loads(metadata["Artist"])["RoiGroups"]["imagingRoiGroup"]["rois"]
-            if type(mrois_si_raw) != dict:
-                mrois_si = []
-                for roi in mrois_si_raw:
-                    if type(roi["scanfields"]) != list:  # TODO: eval
-                        scanfield = roi["scanfields"]
-                    else:
-                        scanfield = roi["scanfields"][
-                            np.where(np.array(roi["zs"]) == 0)[0][0]
-                        ]
-                    roi_dict = {}
-                    roi_dict["center"] = np.array(scanfield["centerXY"])
-                    roi_dict["sizeXY"] = np.array(scanfield["sizeXY"])
-                    roi_dict["pixXY"] = np.array(scanfield["pixelResolutionXY"])
-                    mrois_si.append(roi_dict)
             else:
-                scanfield = mrois_si_raw["scanfields"]
-                roi_dict = {}
-                roi_dict["center"] = np.array(scanfield["centerXY"])
-                roi_dict["sizeXY"] = np.array(scanfield["sizeXY"])
-                roi_dict["pixXY"] = np.array(scanfield["pixelResolutionXY"])
-                mrois_si = [roi_dict]
+                raise NotImplementedError
 
-            # Sort MROIs so they go from left-to-right
-            # (but keep the un-sorted because that matches how they were acquired and saved in the long-tif-strip)
-            mrois_centers_si = np.array([mroi_si["center"] for mroi_si in mrois_si])
-            x_sorted = np.argsort(mrois_centers_si[:, 0])
-            mrois_si_sorted_x = [mrois_si[i] for i in x_sorted]
-            mrois_centers_si_sorted_x = [mrois_centers_si[i] for i in x_sorted]
-
-        # %% Load, reshape (so time and planes are 2 independent dimensions) and re-order (planes, fix Jeff's order)
-        ic("Loading file (expect warning for multi-file recording)")
-
+        ic(f"Loading file {path_input_file} (expect warning for multi-file recording)")
         tiff_file = tifffile.imread(path_input_file)
-        dim1 = tiff_file.shape[0]
-        dim2 = tiff_file.shape[1]
-        dim3 = tiff_file.shape[2]
 
-        if n_planes > 1:
-            ic(tiff_file.shape)
-            ic(f"Reshaping: {int(tiff_file.shape[0])}")
-            # warnings are expected if the recording is split into many files or incomplete
-            tiff_file = np.reshape(tiff_file, (
-                int(tiff_file.shape[0] / n_planes),
-                n_planes,
-                tiff_file.shape[1],
-                tiff_file.shape[2],
-            ), order="C")  # TODO: Eval, I believe this should be 'C'
-            ic(tiff_file)
-        else:
-            tiff_file = np.expand_dims(tiff_file, 1)
+        nt = int(tiff_file.shape[0] / n_planes)
+        # TODO: should check to make sure % 2 != 0
+        # assert(nt % 2 != 0)
+        tiff_file = np.reshape(tiff_file, (
+            nt,
+            n_planes,
+            tiff_file.shape[1],
+            tiff_file.shape[2],
+        ), order="C")  # TODO: Eval, I believe this should be 'C'
+        ic(tiff_file)
+        # tiff_file = np.expand_dims(tiff_file, 1)
         tiff_file = np.swapaxes(tiff_file, 1, 3)
         tiff_file = tiff_file[..., chans_order]
 
@@ -257,7 +221,8 @@ for current_pipeline_step in pipeline_steps:
         for i_plane in range(n_planes):
             y_start = 0
             for i_mroi in range(n_mrois):  # go over the order in which they were acquired
-                planes_mrois[i_plane, i_mroi] = tiff_file[:, :, y_start : y_start + mrois_pixels_Y[x_sorted[i_mroi]], i_plane]
+                planes_mrois[i_plane, i_mroi] = tiff_file[:, :, y_start: y_start + mrois_pixels_Y[x_sorted[i_mroi]],
+                                                i_plane]
                 y_start += mrois_pixels_Y[i_mroi] + each_flyback_pixels_Y
         del tiff_file
 
@@ -281,14 +246,13 @@ for current_pipeline_step in pipeline_steps:
             pixel_sizes = sizes_mrois_si / sizes_mrois_pix
             psize_x, psize_y = np.mean(pixel_sizes[:, 0]), np.mean(pixel_sizes[:, 1])
             assert np.product(np.isclose(pixel_sizes[:, 1] - psize_y, 0)
-            ), "Y-pixels resolution not uniform across MROIs"
+                              ), "Y-pixels resolution not uniform across MROIs"
             assert np.product(
                 np.isclose(pixel_sizes[:, 0] - psize_x, 0)
             ), "X-pixels resolution not uniform across MROIs"
             # assert np.product(np.isclose(pixel_sizes[:,0]-pixel_sizes[:,1], 0)), "Pixels do not have squared resolution"
 
             # Calculate the pixel ranges (with their SI locations) that would fit all MROIs
-            # TODO: unbound local with all of these mrois_sorted
             top_left_corners_si = mrois_centers_si_sorted_x - sizes_mrois_si / 2
             bottom_right_corners_si = mrois_centers_si_sorted_x + sizes_mrois_si / 2
             xmin_si, ymin_si = (
@@ -326,8 +290,8 @@ for current_pipeline_step in pipeline_steps:
                         == np.sum(sizes_mrois_pix[:, 0]) + 1
                 ):
                     reconstructed_xy_ranges_si[i_xy] = reconstructed_xy_ranges_si[i_xy][
-                        :-1
-                    ]
+                                                       :-1
+                                                       ]
 
         # %% Calculate optimal overlap for seams
         if current_pipeline_step == "make_template":
@@ -357,18 +321,18 @@ for current_pipeline_step in pipeline_steps:
                 for i_plane in range(n_planes):
                     for i_seam in range(n_mrois - 1):
                         for i_overlaps in range(
-                            params["min_seam_overlap"], params["max_seam_overlap"]
+                                params["min_seam_overlap"], params["max_seam_overlap"]
                         ):
                             strip_left = planes_mrois[i_plane, i_seam][
-                                0,
-                                -params["n_ignored_pixels_sides"]
-                                - i_overlaps : -params["n_ignored_pixels_sides"],
-                            ]
+                                         0,
+                                         -params["n_ignored_pixels_sides"]
+                                         - i_overlaps: -params["n_ignored_pixels_sides"],
+                                         ]
                             strip_right = planes_mrois[i_plane, i_seam + 1][
-                                0,
-                                params["n_ignored_pixels_sides"] : i_overlaps
-                                + params["n_ignored_pixels_sides"],
-                            ]
+                                          0,
+                                          params["n_ignored_pixels_sides"]: i_overlaps
+                                                                            + params["n_ignored_pixels_sides"],
+                                          ]
                             subtract_left_right = abs(strip_left - strip_right)
                             overlaps_planes_seams_scores[
                                 i_plane, i_seam, i_overlaps - params["min_seam_overlap"]
@@ -389,9 +353,9 @@ for current_pipeline_step in pipeline_steps:
                 if params["alignment_plot_checks"]:
                     for i_plane in range(n_planes):
                         plt.plot(range(params["min_seam_overlap"], params["max_seam_overlap"]
-                            ),
-                            overlaps_planes_scores[i_plane],
-                        )
+                                       ),
+                                 overlaps_planes_scores[i_plane],
+                                 )
                     plt.title("Score for all planes")
                     plt.xlabel("Overlap (pixels)")
                     plt.ylabel("Error (a.u.)")
@@ -531,7 +495,7 @@ for current_pipeline_step in pipeline_steps:
                 y_end_canvas = y_start_canvas + sizes_mrois_pix[i_mroi][1]
 
                 plane_canvas[
-                    :, x_start_canvas:x_end_canvas, y_start_canvas:y_end_canvas
+                :, x_start_canvas:x_end_canvas, y_start_canvas:y_end_canvas
                 ] = planes_mrois[i_plane, i_mroi][:, x_start_mroi:x_end_mroi]
 
             shift_x_varied_seams = int(

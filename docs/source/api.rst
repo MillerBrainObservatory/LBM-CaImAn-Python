@@ -1,11 +1,11 @@
-Core Functions
+Preprocessing Utilities
 =======================
 
 Functions needed to process a dataset.
 
 
-Movie Handling
----------------
+Scan Corrections
+----------------
 
 .. currentmodule:: util.scan
 
@@ -16,5 +16,4 @@ Scan Image Utilities
 --------------------
 
 .. currentmodule:: util.roi_data_simple
-
 .. autoclass:: RoiDataSimple
