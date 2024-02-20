@@ -3,11 +3,12 @@ Preprocessing Utilities
 
 Functions needed to process a dataset.
 
-
 Scan Corrections
 ----------------
 
 .. currentmodule:: util.scan
+.. automodule:: util
+.. automodule:: util.scan
 
 .. autofunction:: return_scan_offset
 .. autofunction:: fix_scan_phase

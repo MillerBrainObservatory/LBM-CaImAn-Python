@@ -14,6 +14,7 @@ import glob
 import h5py
 import json
 import matplotlib.pyplot as plt
+from pathlib import Path
 
 plt.rcParams["figure.dpi"] = 900
 import numpy as np
@@ -35,9 +36,12 @@ params = params.init_params()
 
 
 def assemble_mroi(path_input_file):
+    tiffs = list(Path(path_input_file).glob("*.tif"))
+    file = tiffs[0]
+    metadata = {}
     # %% Get MROI info from tif metadata
-    with tifffile.TiffFile(path_input_file) as tif:
-        metadata = {}
+    with tifffile.TiffFile(file) as tif:
+
         for tag in tif.pages[0].tags.values():
             tag_name, tag_value = tag.name, tag.value
             metadata[tag_name] = tag_value
@@ -71,7 +75,7 @@ def assemble_mroi(path_input_file):
     x_sorted = np.argsort(mrois_centers_si[:, 0])
     mrois_si_sorted_x = [mrois_si[i] for i in x_sorted]
     mrois_centers_si_sorted_x = [mrois_centers_si[i] for i in x_sorted]
-    return mrois_si, mrois_centers_si_sorted_x, mrois_centers_si, mrois_si_sorted_x
+    return mrois_si, mrois_centers_si_sorted_x, mrois_centers_si, mrois_si_sorted_x, x_sorted, metadata
 
 
 def set_vars():
@@ -159,7 +163,8 @@ def set_vars():
 
 path_input_files = params['raw_data_dirs'][0]
 path_template_files, path_all_files, n_template_files, initialize_volume_with_nans, convert_volume_float32_to_int16, pipeline_steps = set_vars()
-mrois_si, mrois_centers_si_sorted_x, mrois_centers_si, mrois_si_sorted_x = assemble_mroi(path_input_files)
+mrois_si, mrois_centers_si_sorted_x, mrois_centers_si, mrois_si_sorted_x, x_sorted, metadata = assemble_mroi(path_input_files)
+n_planes=30
 
 for current_pipeline_step in pipeline_steps:
     if current_pipeline_step == "make_template":
@@ -179,7 +184,6 @@ for current_pipeline_step in pipeline_steps:
 
         if i_file == 0:
             if n_planes == 30:
-                n_planes = int(input("Check filename... Number of planes?"))
                 chans_order = params["chans_order_30planes"]
                 rows, columns = 6, 5
             else:
@@ -206,7 +210,12 @@ for current_pipeline_step in pipeline_steps:
             tiff_file = np.mean(tiff_file, axis=0, keepdims=True)
 
         # ----
-        # %% Separate tif into MROIs
+        # %% Separate tif into MR
+        #  with tifffile.TiffFile(path_input_file) as tif:
+        #                 metadata = {}
+        #                 for tag in tif.pages[0].tags.values():
+        #                     tag_name, tag_value = tag.name, tag.value
+        #                     metadata[tag_name] = tag_valueOIs
         # Get the Y coordinates for mrois (and not flybacks)
         if i_file == 0:
             n_mrois = len(mrois_si)
@@ -607,6 +616,8 @@ for current_pipeline_step in pipeline_steps:
                 # TODO: Make outpath a param
                 save_dir = os.path.dirname(path_input_file) + "/Preprocessed_temp/"
                 if params["save_as_volume_or_planes"] == "volume":
+                    print("Saving as a volume")
+                    ic("Saving as a volume")
                     save_dir = os.path.dirname(path_input_file)
                     path_output_file = path_input_file[:-4] + "_preprocessed.h5"
                     h5file = h5py.File(path_output_file, "w")

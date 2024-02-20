@@ -3,11 +3,11 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to the Brain Observatory Hub
-====================================
+Brain Observatory Hub
+=====================
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 1
    :caption: Contents:
 
    data_guide
@@ -15,8 +15,6 @@ Welcome to the Brain Observatory Hub
    scanimage_mroi
    scanimage_roi_hierarchy
    tips_tricks
-
-
 
 
 Helpful Resources

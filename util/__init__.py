@@ -8,7 +8,7 @@ from .reorg import reorganize
 from .roi_data_simple import RoiDataSimple
 from .metadata import parse
 from .io import save_to_disk, determine_chunk_size, load_from_disk, read_data_chunk, save_single
-from reshaping_stitching_aligning import *
+import reshaping_stitching_aligning
 
 
 def extract_common_key(filepath):
