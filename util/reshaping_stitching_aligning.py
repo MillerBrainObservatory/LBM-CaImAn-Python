@@ -34,18 +34,21 @@ def _(obj):
 
 params = params.init_params()
 
-
 def assemble_mroi(path_input_file):
     tiffs = list(Path(path_input_file).glob("*.tif"))
-    file = tiffs[0]
+    if len(tiffs) == 1:
+        file = tiffs[0]
+    else:
+        raise NotImplementedError
+
     metadata = {}
-    # %% Get MROI info from tif metadata
     with tifffile.TiffFile(file) as tif:
 
         for tag in tif.pages[0].tags.values():
             tag_name, tag_value = tag.name, tag.value
             metadata[tag_name] = tag_value
 
+    # Get MROI location information to restitch
     mrois_si_raw = json.loads(metadata["Artist"])["RoiGroups"]["imagingRoiGroup"]["rois"]
     if type(mrois_si_raw) != dict:
         mrois_si = []
@@ -167,11 +170,11 @@ mrois_si, mrois_centers_si_sorted_x, mrois_centers_si, mrois_si_sorted_x, x_sort
 n_planes=30
 
 for current_pipeline_step in pipeline_steps:
+
     if current_pipeline_step == "make_template":
         path_input_files = path_template_files
     elif current_pipeline_step == "reconstruct_all":
         path_input_files = path_all_files
-
     if params["reconstruct_all_files"]:
         list_files_for_reconstruction = range(len(path_input_files))
     else:
@@ -179,6 +182,7 @@ for current_pipeline_step in pipeline_steps:
 
     for i_file in list_files_for_reconstruction:
         tic = time.time()
+
         path_input_file = path_input_files[i_file]
         ic("Start Reconstruction", path_input_file)
 
@@ -193,29 +197,22 @@ for current_pipeline_step in pipeline_steps:
         tiff_file = tifffile.imread(path_input_file)
 
         nt = int(tiff_file.shape[0] / n_planes)
-        # TODO: should check to make sure % 2 != 0
-        # assert(nt % 2 != 0)
         tiff_file = np.reshape(tiff_file, (
             nt,
             n_planes,
             tiff_file.shape[1],
             tiff_file.shape[2],
         ), order="C")  # TODO: Eval, I believe this should be 'C'
+
         ic(tiff_file)
-        # tiff_file = np.expand_dims(tiff_file, 1)
+        if n_planes == 1:
+            tiff_file = np.expand_dims(tiff_file, 1)
         tiff_file = np.swapaxes(tiff_file, 1, 3)
         tiff_file = tiff_file[..., chans_order]
 
         if current_pipeline_step == "make_template":
             tiff_file = np.mean(tiff_file, axis=0, keepdims=True)
 
-        # ----
-        # %% Separate tif into MR
-        #  with tifffile.TiffFile(path_input_file) as tif:
-        #                 metadata = {}
-        #                 for tag in tif.pages[0].tags.values():
-        #                     tag_name, tag_value = tag.name, tag.value
-        #                     metadata[tag_name] = tag_valueOIs
         # Get the Y coordinates for mrois (and not flybacks)
         if i_file == 0:
             n_mrois = len(mrois_si)
@@ -304,6 +301,7 @@ for current_pipeline_step in pipeline_steps:
 
         # %% Calculate optimal overlap for seams
         if current_pipeline_step == "make_template":
+            # 1) SEAM OVERLAP
             if params["seams_overlap"] == "calculate":
                 # Determine if all the MROIs are adjacent
                 for i_mroi in range(n_mrois - 1):
@@ -413,7 +411,6 @@ for current_pipeline_step in pipeline_steps:
                             plt.show()
 
                 overlaps_planes = [int(round(np.mean(overlaps_planes)))] * n_planes
-
             elif type(params["seams_overlap"]) is int:
                 overlaps_planes = [params["seams_overlap"]] * n_planes
             elif params["seams_overlap"] is list:
@@ -424,9 +421,8 @@ for current_pipeline_step in pipeline_steps:
                 )
 
         # %% Create a volume container
-        if (
-                current_pipeline_step == "make_template"
-        ):  # For templatingMROIs, we will get here when working on the last file
+        if (current_pipeline_step == "make_template"):  # For templating
+            # MROIs, we will get here when working on the last file
             n_f = 1
         elif current_pipeline_step == "reconstruct_all":
             n_f = n_f = planes_mrois[0, 0].shape[0]
@@ -450,10 +446,9 @@ for current_pipeline_step in pipeline_steps:
         n_y = len(reconstructed_xy_ranges_si[1]) + max_shift_y
         n_z = n_planes
 
-        if params["debug"]:
-            print("Creating volume of shape: ")
-            ic(str([n_f, n_x, n_y, n_y]))
-            print(" (f,x,y,z)")
+        print("Creating volume of shape: ")
+        ic(str([n_f, n_x, n_y, n_y]))
+        print(" (f,x,y,z)")
 
         if initialize_volume_with_nans:
             volume = np.full((n_f, n_x, n_y, n_z), np.nan, dtype=np.float32)
@@ -461,9 +456,7 @@ for current_pipeline_step in pipeline_steps:
             volume = np.empty((n_f, n_x, n_y, n_z), dtype=np.int16)
 
         # %% Merge MROIs and place the plane in the volume (with lateral offsets)
-        if params["debug"]:
-            ic("merging MROIS and placing them into the volume")
-
+        ic("merging MROIS and placing them into the volume")
         for i_plane in range(n_planes):
             overlap_seams_this_plane = overlaps_planes[i_plane]
             plane_width = len(
@@ -575,8 +568,6 @@ for current_pipeline_step in pipeline_steps:
             min_accumulated_shift = np.min(accumulated_shifts, axis=0)
             for xy in range(2):
                 accumulated_shifts[:, xy] -= min_accumulated_shift[xy]
-
-            ic(accumulated_shifts.tolist())
             continue
 
         # %% Select X,Y pixels that do not have nans for any plane
@@ -614,7 +605,7 @@ for current_pipeline_step in pipeline_steps:
             if params["save_output"]:
                 ic("Saving output")
                 # TODO: Make outpath a param
-                save_dir = os.path.dirname(path_input_file) + "/Preprocessed_temp/"
+                save_dir = os.path.dirname(path_input_file) + "/Preprocessed_2/"
                 if params["save_as_volume_or_planes"] == "volume":
                     print("Saving as a volume")
                     ic("Saving as a volume")
@@ -657,6 +648,7 @@ for current_pipeline_step in pipeline_steps:
                             data_to_concatenate = np.concatenate(
                                 data_to_concatenate[:], axis=0
                             )
+                            ic(f"Saving plane: {i_plane:02d}")
                             tifffile.imwrite(
                                 save_dir_this_plane + "plane" f"{i_plane:02d}.tif",
                                 data_to_concatenate,
@@ -666,6 +658,7 @@ for current_pipeline_step in pipeline_steps:
 
                 # %% Save mean frame png
                 if params["save_meanf_png"]:
+                    ic("Saving as mean frame")
                     if not params["meanf_png_only_first_file"] or i_file == 0:
                         ic("Saving mean fl. png")
                         canvas_png = np.zeros(
