@@ -10,55 +10,80 @@ OUTPUT_DIRS = Path('/v-data4/foconnell/')
 
 def init_params():
     """
-    Return a dictionary with parameters.
+    Initializes and returns a dictionary containing parameters for preprocessing, reconstruction,
+    visualization, and saving of imaging data.
 
-    Parameters:
-    ----------
-    debug: bool : Whether to return debug messages.
-    chans_order_{1, 15, 30} : Channel / plane reordering to put in order of tissue depth.
-    save_output : If true, will save each plane in a separate folder, otherwise saves the full volume
-    raw_data_dirs : Absolute path to the folder containing your data. Must be a list of 1 or more directories.
-    fname_must_contain : Optional string to match filenames to exclude from the analysis.
-    fname_must_NOT_contain: Optional string to match filenames to exclude from the analysis.
-    make_template_seams_and_plane_alignment : Flag to start reconstruction.
-    reconstruct_all_files : Whether to iterate over all files
-    reconstruct_until_this_ifile : Iterate over this many files in each raw_data_dirs. Fallback
-    list_files_for_template : TBD.
-    seams_overlap : "calculate",
-    make_nonan_volume :?? Isn't user set, checks for nan's in each plane
-        - False if letaral_align_planes = True because it is going to be no-nan by definition, no need to check for it
-    lateral_align_planes : Check if  the pipeline can work with int16, and do it if so. If NaN
-        handling is required, float32 will be used instead.
-    add_1000_for_nonegative_volume : Correct for the first 1000 planes being used by the resonant scanner?
-    save_mp4 : Saves the plane across time,
-    save_meanf_png : Saves the image of an individual plane.
+    Returns
+    -------
+    params : dict
+        A dictionary with the following keys and default values:
+        - debug (bool): Enable debug messages.
+        - chans_order_{n}planes (np.array): Channel or plane reordering array to arrange data by tissue depth for n planes.
+        - save_output (bool): If True, saves each plane in a separate folder; otherwise, saves the full volume.
+        - raw_data_dirs (list): List of strings specifying the absolute paths to folders containing data.
+        - fname_must_contain (str): Filenames must contain this string to be included in analysis.
+        - fname_must_NOT_contain (str): Filenames must not contain this string to be included in analysis.
+        - make_template_seams_and_plane_alignment (bool): Flag to indicate whether to start reconstruction.
+        - reconstruct_all_files (bool): If True, iterate over all files; otherwise, use 'reconstruct_until_this_ifile'.
+        - reconstruct_until_this_ifile (int): Number of files to process in each directory when 'reconstruct_all_files' is False.
+        - list_files_for_template (list): Indices of files to use for creating a template.
+        - seams_overlap (str or int or list): Strategy for calculating overlap. If "calculate", dynamically determine the optimal overlap; if int, use as fixed overlap; if list, specify overlap for each plane.
+        - save_as_volume_or_planes (str): Specifies saving mode, either as "volume" or "planes".
+        - concatenate_all_h5_to_tif (bool): If True, concatenate all .h5 files into a single .tif file.
+        - n_ignored_pixels_sides (int): Number of pixels to ignore on each side of the MROI for overlap calculation.
+        - min_seam_overlap (int): Minimum seam overlap in pixels for dynamic overlap calculation.
+        - max_seam_overlap (int): Maximum seam overlap in pixels for dynamic overlap calculation.
+        - alignment_plot_checks (bool): If True, generate plots to check alignment during processing.
+        - gaps_columns (int), gaps_rows (int): Gap sizes in pixels for visualization.
+        - intensity_percentiles (list): Percentiles for intensity scaling in visualization.
+        - meanf_png_only_first_file (bool), video_only_first_file (bool): Flags to limit certain outputs to the first file processed.
+        - video_play_speed (int), rolling_average_frames (int), video_duration_secs (int): Parameters for video visualization.
+        - lateral_align_planes (bool): If True, perform lateral alignment across planes.
+        - make_nonan_volume (bool): If True, ensure the volume does not contain NaNs by trimming or padding.
+        - add_1000_for_nonegative_volume (bool): If True, add 1000 to pixel values to ensure non-negative volumes.
+        - output_dir (Path): The directory where output files should be saved.
+        - json_logging (bool): Enable JSON format for logging debug and process information.
 
-    TODO: Add checks with clear warnings or errors for each parameter
-    TODO: detect the number of planes based on the file metadata and not on the filename
+    Notes
+    -----
+    This function should be modified to include any additional parameters required by the imaging processing
+    and analysis pipeline. Users are encouraged to adjust the default values according to their specific needs.
+
+    TODO: Implement checks with clear warnings or errors for parameter inconsistencies.
+          Detect the number of planes based on file metadata instead of relying on filename conventions.
     """
     params = {
         "debug": True,
         "chans_order_1plane": np.array([0]),
-        "chans_order_15planes": (np.array([1, 3, 4, 5, 6, 7, 2, 8, 9, 10, 11, 12, 13, 14, 15]) - 1),
-        "chans_order_30planes": (np.array([
-                1, 5, 6, 7, 8, 9, 2, 10, 11, 12, 13, 14, 15, 16,
-                17, 3, 18, 19, 20, 21, 22, 23, 4, 24, 25, 26, 27, 28, 29, 30,]) - 1),
-        "flynn_temp_param": True,
-        "raw_data_dirs": [r"/v-data4/foconnell/data/lbm/raw"],
-        "output_dir": Path(""),
-        "fname_must_contain": "0001",
-        "fname_must_NOT_contain": "some_random_stuff",
+        "chans_order_15planes": np.arange(1, 16) - 1,
+        "chans_order_30planes": np.arange(1, 31) - 1,
+        "raw_data_dirs": ["/path/to/your/data"],
+        "output_dir": Path("/path/to/output"),
+        "fname_must_contain": "",
+        "fname_must_NOT_contain": "",
         "make_template_seams_and_plane_alignment": True,
         "reconstruct_all_files": True,
         "list_files_for_template": [0],
-        "json_logging": False,
         "seams_overlap": "calculate",
         "save_output": True,
-        "make_nonan_volume": True,
+        "save_as_volume_or_planes": "planes",
+        "concatenate_all_h5_to_tif": False,
+        "n_ignored_pixels_sides": 5,
+        "min_seam_overlap": 5,
+        "max_seam_overlap": 20,
+        "alignment_plot_checks": False,
+        "gaps_columns": 5,
+        "gaps_rows": 5,
+        "intensity_percentiles": [15, 99.5],
+        "meanf_png_only_first_file": True,
+        "video_only_first_file": True,
+        "video_play_speed": 1,
+        "rolling_average_frames": 1,
+        "video_duration_secs": 20,
         "lateral_align_planes": False,
+        "make_nonan_volume": True,
         "add_1000_for_nonegative_volume": True,
-        "save_mp4": True,
-        "save_meanf_png": True,
+        "json_logging": False,
     }
 
     return params
