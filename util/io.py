@@ -1,6 +1,7 @@
-import tables
-import h5py
 from pathlib import Path
+
+import h5py
+import tables
 
 
 def load_from_disk(filename):
