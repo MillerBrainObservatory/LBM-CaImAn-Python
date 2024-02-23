@@ -354,7 +354,7 @@ def main():
         list_files_for_reconstruction = range(parameters["reconstruct_until_this_ifile"]) if not parameters[
             "reconstruct_all_files"] else range(len(path_input_files))
 
-        
+
         for i_file in list_files_for_reconstruction:
             tic = time.time()
             path_input_file = path_input_files[i_file]
@@ -366,6 +366,7 @@ def main():
 
             # %% Separate tif into MROIs
             # Get the Y coordinates for mrois (and not flybacks)
+
             if i_file == 0:
                 n_mrois = len(mrois_si)
                 tif_pixels_Y = tiff.shape[2]

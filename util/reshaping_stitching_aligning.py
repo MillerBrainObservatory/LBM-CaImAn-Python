@@ -34,6 +34,7 @@ def _(obj):
 
 params = params.init_params()
 
+
 def assemble_mroi(path_input_file):
     tiffs = list(Path(path_input_file).glob("*.tif"))
     if len(tiffs) == 1:
@@ -166,8 +167,9 @@ def set_vars():
 
 path_input_files = params['raw_data_dirs'][0]
 path_template_files, path_all_files, n_template_files, initialize_volume_with_nans, convert_volume_float32_to_int16, pipeline_steps = set_vars()
-mrois_si, mrois_centers_si_sorted_x, mrois_centers_si, mrois_si_sorted_x, x_sorted, metadata = assemble_mroi(path_input_files)
-n_planes=30
+mrois_si, mrois_centers_si_sorted_x, mrois_centers_si, mrois_si_sorted_x, x_sorted, metadata = assemble_mroi(
+    path_input_files)
+n_planes = 30
 
 for current_pipeline_step in pipeline_steps:
 
