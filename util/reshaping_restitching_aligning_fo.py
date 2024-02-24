@@ -1,3 +1,4 @@
+import copy
 import glob
 import json
 import os
@@ -14,7 +15,6 @@ from matplotlib import pyplot as plt
 from params import init_params
 
 
-# Utility Functions
 def ic_format_nparray(obj):
     """Format numpy array for debug statements."""
     return f"ndarray, shape={obj.shape}, dtype={obj.dtype}"
@@ -59,7 +59,8 @@ def extract_scanimage_metadata(filepath):
     # We retain that information within an array of indexes.
     rois = []
     for roi in rois_raw:
-        if type(roi["scanfields"]) != list:  # TODO: eval
+        #TODO: WHat condition leads to scanfields being saved as non-list/non-iterable types
+        if type(roi["scanfields"]) != list:
             scanfield = roi["scanfields"]
         else:
             scanfield = roi["scanfields"][
@@ -260,7 +261,7 @@ def locate_mroi(planes_mrois, mrois_si_sorted_x, mrois_centers_si_sorted_x):
         if len(reconstructed_xy_ranges_si[i_xy]) == np.sum(sizes_mrois_pix[:, i_xy]) + 1:
             reconstructed_xy_ranges_si[i_xy] = reconstructed_xy_ranges_si[i_xy][:-1]
 
-    return reconstructed_xy_ranges_si, top_left_corners_si
+    return reconstructed_xy_ranges_si, top_left_corners_si, top_left_corners_pix, sizes_mrois_pix, sizes_mrois_si
 
 
 def calculate_overlap(n_mrois, n_planes, planes_mrois, params_dict, top_left_corners_pix, sizes_mrois_pix):
@@ -354,7 +355,6 @@ def main():
         list_files_for_reconstruction = range(parameters["reconstruct_until_this_ifile"]) if not parameters[
             "reconstruct_all_files"] else range(len(path_input_files))
 
-
         for i_file in list_files_for_reconstruction:
             tic = time.time()
             path_input_file = path_input_files[i_file]
@@ -368,9 +368,17 @@ def main():
             # Get the Y coordinates for mrois (and not flybacks)
 
             if i_file == 0:
+
+                # Calculate amount of flyback pixels to delete on each scan
+
+                # if each XY image is (144, 1000)
+                # we should have a total of 1000 pixels for each ROI, i.e. 5000 pixels
+                # but the scanner flyback adds extra lines, for the case of 5000 px, our number of pixels is 5104
+                # Calculate how many px we need to eliminate for each scanner flyback
                 n_mrois = len(mrois_si)
-                tif_pixels_Y = tiff.shape[2]
+                tif_pixels_Y = tiff.shape[2]  # this will be > num_pixels_y * n_roi
                 mrois_pixels_Y = np.array([mroi_si['pixXY'][1] for mroi_si in mrois_si])
+
                 each_flyback_pixels_Y = (tif_pixels_Y - mrois_pixels_Y.sum()) // (n_mrois - 1)
 
             # Divide long stripe into mrois
@@ -379,37 +387,41 @@ def main():
                 y_start = 0
                 # We go over the order in which they were acquired
                 for i_mroi in range(n_mrois):
-                    planes_mrois[i_plane, i_mroi] = tiff_file[:, :, y_start:y_start + mrois_pixels_Y[x_sorted[i_mroi]],
-                                                    i_plane]
+                    planes_mrois[i_plane, i_mroi] = tiff_file[:, :, y_start:y_start + mrois_pixels_Y[x_sorted[i_mroi]], i_plane]
                     y_start += mrois_pixels_Y[i_mroi] + each_flyback_pixels_Y
 
             del tiff_file
 
-            # if current_pipeline_step == 'make_template':
-            #     n_template_files = params['list_files_for_template']
-            #     if n_template_files > 1:
-            #         if i_file == 0:
-            #             template_accumulator = copy.deepcopy(planes_mrois)
-            #             continue
-            #         elif i_file != n_template_files - 1:
-            #             template_accumulator += planes_mrois
-            #             continue
-            #         else:
-            #             template_accumulator += planes_mrois
-            #             planes_mrois = template_accumulator / n_template_files
-            #
-            # reconstructed_xy_ranges_si = locate_mroi(planes_mrois, mrois_si_sorted_x, mrois_centers_si_sorted_x)
-            # if current_pipeline_step == 'make_template':
-            #     if params['seams_overlap'] == 'calculate':
-            #         overlap = calculate_overlap(n_mrois, n_planes, planes_mrois, reconstructed_xy_ranges_si,,
-            #     elif type(params['seams_overlap']) is int:
-            #         overlaps_planes = [params['seams_overlap']] * n_planes
-            #     elif params['seams_overlap'] is list:
-            #         overlaps_planes = params['seams_overlap']
-            # else:
-            #     raise Exception(
-            #         'params[\'seams_overlap\'] should be set to \'calculate\', an integer, or a list of length n_planes')
-            #
+            if current_pipeline_step == 'make_template':
+                n_template_files = params['list_files_for_template']
+                if len(n_template_files) > 1:
+                    if i_file == 0:
+                        template_accumulator = copy.deepcopy(planes_mrois)
+                        continue
+                    elif i_file != n_template_files - 1:
+                        template_accumulator += planes_mrois
+                        continue
+                    else:
+                        template_accumulator += planes_mrois
+                        planes_mrois = template_accumulator / n_template_files
+
+            # LOCATE MROIS
+            reconstructed_xy_ranges_si, top_left_corners_si, top_left_corners_pix, sizes_mrois_pix, sizes_mrois_si = locate_mroi(planes_mrois, mrois_si_sorted_x, mrois_centers_si_sorted_x)
+
+            n_mrois = None
+            n_planes = None
+            if current_pipeline_step == 'make_template':
+                if params['seams_overlap'] == 'calculate':
+                    overlap_planes = calculate_overlap(n_mrois, len(planes_mrois),planes_mrois, params, top_left_corners_pix, sizes_mrois_pix)
+                elif type(params['seams_overlap']) is int:
+                    overlaps_planes = [params['seams_overlap']] * n_planes
+                elif params['seams_overlap'] is list:
+                    overlaps_planes = params['seams_overlap']
+            else:
+                raise Exception(
+                    'params[\'seams_overlap\'] should be set to \'calculate\', an integer, or a list of length n_planes')
+
+            x = 5
             # save_outputs(i_file, volume, path_input_file, metadata, n_planes, parameters, path_input_files)
             # toc = time.time()
             # print(f"Processing time for file {i_file}: {toc - tic} seconds")
