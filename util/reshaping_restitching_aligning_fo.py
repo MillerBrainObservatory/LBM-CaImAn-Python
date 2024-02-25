@@ -6,7 +6,7 @@ import time
 from pathlib import Path
 
 import h5py
-import numpy as np
+import scipy
 import tifffile
 from icecream import ic
 from matplotlib import pyplot as plt
@@ -275,6 +275,112 @@ def locate_mroi(planes_mrois, mrois_si_sorted_x, mrois_centers_si_sorted_x):
     return reconstructed_xy_ranges_si, top_left_corners_si, top_left_corners_pix, sizes_mrois_pix, sizes_mrois_si
 
 
+import numpy as np
+
+
+def merge_mrois_into_volume(n_planes, n_mrois, planes_mrois, overlaps_planes, top_left_corners_pix, sizes_mrois_pix,
+                            reconstructed_xy_ranges_si, n_f, accumulated_shifts):
+    """
+    Merges Multi-Regions of Interest (MROIs) into a single volume with lateral offsets.
+
+    Parameters
+    ----------
+    n_planes : int
+        The number of planes in the dataset.
+    n_mrois : int
+        The number of MROIs.
+    planes_mrois : np.ndarray
+        Array containing the imaging data for each MROI, structured as (n_planes, n_mrois).
+    overlaps_planes : list
+        List containing the calculated optimal overlap for each plane.
+    top_left_corners_pix : np.ndarray
+        Array of starting pixel coordinates for each MROI in the reconstructed image.
+    sizes_mrois_pix : np.ndarray
+        Array of sizes for each MROI in pixels.
+    reconstructed_xy_ranges_si : list of np.ndarray
+        The reconstructed spatial ranges in SI units that fit all MROIs, in both x and y dimensions.
+    n_f : int
+        Number of frames or depth of the volume.
+    accumulated_shifts : np.ndarray
+        The accumulated lateral shifts applied to each plane.
+
+    Returns
+    -------
+    shift_x : int
+        The lateral shift along the x-axis applied to the merged volume.
+    shift_y : int
+        The lateral shift along the y-axis applied to the merged volume.
+    end_x : int
+        The ending x-coordinate of the merged volume after applying the lateral shift.
+    end_y : int
+        The ending y-coordinate of the merged volume after applying the lateral shift.
+    volume : np.ndarray
+        The merged volume containing all MROIs with applied lateral shifts.
+
+    """
+    volume = np.zeros((n_f, reconstructed_xy_ranges_si[0][-1], reconstructed_xy_ranges_si[1][-1], n_planes),
+                      dtype=np.float32)
+    for i_plane in range(n_planes):
+        overlap_seams_this_plane = overlaps_planes[i_plane]
+        plane_width = len(
+            reconstructed_xy_ranges_si[0]
+            ) - overlap_seams_this_plane * (n_mrois - 1)
+        plane_length = len(reconstructed_xy_ranges_si[1])
+        plane_canvas = np.zeros((n_f, plane_width, plane_length), dtype=np.float32)
+        x_end_canvas = 0
+        for i_mroi in range(n_mrois):
+            # The first and last MROIs require different handling  #TODO: is this because of the dual cavities?
+            if i_mroi == 0:
+                # This always works because the MROIs were sorted
+                x_start_canvas = (0)
+                x_end_canvas = (
+                        x_start_canvas
+                        + sizes_mrois_pix[i_mroi][0]
+                        - int(np.trunc(overlap_seams_this_plane / 2))
+                )
+                x_start_mroi = x_start_canvas
+                x_end_mroi = x_end_canvas
+            elif i_mroi != n_mrois - 1:
+                x_start_canvas = copy.deepcopy(x_end_canvas)
+                x_end_canvas = (
+                        x_start_canvas
+                        + sizes_mrois_pix[i_mroi][0]
+                        - overlap_seams_this_plane
+                )
+                x_mroi_width = sizes_mrois_pix[i_mroi][0] - overlap_seams_this_plane
+                x_start_mroi = int(np.ceil(overlap_seams_this_plane / 2))
+                x_end_mroi = x_start_mroi + x_mroi_width
+            else:
+                x_start_canvas = copy.deepcopy(x_end_canvas)
+                x_end_canvas = plane_width
+                x_start_mroi = int(np.ceil(overlap_seams_this_plane / 2))
+                x_end_mroi = sizes_mrois_pix[i_mroi][0]
+
+            y_start_canvas = top_left_corners_pix[i_mroi][1]
+            y_end_canvas = y_start_canvas + sizes_mrois_pix[i_mroi][1]
+
+            plane_canvas[
+            :, x_start_canvas:x_end_canvas, y_start_canvas:y_end_canvas
+            ] = planes_mrois[i_plane, i_mroi][:, x_start_mroi:x_end_mroi]
+
+        shift_x_varied_seams = int(
+            round(
+                (overlap_seams_this_plane - min(overlaps_planes))
+                * (n_mrois - 1)
+                / 2
+            )
+        )
+        shift_x = accumulated_shifts[i_plane, 0] + shift_x_varied_seams
+        shift_y = accumulated_shifts[i_plane, 1]
+
+        end_x = shift_x + plane_canvas.shape[1]
+        end_y = shift_y + plane_canvas.shape[2]
+
+        volume[:, shift_x:end_x, shift_y:end_y, i_plane] = plane_canvas
+
+    return shift_x, shift_y, end_x, end_y, volume
+
+
 def calculate_overlap(n_mrois, n_planes, planes_mrois, params_dict, top_left_corners_pix, sizes_mrois_pix):
     """
     Calculates the optimal overlap for seams between adjacent Regions of Interest (mROIs) for each plane.
@@ -344,6 +450,96 @@ def calculate_overlap(n_mrois, n_planes, planes_mrois, params_dict, top_left_cor
             plt.show()
 
     return overlaps_planes
+
+
+def calculate_lateral_offsets(volume, n_planes):
+    """
+    Calculate lateral offsets between consecutive planes in a volume using cross-correlation.
+
+    Parameters
+    ----------
+    volume : np.ndarray
+        The volume containing all planes, structured as (n_frames, width, height, n_planes).
+    n_planes : int
+        The number of planes in the volume.
+
+    Returns
+    -------
+    accumulated_shifts : np.ndarray
+        Accumulated shifts for each plane to align them, structured as (n_planes-1, 2),
+        where each row contains the x and y shift for the plane.
+
+    Notes
+    -----
+    This function assumes the volume has already been preprocessed to remove NaN values
+    and that planes are sufficiently similar for cross-correlation to be effective.
+    """
+    # Initialize arrays to store shifts
+    interplane_shifts = np.zeros((n_planes-1, 2), dtype=int)
+    accumulated_shifts = np.zeros_like(interplane_shifts)
+
+    # iterate through planes to calculate shifts
+    for i_plane in range(n_planes - 1):
+        # extract planes and remove NaNs
+        im1, im2 = volume[0, :, :, i_plane], volume[0, :, :, i_plane + 1]
+        nonan_mask = ~np.isnan(im1) & ~np.isnan(im2)
+        im1_nonan, im2_nonan = im1[nonan_mask], im2[nonan_mask]
+
+        # normalize images
+        im1_nonan -= np.min(im1_nonan)
+        im2_nonan -= np.min(im2_nonan)
+
+        # compute cross-correlation
+        cross_corr_img = scipy.signal.fftconvolve(im1_nonan, im2_nonan[::-1, ::-1], mode='same')
+
+        # find peak correlation
+        peak_x, peak_y = np.unravel_index(np.argmax(cross_corr_img), cross_corr_img.shape)
+
+        # calculate shift relative to center
+        center_x, center_y = np.array(cross_corr_img.shape) // 2
+        shift_x, shift_y = peak_x - center_x, peak_y - center_y
+
+        # store shifts
+        interplane_shifts[i_plane] = [shift_x, shift_y]
+
+    # accumulate shifts to align all planes relative to the first
+    for i in range(1, n_planes - 1):
+        accumulated_shifts[i] = accumulated_shifts[i-1] + interplane_shifts[i]
+
+    return accumulated_shifts
+
+def trim_volume_to_nonan(volume):
+    """
+    Trims a volume to exclude regions that contain NaNs in any plane, effectively cropping
+    the volume to the non-NaN extents across all planes.
+
+    Parameters
+    ----------
+    volume : np.ndarray
+        The volume to be trimmed, structured as (n_frames, width, height, n_planes).
+
+    Returns
+    -------
+    trimmed_volume : np.ndarray
+        The trimmed volume, with dimensions potentially reduced to exclude NaN-containing regions.
+
+    """
+    # Calculate the mean projection along the planes to find NaNs
+    volume_mean_projection = np.nanmean(volume, axis=3)  # Mean across planes
+
+    # Identify non-NaN coordinates across all planes
+    non_nan_mask = ~np.isnan(volume_mean_projection).any(axis=0)  # Any NaN in any frame
+
+    # Find the bounding box of non-NaN areas
+    coords = np.argwhere(non_nan_mask)
+    min_coords = coords.min(axis=0)
+    max_coords = coords.max(axis=0) + 1  # Add 1 for inclusive slicing
+
+    # Trim the volume to the bounding box
+    trimmed_volume = volume[:, min_coords[0]:max_coords[0], min_coords[1]:max_coords[1], :]
+
+    return trimmed_volume
+
 
 
 def main():
@@ -460,10 +656,33 @@ def main():
                 volume = np.full((n_f, n_x, n_y, n_z), np.nan, dtype=np.float32)
             else:
                 volume = np.empty((n_f, n_x, n_y, n_z), dtype=np.int16)
-            x = 5
-            # save_outputs(i_file, volume, path_input_file, metadata, n_planes, parameters, path_input_files)
-            # toc = time.time()
-            # print(f"Processing time for file {i_file}: {toc - tic} seconds")
+
+            shift_x, shift_y, end_x, end_y, volume = merge_mrois_into_volume(n_planes, n_mrois, planes_mrois, overlaps_planes, top_left_corners_pix, sizes_mrois_pix, reconstructed_xy_ranges_si, n_f, accumulated_shifts)
+
+            del planes_mrois
+
+            # two more funcs here
+            # 1. calculate_lateral_offsets
+            # 2. trim_volume_to_nonan
+
+            accumulated_shifts = calculate_lateral_offsets(volume, n_planes)
+            volume = trim_volume_to_nonan(volume)
+
+            # %% Make volume non-negative
+            if params["add_1000_for_nonegative_volume"]:
+                ic("Adding 1000 to make positive")
+                volume += 1000
+
+            # %% Convert volume from float to int
+            if convert_volume_float32_to_int16:
+                if volume.dtype != np.int16:
+                    ic("Transforming to int16")
+                    volume = volume.astype(np.int16)
+            volume = np.swapaxes(volume, 1, 2)
+
+            save_outputs(i_file, volume, path_input_file, metadata, n_planes, parameters, path_input_files)
+            toc = time.time()
+            print(f"Processing time for file {i_file}: {toc - tic} seconds")
 
 
 if __name__ == "__main__":
