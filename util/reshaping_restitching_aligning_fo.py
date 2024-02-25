@@ -4,7 +4,6 @@ import json
 import os
 import time
 from pathlib import Path
-from pprint import pprint
 
 import h5py
 import numpy as np
@@ -108,11 +107,23 @@ def set_params(params):
     for i_dir in params["raw_data_dirs"]:
         path_all_files.extend(sorted(glob.glob(f"{i_dir}/**/*.tif", recursive=True)))
 
+    if not params["lateral_align_planes"]:  # If no need to align planes, we can use int16
+        # TODO: Is this param ever false?
+        initialize_volume_with_nans = False
+        convert_volume_float32_to_int16 = True
+        # It is going to be no-nan by definition, no need to check for it
+        params["make_nonan_volume"] = False
+    elif params["make_nonan_volume"]:
+        initialize_volume_with_nans = True
+        convert_volume_float32_to_int16 = True
+    else:
+        initialize_volume_with_nans = True
+        convert_volume_float32_to_int16 = False
     path_template_files = [path_all_files[idx] for idx in params["list_files_for_template"]]
     pipeline_steps = ["make_template"] if params["make_template_seams_and_plane_alignment"] else []
     pipeline_steps.append("reconstruct_all" if params["reconstruct_all_files"] else "")
 
-    return path_template_files, path_all_files, params, pipeline_steps
+    return path_template_files, path_all_files, params, pipeline_steps, initialize_volume_with_nans, convert_volume_float32_to_int16
 
 
 def save_outputs(i_file, volume, path_input_file, metadata, n_planes, params, file_list):
@@ -343,10 +354,9 @@ def main():
     metadata, mrois_si, mrois_si_sorted_x, mrois_centers_si_sorted_x, x_sorted = extract_scanimage_metadata(
         path_input_files)
 
-    path_template_files, path_all_files, params, pipeline_steps = set_params(parameters)
+    path_template_files, path_all_files, params, pipeline_steps, initialize_volume_with_nans, convert_volume_float32_to_int16 = set_params(
+        parameters)
     for current_pipeline_step in pipeline_steps:
-
-        pprint(current_pipeline_step)
 
         # Gather input files.
         # Template files are created on the first pass "make_template"
@@ -387,10 +397,10 @@ def main():
                 y_start = 0
                 # We go over the order in which they were acquired
                 for i_mroi in range(n_mrois):
-                    planes_mrois[i_plane, i_mroi] = tiff_file[:, :, y_start:y_start + mrois_pixels_Y[x_sorted[i_mroi]], i_plane]
+                    planes_mrois[i_plane, i_mroi] = tiff[:, :, y_start:y_start + mrois_pixels_Y[x_sorted[i_mroi]], i_plane]
                     y_start += mrois_pixels_Y[i_mroi] + each_flyback_pixels_Y
 
-            del tiff_file
+            del tiff
 
             if current_pipeline_step == 'make_template':
                 n_template_files = params['list_files_for_template']
@@ -408,8 +418,6 @@ def main():
             # LOCATE MROIS
             reconstructed_xy_ranges_si, top_left_corners_si, top_left_corners_pix, sizes_mrois_pix, sizes_mrois_si = locate_mroi(planes_mrois, mrois_si_sorted_x, mrois_centers_si_sorted_x)
 
-            n_mrois = None
-            n_planes = None
             if current_pipeline_step == 'make_template':
                 if params['seams_overlap'] == 'calculate':
                     overlap_planes = calculate_overlap(n_mrois, len(planes_mrois),planes_mrois, params, top_left_corners_pix, sizes_mrois_pix)
@@ -421,6 +429,37 @@ def main():
                 raise Exception(
                     'params[\'seams_overlap\'] should be set to \'calculate\', an integer, or a list of length n_planes')
 
+            # %% Create a volume container
+            if (current_pipeline_step == "make_template"):  # For templating
+                # MROIs, we will get here when working on the last file
+                n_f = 1
+            elif current_pipeline_step == "reconstruct_all":
+                n_f = n_f = planes_mrois[0, 0].shape[0]
+
+                # For template or if no need to align planes, initialize interplane shifts as 0s
+            if (current_pipeline_step == "make_template" or not params["lateral_align_planes"]):
+                interplane_shifts = np.zeros((n_planes, 2), dtype=int)
+                accumulated_shifts = np.zeros((n_planes, 2), dtype=int)
+
+            max_shift_x = max(accumulated_shifts[:, 0])
+            max_shift_y = max(accumulated_shifts[:, 1])
+
+            n_x = (
+                    len(reconstructed_xy_ranges_si[0])
+                    - min(overlaps_planes) * (n_mrois - 1)
+                    + max_shift_x
+            )
+            n_y = len(reconstructed_xy_ranges_si[1]) + max_shift_y
+            n_z = n_planes
+
+            print("Creating volume of shape: ")
+            ic(str([n_f, n_x, n_y, n_y]))
+            print(" (f,x,y,z)")
+
+            if initialize_volume_with_nans:
+                volume = np.full((n_f, n_x, n_y, n_z), np.nan, dtype=np.float32)
+            else:
+                volume = np.empty((n_f, n_x, n_y, n_z), dtype=np.int16)
             x = 5
             # save_outputs(i_file, volume, path_input_file, metadata, n_planes, parameters, path_input_files)
             # toc = time.time()
