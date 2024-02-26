@@ -44,22 +44,21 @@ def assemble_mroi(path_input_file):
 
     metadata = {}
     with tifffile.TiffFile(file) as tif:
-
         for tag in tif.pages[0].tags.values():
             tag_name, tag_value = tag.name, tag.value
             metadata[tag_name] = tag_value
 
     # Get MROI location information to restitch
-    mrois_si_raw = json.loads(metadata["Artist"])["RoiGroups"]["imagingRoiGroup"]["rois"]
+    mrois_si_raw = json.loads(metadata["Artist"])["RoiGroups"]["imagingRoiGroup"][
+        "rois"
+    ]
     if type(mrois_si_raw) != dict:
         mrois_si = []
         for roi in mrois_si_raw:
             if type(roi["scanfields"]) != list:  # TODO: eval
                 scanfield = roi["scanfields"]
             else:
-                scanfield = roi["scanfields"][
-                    np.where(np.array(roi["zs"]) == 0)[0][0]
-                ]
+                scanfield = roi["scanfields"][np.where(np.array(roi["zs"]) == 0)[0][0]]
             roi_dict = {}
             roi_dict["center"] = np.array(scanfield["centerXY"])
             roi_dict["sizeXY"] = np.array(scanfield["sizeXY"])
@@ -79,13 +78,22 @@ def assemble_mroi(path_input_file):
     x_sorted = np.argsort(mrois_centers_si[:, 0])
     mrois_si_sorted_x = [mrois_si[i] for i in x_sorted]
     mrois_centers_si_sorted_x = [mrois_centers_si[i] for i in x_sorted]
-    return mrois_si, mrois_centers_si_sorted_x, mrois_centers_si, mrois_si_sorted_x, x_sorted, metadata
+    return (
+        mrois_si,
+        mrois_centers_si_sorted_x,
+        mrois_centers_si,
+        mrois_si_sorted_x,
+        x_sorted,
+        metadata,
+    )
 
 
 def set_vars():
-    if params['debug']:
+    if params["debug"]:
         ic.enable()
-        ic.configureOutput(prefix='RBO Debugger -> ', includeContext=True, contextAbsPath=True)
+        ic.configureOutput(
+            prefix="RBO Debugger -> ", includeContext=True, contextAbsPath=True
+        )
         ic()
     else:
         ic.disable()
@@ -137,18 +145,16 @@ def set_vars():
     for i_dir in params["raw_data_dirs"]:
         tmp_paths = sorted(glob.glob(i_dir + "/**/*.tif", recursive=True))
         for this_tmp_path in tmp_paths:
-            if (
-                    params["fname_must_contain"] in this_tmp_path and
-                    params["fname_must_NOT_contain"] not in this_tmp_path
-            ):
-                path_all_files.append(this_tmp_path)
+            path_all_files.append(this_tmp_path)
 
     if params["debug"]:
         ic(path_all_files)
 
     n_template_files = len(params["list_files_for_template"])
     ic(n_template_files)
-    path_template_files = [path_all_files[file_idx] for file_idx in params["list_files_for_template"]]
+    path_template_files = [
+        path_all_files[file_idx] for file_idx in params["list_files_for_template"]
+    ]
 
     del (
         i_dir,
@@ -162,17 +168,36 @@ def set_vars():
     if params["reconstruct_all_files"]:
         pipeline_steps.append("reconstruct_all")
 
-    return path_template_files, path_all_files, n_template_files, initialize_volume_with_nans, convert_volume_float32_to_int16, pipeline_steps
+    return (
+        path_template_files,
+        path_all_files,
+        n_template_files,
+        initialize_volume_with_nans,
+        convert_volume_float32_to_int16,
+        pipeline_steps,
+    )
 
 
-path_input_files = params['raw_data_dirs'][0]
-path_template_files, path_all_files, n_template_files, initialize_volume_with_nans, convert_volume_float32_to_int16, pipeline_steps = set_vars()
-mrois_si, mrois_centers_si_sorted_x, mrois_centers_si, mrois_si_sorted_x, x_sorted, metadata = assemble_mroi(
-    path_input_files)
+path_input_files = params["raw_data_dirs"][0]
+(
+    path_template_files,
+    path_all_files,
+    n_template_files,
+    initialize_volume_with_nans,
+    convert_volume_float32_to_int16,
+    pipeline_steps,
+) = set_vars()
+(
+    mrois_si,
+    mrois_centers_si_sorted_x,
+    mrois_centers_si,
+    mrois_si_sorted_x,
+    x_sorted,
+    metadata,
+) = assemble_mroi(path_input_files)
 n_planes = 30
 
 for current_pipeline_step in pipeline_steps:
-
     if current_pipeline_step == "make_template":
         path_input_files = path_template_files
     elif current_pipeline_step == "reconstruct_all":
@@ -186,6 +211,7 @@ for current_pipeline_step in pipeline_steps:
         tic = time.time()
 
         path_input_file = path_input_files[i_file]
+        # TODO: Why is IC failing "Was invoked during replay of a frozen trace"
         ic("Start Reconstruction", path_input_file)
 
         if i_file == 0:
@@ -199,14 +225,17 @@ for current_pipeline_step in pipeline_steps:
         tiff_file = tifffile.imread(path_input_file)
 
         nt = int(tiff_file.shape[0] / n_planes)
-        tiff_file = np.reshape(tiff_file, (
-            nt,
-            n_planes,
-            tiff_file.shape[1],
-            tiff_file.shape[2],
-        ), order="C")  # TODO: Eval, I believe this should be 'C'
+        tiff_file = np.reshape(
+            tiff_file,
+            (
+                nt,
+                n_planes,
+                tiff_file.shape[1],
+                tiff_file.shape[2],
+            ),
+            order="C",
+        )  # TODO: Eval, I believe this should be 'C'
 
-        ic(tiff_file)
         if n_planes == 1:
             tiff_file = np.expand_dims(tiff_file, 1)
         tiff_file = np.swapaxes(tiff_file, 1, 3)
@@ -220,7 +249,9 @@ for current_pipeline_step in pipeline_steps:
             n_mrois = len(mrois_si)
             tif_pixels_Y = tiff_file.shape[2]
             mrois_pixels_Y = np.array([mroi_si["pixXY"][1] for mroi_si in mrois_si])
-            each_flyback_pixels_Y = (tif_pixels_Y - mrois_pixels_Y.sum()) // (n_mrois - 1)
+            each_flyback_pixels_Y = (tif_pixels_Y - mrois_pixels_Y.sum()) // (
+                n_mrois - 1
+            )
 
         ic("Separating tifs")
 
@@ -228,9 +259,12 @@ for current_pipeline_step in pipeline_steps:
         planes_mrois = np.empty((n_planes, n_mrois), dtype=np.ndarray)
         for i_plane in range(n_planes):
             y_start = 0
-            for i_mroi in range(n_mrois):  # go over the order in which they were acquired
-                planes_mrois[i_plane, i_mroi] = tiff_file[:, :, y_start: y_start + mrois_pixels_Y[x_sorted[i_mroi]],
-                                                i_plane]
+            for i_mroi in range(
+                n_mrois
+            ):  # go over the order in which they were acquired
+                planes_mrois[i_plane, i_mroi] = tiff_file[
+                    :, :, y_start : y_start + mrois_pixels_Y[x_sorted[i_mroi]], i_plane
+                ]
                 y_start += mrois_pixels_Y[i_mroi] + each_flyback_pixels_Y
         del tiff_file
 
@@ -246,15 +280,20 @@ for current_pipeline_step in pipeline_steps:
                     template_accumulator += planes_mrois
                     planes_mrois = template_accumulator / n_template_files
 
-        # %% Get location of MROIs in final canvas based on MROI metadata
+        # LOCATE_MROI: Get location of MROIs in final canvas based on MROI metadata
         if current_pipeline_step == "make_template":
             # Get pixel sizes
-            sizes_mrois_pix = np.array([mroi_pix.shape[1:] for mroi_pix in planes_mrois[0, :]])
-            sizes_mrois_si = np.array([mroi_si["sizeXY"] for mroi_si in mrois_si_sorted_x])
+            sizes_mrois_pix = np.array(
+                [mroi_pix.shape[1:] for mroi_pix in planes_mrois[0, :]]
+            )
+            sizes_mrois_si = np.array(
+                [mroi_si["sizeXY"] for mroi_si in mrois_si_sorted_x]
+            )
             pixel_sizes = sizes_mrois_si / sizes_mrois_pix
             psize_x, psize_y = np.mean(pixel_sizes[:, 0]), np.mean(pixel_sizes[:, 1])
-            assert np.product(np.isclose(pixel_sizes[:, 1] - psize_y, 0)
-                              ), "Y-pixels resolution not uniform across MROIs"
+            assert np.product(
+                np.isclose(pixel_sizes[:, 1] - psize_y, 0)
+            ), "Y-pixels resolution not uniform across MROIs"
             assert np.product(
                 np.isclose(pixel_sizes[:, 0] - psize_x, 0)
             ), "X-pixels resolution not uniform across MROIs"
@@ -290,26 +329,28 @@ for current_pipeline_step in pipeline_steps:
                     closest_xy_si = reconstructed_xy_ranges_si[i_xy][closest_xy_pix]
                     if not np.isclose(closest_xy_si, top_left_corners_si[i_mroi, i_xy]):
                         if params["debug"]:
-                            ic(f"ROI {i_mroi} x does not fit perfectly into image, corner is {closest_xy_si}.4f but closest available is {top_left_corners_si[i_mroi, i_xy]}.4f")
+                            ic(
+                                f"ROI {i_mroi} x does not fit perfectly into image, corner is {closest_xy_si}.4f but closest available is {top_left_corners_si[i_mroi, i_xy]}.4f"
+                            )
             # Sometimes an extra pixel is added because of pixel_size rounding
             for i_xy in range(2):
                 if (
-                        len(reconstructed_xy_ranges_si[i_xy])
-                        == np.sum(sizes_mrois_pix[:, 0]) + 1
+                    len(reconstructed_xy_ranges_si[i_xy])
+                    == np.sum(sizes_mrois_pix[:, 0]) + 1
                 ):
                     reconstructed_xy_ranges_si[i_xy] = reconstructed_xy_ranges_si[i_xy][
-                                                       :-1
-                                                       ]
+                        :-1
+                    ]
 
-        # %% Calculate optimal overlap for seams
+        # CALCULATE OVERLAP: alculate optimal overlap for seams
         if current_pipeline_step == "make_template":
             # 1) SEAM OVERLAP
             if params["seams_overlap"] == "calculate":
                 # Determine if all the MROIs are adjacent
                 for i_mroi in range(n_mrois - 1):
                     if (
-                            top_left_corners_pix[i_mroi][0] + sizes_mrois_pix[i_mroi][0]
-                            != top_left_corners_pix[i_mroi + 1][0]
+                        top_left_corners_pix[i_mroi][0] + sizes_mrois_pix[i_mroi][0]
+                        != top_left_corners_pix[i_mroi + 1][0]
                     ):
                         raise Exception(
                             "MROIs number "
@@ -320,28 +361,29 @@ for current_pipeline_step in pipeline_steps:
                         )
 
                 # Combine meanf from differete template files:
-                overlaps_planes_seams_scores = np.zeros((
-                    n_planes,
-                    n_mrois - 1,
-                    params["max_seam_overlap"] - params["min_seam_overlap"],
-                )
+                overlaps_planes_seams_scores = np.zeros(
+                    (
+                        n_planes,
+                        n_mrois - 1,
+                        params["max_seam_overlap"] - params["min_seam_overlap"],
+                    )
                 )  # We will avoid i_overlaps = 0
 
                 for i_plane in range(n_planes):
                     for i_seam in range(n_mrois - 1):
                         for i_overlaps in range(
-                                params["min_seam_overlap"], params["max_seam_overlap"]
+                            params["min_seam_overlap"], params["max_seam_overlap"]
                         ):
                             strip_left = planes_mrois[i_plane, i_seam][
-                                         0,
-                                         -params["n_ignored_pixels_sides"]
-                                         - i_overlaps: -params["n_ignored_pixels_sides"],
-                                         ]
+                                0,
+                                -params["n_ignored_pixels_sides"]
+                                - i_overlaps : -params["n_ignored_pixels_sides"],
+                            ]
                             strip_right = planes_mrois[i_plane, i_seam + 1][
-                                          0,
-                                          params["n_ignored_pixels_sides"]: i_overlaps
-                                                                            + params["n_ignored_pixels_sides"],
-                                          ]
+                                0,
+                                params["n_ignored_pixels_sides"] : i_overlaps
+                                + params["n_ignored_pixels_sides"],
+                            ]
                             subtract_left_right = abs(strip_left - strip_right)
                             overlaps_planes_seams_scores[
                                 i_plane, i_seam, i_overlaps - params["min_seam_overlap"]
@@ -357,14 +399,16 @@ for current_pipeline_step in pipeline_steps:
                             + 2 * params["n_ignored_pixels_sides"]
                         )
                     )
-                ic(overlaps_planes)
                 # Plot the scores for the different planes and also potential shifts
+
                 if params["alignment_plot_checks"]:
                     for i_plane in range(n_planes):
-                        plt.plot(range(params["min_seam_overlap"], params["max_seam_overlap"]
-                                       ),
-                                 overlaps_planes_scores[i_plane],
-                                 )
+                        plt.plot(
+                            range(
+                                params["min_seam_overlap"], params["max_seam_overlap"]
+                            ),
+                            overlaps_planes_scores[i_plane],
+                        )
                     plt.title("Score for all planes")
                     plt.xlabel("Overlap (pixels)")
                     plt.ylabel("Error (a.u.)")
@@ -385,13 +429,13 @@ for current_pipeline_step in pipeline_steps:
                             x_start = 0
                             for i_mroi in range(n_mrois):
                                 x_start = (
-                                        top_left_corners_pix[i_mroi][0] - i_mroi * i_overlap
+                                    top_left_corners_pix[i_mroi][0] - i_mroi * i_overlap
                                 )
                                 x_end = x_start + sizes_mrois_pix[i_mroi][0]
                                 y_start = top_left_corners_pix[i_mroi][1]
                                 y_end = y_start + sizes_mrois_pix[i_mroi][1]
                                 canvas_alignment_check[
-                                x_start:x_end, y_start:y_end, i_mroi % 2
+                                    x_start:x_end, y_start:y_end, i_mroi % 2
                                 ] = planes_mrois[0, i_plane, i_mroi] - np.min(
                                     planes_mrois[0, i_plane, i_mroi]
                                 )
@@ -422,17 +466,16 @@ for current_pipeline_step in pipeline_steps:
                     "params['seams_overlap'] should be set to 'calculate', an integer, or a list of length n_planes"
                 )
 
-        # %% Create a volume container
-        if (current_pipeline_step == "make_template"):  # For templating
+        # Create a volume container
+        if current_pipeline_step == "make_template":  # For templating
             # MROIs, we will get here when working on the last file
             n_f = 1
         elif current_pipeline_step == "reconstruct_all":
             n_f = n_f = planes_mrois[0, 0].shape[0]
-
-            # For template or if no need to align planes, initialize interplane shifts as 0s
+        # For template or if no need to align planes, initialize interplane shifts as 0s
         if (
-                current_pipeline_step == "make_template"
-                or not params["lateral_align_planes"]
+            current_pipeline_step == "make_template"
+            or not params["lateral_align_planes"]
         ):
             interplane_shifts = np.zeros((n_planes, 2), dtype=int)
             accumulated_shifts = np.zeros((n_planes, 2), dtype=int)
@@ -441,9 +484,9 @@ for current_pipeline_step in pipeline_steps:
         max_shift_y = max(accumulated_shifts[:, 1])
 
         n_x = (
-                len(reconstructed_xy_ranges_si[0])
-                - min(overlaps_planes) * (n_mrois - 1)
-                + max_shift_x
+            len(reconstructed_xy_ranges_si[0])
+            - min(overlaps_planes) * (n_mrois - 1)
+            + max_shift_x
         )
         n_y = len(reconstructed_xy_ranges_si[1]) + max_shift_y
         n_z = n_planes
@@ -457,7 +500,7 @@ for current_pipeline_step in pipeline_steps:
         else:
             volume = np.empty((n_f, n_x, n_y, n_z), dtype=np.int16)
 
-        # %% Merge MROIs and place the plane in the volume (with lateral offsets)
+        # MERGE_MROIS_INTO_VOLUME: Merge MROIs and place the plane in the volume (with lateral offsets)
         ic("merging MROIS and placing them into the volume")
         for i_plane in range(n_planes):
             overlap_seams_this_plane = overlaps_planes[i_plane]
@@ -468,23 +511,21 @@ for current_pipeline_step in pipeline_steps:
             plane_canvas = np.zeros((n_f, plane_width, plane_length), dtype=np.float32)
             for i_mroi in range(n_mrois):
                 # The first and last MROIs require different handling  #TODO: is this because of the dual cavities?
-                if i_mroi == 0:
-                    x_start_canvas = (
-                        0  # This always works because the MROIs were sorted
-                    )
+                if i_mroi == 0:  # This always works because the MROIs were sorted
+                    x_start_canvas = 0
                     x_end_canvas = (
-                            x_start_canvas
-                            + sizes_mrois_pix[i_mroi][0]
-                            - int(np.trunc(overlap_seams_this_plane / 2))
+                        x_start_canvas
+                        + sizes_mrois_pix[i_mroi][0]
+                        - int(np.trunc(overlap_seams_this_plane / 2))
                     )
                     x_start_mroi = x_start_canvas
                     x_end_mroi = x_end_canvas
                 elif i_mroi != n_mrois - 1:
                     x_start_canvas = copy.deepcopy(x_end_canvas)
                     x_end_canvas = (
-                            x_start_canvas
-                            + sizes_mrois_pix[i_mroi][0]
-                            - overlap_seams_this_plane
+                        x_start_canvas
+                        + sizes_mrois_pix[i_mroi][0]
+                        - overlap_seams_this_plane
                     )
                     x_mroi_width = sizes_mrois_pix[i_mroi][0] - overlap_seams_this_plane
                     x_start_mroi = int(np.ceil(overlap_seams_this_plane / 2))
@@ -498,8 +539,11 @@ for current_pipeline_step in pipeline_steps:
                 y_start_canvas = top_left_corners_pix[i_mroi][1]
                 y_end_canvas = y_start_canvas + sizes_mrois_pix[i_mroi][1]
 
+                print(
+                    f"{x_start_canvas}, {x_end_canvas}, {y_start_canvas}, {y_end_canvas}, {i_plane, i_mroi}, {x_start_mroi}, {x_end_mroi}"
+                )
                 plane_canvas[
-                :, x_start_canvas:x_end_canvas, y_start_canvas:y_end_canvas
+                    :, x_start_canvas:x_end_canvas, y_start_canvas:y_end_canvas
                 ] = planes_mrois[i_plane, i_mroi][:, x_start_mroi:x_end_mroi]
 
             shift_x_varied_seams = int(
@@ -518,6 +562,7 @@ for current_pipeline_step in pipeline_steps:
             volume[:, shift_x:end_x, shift_y:end_y, i_plane] = plane_canvas
 
         del planes_mrois
+
         # %% Calculate lateral offsets
         if current_pipeline_step == "make_template":
             # Calculate lateral offsets across planes and align planes
@@ -540,8 +585,8 @@ for current_pipeline_step in pipeline_steps:
                 min_y, max_y = np.min(coord_nonan_pixels[1]), np.max(
                     coord_nonan_pixels[1]
                 )
-                im1_nonan = im1_copy[min_x: max_x + 1, min_y: max_y + 1]
-                im2_nonan = im2_copy[min_x: max_x + 1, min_y: max_y + 1]
+                im1_nonan = im1_copy[min_x : max_x + 1, min_y : max_y + 1]
+                im2_nonan = im2_copy[min_x : max_x + 1, min_y : max_y + 1]
 
                 im1_nonan -= np.min(im1_nonan)
                 im2_nonan -= np.min(im2_nonan)
@@ -573,6 +618,7 @@ for current_pipeline_step in pipeline_steps:
             continue
 
         # %% Select X,Y pixels that do not have nans for any plane
+        # CALCULATE_LATERAL_OFFSETS
         if params["make_nonan_volume"]:
             ic("Trimming NaNs")
 
@@ -615,7 +661,9 @@ for current_pipeline_step in pipeline_steps:
                     path_output_file = path_input_file[:-4] + "_preprocessed.h5"
                     h5file = h5py.File(path_output_file, "w")
                     h5file.create_dataset("mov", data=volume)
-                    h5file.attrs.create("metadata", str(metadata))  # You can use json to load it as a dictionary
+                    h5file.attrs.create(
+                        "metadata", str(metadata)
+                    )  # You can use json to load it as a dictionary
                     h5file.close()
                     del h5file
                 elif params["save_as_volume_or_planes"] == "planes":
@@ -625,7 +673,7 @@ for current_pipeline_step in pipeline_steps:
                             os.makedirs(save_dir_this_plane)
                         output_filename = os.path.basename(
                             path_input_file[:-4] + "_plane"
-                                                   f"{i_plane:02d}_preprocessed.h5"
+                            f"{i_plane:02d}_preprocessed.h5"
                         )
                         path_output_file = save_dir_this_plane + output_filename
                         h5file = h5py.File(path_output_file, "w")
@@ -637,8 +685,8 @@ for current_pipeline_step in pipeline_steps:
                         del h5file
 
                         if (
-                                i_file == list_files_for_reconstruction[-1]
-                                and params["concatenate_all_h5_to_tif"]
+                            i_file == list_files_for_reconstruction[-1]
+                            and params["concatenate_all_h5_to_tif"]
                         ):
                             files_to_concatenate = sorted(
                                 glob.glob(save_dir_this_plane + "*preprocessed.h5")
@@ -692,14 +740,14 @@ for current_pipeline_step in pipeline_steps:
                             plane_for_png = plane_for_png.astype(np.uint8)
                             # Place it on canvas
                             x_start = (
-                                    i_plane
-                                    % columns
-                                    * (plane_for_png.shape[1] + params["gaps_columns"])
+                                i_plane
+                                % columns
+                                * (plane_for_png.shape[1] + params["gaps_columns"])
                             )
                             y_start = (
-                                    i_plane
-                                    // columns
-                                    * (plane_for_png.shape[0] + params["gaps_rows"])
+                                i_plane
+                                // columns
+                                * (plane_for_png.shape[0] + params["gaps_rows"])
                             )
                             x_end = x_start + plane_for_png.shape[1]
                             y_end = y_start + plane_for_png.shape[0]
@@ -711,7 +759,9 @@ for current_pipeline_step in pipeline_steps:
                         plt.xticks(fontsize=4)
                         plt.yticks(fontsize=4)
                         fig.tight_layout()
-                        output_filename_meanf_png = (save_dir + input_filename[:-4] + ".png")
+                        output_filename_meanf_png = (
+                            save_dir + input_filename[:-4] + ".png"
+                        )
                         fig.savefig(output_filename_meanf_png, bbox_inches="tight")
                         del canvas_png, volume_meanf
 
@@ -727,7 +777,9 @@ for current_pipeline_step in pipeline_steps:
                                 frame_rate = float(metadata_software[i_line + 2])
                         fps = frame_rate * params["video_play_speed"]
                         if params["video_duration_secs"] != 0:
-                            use_until_frame_n = round(fps * params["video_duration_secs"])  # -1 for entire recording
+                            use_until_frame_n = round(
+                                fps * params["video_duration_secs"]
+                            )  # -1 for entire recording
                         else:
                             use_until_frame_n = -1
                         canvas_video = np.zeros(
@@ -769,19 +821,19 @@ for current_pipeline_step in pipeline_steps:
                             plane_for_video = plane_for_video.astype(np.uint8)
                             # Place it on canvas
                             x_start = (
-                                    i_plane
-                                    % columns
-                                    * (plane_for_video.shape[2] + params["gaps_columns"])
+                                i_plane
+                                % columns
+                                * (plane_for_video.shape[2] + params["gaps_columns"])
                             )
                             y_start = (
-                                    i_plane
-                                    // columns
-                                    * (plane_for_video.shape[1] + params["gaps_rows"])
+                                i_plane
+                                // columns
+                                * (plane_for_video.shape[1] + params["gaps_rows"])
                             )
                             x_end = x_start + plane_for_video.shape[2]
                             y_end = y_start + plane_for_video.shape[1]
                             canvas_video[
-                            :, y_start:y_end, x_start:x_end
+                                :, y_start:y_end, x_start:x_end
                             ] = plane_for_video
                         size_frame_video = (
                             canvas_video.shape[2],
@@ -789,13 +841,13 @@ for current_pipeline_step in pipeline_steps:
                         )
                         input_filename = os.path.basename(path_input_file)
                         output_filename_video = (
-                                save_dir
-                                + input_filename[:-4]
-                                + "_RollingAvg"
-                                + str(params["rolling_average_frames"])
-                                + "Frames_Speed"
-                                + str(params["video_play_speed"])
-                                + "x.mp4"
+                            save_dir
+                            + input_filename[:-4]
+                            + "_RollingAvg"
+                            + str(params["rolling_average_frames"])
+                            + "Frames_Speed"
+                            + str(params["video_play_speed"])
+                            + "x.mp4"
                         )
                         out = cv2.VideoWriter(
                             output_filename_video,

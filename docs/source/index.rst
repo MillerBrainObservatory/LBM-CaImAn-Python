@@ -11,7 +11,7 @@ Brain Observatory Hub
    :caption: Contents:
 
    data_guide
-   api
+   preprocess
    scanimage_mroi
    scanimage_roi_hierarchy
    tips_tricks

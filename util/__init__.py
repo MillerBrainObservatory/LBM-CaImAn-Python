@@ -4,7 +4,6 @@ Utilities for the MaXiMuM project.
 
 import os
 
-import reshaping_stitching_aligning
 from .get_mroi_from_tiff import get_mroi_data_from_tiff
 from .io import save_to_disk, determine_chunk_size, load_from_disk, read_data_chunk, save_single
 from .metadata import parse
@@ -69,11 +68,11 @@ __all__ = [
     'reorganize',
     'RoiDataSimple',
     'parse',
-    'get_mroi_data_from_tiff',
-    'save_to_disk',
-    'determine_chunk_size',
-    'load_from_disk',
-    'read_data_chunk',
-    'save_single',
-    'reshaping_stitching_aligning'
+    'get_mroi_data_from_tiff'
+    # 'save_to_disk',
+    # 'determine_chunk_size',
+    # 'load_from_disk',
+    # 'read_data_chunk',
+    # 'save_single',
+    # 'reshaping_stitching_aligning'
 ]

@@ -109,7 +109,6 @@ if params['save_mp4'] or params['save_meanf_png']:
 
 
 #%%
-
 # This will check if the pipeline can work with int16, and do it if possible. If NaN handling is required, float32 will be used instead
 if not params['lateral_align_planes']:
     initialize_volume_with_nans = False
@@ -242,9 +241,6 @@ for current_pipeline_step in pipeline_steps:
             mrois_si_sorted_x = [mrois_si[i] for i in x_sorted]
             mrois_centers_si_sorted_x = [mrois_centers_si[i] for i in x_sorted]
 
-        #%% Load, reshape (so time and planes are 2 independent dimensions) and re-order (planes, fix Jeff's order)
-        if params['json_logging']: json_logger.debug(json.dumps({'debug_message':'Loading file (expect warning if multi-file recording)'}))
-
         tiff_file = tifffile.imread(path_input_file)
         if n_planes > 1:
             tiff_file = np.reshape(tiff_file, ( int(tiff_file.shape[0]/n_planes), n_planes,tiff_file.shape[1],tiff_file.shape[2]), order='A') # warnings are expected if the recording is split into many files or incomplete
@@ -264,7 +260,6 @@ for current_pipeline_step in pipeline_steps:
             mrois_pixels_Y = np.array([mroi_si['pixXY'][1] for mroi_si in mrois_si])
             each_flyback_pixels_Y = (tif_pixels_Y - mrois_pixels_Y.sum())//(n_mrois - 1)
 
-        if params['json_logging']: json_logger.debug(json.dumps({'debug_message':'Separating tif into individual MROIs'}))
 
         # Divide long stripe into mrois
         planes_mrois = np.empty((n_planes,n_mrois), dtype=np.ndarray)
@@ -314,9 +309,8 @@ for current_pipeline_step in pipeline_steps:
                     top_left_corners_pix[i_mroi,i_xy] = int(closest_xy_pix)
                     closest_xy_si = reconstructed_xy_ranges_si[i_xy][closest_xy_pix]
                     if not np.isclose(closest_xy_si, top_left_corners_si[i_mroi, i_xy]):
-                        if params['json_logging']: json_logger.debug(json.dumps({'debug_message':"ROI %d x does not fit perfectly into image, corner is %.4f but closest available is %.4f" % \
-                                                                                                 (i_mroi, closest_xy_si, top_left_corners_si[i_mroi, i_xy])}))
-            #Sometimes an extra pixel is added because of pixel_size rounding
+                        raise Exception('Closest pixel to SI location is not the same as the SI location')
+
             for i_xy in range(2):
                 if len(reconstructed_xy_ranges_si[i_xy]) == np.sum(sizes_mrois_pix[:,0]) + 1:
                     reconstructed_xy_ranges_si[i_xy] = reconstructed_xy_ranges_si[i_xy][:-1]
@@ -345,7 +339,6 @@ for current_pipeline_step in pipeline_steps:
                 overlaps_planes = []
                 for i_plane in range(n_planes):
                     overlaps_planes.append(int(np.argmin(overlaps_planes_scores[i_plane])+ params['min_seam_overlap'] + 2 * params['n_ignored_pixels_sides']))
-                if params['json_logging']: json_logger.info(json.dumps({'overlaps_planes' : overlaps_planes}))
 
                 #Plot the scores for the different planes and also potential shifts
                 if params['alignment_plot_checks']:
@@ -488,30 +481,25 @@ for current_pipeline_step in pipeline_steps:
             for xy in range(2):
                 accumulated_shifts[:,xy] -= min_accumulated_shift[xy]
 
-            if params['json_logging']: json_logger.info(json.dumps({'accumulated_shifts': accumulated_shifts.tolist()}))
             continue
 
         #%% Select X,Y pixels that do not have nans for any plane
         if params['make_nonan_volume']:
-            if params['json_logging']: json_logger.debug(json.dumps({'debug_message':'Trimming volume to remove NaNs'}))
             volume_meanp = np.mean(volume[0], axis = 2)
             non_nan = ~np.isnan(volume_meanp)
             coord_nonan_pixels = np.where(non_nan)
             min_x, max_x = np.min(coord_nonan_pixels[0]) , np.max(coord_nonan_pixels[0])+1
             min_y, max_y = np.min(coord_nonan_pixels[1]) , np.max(coord_nonan_pixels[1])+1
             volume = volume[:,min_x:max_x,min_y:max_y]
-            if params['json_logging']: json_logger.debug(json.dumps({'debug_message':'Shape of trimmed nonan volume: ' + str(volume.shape)}))
 
 
         #%% Make volume non-negative
         if params['add_1000_for_nonegative_volume']:
-            if params['json_logging']: json_logger.debug(json.dumps({'debug_message':'Adding 1000 to make positive'}))
             volume += 1000
 
         #%% Convert volume from float to int
         if convert_volume_float32_to_int16:
             if volume.dtype != np.int16:
-                if params['json_logging']: json_logger.debug(json.dumps({'debug_message':'Transforming volume to int16'}))
                 volume = volume.astype(np.int16)
 
         volume = np.swapaxes(volume, 1, 2)
@@ -519,7 +507,6 @@ for current_pipeline_step in pipeline_steps:
         #%% Saving outputs
         if current_pipeline_step == 'reconstruct_all':
             if params['save_output']:
-                if params['json_logging']: json_logger.debug(json.dumps({'debug_message':'Saving output file'}))
                 save_dir = os.path.dirname(path_input_file) + '/Preprocessed/'
                 if params['save_as_volume_or_planes'] == 'volume':
                     save_dir = os.path.dirname(path_input_file)
@@ -551,12 +538,10 @@ for current_pipeline_step in pipeline_steps:
                             data_to_concatenate = np.concatenate(data_to_concatenate[:], axis = 0)
                             tifffile.imwrite(save_dir_this_plane + 'plane'f'{i_plane:02d}.tif', data_to_concatenate)
 
-                if params['json_logging']: json_logger.debug(json.dumps({'debug_message':'File(s) saved'}))
 
                 #%% Save mean frame png
                 if params['save_meanf_png']:
                     if not params['meanf_png_only_first_file'] or i_file == 0:
-                        if params['json_logging']: json_logger.debug(json.dumps({'debug_message':'Saving png'}))
                         canvas_png = np.zeros(((volume.shape[1] + params['gaps_rows']) * rows - params['gaps_rows'],
                                                (volume.shape[2] + params['gaps_columns']) * columns - params['gaps_columns']),
                                               dtype = np.uint8)
@@ -594,7 +579,6 @@ for current_pipeline_step in pipeline_steps:
                 #%% Save mp4 clip for easy visual inspection
                 if params['save_mp4']:
                     if not params['video_only_first_file'] or i_file == 0:
-                        if params['json_logging']: json_logger.debug(json.dumps({'debug_message':'Saving mp4'}))
                         metadata_software = metadata["Software"].split()
                         for i_line in range(len(metadata_software)):
                             this_line = metadata_software[i_line]
@@ -641,5 +625,4 @@ for current_pipeline_step in pipeline_steps:
         #%% This file is done
 
         toc = time.time()
-        if params['json_logging']: json_logger.debug(json.dumps({'debug_message':'File processed and outputs saved. Time elapsed: ' + str(toc-tic)}))
         del volume
