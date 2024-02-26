@@ -6,6 +6,7 @@ import time
 from pathlib import Path
 from typing import Any
 
+import dask
 import h5py
 import numpy as np
 import scipy
@@ -13,7 +14,6 @@ import tifffile
 from icecream import ic
 from matplotlib import pyplot as plt
 from numpy import ndarray, dtype, floating
-from numpy._typing import _32Bit
 
 from params import init_params
 
@@ -144,10 +144,9 @@ def set_params(params):
     )
 
 
-
-
 def load_tiff(path_input_file, n_planes):
-    tiff_file = tifffile.imread(path_input_file)
+    tiff_file = tifffile.imread(path_input_file, aszarr=True)
+    r_arr = dask.array.from_zrr(tiff_file)
     if n_planes > 1:
         # warnings are expected if the recording is split into many files or incomplete
         tiff_file = np.reshape(
@@ -265,7 +264,7 @@ def calculate_overlap(
     """
     Calculates the optimal overlap for seams between adjacent Regions of Interest (mROIs) for each plane.
     This function evaluates the difference in pixel intensities at the seams and determines the optimal overlap
-    to minimize this difference, facilitating a smoother transition between MROIs.
+    to minimize this difference.
 
     Parameters
     ----------
@@ -385,17 +384,11 @@ def calculate_lateral_offsets(volume, accumulated_shifts, interplane_shifts, n_p
         im1_copy = copy.deepcopy(volume[0, :, :, i_plane])
         im2_copy = copy.deepcopy(volume[0, :, :, i_plane + 1])
         # Removing nans
-        nonan_mask = np.stack(
-            (~np.isnan(im1_copy), ~np.isnan(im2_copy)), axis=0
-        )
+        nonan_mask = np.stack((~np.isnan(im1_copy), ~np.isnan(im2_copy)), axis=0)
         nonan_mask = np.all(nonan_mask, axis=0)
         coord_nonan_pixels = np.where(nonan_mask)
-        min_x, max_x = np.min(coord_nonan_pixels[0]), np.max(
-            coord_nonan_pixels[0]
-        )
-        min_y, max_y = np.min(coord_nonan_pixels[1]), np.max(
-            coord_nonan_pixels[1]
-        )
+        min_x, max_x = np.min(coord_nonan_pixels[0]), np.max(coord_nonan_pixels[0])
+        min_y, max_y = np.min(coord_nonan_pixels[1]), np.max(coord_nonan_pixels[1])
         im1_nonan = im1_copy[min_x : max_x + 1, min_y : max_y + 1]
         im2_nonan = im2_copy[min_x : max_x + 1, min_y : max_y + 1]
 
@@ -410,18 +403,14 @@ def calculate_lateral_offsets(volume, accumulated_shifts, interplane_shifts, n_p
         corr_img_peak_x, corr_img_peak_y = np.unravel_index(
             np.argmax(cross_corr_img), cross_corr_img.shape
         )
-        self_corr_peak_x, self_corr_peak_y = [
-            dim / 2 for dim in cross_corr_img.shape
-        ]
+        self_corr_peak_x, self_corr_peak_y = [dim / 2 for dim in cross_corr_img.shape]
         interplane_shift = [
             corr_img_peak_x - self_corr_peak_x,
             corr_img_peak_y - self_corr_peak_y,
-            ]
+        ]
 
         interplane_shifts[i_plane] = copy.deepcopy(interplane_shift)
-        accumulated_shifts[i_plane] = np.sum(
-            interplane_shifts, axis=0, dtype=int
-        )
+        accumulated_shifts[i_plane] = np.sum(interplane_shifts, axis=0, dtype=int)
 
         min_accumulated_shift = np.min(accumulated_shifts, axis=0)
         for xy in range(2):
@@ -580,7 +569,7 @@ def trim_volume_to_nonan(volume):
 
 
 def save_outputs(
-        i_file, volume, path_input_file, metadata, n_planes, params, file_list
+    i_file, volume, path_input_file, metadata, n_planes, params, file_list
 ):
     """
     Save processed data in various formats based on parameters.
@@ -644,7 +633,8 @@ def save_outputs(
                 tifffile.imwrite(
                     save_dir_this_plane + "plane" f"{i_plane:02d}.tif",
                     data_to_concatenate,
-                    )
+                )
+
 
 def main():
     n_planes = 30

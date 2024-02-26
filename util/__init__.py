@@ -7,6 +7,17 @@ import os
 from .get_mroi_from_tiff import get_mroi_data_from_tiff
 from .io import save_to_disk, determine_chunk_size, load_from_disk, read_data_chunk, save_single
 from .metadata import parse
+from .preprocess import (
+    extract_scanimage_metadata,
+    locate_mroi,
+    load_tiff,
+    merge_mrois_into_volume,
+    calculate_overlap,
+    calculate_lateral_offsets,
+    save_outputs,
+    trim_volume_to_nonan,
+    set_params
+)
 from .reorg import reorganize
 from .roi_data_simple import RoiDataSimple
 from .scan import return_scan_offset, fix_scan_phase
@@ -68,11 +79,17 @@ __all__ = [
     'reorganize',
     'RoiDataSimple',
     'parse',
-    'get_mroi_data_from_tiff'
-    # 'save_to_disk',
-    # 'determine_chunk_size',
-    # 'load_from_disk',
-    # 'read_data_chunk',
-    # 'save_single',
-    # 'reshaping_stitching_aligning'
+    'get_mroi_data_from_tiff',
+    'extract_scanimage_metadata',
+    'locate_mroi',
+    'load_tiff',
+    'merge_mrois_into_volume',
+    'calculate_overlap',
+    'calculate_lateral_offsets',
+    'save_outputs',
+    'trim_volume_to_nonan',
+    'set_params',
+    'detect_number_of_cores',
+    'determine_chunk_size',
+    'CacheDict'
 ]
