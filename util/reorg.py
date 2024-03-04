@@ -40,12 +40,10 @@ def reorganize(num_px, num_channels, num_rois, num_frames, roi_data):
             stripTemp = fix_scan_phase(np.array(stripTemp), corr, 1)
             val = round(stripTemp.shape[0] * 0.03)
             stripTemp = stripTemp[val - 1 :, 6:138, :, :]
-            # Concatenate stripTemp to frameTemp along the second axis
             if len(frameTemp) != 0:
                 frameTemp = np.concatenate((frameTemp, stripTemp), axis=1)
             else:
                 frameTemp = stripTemp
-            # Concatenate frameTemp to imageData along the third axis
         if len(imageData) != 0:
             imageData = np.concatenate((imageData, frameTemp), axis=2)
         else:

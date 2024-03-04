@@ -50,3 +50,8 @@ def parse(metadata_str):
             json_portion.append(line)
     metadata_json = json.loads('\n'.join(json_portion))
     return metadata_kv, metadata_json
+
+
+if __name__ == "__main__":
+    file = r"/data2/fpo/lbm/mh89_hemisphere_FOV_50_550um_depth_250mW_dual_stimuli_30min_00001_00001.tif"
+
