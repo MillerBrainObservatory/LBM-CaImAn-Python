@@ -4,7 +4,6 @@ import json
 import os
 import time
 from pathlib import Path
-from typing import Any
 
 import dask
 import h5py
@@ -13,7 +12,7 @@ import scipy
 import tifffile
 from icecream import ic
 from matplotlib import pyplot as plt
-from numpy import ndarray, dtype, floating
+from numpy import ndarray
 
 from params import init_params
 
@@ -477,7 +476,7 @@ def merge_mrois_into_volume(
             n_mrois - 1
         )
         plane_length = len(reconstructed_xy_ranges_si[1])
-        plane_canvas: ndarray[Any, dtype[floating[_32Bit]]] = np.zeros(
+        plane_canvas = np.zeros(
             (n_f, plane_width, plane_length), dtype=np.float32
         )
         for i_mroi in range(n_mrois):
