@@ -1,14 +1,7 @@
 """
 Simple data structure for ROI data.
 
-Made to emulate ScanImage's RoiDataSimple class.
-
-Author: Flynn OConnell - FlynnOConnell@gmail.com
-
-Notes:
-    The image data is stored in a list of lists of numpy arrays.
-    The first level is for channels, the second level is for volumes, and the third level is for z-stacks.
-    The numpy arrays are the actual image data.
+Python equiv. of ScanImage's RoiDataSimple class.
 """
 
 

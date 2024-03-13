@@ -1,11 +1,11 @@
-import tables
-import h5py
 from pathlib import Path
+
+import h5py
+import tables
 
 
 def load_from_disk(filename):
     """Load the volume and metadata from a HDF5 file."""
-
     loadpath = Path(filename) if isinstance(filename, str) else filename
     with tables.open_file(loadpath.with_suffix('.h5'), mode='r') as f:
         # Load the entire volume into memory (use read_data_chunk function for larger datasets)

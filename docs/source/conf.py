@@ -12,11 +12,10 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('.'))
-sys.path.insert(0, os.path.abspath('..'))
-sys.path.insert(0, os.path.abspath('../util'))
-sys.path.insert(0, os.path.abspath('../rbo-lbm'))
-
+sys.path.insert(0, os.path.abspath('./'))
+sys.path.insert(0, os.path.abspath('../'))
+sys.path.insert(0, os.path.abspath('../img/'))
+sys.path.insert(0, os.path.abspath('../..'))
 
 # -- Project information -----------------------------------------------------
 
@@ -40,11 +39,9 @@ extensions = [
     'sphinx-prompt',
     'sphinxcontrib.apidoc',
     'sphinx_autodoc_typehints',
-
     'sphinx.ext.autosummary',
 ]
 
-htmlhelp_basename = 'rbo-lbm'
 pygments_style = 'sphinx'
 
 # Add any paths that contain templates here, relative to this directory.
@@ -67,9 +64,29 @@ master_doc = 'index'
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'alabaster'
+
+
+html_theme_options = {
+  "github_url": "https://github.com/ru-rbu",
+  "external_links": [
+      {"name": "RBO", "url": "https://rbo.rockefeller.edu"},
+      {"name": "Github", "url": "https://www.github.com/ru-rbo"}
+      ],
+}
+
+html_theme = 'pydata_sphinx_theme'
+html_title ="Rockefeller Brain Observatory Hub"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+
+# These folders are copied to the documentation's HTML output
+html_static_path = ['_static']
+
+# These paths are either relative to html_static_path
+# or fully qualified paths (eg. https://...)
+html_css_files = [
+    'rbo.css'
+]
