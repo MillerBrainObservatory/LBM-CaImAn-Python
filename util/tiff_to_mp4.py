@@ -4,8 +4,9 @@ import numpy as np
 from pathlib import Path
 
 # Read the .tiff file
-path = Path.home() / 'Downloads'
-tiff_file = path / 'trimmed.tiff'
+path = Path('/data2/fpo/lbm/output/').glob('*.mat*')
+tiff_file = list(path)[0]
+
 reader = imageio.get_reader(tiff_file)
 
 # Initialize video writer

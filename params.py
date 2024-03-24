@@ -30,7 +30,7 @@ def init_params():
         - seams_overlap (str or int or list): Strategy for calculating overlap. If "calculate", dynamically determine the optimal overlap; if int, use as fixed overlap; if list, specify overlap for each plane.
         - save_as_volume_or_planes (str): Specifies saving mode, either as "volume" or "planes".
         - concatenate_all_h5_to_tif (bool): If True, concatenate all .h5 files into a single .tif file.
-        - n_ignored_pixels_sides (int): Number of pixels to ignore on each side of the MROI for overlap calculation.
+        - n_ignored_pixels_sides (int): Number of pixels to ignore on each side of the MROI.
         - min_seam_overlap (int): Minimum seam overlap in pixels for dynamic overlap calculation.
         - max_seam_overlap (int): Maximum seam overlap in pixels for dynamic overlap calculation.
         - alignment_plot_checks (bool): If True, generate plots to check alignment during processing.
