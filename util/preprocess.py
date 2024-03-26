@@ -5,7 +5,7 @@ import os
 import time
 from pathlib import Path
 
-import dask
+import dask.array as da
 import h5py
 import numpy as np
 import scipy
@@ -61,7 +61,11 @@ def extract_scanimage_metadata(filepath):
     # We retain that information within an array of indexes.
     rois = []
     for roi in rois_raw:
-        # TODO: WHat condition leads to scanfields being saved as non-list/non-iterable types
+        # TODO: What condition leads to scanfields being saved as non-list/non-iterable types
+        # I believe whether the scanfields are saved as lists depends on the number of "slices"; in ScanImage terms
+        # we only use 1 slice: single-plane recordings will be saved as lists
+        # while multi-plane recordings will be saved as non-lists
+
         if type(roi["scanfields"]) != list:
             scanfield = roi["scanfields"]
         else:
@@ -145,23 +149,9 @@ def set_params(params):
 
 def load_tiff(path_input_file, n_planes):
     tiff_file = tifffile.imread(path_input_file, aszarr=True)
-    r_arr = dask.array.from_zrr(tiff_file)
-    if n_planes > 1:
-        # warnings are expected if the recording is split into many files or incomplete
-        tiff_file = np.reshape(
-            tiff_file,
-            (
-                int(tiff_file.shape[0] / n_planes),
-                n_planes,
-                tiff_file.shape[1],
-                tiff_file.shape[2],
-            ),
-            order="A",
-        )
-    else:
-        tiff_file = np.expand_dims(tiff_file, 1)
-    tiff_file = np.swapaxes(tiff_file, 1, 3)
-    return tiff_file
+    r_arr = da.from_zarr(tiff_file)
+    r_arr = np.swapaxes(r_arr, 1, 3)
+    return r_arr
 
 
 def locate_mroi(planes_mrois, mrois_si_sorted_x, mrois_centers_si_sorted_x):
