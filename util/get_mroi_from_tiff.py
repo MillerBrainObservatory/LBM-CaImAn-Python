@@ -13,10 +13,14 @@ roi_data - len(roi_data) = number of ROIs
             - len(imageData[0][0]) = number of "slices", but this will always be 1 for us
                 - imageData[0][0][0] = the actual 2D cross-section of the image
 """
+import logging
+import os
+from pathlib import Path
 
 import numpy as np
+import tifffile
+
 from util.roi_data_simple import RoiDataSimple
-import logging
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -93,9 +97,6 @@ def get_mroi_data_from_tiff(
     else:
         lenRoiZs = len(stackZsAvailable)
 
-    # roi_info is a little more complicated in python with array concatenation
-    # Each stackZsAvailable increment will increase the length of the axis by 1
-    # We don't actually need to handle this because in our case, it is 0 (or a single value)
     # So not worrying about it now, heres the matlab translation nonetheless:
     # roi_info = np.zeros((num_rois, stackZsAvailable))
     roi_info = np.zeros((num_rois,))
@@ -189,7 +190,6 @@ def get_mroi_data_from_tiff(
                     roi_img_width_range = np.arange(0, roi_img_width)
                     roi_image_cnt[roi_idx] += 1
 
-                    # We need to ensure these indices aren't converted to floats
                     y_indices = (img_offset_y + roi_img_height_range).astype(int)
                     x_indices = (img_offset_x + roi_img_width_range).astype(int)
 
@@ -201,3 +201,86 @@ def get_mroi_data_from_tiff(
                     )
                     cnt += 1
     return roi_data, roi_group
+
+
+def get_metadata_from_tiff(
+    filename: os.PathLike,
+    trim_x=(2, 2),  # (left, right)
+    trim_y=(30, 0),  # (top, bottom)
+):
+    filename = Path(filename)
+    if not filename.is_file():
+        raise FileNotFoundError(f"File {filename} not found")
+    with open(filename, "rb") as fh:
+        metadata = tifffile.read_scanimage_metadata(fh)
+
+    static_metadata = metadata[0]
+    frame_metadata = metadata[1]["RoiGroups"]["imagingRoiGroup"]["rois"]
+    rois = [x["scanfields"] for x in frame_metadata]
+
+    num_planes = len(static_metadata["SI.hChannels.channelSave"])
+    lines_per_frame = static_metadata["SI.hRoiManager.linesPerFrame"]
+    px_per_line = static_metadata["SI.hRoiManager.pixelsPerLine"]
+    numLinesBetweenScanfields = np.round(
+        static_metadata["SI.hScan2D.flytoTimePerScanfield"]
+        / float(static_metadata["SI.hRoiManager.linePeriod"]),
+        0,
+        )
+
+    roi_center_xy = rois[0]["centerXY"]  # needed to realign the image
+    roi_size_xy = rois[0]["sizeXY"]
+
+    num_px_x = rois[0]["pixelResolutionXY"][0]  # number of pixels in x
+    num_px_y = rois[0]["pixelResolutionXY"][1]  # number of pixels in y
+
+    num_frames_total = static_metadata["SI.hStackManager.framesPerSlice"]  # number of frames
+    num_frames_file = static_metadata["SI.hScan2D.logFramesPerFile"]  # number of frames per file
+    if num_frames_file >= num_frames_total:
+        num_files = 1
+    else:
+        num_files = int(num_frames_total / num_frames_file)  # number of files
+
+    frame_rate = static_metadata["SI.hRoiManager.scanVolumeRate"]  # hz
+    objective_resolution = static_metadata["SI.objectiveResolution"]  # deg/deg
+    fovx = np.round(roi_size_xy[0] * objective_resolution, 0) # deg/um
+    fovy = np.round(roi_size_xy[1] * objective_resolution, 0)  # deg/um
+    pixel_resolution_x = np.round(fovx / num_px_x, 0)  # um/pixel
+    pixel_resolution_y = np.round(fovy / num_px_y, 0)  # um/pixel
+
+    # make a range of x and y values to use for indexing
+    x_roi_range = np.arange(trim_x[0], num_px_x - trim_x[1])
+    y_roi_range = np.arange(trim_y[0], num_px_y - trim_y[1])
+
+    new_roi_width = len(x_roi_range)
+    new_roi_height = len(y_roi_range)
+
+    new_roi_sizes = {
+        "new_roi_width": new_roi_width,
+        "new_roi_height": new_roi_height,
+        "x_roi_range": x_roi_range,
+        "y_roi_range": y_roi_range
+    }
+
+    return {
+        "raw_filename": filename,
+        "static_metadata": static_metadata,
+        "frame_metadata": frame_metadata,
+        "num_frames_total": num_frames_total,
+        "num_frames_file": num_frames_file,
+        "num_files": num_files,
+        "num_planes": num_planes,
+        "frame_rate": frame_rate,
+        "num_px_x": num_px_x,
+        "num_px_y": num_px_y,
+        "fov_x": fovx,
+        "fov_y": fovy,
+        "pixel_resolution_x": pixel_resolution_x,
+        "pixel_resolution_y": pixel_resolution_y,
+        "lines_per_frame": lines_per_frame,
+        "px_per_line": px_per_line,
+        "objective_resolution": objective_resolution,
+        "sizes": new_roi_sizes,
+        "roi_center_xy": roi_center_xy,
+        "roi_size_xy": roi_size_xy,
+        "numLinesBetweenScanfields": numLinesBetweenScanfields,
+    }

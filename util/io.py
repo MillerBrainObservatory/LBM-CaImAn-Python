@@ -1,7 +1,7 @@
 from pathlib import Path
 
-import h5py
 import tables
+from h5py import File
 
 
 def load_from_disk(filename):
@@ -11,6 +11,7 @@ def load_from_disk(filename):
         # Load the entire volume into memory (use read_data_chunk function for larger datasets)
         vol = f.root.vol[:]
 
+        vol = f.root.volume2[:]
         # Retrieve the metadata
         volume_rate = f.root.metadata.volume_rate.read()
         pixel_resolution = f.root.metadata.pixel_resolution.read()
@@ -60,15 +61,7 @@ def determine_chunk_size(shape, target_chunk_size):
 
 def save_single(data, save_dir, file_name):
     filename = Path(save_dir) / f'{file_name}.h5'
-    with h5py.File(filename, 'w') as hf:
+    with File(filename, 'w') as hf:
         hf.create_dataset("dataset_name", data=data)
     return filename
 
-
-if __name__ == "__main__":
-    # Test the save and load functions
-    tempdata = Path.home() / 'data' / 'lbm' / 'temp'
-    files = sorted(tempdata.glob('*.h5'))
-    file = files[0]
-    a, b, c, d = load_from_disk(file)
-    print(a.shape, b, c, d)
