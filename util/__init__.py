@@ -1,12 +1,11 @@
 """
-Utilities for the MaXiMuM project.
+General utilities.
 """
 
 import os
 
-from .get_mroi_from_tiff import get_mroi_data_from_tiff
+from .get_mroi_from_tiff import get_mroi_data_from_tiff, get_metadata_from_tiff
 from .io import save_to_disk, determine_chunk_size, load_from_disk, read_data_chunk, save_single
-from .metadata import parse
 from .preprocess import (
     extract_scanimage_metadata,
     locate_mroi,
@@ -78,8 +77,8 @@ __all__ = [
     'fix_scan_phase',
     'reorganize',
     'RoiDataSimple',
-    'parse',
     'get_mroi_data_from_tiff',
+    'get_metadata_from_tiff',
     'extract_scanimage_metadata',
     'locate_mroi',
     'load_tiff',
@@ -90,6 +89,9 @@ __all__ = [
     'trim_volume_to_nonan',
     'set_params',
     'detect_number_of_cores',
-    'determine_chunk_size',
+    # 'determine_chunk_size',
     'CacheDict'
 ]
+
+if __name__ == "__main__":
+    extract_scanimage_metadata("/data2/fpo/data/*.tif")

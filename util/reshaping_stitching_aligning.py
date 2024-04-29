@@ -211,9 +211,6 @@ for current_pipeline_step in pipeline_steps:
         tic = time.time()
 
         path_input_file = path_input_files[i_file]
-        # TODO: Why is IC failing "Was invoked during replay of a frozen trace"
-        ic("Start Reconstruction", path_input_file)
-
         if i_file == 0:
             if n_planes == 30:
                 chans_order = params["chans_order_30planes"]
@@ -253,15 +250,11 @@ for current_pipeline_step in pipeline_steps:
                 n_mrois - 1
             )
 
-        ic("Separating tifs")
-
         # Divide long stripe into mrois ------------
         planes_mrois = np.empty((n_planes, n_mrois), dtype=np.ndarray)
         for i_plane in range(n_planes):
             y_start = 0
-            for i_mroi in range(
-                n_mrois
-            ):  # go over the order in which they were acquired
+            for i_mroi in range(n_mrois):  # go over the order in which they were acquired
                 planes_mrois[i_plane, i_mroi] = tiff_file[
                     :, :, y_start : y_start + mrois_pixels_Y[x_sorted[i_mroi]], i_plane
                 ]
@@ -666,6 +659,7 @@ for current_pipeline_step in pipeline_steps:
                     )  # You can use json to load it as a dictionary
                     h5file.close()
                     del h5file
+                # SAVE PLANE to h5
                 elif params["save_as_volume_or_planes"] == "planes":
                     for i_plane in range(n_planes):
                         save_dir_this_plane = save_dir + "plane" f"{i_plane:02d}/"
