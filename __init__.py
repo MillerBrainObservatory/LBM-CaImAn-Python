@@ -46,6 +46,7 @@ if __name__ == "__main__":
 
     filepath = Path("/data2/fpo/data")
     data, metadata = extract(filepath)
+    metadata['num_rois']
 
     # print all files / dirs in filepath
     file = [x for x in filepath.glob("*.tif")]

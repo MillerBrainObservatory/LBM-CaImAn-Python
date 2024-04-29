@@ -217,6 +217,7 @@ def get_metadata_from_tiff(
     static_metadata = metadata[0]
     frame_metadata = metadata[1]["RoiGroups"]["imagingRoiGroup"]["rois"]
     rois = [x["scanfields"] for x in frame_metadata]
+    num_rois = len(rois)
 
     num_planes = len(static_metadata["SI.hChannels.channelSave"])
     lines_per_frame = static_metadata["SI.hRoiManager.linesPerFrame"]
@@ -269,6 +270,7 @@ def get_metadata_from_tiff(
         "num_frames_file": num_frames_file,
         "num_files": num_files,
         "num_planes": num_planes,
+        "num_rois": num_rois,
         "frame_rate": frame_rate,
         "num_px_x": num_px_x,
         "num_px_y": num_px_y,
