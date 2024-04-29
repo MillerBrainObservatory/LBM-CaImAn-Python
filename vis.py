@@ -1,9 +1,8 @@
 #%%
-from pprint import pprint
-from dask_image.imread import imread
-import napari
-import dask_image
 from pathlib import Path
+
+import tifffile
+from dask_image.imread import imread
 
 try:
     from icecream import ic, install, argumentToString
@@ -14,10 +13,16 @@ except ImportError:  # graceful fallback if icecream isn't installed.
 
 install()
 
-tiffs = Path("/v-data2/jeff_demas/EXAMPLE DATA/Fig2/20191122/mh89_hemisphere_FOV_50_550um_depth_250mW_dual_stimuli_30min_00001/data")
+tiffs = Path("/data2/fpo/data/")
+filepath = tiffs.resolve()
+
 files = [x for x in tiffs.glob("*.tif*")]
 
 stack = imread(files[0])
-stack2 = imread(tiffs)
+
+with open(filepath, 'rb') as fh:
+    metadata = read_scanimage_metadata(fh)
+
+stack = stack.reshape()
+
 print('done')
-x=4
