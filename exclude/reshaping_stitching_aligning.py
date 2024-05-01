@@ -5,7 +5,6 @@ import copy
 
 try:
     from icecream import ic, install, argumentToString
-
     install()
 except ImportError:  # graceful fallback if icecream isn't installed.
     ic = lambda *a: None if not a else (a[0] if len(a) == 1 else a)  # noqa
