@@ -1,25 +1,32 @@
 """
 General utilities.
 """
-
 import os
 
-from .get_mroi_from_tiff import get_mroi_data_from_tiff, get_metadata_from_tiff
-from .io import save_to_disk, determine_chunk_size, load_from_disk, read_data_chunk, save_single
-from .preprocess import (
-    extract_scanimage_metadata,
-    locate_mroi,
-    load_tiff,
-    merge_mrois_into_volume,
-    calculate_overlap,
-    calculate_lateral_offsets,
-    save_outputs,
-    trim_volume_to_nonan,
-    set_params
+from . import (
+    stitching
 )
-from .reorg import reorganize
-from .roi_data_simple import RoiDataSimple
-from .scan import return_scan_offset, fix_scan_phase
+from .caiman_interface import (
+    extract_masks,
+    greedy_roi,
+    deconvolve,
+    deconvolve_detrended,
+    classify_masks,
+    get_centroids
+)
+from .galvo_corrections import (
+    compute_raster_phase,
+    compute_motion_shifts,
+    fix_outliers,
+    correct_raster,
+    correct_motion
+)
+from .registration import (
+    create_grid,
+    resize,
+    affine_product,
+    sample_grid
+)
 
 
 def extract_common_key(filepath):
@@ -64,32 +71,19 @@ def detect_number_of_cores():
     return 1  # Default
 
 
-def _test():
-    """Run ``doctest``"""
-    import doctest
-    doctest.testmod()
-
-
 __all__ = [
-    'return_scan_offset',
-    'fix_scan_phase',
-    'reorganize',
-    'RoiDataSimple',
-    'get_mroi_data_from_tiff',
-    'get_metadata_from_tiff',
-    'extract_scanimage_metadata',
-    'locate_mroi',
-    'load_tiff',
-    'merge_mrois_into_volume',
-    'calculate_overlap',
-    'calculate_lateral_offsets',
-    'save_outputs',
-    'trim_volume_to_nonan',
-    'set_params',
     'detect_number_of_cores',
     # 'determine_chunk_size',
-    'CacheDict'
+    'CacheDict',
+    'h5',
+    'enhancement',
+    'caiman_stats',
+    'settings',
+    'caiman_interface',
+    'mask_classification',
+    'quality',
+    'registration',
+    'signal',
+    'stitching',
+    'galvo_corrections'
 ]
-
-if __name__ == "__main__":
-    extract_scanimage_metadata("/data2/fpo/data/*.tif")

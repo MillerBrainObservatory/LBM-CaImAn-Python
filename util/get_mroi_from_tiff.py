@@ -205,8 +205,6 @@ def get_mroi_data_from_tiff(
 
 def get_metadata_from_tiff(
     filename: os.PathLike,
-    trim_x=(2, 2),  # (left, right)
-    trim_y=(30, 0),  # (top, bottom)
 ):
     filename = Path(filename)
     if not filename.is_file():
@@ -217,16 +215,14 @@ def get_metadata_from_tiff(
     static_metadata = metadata[0]
     frame_metadata = metadata[1]["RoiGroups"]["imagingRoiGroup"]["rois"]
     rois = [x["scanfields"] for x in frame_metadata]
+
     num_rois = len(rois)
 
     num_planes = len(static_metadata["SI.hChannels.channelSave"])
     lines_per_frame = static_metadata["SI.hRoiManager.linesPerFrame"]
     px_per_line = static_metadata["SI.hRoiManager.pixelsPerLine"]
-    numLinesBetweenScanfields = np.round(
-        static_metadata["SI.hScan2D.flytoTimePerScanfield"]
-        / float(static_metadata["SI.hRoiManager.linePeriod"]),
-        0,
-        )
+
+    num_lines_between_scanfields = np.round(static_metadata["SI.hScan2D.flytoTimePerScanfield"] / float(static_metadata["SI.hRoiManager.linePeriod"]), 0,)
 
     roi_center_xy = rois[0]["centerXY"]  # needed to realign the image
     roi_size_xy = rois[0]["sizeXY"]
@@ -249,8 +245,8 @@ def get_metadata_from_tiff(
     pixel_resolution_y = np.round(fovy / num_px_y, 0)  # um/pixel
 
     # make a range of x and y values to use for indexing
-    x_roi_range = np.arange(trim_x[0], num_px_x - trim_x[1])
-    y_roi_range = np.arange(trim_y[0], num_px_y - trim_y[1])
+    x_roi_range = np.arange(0, num_px_x)
+    y_roi_range = np.arange(0, num_px_y)
 
     new_roi_width = len(x_roi_range)
     new_roi_height = len(y_roi_range)
@@ -284,5 +280,5 @@ def get_metadata_from_tiff(
         "sizes": new_roi_sizes,
         "roi_center_xy": roi_center_xy,
         "roi_size_xy": roi_size_xy,
-        "numLinesBetweenScanfields": numLinesBetweenScanfields,
+        "num_lines_between_scanfields": num_lines_between_scanfields
     }
