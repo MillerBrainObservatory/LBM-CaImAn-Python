@@ -3,18 +3,31 @@ from scipy import ndimage
 
 
 def lcn(image, sigmas=(12, 12)):
-    """ Local contrast normalization.
+    """
+    Local contrast normalization using Gaussian filters.
 
-    Normalize each pixel using mean and stddev computed on a local neighborhood.
+    Normalize each pixel using mean and standard deviation computed on a local neighborhood
+    defined by Gaussian filters. This approach is softer on edges compared to using uniform filters.
 
-    We use gaussian filters rather than uniform filters to compute the local mean and std
-    to soften the effect of edges. Essentially we are using a fuzzy local neighborhood.
-    Equivalent using a hard defintion of neighborhood will be:
-        local_mean = ndimage.uniform_filter(image, size=(32, 32))
+    Parameters
+    ----------
+    image : np.array
+        2D array with raw two-photon images.
+    sigmas : tuple of int
+        Gaussian kernel standard deviations for x and y dimensions. Smaller values result in more
+        localized neighborhoods. Typical values might be between 15-30 microns.
 
-    :param np.array image: Array with raw two-photon images.
-    :param tuple sigmas: List with sigmas (one per axis) to use for the gaussian filter.
-        Smaller values result in more local neighborhoods. 15-30 microns should work fine
+    Returns
+    -------
+    np.array
+        Normalized image.
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> image = np.random.rand(256, 256)
+    >>> normalized_image = lcn(image, sigmas=(15, 15))
+
     """
     local_mean = ndimage.gaussian_filter(image, sigmas)
     local_var = ndimage.gaussian_filter(image ** 2, sigmas) - local_mean ** 2
@@ -25,13 +38,34 @@ def lcn(image, sigmas=(12, 12)):
 
 
 def sharpen_2pimage(image, laplace_sigma=0.7, low_percentile=3, high_percentile=99.9):
-    """ Apply a laplacian filter, clip pixel range and normalize.
+    """
+    Enhance edges in an image using Laplacian of Gaussian.
 
-    :param np.array image: Array with raw two-photon images.
-    :param float laplace_sigma: Sigma of the gaussian used in the laplace filter.
-    :param float low_percentile, high_percentile: Percentiles at which to clip.
+    Apply a Laplacian of Gaussian filter to enhance edges, then clip the pixel values to the specified
+    percentiles and normalize the image.
 
-    :returns: Array of same shape as input. Sharpened image.
+    Parameters
+    ----------
+    image : np.array
+        2D array with raw two-photon images.
+    laplace_sigma : float
+        Sigma of the Gaussian used in the Laplace filter.
+    low_percentile : float
+        Lower bound percentile to clip pixel values.
+    high_percentile : float
+        Upper bound percentile to clip pixel values.
+
+    Returns
+    -------
+    np.array
+        Sharpened and normalized image.
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> image = np.random.rand(256, 256)
+    >>> sharpened_image = sharpen_2pimage(image, laplace_sigma=0.7, low_percentile=3, high_percentile=99.9)
+
     """
     sharpened = image - ndimage.gaussian_laplace(image, laplace_sigma)
     clipped = np.clip(sharpened, *np.percentile(sharpened, [low_percentile, high_percentile]))
@@ -40,19 +74,34 @@ def sharpen_2pimage(image, laplace_sigma=0.7, low_percentile=3, high_percentile=
 
 
 def create_correlation_image(scan):
-    """ Compute the correlation image for the given scan.
+    """
+    Compute the correlation image for a given scan.
 
-    At each pixel, we compute the correlation (over time) with each of its eight
-    neighboring pixels and average them.
+    For each pixel, compute the correlation over time with each of its eight neighboring pixels and
+    average these correlations to produce a correlation image.
 
-    :param np.array scan: 3-dimensional scan (image_height, image_width, num_frames).
+    Parameters
+    ----------
+    scan : np.array
+        3D scan array (height, width, num_frames).
 
-    :returns: Correlation image. 2-dimensional array (image_height x image_width).
-    :rtype np.array
+    Returns
+    -------
+    np.array
+        2D correlation image (height x width).
 
-    ..note:: Even though this code does not reuse the correlations between pixels for the
-    next iteration it is as efficient in time and (slightly better in) memory than the
-    dynamic programming implementation below. It may be due to vectorization usage.
+    Notes
+    -----
+    This implementation computes correlations directly rather than reusing computations between pixels,
+    which might seem less efficient but allows better use of vectorization, hence can be faster and
+    slightly more memory efficient than a dynamic programming approach.
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> scan = np.random.rand(100, 100, 10)  # 100x100 image with 10 time points
+    >>> corr_img = create_correlation_image(scan)
+
     """
     from itertools import product
 
