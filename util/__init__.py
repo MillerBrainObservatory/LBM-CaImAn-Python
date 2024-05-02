@@ -3,8 +3,10 @@ General utilities.
 """
 import os
 
-from . import (
-    stitching
+from .enhancement import (
+    create_correlation_image,
+    sharpen_2pimage,
+    lcn
 )
 from .caiman_interface import (
     extract_masks,
