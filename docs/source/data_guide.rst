@@ -20,22 +20,6 @@ Overview
 | 0p3mm       | 0.4   | 0.5              | 1.4     | 9.61      |
 +-------------+-------+------------------+---------+-----------+
 
-Data Description
-----------------
-
-ScanImage tiff files store the following kinds of data:
-
-.. table::
-
-    ================ ===========================================================
-    Metadata         Description
-    ================ ===========================================================
-    **pixel resolution**         The image data itself
-    **metadata**     Frame-invariant metadata such as the microscope configuration_ and
-                     `region of interest`_ descriptions.
-    **descriptions** Frame-varying metadata such as timestamps_ and `I2C data`_.
-    ================ ===========================================================
-
 Data Format
 -----------
 

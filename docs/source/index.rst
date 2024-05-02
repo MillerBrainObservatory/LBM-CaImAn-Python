@@ -2,7 +2,8 @@
    sphinx-quickstart on Mon Feb  5 15:00:42 2024.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
-.. include:: ../README.rst
+
+.. include:: ../../README.rst
 
 caiman-python
 =============
@@ -11,16 +12,11 @@ caiman-python
    :maxdepth: 2
    :caption: Contents:
 
-   readme
+   README
    data_guide
+   scanimage
    preprocess
-   scanimage_mroi
-   scanimage_roi_hierarchy
-   tips_tricks
-
-.. currentmodule:: .
-
-
+   modules
 
 Helpful Resources
 =================

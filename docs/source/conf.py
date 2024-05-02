@@ -20,7 +20,7 @@ sys.path.insert(0, os.path.abspath('../..'))
 # -- Project information -----------------------------------------------------
 
 project = 'rbo-lbm'
-copyright = '2024, Flynn OConnell'
+copyright = '2024, Elizabeth R. Miller Brain Observatory.'
 author = 'Flynn OConnell, Vaziri Lab Members'
 
 
@@ -40,8 +40,10 @@ extensions = [
     'sphinxcontrib.apidoc',
     'sphinx_autodoc_typehints',
     'sphinx.ext.autosummary',
+    'myst_parser'
 ]
 
+html_theme = "sphinx_book_theme"
 pygments_style = 'sphinx'
 templates_path = ['_templates']
 exclude_patterns = []
@@ -51,30 +53,44 @@ source_suffix = ['.rst', '.md']
 # The master toctree document.
 master_doc = 'index'
 
-# -- Options for HTML output -------------------------------------------------
+html_title = "CaImAn (Python) MBO User Guide"
+html_static_path = ['_static']
+html_last_updated_fmt = '%b %d, %Y'
 
-# The theme to use for HTML and HTML Help pages.  See the documentation for
-# a list of builtin themes.
+html_context = {"default_mode": "dark"}
+html_use_modindex = True
+html_copy_source = False
+html_domain_indices = False
+html_file_suffix = '.html'
 
+# MyST configuration reference: https://myst-parser.readthedocs.io/en/latest/configuration.html
+myst_heading_anchors = 3
+linkcheck_ignore = [
+    r".*github\.com.*#",
+    r"http://127\.0\.0\.1:.*",
+]
 
+htmlhelp_basename = 'mbo'
 html_theme_options = {
-  "github_url": "https://github.com/ru-rbu",
-  "external_links": [
-      {"name": "MBO", "url": "https://mbo.rockefeller.edu"},
-      {"name": "Github", "url": "https://www.github.com/ru-rbo"}
-      ],
+    "logo": {
+        "image_light": "_static/numpylogo.svg",
+        "image_dark": "_static/numpylogo_dark.svg",
+    },
+    "github_url": "https://github.com/ru-rbo/rbo-lbm/",
+    "collapse_navigation": True,
+    "external_links": [
+        {"name": "MBO", "url": "https://mbo.rockefeller.edu"},
+    ],
+    "header_links_before_dropdown": 6,
+    # Add light/dark mode and documentation version switcher:
+    "navbar_end": [
+        "search-button",
+        "theme-switcher",
+        "navbar-icon-links"
+    ],
+    "navbar_persistent": [],
 }
 
-html_theme = 'pydata_sphinx_theme'
-html_title ="Elizabeth R. Miller Brain Observatory Hub"
-
-# Add any paths that contain custom static files (such as style sheets) here,
-# relative to this directory. They are copied after the builtin static files,
-# so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
-
-# These paths are either relative to html_static_path
-# or fully qualified paths (eg. https://...)
 html_css_files = [
     'rbo.css'
 ]

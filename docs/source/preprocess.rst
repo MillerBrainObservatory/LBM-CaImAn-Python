@@ -42,32 +42,9 @@ The example LBM dataset is a 3D array with dimensions `(25350, 145, 5104)`, wher
    - **New Dimensions**: `(1, 5104, 145, 30)` after taking the mean across frames.
 
 
-
-
-
 MROI Handling
 -------------
 
 This section focuses on the extraction and processing of multi-regions of interest (MROIs) within the imaging data.
 
 - **Extraction Process**: MROIs are defined by their Y-coordinates and extracted from the volumetric data, adjusting for any flyback lines. This results in arrays with varying sizes in the Y dimension but consistent in other dimensions.
-
-
-Volume Creation and MROI Merging
----------------------------------
-
-- **Objective**: To merge extracted MROIs into a new volume, considering lateral shifts and overlaps.
-- **Dimensions**: The final volume's dimensions, `(n_f, n_x, n_y, n_z)`, are calculated based on the processed MROIs, with `n_f` representing the number of frames (or depth), `n_x` and `n_y` the reconstructed spatial dimensions, and `n_z` the number of planes.
-
-.. currentmodule:: util
-
-.. autofunction:: extract_scanimage_metadata
-.. autofunction:: set_params
-.. autofunction:: save_outputs
-.. autofunction:: load_tiff
-.. autofunction:: trim_volume_to_nonan
-.. autofunction:: locate_mroi
-.. autofunction:: calculate_overlap
-.. autofunction:: calculate_lateral_offsets
-.. autofunction:: merge_mrois_into_volume
-
