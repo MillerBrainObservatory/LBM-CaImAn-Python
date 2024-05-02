@@ -1,4 +1,12 @@
-""" Utilities for motion and raster correction of resonant scans. """
+"""
+Galvo Corrections
+=================
+
+Utilities for motion and raster correction of resonant scans.
+
+.. currentmodule:: util.galvo_corrections
+
+"""
 import numpy as np
 from scipy import interpolate as interp
 from scipy import ndimage
