@@ -1,3 +1,4 @@
+# Env file for devs. Includes doc utils and formatters/linters.
 channels:
 - conda-forge
 - default
@@ -38,8 +39,6 @@ dependencies:
 - tqdm
 - yapf
 - zarr
-
-#TODO: move to environment-dev.yml
 - black
 - icecream
 - numpydoc
@@ -47,3 +46,4 @@ dependencies:
 - coverage
 - sphinx-autodoc-typehints
 - sphinx-prompt
+- pydata-sphinx-theme

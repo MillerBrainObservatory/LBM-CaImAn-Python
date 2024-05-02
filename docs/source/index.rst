@@ -2,19 +2,24 @@
    sphinx-quickstart on Mon Feb  5 15:00:42 2024.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
+.. include:: ../README.rst
 
-Brain Observatory Hub
-=====================
+caiman-python
+=============
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :caption: Contents:
 
+   readme
    data_guide
    preprocess
    scanimage_mroi
    scanimage_roi_hierarchy
    tips_tricks
+
+.. currentmodule:: .
+
 
 
 Helpful Resources
