@@ -2,7 +2,7 @@ import numpy as np
 from scipy import signal
 from scipy.ndimage import interpolation
 
-from util import compute_motion_shifts
+from util.galvo_corrections import compute_motion_shifts
 
 
 class Position:
