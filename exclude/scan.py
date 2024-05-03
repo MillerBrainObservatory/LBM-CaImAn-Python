@@ -133,7 +133,7 @@ def fix_scan_phase(data_in, offset, dim):
             data_out[1::2, offset:offset + sx, :, :] = data_in[1::2, :, :, :]
         elif offset < 0:
             offset = abs(offset)
-            data_out = np.zeros((sy, sx + offset, sc, sz))  # This initialization is key
+            data_out = np.zeros((sy, sx + offset, sc, sz))  
             data_out[0::2, offset:offset + sx, :, :] = data_in[0::2, :, :, :]
             data_out[1::2, :sx, :, :] = data_in[1::2, :, :, :]
         else:
@@ -144,9 +144,12 @@ def fix_scan_phase(data_in, offset, dim):
     elif dim == 2:
         data_out = np.zeros((sy, sx, sc, sz))
         if offset > 0:
-            sy = min(sy, data_out.shape[0] - offset)  # account for the 0's padded during the shift
+            sy = min(data_out.shape[0] - offset, data_in.shape[0]) 
             data_out[:, 0::2, :, :] = data_in[:, 0::2, :, :]
-            data_out[offset:(offset + sy), 1::2, :, :] = data_in[:, 1::2, :, :]
+            usable = data_in[:sy, 1::2, :, :]
+            data_out[offset:(offset + sy), 1::2, :, :] = usable
+
+            # data_out[offset:(offset + sy), 1::2, :, :] = data_in[:, 1::2, :, :]
         elif offset < 0:
             offset = abs(offset)
             sy = min(sy, data_out.shape[0] - offset)  # account for the 0's padded during the shift
