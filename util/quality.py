@@ -4,7 +4,8 @@ from scipy import signal
 
 
 def compute_quantal_size(scan):
-    """ Estimate the unit change in calcium response corresponding to a unit change in
+    """ 
+    Estimate the unit change in calcium response corresponding to a unit change in
     pixel intensity (dubbed quantal size, lower is better).
 
     Assumes images are stationary from one timestep to the next. Uses it to calculate a

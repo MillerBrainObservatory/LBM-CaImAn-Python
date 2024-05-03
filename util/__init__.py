@@ -34,6 +34,15 @@ from .registration import (
     affine_product,
     sample_grid
 )
+from .performance import (
+    map_frames,
+    parallel_quality_metrics,
+    parallel_motion_shifts
+)
+from .quality import (
+    compute_quantal_size, 
+    find_peaks
+)
 
 
 def extract_common_key(filepath):
