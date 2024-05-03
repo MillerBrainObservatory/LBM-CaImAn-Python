@@ -35,13 +35,14 @@ class ScanInfo:
     nrois                   : tinyint           # number of ROIs (see scanimage)
     """
 
-    @property
-    def key_source(self):
-        rigs = [{"rig": "2P4"}, {"rig": "R2P1"}, {"rig": "V2P1"}]
-        meso_scans = experiment.Scan() & (experiment.Session() & rigs)
-        return meso_scans * (Version() & {"pipe_version": CURRENT_VERSION})
+    # @property
+    # def key_source(self):
+    #     rigs = [{"rig": "2P4"}, {"rig": "R2P1"}, {"rig": "V2P1"}]
+    #     meso_scans = experiment.Scan() & (experiment.Session() & rigs)
+    #     return meso_scans * (Version() & {"pipe_version": CURRENT_VERSION})
 
-    class Field(dj.Part):
+    # class Field(dj.Part):
+    class Field:
         definition = """ # field-specific scan information
 
         -> ScanInfo
@@ -146,18 +147,19 @@ class FieldAnnotation(dj.Manual):
     """
 
 
-@schema
-class Quality(dj.Computed):
+# @schema
+# class Quality(dj.Computed):
+class Quality:
     definition = """ # different quality metrics for a scan (before corrections)
 
     -> ScanInfo
     """
 
-    @property
-    def key_source(self):
-        return ScanInfo() & {"pipe_version": CURRENT_VERSION}
+    # @property
+    # def key_source(self):
+    #     return ScanInfo() & {"pipe_version": CURRENT_VERSION}
 
-    class MeanIntensity(dj.Part):
+    class MeanIntensity:
         definition = """ # mean intensity values across time
 
         -> Quality
@@ -167,7 +169,7 @@ class Quality(dj.Computed):
         intensities                 : longblob
         """
 
-    class SummaryFrames(dj.Part):
+    class SummaryFrames:
         definition = """ # 16-part summary of the scan (mean of 16 blocks)
 
         -> Quality
@@ -177,7 +179,7 @@ class Quality(dj.Computed):
         summary                     : longblob      # h x w x 16
         """
 
-    class Contrast(dj.Part):
+    class Contrast:
         definition = """ # difference between 99 and 1 percentile across time
 
         -> Quality
@@ -187,7 +189,7 @@ class Quality(dj.Computed):
         contrasts                   : longblob
         """
 
-    class QuantalSize(dj.Part):
+    class QuantalSize:
         definition = """ # quantal size in images
 
         -> Quality
@@ -201,7 +203,7 @@ class Quality(dj.Computed):
         quantal_frame               : longblob      # average frame expressed in quanta
         """
 
-    class EpileptiformEvents(dj.Part):
+    class EpileptiformEvents:
         definition = """ # compute frequency of epileptiform events
 
         -> Quality
@@ -347,8 +349,9 @@ class Quality(dj.Computed):
         slack_user.notify(file=img_filename, file_title=msg)
 
 
-@schema
-class CorrectionChannel(dj.Manual):
+# @schema
+# class CorrectionChannel(dj.Manual):
+class CorrectionChannel:
     definition = """ # channel to use for raster and motion correction
 
     -> experiment.Scan
@@ -366,8 +369,9 @@ class CorrectionChannel(dj.Manual):
             )
 
 
-@schema
-class RasterCorrection(dj.Computed):
+# @schema
+# class RasterCorrection(dj.Computed):
+class RasterCorrection:
     definition = """ # raster correction for bidirectional resonant scans
 
     -> ScanInfo                         # animal_id, session, scan_idx, version
@@ -377,9 +381,9 @@ class RasterCorrection(dj.Computed):
     raster_phase        : float         # difference between expected and recorded scan angle
     """
 
-    @property
-    def key_source(self):
-        return ScanInfo * CorrectionChannel & {"pipe_version": CURRENT_VERSION}
+    # @property
+    # def key_source(self):
+    #     return ScanInfo * CorrectionChannel & {"pipe_version": CURRENT_VERSION}
 
     def make(self, key):
         from scipy.signal import tukey
@@ -440,8 +444,9 @@ class RasterCorrection(dj.Computed):
         return correct_raster
 
 
-@schema
-class MotionMethodForScan(dj.Manual):
+# @schema
+# class MotionMethodForScan(dj.Manual):
+class MotionMethodForScan:
     definition = """ # defines which motion correction method to use
     -> experiment.Scan
     ---
@@ -453,8 +458,9 @@ class MotionMethodForScan(dj.Manual):
                       ignore_extra_fields=True, skip_duplicates=True,)
 
 
-@schema
-class MotionCorrection(dj.Computed):
+# @schema
+# class MotionCorrection(dj.Computed):
+class MotionCorrection:
     definition = """ # motion correction for galvo scans
 
     -> RasterCorrection
@@ -468,17 +474,17 @@ class MotionCorrection(dj.Computed):
     align_time=CURRENT_TIMESTAMP    : timestamp     # automatic
     """
 
-    class MotionMethodUsed(dj.Part):
-        definition = """ # which motion correction method was used
-        -> master
-        ---
-        -> shared.Channel
-        -> shared.MotionCorrectionMethod
-        """
+    # class MotionMethodUsed(dj.Part):
+    #     definition = """ # which motion correction method was used
+    #     -> master
+    #     ---
+    #     -> shared.Channel
+    #     -> shared.MotionCorrectionMethod
+    #     """
 
-    @property
-    def key_source(self):
-        return RasterCorrection() & {"pipe_version": CURRENT_VERSION} & MotionMethodForScan()
+    # @property
+    # def key_source(self):
+    #     return RasterCorrection() & {"pipe_version": CURRENT_VERSION} & MotionMethodForScan()
     
     
     def make(self, key):
