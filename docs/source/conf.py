@@ -35,12 +35,11 @@ extensions = [
     "sphinx.ext.mathjax",
     "sphinx.ext.viewcode",
     'sphinx.ext.napoleon',
-    'sphinx.ext.coverage',
     'sphinx-prompt',
     'sphinxcontrib.apidoc',
-    'sphinx_autodoc_typehints',
     'sphinx.ext.autosummary',
-    'myst_parser'
+    'myst_parser',
+    'nbsphinx',
 ]
 
 html_theme = "sphinx_book_theme"
@@ -53,14 +52,11 @@ source_suffix = ['.rst', '.md']
 # The master toctree document.
 master_doc = 'index'
 
-html_title = "CaImAn (Python) MBO User Guide"
+html_title = "MBO Caiman Guide"
 html_static_path = ['_static']
 html_last_updated_fmt = '%b %d, %Y'
 
 html_context = {"default_mode": "dark"}
-html_use_modindex = True
-html_copy_source = False
-html_domain_indices = False
 html_file_suffix = '.html'
 
 # MyST configuration reference: https://myst-parser.readthedocs.io/en/latest/configuration.html
@@ -73,8 +69,8 @@ linkcheck_ignore = [
 htmlhelp_basename = 'mbo'
 html_theme_options = {
     "logo": {
-        "image_light": "_static/numpylogo.svg",
-        "image_dark": "_static/numpylogo_dark.svg",
+        "image_light": "_static/favicon/favicon_32x32.png",
+        "image_dark": "_static/favicon/favicon_32x32.png",
     },
     "github_url": "https://github.com/ru-rbo/rbo-lbm/",
     "collapse_navigation": True,
@@ -92,5 +88,5 @@ html_theme_options = {
 }
 
 html_css_files = [
-    'rbo.css'
+    '_static/rbo.css'
 ]

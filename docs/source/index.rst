@@ -5,6 +5,20 @@
 
 .. include:: ../../README.rst
 
+.. _mbo_caiman_docs_mainpage:
+
+#######################
+CaImAn-Py documentation
+#######################
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+
+   User Guide <user/index>
+   API reference <api/index>
+   For Developers <dev/index>
+
 caiman-python
 =============
 
