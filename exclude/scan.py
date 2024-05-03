@@ -124,12 +124,11 @@ def fix_scan_phase(data_in, offset, dim):
     ndarray
         The data with corrected scan phase, of shape (sy, sx, sc, sz).
     """
-
     sy, sx, sc, sz = data_in.shape
     data_out = None
     if dim == 1:
         if offset > 0:
-            data_out = np.zeros((sy, sx + offset, sc, sz))
+            data_out = np.zeros([sy, sx + offset, sc, sz])
             data_out[0::2, :sx, :, :] = data_in[0::2, :, :, :]
             data_out[1::2, offset:offset + sx, :, :] = data_in[1::2, :, :, :]
         elif offset < 0:
@@ -143,12 +142,14 @@ def fix_scan_phase(data_in, offset, dim):
             data_out[:, half_offset:half_offset + sx, :, :] = data_in
 
     elif dim == 2:
-        data_out = np.zeros(sy, sx, sc, sz)
+        data_out = np.zeros((sy, sx, sc, sz))
         if offset > 0:
+            sy = min(sy, data_out.shape[0] - offset)  # account for the 0's padded during the shift
             data_out[:, 0::2, :, :] = data_in[:, 0::2, :, :]
             data_out[offset:(offset + sy), 1::2, :, :] = data_in[:, 1::2, :, :]
         elif offset < 0:
             offset = abs(offset)
+            sy = min(sy, data_out.shape[0] - offset)  # account for the 0's padded during the shift
             data_out[offset:(offset + sy), 0::2, :, :] = data_in[:, 0::2, :, :]
             data_out[:, 1::2, :, :] = data_in[:, 1::2, :, :]
         else:
