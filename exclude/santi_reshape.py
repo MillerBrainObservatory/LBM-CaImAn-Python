@@ -60,7 +60,7 @@ if not params["reconstruct_all_files"]:
 
 # Directories
 params["raw_data_dirs"] = [
-    r"/data2/fpo/data/"
+    "/data2/fpo/data/"
 ]  # Must be a list with 1 or more dirs
 params[
     "fname_must_contain"
