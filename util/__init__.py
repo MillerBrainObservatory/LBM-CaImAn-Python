@@ -28,20 +28,23 @@ from .galvo_corrections import (
     correct_raster,
     correct_motion
 )
-from .registration import (
-    create_grid,
-    resize,
-    affine_product,
-    sample_grid
-)
 from .performance import (
     map_frames,
     parallel_quality_metrics,
     parallel_motion_shifts
 )
 from .quality import (
-    compute_quantal_size, 
+    compute_quantal_size,
     find_peaks
+)
+from .registration import (
+    create_grid,
+    resize,
+    affine_product,
+    sample_grid
+)
+from .scan import (
+    fix_scan_phase, return_scan_offset
 )
 
 
