@@ -3,9 +3,9 @@ from util.scan import return_scan_offset
 from util.scan import fix_scan_phase
 
 
-def reorganize(num_px, num_channels, num_rois, num_frames, roi_data):
+def extract_roi_data(num_px, num_channels, num_rois, num_frames, roi_data):
     """
-    Reorganizes multidimensional image data into a structured format suitable for further analysis.
+    Extract 4D image data from scanimage tiff recordings.
 
     This function takes the original multidimensional data acquired from microscopy scans and
     reorganizes it into a structured format, applying corrections and adjustments to each channel,
