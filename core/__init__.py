@@ -1,10 +1,17 @@
 """
 .. currentmodule:: core
 
-core/__init__.py: This file is the entry point for the core package.
-It imports the core module of the LBM pipeline. The __all__ variable is set to ["core"],
-which means that when the core package is imported, only the core module will be accessible.
+This module contains the core functionality of the package. It provides the following submodules:
 
+- :mod:`core.io`: Contains functions for reading and writing data.
+- :mod:`core.util`: Contains utility functions for data processing.
+
+This __init__.py file controls what modules, functions, or packages are imported to the package level.
+For example, if you want to import the function :func:`core.io.read_data` to the package level, you would add the following line to this file:
+
+.. code-block:: python
+
+    from .io import read_data
 """
 from .io import *
 from .util import *
