@@ -545,10 +545,14 @@ def return_scan_offset(image_in, dim):
 
     Parameters
     ----------
-    image_in : ndarray
-        Input image or volume. It can be 2D, 3D, or 4D. The dimensions represent
+    image_in : ndarray | ndarray-like
+        Input image or volume. It can be 2D, 3D, or 4D. 
+    
+    .. note:: 
+        
+        Dimensions: [height, width], [height, width, time], or [height, width, time, channel/plane].
+        The input array must be castable to numpy. e.g. np.shape, np.ravel.
 
-        [height, width], [height, width, time], or [height, width, time, channel/plane], respectively.
     dim : int
         Dimension along which to compute the scan offset correction. 1 for vertical (along height), 2 for horizontal (along width).
 
@@ -712,6 +716,11 @@ def correct_scan_stack(num_px, num_channels, num_rois, num_frames, roi_data):
     Returns:
         np.ndarray: A numpy array containing the reorganized image data, with adjustments applied to
                     each channel, ROI, and frame. The array has a data type of int.
+
+
+    .. deprecated:: 0.1.0
+          `correct_scan_stack` will be removed in 0.2.0, it is replaced by
+          `scanreader` along with `fix_scan_phase`
     """
 
     imageData = []
@@ -723,7 +732,6 @@ def correct_scan_stack(num_px, num_channels, num_rois, num_frames, roi_data):
         for strip in range(num_rois):
             stripTemp = np.empty((roi_y, roi_x, 1, num_frames), dtype=np.float32)
             for frame in range(num_frames):
-                frame_data = roi_data[strip].imageData[channel][frame][0]
                 stripTemp[:, :, 0, frame] = roi_data[strip].imageData[channel][frame][0]
             corr = return_scan_offset(stripTemp, 1).astype(int)
 
