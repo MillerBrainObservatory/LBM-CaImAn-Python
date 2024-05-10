@@ -6,28 +6,28 @@
 name: mbo-caiman  # changing this will mean changing `conda activate <my-package-name>
 channels:
 - conda-forge
-- default
+- defaults
 dependencies:
+- pip
+- pip:
+  - -e git+https://github.com/ru-rbo/scanreader.git#egg=argh
+  - scanreader
 - python <=3.9
 - av
 - bokeh >=3.1.1
 - cython
-- suite2p
 - h5py
 - holoviews >=1.16.2
 - ipykernel
-- scanreader
 - ipython
 - ipyparallel
 - jupyter
 - jupyter_bokeh
 - matplotlib
 - moviepy
-- mypy
 - nose
 - numpy <2.0.0
 - caiman
-- suite2p
 - opencv
 - panel >=1.0.2
 - peakutils
