@@ -45,7 +45,6 @@ def mute_function(f):
     return wrapper
 
 
-@mute_function
 def extract_masks(
     scan,
     mmap_scan,
