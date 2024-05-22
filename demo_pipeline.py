@@ -104,7 +104,7 @@ core.io.h5.save_zstack('testfile.h5', slice_plane,
 #%% md
 # ### Phase correction via Linear Phase Interpolation 
 #%%
-phase_angle = core.util.compute_raster_phase(slice_plane[:, :], reader.temporal_fill_fraction)
+phase_angle = core.util.compute_raster_phase(slice_plane[:, :, 2], reader.temporal_fill_fraction)
 corrected_li = core.util.correct_raster(slice_plane, phase_angle, reader.temporal_fill_fraction)
 slice_plane.dtype
 
