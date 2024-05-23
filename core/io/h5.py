@@ -1,9 +1,11 @@
-import h5py
 from pathlib import Path
+
+import h5py
 import numpy as np
 
 from ..util.exceptions import PipelineException
 from ..util.signal import mirrconv, spaced_max
+
 
 def save_zstack(filename, data, metadata=None, overwrite=False):
 
@@ -52,7 +54,7 @@ def load_zstack(filename):
 def read_behavior_file(filename):
     """ Reads hdf5 file with timestamps and analog signals.
 
-    :param filename: path of the file. Needs a %d where multiple files differ.
+    :param filename: data_path of the file. Needs a %d where multiple files differ.
 
     :returns: A dictionary with these fields:
         version: string. File version
@@ -195,7 +197,7 @@ def ts2sec(ts, sampling_rate=1e7, is_packeted=False):
 def read_imager_file(filename):
     """ Reads hdf5 file with Intrinsic Imager data saved by Labview.
 
-    :param filename: path of the file.
+    :param filename: data_path of the file.
 
     :returns: A dictionary with these fields:
         photodiode: 1-d array. Photodiode current in volts at 10 KHz.
@@ -291,7 +293,7 @@ def find_flips(signal, fps, monitor_fps):
 
 def read_digital_olfaction_file(filename):
     """ Reads hdf5 files with olfaction digital signals.
-    :param filename: path of the file. Needs a %d where 2GB file split counter is located.
+    :param filename: data_path of the file. Needs a %d where 2GB file split counter is located.
     :returns: A dictionary with these fields:
         version: string. File version
         delay: float. Time in milliseconds between puffs of odor
@@ -323,7 +325,7 @@ def read_digital_olfaction_file(filename):
 
 def read_analog_olfaction_file(filename):
     """ Reads hdf5 files with olfaction analog signals.
-    :param filename: path of the file. Needs a %d where 2GB file split counter is located.
+    :param filename: data_path of the file. Needs a %d where 2GB file split counter is located.
     :returns: A dictionary with these fields:
         version: string. File version
         fs: sampling rate  in Hz

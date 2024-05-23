@@ -7,11 +7,6 @@ import time
 
 import numpy as np
 from caiman import components_evaluation
-
-from caiman.utils.stats import ( 
-    mode_robust_fast, mode_robust, mode_robust_kde, df_percentile, kde, fixed_point, csc_column_remove, pd_solve 
-)
-
 from caiman.source_extraction.cnmf import (
     map_reduce,
     initialization,
@@ -22,6 +17,9 @@ from caiman.source_extraction.cnmf import (
     deconvolution,
 )
 from caiman.utils import visualization
+from caiman.utils.stats import (
+    df_percentile
+)
 from scipy.ndimage import percentile_filter
 
 from .caiman_stats import df_percentile
@@ -750,7 +748,7 @@ def classify_masks(masks, soma_diameter=(12, 12)):
 
     Notes
     -----
-    - The CNN model is expected to be pretrained and saved in a specified directory. The path to this model
+    - The CNN model is expected to be pretrained and saved in a specified directory. The data_path to this model
       is currently hardcoded and needs to be updated according to the model's location.
     - This function uses sparse matrix representations internally to optimize memory usage when converting
       masks for model input.

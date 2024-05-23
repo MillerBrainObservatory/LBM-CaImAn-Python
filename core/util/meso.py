@@ -865,7 +865,7 @@ class MotionCorrection:
     ):
         """Creates an animation video showing the original vs corrected scan.
 
-        :param string filename: Output filename (path + filename)
+        :param string filename: Output filename (data_path + filename)
         :param int channel: What channel from the scan to use. Starts at 1
         :param int start_index: Where in the scan to start the video.
         :param int seconds: How long in seconds should the animation run.
@@ -1423,7 +1423,7 @@ class Segmentation(dj.Computed):
         ):
             """Creates an animation video showing the results of CNMF.
 
-            :param string filename: Output filename (path + filename)
+            :param string filename: Output filename (data_path + filename)
             :param int start_index: Where in the scan to start the video.
             :param int seconds: How long in seconds should the animation run.
             :param int dpi: Dots per inch, controls the quality of the video.
