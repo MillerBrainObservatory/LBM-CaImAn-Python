@@ -36,7 +36,7 @@ import core.io
 import scanreader
 
 # Give this notebook access to the root package
-# sys.path.append('../../')  # TODO: Take this out when we upload to pypi
+# sys.data_path.append('../../')  # TODO: Take this out when we upload to pypi
 
 try:
     cv2.setNumThreads(0)
@@ -57,7 +57,7 @@ logging.basicConfig(format="{asctime} - {levelname} - [{filename} {funcName}() {
 # level=logging.DEBUG, style="{") # this shows you general information that developers use to trakc their program
 # (be careful when playing movies, there will be a lot of debug messages)
 
-# set env variables 
+# set env variables
 os.environ["MKL_NUM_THREADS"] = "1"
 os.environ["OPENBLAS_NUM_THREADS"] = "1"
 os.environ["VECLIB_MAXIMUM_THREADS"] = "1"
@@ -70,20 +70,16 @@ raw_path = parent_path / 'raw'
 extracted_path = parent_path / 'extracted'
 dataset = "high_res"
 raw_file_path = raw_path / dataset
-
-htiffs = [x for x in
-          raw_file_path.glob('*.tif')]  # this accumulates a list of every filepath which contains a .tif file
+htiffs = [x for x in raw_file_path.glob('*.tif')]  # this accumulates a list of every filepath which contains a .tif file
 
 reader = scanreader.read_scan(str(htiffs[0]), join_contiguous=True, x_cut=(6, 6), y_cut=(17, 0),
                               lbm=True)  # this should take < 2s, no actual data is being read yet
-y_trim = 0.03 * reader.field_heights[0]
-data = reader[0]  # this reads the data into memory, this will take a while depending on the size of the data
+data = reader[0, ]  # this reads the data into memory, this will take a while depending on the size of the data
+
 data = data[:, :, chan_order, :]  # reorder based on a channel mapping
 #%%
 
 dataset_name = 'highres'
-
-# create empty zarr store to save on disk and write to
 z1 = zarr.open('/data2/fpo/data/extracted/{dataset_name}/{dataset_name}.zarr', mode='w', shape=(data.shape),
                chunks=(data.shape[0], data.shape[1], data.shape[2], 1), dtype='int16')
 z1[:] = data
