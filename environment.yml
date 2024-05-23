@@ -2,7 +2,7 @@
 #    $ conda install -n base -c conda-forge mamba
 #    $ mamba create -n mbo-caiman -c conda-forge caiman  # match package name
 #    $ conda activate mbo-caiman
-#    $ conda install -f /path/to/repo/environment.yml
+#    $ conda install -f /data_path/to/repo/environment.yml
 name: mbo-caiman  # changing this will mean changing `conda activate <my-package-name>
 channels:
 - conda-forge
