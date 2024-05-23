@@ -1,4 +1,6 @@
 import os
+import time
+from datetime import timedelta
 from pathlib import Path
 
 import zarr
@@ -16,33 +18,29 @@ def load_data(data_path):
     return scanreader.read_scan(str(files[0]), join_contiguous=True, x_cut=(6, 6), y_cut=(17, 0), lbm=True)
 
 
-def load_plane(reader: scanreader.core.scans.LBMScanMultiROI, save_path: os.PathLike):
+def load_plane(reader_obj: scanreader.core.scans.LBMScanMultiROI, save_path: os.PathLike | str):
     save_path = Path(save_path).with_suffix('.zarr')
-    data = reader[:, :, :, 1, 1]  # single frame, all planes
+    _data = reader_obj[:, :, :, 1, 1]  # single frame, all planes
     store = zarr.DirectoryStore(str(save_path))
-    zarr.save_array(store=store, arr=data, path=save_path)
+    zarr.save_array(store=store, arr=_data, path=save_path)
     return zarr.load(store, path=save_path)
 
-def load_zarr(data_path):
-    data_path = Path(data_path)
-    return zarr.open(str(data_path))
-
-
+start_time = time.perf_counter()
 data_path = Path('/data2/fpo/data/extracted/high_res/').glob("*.zarr")
 files = [x for x in data_path]
-zarr = load_zarr(str(files[0]))
-# reader = load_data(data_path)
-# data = load_plane(reader, '/data2/fpo/data/extracted/LBM_Test.zarr')
-# data = data.squeeze()
+# zarr = zarr.open(str(files[0]))
+# myarr = da.from_zarr(zarr)
+
+reader = load_data(data_path)
+start_time = time.perf_counter()
+data = load_plane(reader, '/data2/fpo/data/extracted/LBM_Test.zarr')
+data = data.squeeze()
+# print('Job took: ', duration)
+duration = timedelta(seconds=time.perf_counter()-start_time)
+
 #
 # # plot the first frame
 # import matplotlib.pyplot as plt
 # plt.imshow(data[...])
 # plt.savefig(data_path / 'first_frame.png')
-# myarr = dask.array.from_zarr(data)
 x = 2
-
-# create empty zarr store to save on disk and write to
-# z1 = zarr.open('/data2/fpo/data/extracted/{dataset_name}/{dataset_name}.zarr', mode='w', shape=(data.shape),
-#                chunks=(data.shape[0], data.shape[1], data.shape[2], 1), dtype='int16')
-# z1[:] = data
