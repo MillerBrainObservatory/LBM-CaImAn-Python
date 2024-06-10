@@ -568,7 +568,7 @@ def save_outputs(
     volume : np.ndarray
         The data array to be saved.
     path_input_file : str
-        The path to the input file, used to derive output file names.
+        The data_path to the input file, used to derive output file names.
     metadata : dict
         ScanImage metadata extracted from the input file.
     n_planes : int
