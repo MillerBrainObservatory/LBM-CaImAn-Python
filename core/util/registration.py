@@ -1,6 +1,11 @@
 import numpy as np
-import torch
-from torch.nn import functional as F
+try:
+    import torch
+    from torch.nn import functional as F
+except ImportError:
+    torch = None
+    F = None
+
 
 
 def create_grid(um_sizes, desired_res=1):
