@@ -3,7 +3,7 @@ import time
 
 import numpy as np
 
-from util import galvo_corrections
+from . import galvo_corrections
 
 
 def map_frames(f, scan, field_id, channel, y=slice(None), x=slice(None), kwargs={},
