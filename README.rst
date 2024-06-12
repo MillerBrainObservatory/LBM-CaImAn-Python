@@ -36,7 +36,7 @@ Requirements
 
 
 .. |docs| image:: https://img.shields.io/badge/LBM%20Documentation-1f425f.svg
-   :target: https://millerbrainobservatory.github.io/LBM-CaImAn-MATLAB/
+   :target: https://millerbrainobservatory.github.io/LBM-CaImAn-Python/
 
 .. |DOI| image:: https://zenodo.org/badge/DOI/10.1007/978-3-319-76207-4_15.svg
       :target: https://doi.org/10.1038/s41592-021-01239-8
