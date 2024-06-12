@@ -8,7 +8,7 @@ from setuptools import setup #find_packages
 long_description = "Light Beads Microscopy 2P Calcium Imaging Pipeline."
 
 setup(
-    name='mbo_pipeline',
+    name='LBM-CaImAn-Python',
     version='0.1.0',
     description="Light Beads Microscopy 2P Calcium Imaging Pipeline.",
     long_description=long_description,

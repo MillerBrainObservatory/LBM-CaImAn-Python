@@ -1,30 +1,42 @@
-Light Beads Microscopy (LBM) and 2pRAM Analysis Pipeline
-========================================================
+########################################################################
+LBM-CaImAn-Python
+########################################################################
 
-The **Light Beads Microscopy (LBM)** and **2pRAM Analysis Pipeline** are designed to process and analyze microscopy data with several automated steps to enhance, classify, and correct the data acquired through advanced microscopy techniques.
+|docs|
 
-Pipeline Steps
---------------
-- **Reshapes the axis** to have an x, y, z, t volume (LBM).
-- **Sorts the z-planes** (LBM).
-- **Calculates and corrects the MROI seams**.
-- **Calculates and corrects the X-Y shifts** across planes (LBM).
-- **Outputs data** as x-y-t planes or x-y-z-t volumes.
+Python implementation of the Light Beads Microscopy (LBM) computational pipeline.
 
-This pipeline integrates functions such as :func:`classify_manual` which opens a GUI for manually classifying masks against a template image, enhancing the usability and precision of data classification in microscopy studies.
+For the `MATLAB` implementation, see `here <https://github.com/MillerBrainObservatory/LBM-CaImAn-MATLAB/>`_
 
-Troubleshooting
----------------
-If a silent crash occurs (and the Terminal closes) despite not reaching 100% RAM, it could be due to the system-oom-process-killer being too sensitive or malfunctioning. Consider adjusting the thresholds for when processes are terminated, or temporarily disabling the system-oom-process-killer.
+Pipeline Steps:
+===========================
 
-.. code-block:: bash
+1. Extraction
+    - De-interleave zT
+    - Scan Phase-Correlation
+2. Registration
+    - Template creation
+    - Rigid registration
+    - Piecewise-rigid registration
+3. Segmentation
+    - Iterative CNMF segmentation
+    - Deconvolution
+    - Refinement
 
-    $ systemctl disable --now systemd-oomd
-    $ systemctl mask systemd-oomd
+Requirements
+=============
 
-To reactivate the service:
+- caiman
+- numpy
+- scipy
 
-.. code-block:: bash
+.. note::
 
-    $ systemctl enable --now systemd-oomd
-    $ systemctl unmask systemd-oomd
+   See the `environment.yml` file at the root of this project for a complete list of package dependencies.
+
+
+.. |docs| image:: https://img.shields.io/badge/LBM%20Documentation-1f425f.svg
+   :target: https://millerbrainobservatory.github.io/LBM-CaImAn-MATLAB/
+
+.. |DOI| image:: https://zenodo.org/badge/DOI/10.1007/978-3-319-76207-4_15.svg
+      :target: https://doi.org/10.1038/s41592-021-01239-8
