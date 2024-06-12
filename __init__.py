@@ -1,8 +1,7 @@
 from core import *
 
 def get_reader(datapath):
-    quic
-    filepath = datapath 
+    filepath = datapath
     if Path(datapath).isfile():
         filepath = datapath
     else:
