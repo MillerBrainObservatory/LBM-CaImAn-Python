@@ -1,3 +1,15 @@
-import util
+from core import *
 
-__all__ = ["util"]
+def get_reader(datapath):
+    quic
+    filepath = datapath 
+    if Path(datapath).isfile():
+        filepath = datapath
+    else:
+        filepath = [x for x in datapath.glob('*.tif')]      # this accumulates a list of every filepath which contains a .tif file
+    return filepath
+
+__all__ = [
+    'core',
+    'get_reader'
+]

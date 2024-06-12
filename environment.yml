@@ -1,12 +1,21 @@
+#To use:
+#    $ conda install -n base -c conda-forge mamba
+#    $ mamba create -n mbo-caiman -c conda-forge caiman  # match package name
+#    $ conda activate mbo-caiman
+#    $ conda install -f /data_path/to/repo/environment.yml
+name: mbo-caiman  # changing this will mean changing `conda activate <my-package-name>
 channels:
 - conda-forge
-- default
+- defaults
 dependencies:
+- pip
+- pip:
+  - -e git+https://github.com/ru-rbo/scanreader.git#egg=argh
+  - scanreader
 - python <=3.9
 - av
 - bokeh >=3.1.1
 - cython
-- suite2p
 - h5py
 - holoviews >=1.16.2
 - ipykernel
@@ -16,9 +25,9 @@ dependencies:
 - jupyter_bokeh
 - matplotlib
 - moviepy
-- mypy
 - nose
 - numpy <2.0.0
+- caiman
 - opencv
 - panel >=1.0.2
 - peakutils
@@ -35,12 +44,3 @@ dependencies:
 - tqdm
 - yapf
 - zarr
-
-#TODO: move to environment-dev.yml
-- black
-- icecream
-- numpydoc
-- sphinx
-- coverage
-- sphinx-autodoc-typehints
-- sphinx-prompt
