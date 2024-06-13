@@ -1,8 +1,13 @@
 #To use:
-#    $ conda install -n base -c conda-forge mamba
-#    $ conda create -n mbo-caiman -f /path/to/repo/environment.yml
-#    $ conda activate mbo-caiman
-name: mbo-caiman
+#    $ conda create -n lbm_python -f /path/to/repo/environment.yml
+#    $ conda activate lbm_python
+#
+#    ... OR bypass "lbm_python" and name it yourself:
+#
+#    $ conda create -n lbm_super_env -f /path/to/repo/environment.yml
+#    $ conda activate lbm_super_env
+
+name: lbm_python
 channels:
 - conda-forge
 - defaults
