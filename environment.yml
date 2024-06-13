@@ -52,5 +52,4 @@ dependencies:
 
 # Non-conda libs
 - pip:
-  - -e git+https://github.com/ru-rbo/scanreader.git#egg=argh
-  - scanreader
+  - -e git+https://github.com/MillerBrainObservatory/scanreader.git
