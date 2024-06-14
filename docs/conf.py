@@ -27,7 +27,7 @@ images_config = dict(backend='LightBox2',
     )
 
 templates_path = ["_templates"]
-html_theme = "pydata_sphinx_theme"
+html_theme = "sphinx_book_theme"
 html_short_title="LBM-CaImAn-Python"
 html_static_path = ["_static"]
 
