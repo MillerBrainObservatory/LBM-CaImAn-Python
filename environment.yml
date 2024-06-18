@@ -43,3 +43,4 @@ dependencies:
 - tqdm
 - yapf
 - zarr
+- nbsphinx
