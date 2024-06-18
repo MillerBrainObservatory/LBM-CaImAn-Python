@@ -49,7 +49,9 @@ dependencies:
 - pims # interface for tiff readers
 - av # ffmpeg binaries
 - tqdm
+- yapf
 
 # Non-conda libs
 - pip:
   - -e git+https://github.com/MillerBrainObservatory/scanreader.git
+

@@ -3,8 +3,9 @@ docutils>=0.19
 furo==2021.11.16
 nbsphinx
 sphinx_gallery
-pydata_sphinx_theme
+sphinx_book_theme
 sphinxcontrib-matlabdomain
 sphinxcontrib-images
 sphinxcontrib-video
 numpydoc
+ipykernel
