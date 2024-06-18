@@ -4,34 +4,43 @@
    contain the root `toctree` directive.
 
 
-=====================
+CaImAn-Python
+===============
+
 
 .. toctree::
     :maxdepth: 2
+    :caption: Notebooks
 
-    get_started/index
+    ../demos/notebooks/demo_pipeline.ipynb
+    ../demos/notebooks/demo_registration.ipynb
 
-.. toctree::
-    :maxdepth: 2
-    :caption: User Guide
+.. .. toctree::
+..     :maxdepth: 2
 
-    user_guide/index
+..     get_started/index
 
-.. toctree::
-    :maxdepth: 2
-    :caption: API:
+.. .. toctree::
+..     :maxdepth: 2
+..     :caption: User Guide
 
-    api/index
+..     user_guide/index
 
-.. toctree::
-   :maxdepth: 1
-   :caption: Contents:
+.. .. toctree::
+..     :maxdepth: 2
+..     :caption: API:
 
-   data_guide
-   preprocess
-   scanimage_mroi
-   scanimage_roi_hierarchy
-   tips_tricks
+..     api/index
+
+.. .. toctree::
+..    :maxdepth: 1
+..    :caption: Contents:
+
+..    data_guide
+..    preprocess
+..    scanimage_mroi
+..    scanimage_roi_hierarchy
+..    tips_tricks
 
 
 Indices and tables

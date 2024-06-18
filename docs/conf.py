@@ -5,6 +5,13 @@
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
+import sys
+import os
+
+os.path.abspath(os.path.join("..", ".."))
+os.path.abspath(os.path.join("..", "demos"))
+sys.path.insert(0, os.path.abspath(os.path.join("..", "core")))
+matlab_src_dir = os.path.abspath("../core/")
 
 project = 'LBM-CaImAn-Python'
 copyright = '2024, Flynn OConnell'
@@ -79,21 +86,21 @@ intersphinx_mapping = {
 
 intersphinx_disabled_reftypes = ["*"]
 
-html_theme_options = {
-    "github_url": "https://github.com/MillerBrainObservatory/millerbrainobservatory.github.io",
-    "collapse_navigation": True,
-    "external_links": [
-        {"name": "MBO.edu", "url": "https://mbo.rockefeller.edu/"},
-        {"name": "LBM.Mat", "url": "https://mbo.rockefeller.edu/"},
-        {"name": "LBM.Py", "url": "https://mbo.rockefeller.edu/"},
-        {"name": "LBM.scanreader", "url": "https://mbo.rockefeller.edu/"},
-    ],
-    "navbar_start": [ "navbar_logo","search-button", ],
-    "header_links_before_dropdown": 6,
-    "navbar_end": [ "navbar-icon-links" ],
-    "navbar_persistent": [],
-    "navbar_align": "content",
-}
+# html_theme_options = {
+#     "github_url": "https://github.com/MillerBrainObservatory/millerbrainobservatory.github.io",
+#     "collapse_navigation": True,
+#     "external_links": [
+#         {"name": "MBO.edu", "url": "https://mbo.rockefeller.edu/"},
+#         {"name": "LBM.Mat", "url": "https://mbo.rockefeller.edu/"},
+#         {"name": "LBM.Py", "url": "https://mbo.rockefeller.edu/"},
+#         {"name": "LBM.scanreader", "url": "https://mbo.rockefeller.edu/"},
+#     ],
+#     "navbar_start": [ "navbar_logo","search-button", ],
+#     "header_links_before_dropdown": 6,
+#     "navbar_end": [ "navbar-icon-links" ],
+#     "navbar_persistent": [],
+#     "navbar_align": "content",
+# }
 
 
 # html_theme_options = {
