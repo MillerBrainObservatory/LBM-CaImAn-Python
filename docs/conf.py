@@ -8,8 +8,10 @@
 import sys
 import os
 
+os.path.abspath(os.path.join(".."))
 os.path.abspath(os.path.join("..", ".."))
-os.path.abspath(os.path.join("..", "demos"))
+os.path.abspath(os.path.join("..", "..", ".."))
+os.path.abspath(os.path.join("..", "demos", "notebooks"))
 sys.path.insert(0, os.path.abspath(os.path.join("..", "core")))
 matlab_src_dir = os.path.abspath("../core/")
 
@@ -33,18 +35,9 @@ extensions = [
     "numpydoc",
     "nbsphinx",
     'sphinx.ext.mathjax',
-    'sphinx_design'
+    'sphinx_design',
 ]
 
-
-# List of documents that shouldn't be included in the build.
-#unused_docs = []
-
-# The reST default role (used for this markup: `text`) to use for all documents.
-source_suffix = '.rst'
-
-# -- Options for HTML output -------------------------------------------------
-# https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_static_path = ['_static']
 # html_use_modindex = False
@@ -86,42 +79,10 @@ intersphinx_mapping = {
 
 intersphinx_disabled_reftypes = ["*"]
 
-# html_theme_options = {
-#     "github_url": "https://github.com/MillerBrainObservatory/millerbrainobservatory.github.io",
-#     "collapse_navigation": True,
-#     "external_links": [
-#         {"name": "MBO.edu", "url": "https://mbo.rockefeller.edu/"},
-#         {"name": "LBM.Mat", "url": "https://mbo.rockefeller.edu/"},
-#         {"name": "LBM.Py", "url": "https://mbo.rockefeller.edu/"},
-#         {"name": "LBM.scanreader", "url": "https://mbo.rockefeller.edu/"},
-#     ],
-#     "navbar_start": [ "navbar_logo","search-button", ],
-#     "header_links_before_dropdown": 6,
-#     "navbar_end": [ "navbar-icon-links" ],
-#     "navbar_persistent": [],
-#     "navbar_align": "content",
-# }
-
-
-# html_theme_options = {
-#     "external_links": [
-#         {"name": "MBO",  "url": "https://mbo.rockefeller.edu"},
-#     ],
-#     "github_url": "https://github.com/MillerBrainObservatory",
-#     "navbar_align": "left",
-#     "navbar_end": ["navbar-icon-links"],
-#     "navbar_start": ["navbar-logo"],
-#     "show_nav_level": 2,
-#     "show_toc_level": 1,
-#     "use_edit_page_button": False,
-#     "header_links_before_dropdown": 8,
-# }
-
-# html_sidebars = {
-#     "index": [],
-#     "pipelines/**": ["search-field.html", "sidebar-nav-bs.html"],
-#     "user_guide/**": ["search-field.html", "sidebar-nav-bs.html"],
-# }
+html_sidebars = {
+    "index": [],
+    "guide/**": ["search-field.html", "sidebar-nav-bs.html"],
+}
 
 
 templates_path = ["_templates"]
