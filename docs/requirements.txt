@@ -8,3 +8,4 @@ sphinxcontrib-matlabdomain
 sphinxcontrib-images
 sphinxcontrib-video
 numpydoc
+ipykernel
