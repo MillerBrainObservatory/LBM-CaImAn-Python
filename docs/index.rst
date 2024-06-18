@@ -3,44 +3,14 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-
 CaImAn-Python
 ===============
 
-
 .. toctree::
     :maxdepth: 2
-    :caption: Notebooks
+    :caption: Notebooks:
 
-    ../demos/notebooks/demo_pipeline.ipynb
-    ../demos/notebooks/demo_registration.ipynb
-
-.. .. toctree::
-..     :maxdepth: 2
-
-..     get_started/index
-
-.. .. toctree::
-..     :maxdepth: 2
-..     :caption: User Guide
-
-..     user_guide/index
-
-.. .. toctree::
-..     :maxdepth: 2
-..     :caption: API:
-
-..     api/index
-
-.. .. toctree::
-..    :maxdepth: 1
-..    :caption: Contents:
-
-..    data_guide
-..    preprocess
-..    scanimage_mroi
-..    scanimage_roi_hierarchy
-..    tips_tricks
+    notebooks/demo_pipeline
 
 
 Indices and tables

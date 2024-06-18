@@ -2,7 +2,6 @@ import os
 
 os.path.abspath(os.path.join(".."))
 os.path.abspath(os.path.join("..", ".."))
-os.path.abspath(os.path.join("..", "..", ".."))
 os.path.abspath(os.path.join("..", "demos", "notebooks"))
 
 project = 'LBM-CaImAn-Python'
@@ -12,10 +11,6 @@ release = '0.1.0'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
-source_suffix = {
-        '.rst': 'restructuredtext',
-        '.md': 'markdown',
-        }
 
 exclude_patterns = ['Thumbs.db', '.DS_Store']
 
@@ -32,16 +27,26 @@ extensions = [
     'sphinx_design'
 ]
 
+source_suffix = {
+    '.rst': 'restructuredtext',
+    '.ipynb': 'myst-nb',
+    '.myst': 'myst-nb',
+}
+
+images_config = dict(
+    backend='LightBox2',
+    default_image_width='100%',
+    default_show_title='True',
+    default_group='default'
+)
+
 templates_path = ["_templates"]
 html_css_files = ["mbo.css"]
 html_theme = "sphinx_book_theme"
 html_title = "LBM-CaImAn-Python"
 html_short_title = "MBO"
 html_static_path = ["_static"]
-html_logo = "MillerBrainObservatory_logo.svg"
-html_favicon = "mbo_icon.ico"
-html_use_modindex = True
-html_copy_source = False
+
 
 html_theme_options = {
   "external_links": [
@@ -68,3 +73,12 @@ intersphinx_disabled_reftypes = ["*"]
 #    #"guide/**": ["search-field.html", "sidebar-nav-bs.html"],
 #}
 
+myst_enable_extensions = [
+    "amsmath",
+    "colon_fence",
+    "deflist",
+    "dollarmath",
+    "html_image",
+]
+
+myst_url_schemes = ("http", "https", "mailto")
