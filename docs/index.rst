@@ -3,17 +3,18 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-
 CaImAn-Python
 ===============
 
+.. include:: ../demos/notebooks/demo_extraction.ipynb
+   :parser: myst_nb.docutils_
 
 .. toctree::
     :maxdepth: 2
     :caption: Notebooks
+    :glob:
 
-    ../demos/notebooks/demo_pipeline.ipynb
-    ../demos/notebooks/demo_registration.ipynb
+    notebooks/*
 
 .. .. toctree::
 ..     :maxdepth: 2
