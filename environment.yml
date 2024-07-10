@@ -2,15 +2,14 @@
 #    $ conda install -n base -c conda-forge mamba
 #    $ conda create -n mbo-caiman -f /path/to/repo/environment.yml
 #    $ conda activate mbo-caiman
-name: mbo-caiman  # changing this will mean changing `conda activate <my-package-name>
+name: mbo-full  # changing this will mean changing `conda activate <my-package-name>
 channels:
 - conda-forge
 - defaults
 dependencies:
 - pip
 - pip:
-  - -e git+https://github.com/ru-rbo/scanreader.git#egg=argh
-  - scanreader
+  - -e git+https://github.com/MillerBrainObservatory/scanreader.git#egg=scanreader
 - caiman
 - python <=3.9
 - av
