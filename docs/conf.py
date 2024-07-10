@@ -5,15 +5,11 @@
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
-import sys
 import os
 
 os.path.abspath(os.path.join(".."))
-os.path.abspath(os.path.join("..", ".."))
-os.path.abspath(os.path.join("..", "..", ".."))
+os.path.abspath(os.path.join("..", "demos"))
 os.path.abspath(os.path.join("..", "demos", "notebooks"))
-sys.path.insert(0, os.path.abspath(os.path.join("..", "core")))
-matlab_src_dir = os.path.abspath("../core/")
 
 project = 'LBM-CaImAn-Python'
 copyright = '2024, Flynn OConnell'
@@ -33,12 +29,20 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.autosectionlabel",
     "numpydoc",
-    "nbsphinx",
+    "myst_nb",
     'sphinx.ext.mathjax',
     'sphinx_design',
 ]
 
+source_suffix = {
+    '.rst': 'restructuredtext',
+    '.txt': 'restructuredtext',
+    '.ipynb': 'myst-nb',
+    '.myst': 'myst-nb',
+}
 
+
+templates_path = ["_templates"]
 html_static_path = ['_static']
 # html_use_modindex = False
 # html_use_index = False
@@ -48,12 +52,12 @@ html_title = "LBM-CaImAn-Python"
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-html_logo = "_images/MillerBrainObservatory_logo.svg"
+html_logo = "MillerBrainObservatory_logo.svg"
 
 # The name of an image file (relative to this directory) to use as a favicon of
 # the docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
 # pixels large.
-html_favicon = "_static/mbo_icon.ico"
+html_favicon = "_static/mbo.ico"
 
 html_theme = 'sphinx_book_theme'
 html_title = "CaImAn-Python"
@@ -84,5 +88,3 @@ html_sidebars = {
     "guide/**": ["search-field.html", "sidebar-nav-bs.html"],
 }
 
-
-templates_path = ["_templates"]
