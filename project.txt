@@ -1,0 +1,1 @@
+.. include:: ../demos/notebooks/demo_extraction.ipynb
