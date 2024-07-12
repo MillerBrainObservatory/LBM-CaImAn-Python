@@ -1,8 +1,8 @@
 #To use:
 #    $ conda install -n base -c conda-forge mamba
-#    $ conda create -n mbo-caiman -f /path/to/repo/environment.yml
-#    $ conda activate mbo-caiman
-name: mbo-full  # changing this will mean changing `conda activate <my-package-name>
+#    $ conda env create -n mbo-py -f /path/to/repo/environment.yml
+#    $ conda activate mbo-py
+name: mbo-py  # changing this will mean changing `conda activate <my-package-name>
 channels:
 - conda-forge
 - defaults
