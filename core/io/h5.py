@@ -34,6 +34,8 @@ def save_zstack(filename, data, metadata=None, overwrite=False):
     with h5py.File(filename, 'w') as f:
         if imtype == 'volume':
             f.create_dataset('raw', data=data)
+        if imtype == 'volume':
+            f.create_dataset('raw', data=data)
 
         if metadata is not None:
             for key, value in metadata.items():
