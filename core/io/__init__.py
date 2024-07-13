@@ -17,5 +17,6 @@ __all__ = [
     'save_object',
     'load_object',
     'save_zstack',
+    '_zstack',
     'VideoReader',
 ]

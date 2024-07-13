@@ -26,7 +26,7 @@ def save_zstack(filename, data, metadata=None, overwrite=False):
     # case 2: file exists and overwrite is True
     elif filename.exists():
         filename.unlink()  # remove file
-    # case 3: file does not exist, overwrite doesn't matter, create the file
+    # case 3: file does not exist, overwrite doesn't matter, create the directory
     else:
         filename.parent.mkdir(parents=True, exist_ok=True)
 

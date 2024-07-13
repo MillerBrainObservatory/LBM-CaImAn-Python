@@ -38,9 +38,4 @@ data = data.squeeze()
 # print('Job took: ', duration)
 duration = timedelta(seconds=time.perf_counter()-start_time)
 
-#
-# # plot the first frame
-# import matplotlib.pyplot as plt
-# plt.imshow(data[...])
-# plt.savefig(data_path / 'first_frame.png')
 x = 2

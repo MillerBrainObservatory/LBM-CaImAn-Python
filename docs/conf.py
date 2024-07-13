@@ -36,9 +36,8 @@ extensions = [
 
 source_suffix = {
     '.rst': 'restructuredtext',
-    '.txt': 'restructuredtext',
     '.ipynb': 'myst-nb',
-    '.myst': 'myst-nb',
+    '.md': 'myst-nb',
 }
 
 
@@ -52,39 +51,31 @@ html_title = "LBM-CaImAn-Python"
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-html_logo = "MillerBrainObservatory_logo.svg"
+html_logo = "_static/caiman-python-logo.svg"
 
 # The name of an image file (relative to this directory) to use as a favicon of
 # the docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
 # pixels large.
-html_favicon = "_static/mbo.ico"
+html_favicon = "_static/lbm.ico"
 
 html_theme = 'sphinx_book_theme'
-html_title = "CaImAn-Python"
-html_short_title = "MBO"
+html_title = "LBM-CaImAn-Python"
+html_short_title = "MBO.py"
 html_static_path = ['_static']
-html_css_files = ["mbo.css"]
+html_css_files = ["custom.css"]
 html_use_modindex = True
 html_copy_source = False
 html_file_suffix = '.html'
 
-# This is a dictionary where the value is a tuple.
-# The first link is a link to our "deployed" documentation URL
-# The second is a path relative to the local build so sphinx can instead
-# map to that location.
-
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3.5', None),
-    'sphinx': ('http://www.sphinx-doc.org/en/stable/', None),
-    'scipy': ('https://docs.scipy.org/doc/scipy', None),
-    'matplotlib': ('https://matplotlib.org/stable', None),
     'numpydoc': ('https://numpydoc.readthedocs.io/en/latest', None),
 }
 
 intersphinx_disabled_reftypes = ["*"]
 
-html_sidebars = {
-    "index": [],
-    "guide/**": ["search-field.html", "sidebar-nav-bs.html"],
-}
+# html_sidebars = {
+#     "index": [],
+#     "guide/**": ["search-field.html", "sidebar-nav-bs.html"],
+# }
 
