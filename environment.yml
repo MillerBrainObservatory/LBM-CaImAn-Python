@@ -5,12 +5,14 @@
 name: mbo-caiman  # changing this will mean changing `conda activate <my-package-name>
 channels:
 - conda-forge
-# - defaults
 dependencies:
 - pip
 - pip:
   - git+https://github.com/MillerBrainObservatory/scanreader.git#egg=scanreader
 - caiman
+- opencv
+- jupyter
+- jupyter_bokeh
 # - python <=3.9
 # - av
 # - cython
@@ -18,13 +20,10 @@ dependencies:
 # - ipykernel
 # - ipython
 # - ipyparallel
-# - jupyter
-# - jupyter_bokeh
 # - matplotlib
 # - moviepy
 # - nose
 # - numpy <2.0.0
-# - opencv
 # - panel >=1.0.2
 # - peakutils
 # - pims
