@@ -10,7 +10,7 @@ dependencies:
 - pip:
   - git+https://github.com/MillerBrainObservatory/scanreader.git#egg=scanreader
 - caiman
-- opencv
+- opencv # needed for applying shifts
 - jupyter
 - jupyter_bokeh
 # - python <=3.9
