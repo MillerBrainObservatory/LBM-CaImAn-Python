@@ -5,10 +5,6 @@ from pathlib import Path
 import numpy as np
 import cv2
 
-sys.path.append('../../util/')  # TODO: Take this out when we upload to pypi
-sys.path.append('exclude/')  # TODO: Take this out when we upload to pypi
-sys.path.append('')  # TODO: Take this out when we upload to pypi
-
 import matplotlib.pyplot as plt
 
 try:
@@ -31,10 +27,6 @@ raw = [x for x in data_path.glob(f'*.tif*')][0]
 ext = "tif"
 reader = sr.read_scan(str(raw), join_contiguous=True, lbm=True, x_cut=(6, 6), y_cut=(17, 0))
 
-if 'dview' in locals():
-    cm.stop_server(dview=dview)
-c, dview, n_processes = cm.cluster.setup_cluster(
-    backend='multiprocessing', n_processes=None, single_thread=False)
 
 plane = reader[:, :, :, 0, 1:400].squeeze()
 plane = np.transpose(plane, (2, 0, 1))
@@ -63,12 +55,19 @@ options_rigid = {
     'nonneg_movie': False
 }
 
-mc_rigid = MotionCorrect(plane, dview=dview, **options_rigid)
-# mc = MotionCorrect(movie, dview=dview, **options_rigid)
-mc_rigid.motion_correct(save_movie=True)
+#%%
+if 'dview' in locals():
+    cm.stop_server(dview=dview)
+# c, dview, n_processes = cm.cluster.setup_cluster(
+#     backend='multiprocessing', n_processes=None, single_thread=False)
+
+mc_file = Path().home() / 'Documents' / 'data' / 'high_res' / 'raw_p1_tp.tif'
+mc_rigid = MotionCorrect(mc_file, dview=None, **options_rigid) # Not parallel
+#mc_rigid = MotionCorrect(plane, dview=None, **options_rigid) # parallel
+
+mc_rigid.motion_correct()
 
 # %%
-mc_file = Path().home() / 'Documents' / 'data' / 'high_res' / 'raw_p1_tp.tif'
 
 # M1 = mc_rigid.apply_shifts_movie(mc_file)
 mc_rigid
@@ -95,11 +94,11 @@ plt.xlabel('frames')
 plt.ylabel('pixels');
 # %%
 # correct for rigid motion correction and save the file (in memory mapped form)
-mc.motion_correct(save_movie=True)
-mc.pw_rigid = True  # turn the flag to True for pw-rigid motion correction
-mc.template = mc.mmap_file  # use the template obtained before to save in computation (optional)
-mc.motion_correct(save_movie=True, template=mc.total_template_rig)
-m_els = cm.load(mc.fname_tot_els)
+mc_rigid.motion_correct(save_movie=True)
+mc_rigid.pw_rigid = True  # turn the flag to True for pw-rigid motion correction
+mc_rigid.template = mc_rigid.mmap_file  # use the template obtained before to save in computation (optional)
+mc_rigid.motion_correct(save_movie=True, template=mc.total_template_rig)
+m_els = cm.load(mc_rigid.fname_tot_els)
 m_els.resize(1, 1, 0.2).play(
     q_max=99.5, fr=30, magnification=2, bord_px=bord_px_rig)
 # %% md
@@ -110,22 +109,22 @@ m_els.resize(1, 1, 0.2).play(
 plt.close()
 plt.figure(figsize=(20, 10))
 plt.subplot(2, 1, 1)
-plt.plot(mc.x_shifts_els)
+plt.plot(mc_rigid.x_shifts_els)
 plt.ylabel('x shifts (pixels)')
 plt.subplot(2, 1, 2)
-plt.plot(mc.y_shifts_els)
+plt.plot(mc_rigid.y_shifts_els)
 plt.ylabel('y_shifts (pixels)')
 plt.xlabel('frames')
 ##%% compute borders to exclude
-bord_px_els = np.ceil(np.maximum(np.max(np.abs(mc.x_shifts_els)),
-                                 np.max(np.abs(mc.y_shifts_els)))).astype(int)
+bord_px_els = np.ceil(np.maximum(np.max(np.abs(mc_rigid.x_shifts_els)),
+                                 np.max(np.abs(mc_rigid.y_shifts_els)))).astype(int)
 # %% md
 # ## Motion Corretion: Optical Flow
 # %%
 ##%% plot the results of Residual Optical Flow
-fls = [cm.paths.fname_derived_presuffix(mc.fname_tot_els[0], 'metrics', swapsuffix='npz'),
-       cm.paths.fname_derived_presuffix(mc.fname_tot_rig[0], 'metrics', swapsuffix='npz'),
-       cm.paths.fname_derived_presuffix(mc.fname[0], 'metrics', swapsuffix='npz'),
+fls = [cm.paths.fname_derived_presuffix(mc_rigid.fname_tot_els[0], 'metrics', swapsuffix='npz'),
+       cm.paths.fname_derived_presuffix(mc_rigid.fname_tot_rig[0], 'metrics', swapsuffix='npz'),
+       cm.paths.fname_derived_presuffix(mc_rigid.fname[0], 'metrics', swapsuffix='npz'),
        ]
 
 plt.figure(figsize=(20, 10))
@@ -170,4 +169,4 @@ for cnt, fl, metr in zip(range(len(fls)), fls, ['pw_rigid', 'rigid', 'raw']):
 if 'dview' in locals():
     cm.stop_server(dview=dview)
 elif 'cluster' in locals():
-    cm.stop_server(dview=cluster)
+    cm.stop_server(dview=c)
