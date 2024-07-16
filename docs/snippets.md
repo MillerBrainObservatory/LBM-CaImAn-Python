@@ -35,5 +35,10 @@ data_path = Path().home() / 'Documents' / 'data' / 'high_res'
 raw_files = [x for x in data_path.glob(f'*.tif*')]
 
 ```
+# Troubleshooting
+caiman heavily relies on opencv, but doens't install it for you. It depends on a few dependencies that are often missing from standard machines. 
 
+```{code-block} python
+RUN apt-get update && apt-get install ffmpeg libsm6 libxext6  -y
+```
 
