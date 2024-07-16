@@ -61,7 +61,7 @@ if 'dview' in locals():
 # c, dview, n_processes = cm.cluster.setup_cluster(
 #     backend='multiprocessing', n_processes=None, single_thread=False)
 
-mc_file = Path().home() / 'Documents' / 'data' / 'high_res' / 'raw_p1_tp.tif'
+mc_file = Path('/mnt/c/Users/RBO') / 'Documents' / 'data' / 'high_res' / 'raw_p1_tp.tif'
 mc_rigid = MotionCorrect(mc_file, dview=None, **options_rigid) # Not parallel
 #mc_rigid = MotionCorrect(plane, dview=None, **options_rigid) # parallel
 
