@@ -8,11 +8,14 @@ channels:
 dependencies:
 - pip
 - pip:
-  - git+https://github.com/MillerBrainObservatory/scanreader.git#egg=scanreader
+  - -e git+https://github.com/MillerBrainObservatory/scanreader.git#egg=scanreader
 - caiman
-- opencv # needed for applying shifts
-- jupyter
-- jupyter_bokeh
+- matplotlib
+- zarr
+- tifffile
+- moviepy
+- h5py
+- scikit-image
 # - python <=3.9
 # - av
 # - cython
