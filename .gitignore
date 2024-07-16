@@ -163,3 +163,4 @@ cython_debug/
 .idea/
 _build/
 exclude/
+src/scanreader
