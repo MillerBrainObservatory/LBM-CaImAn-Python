@@ -22,7 +22,7 @@ import scipy.signal
 import skimage
 import tifffile
 import time
-import params
+from exclude import params
 
 
 @argumentToString.register(np.ndarray)
