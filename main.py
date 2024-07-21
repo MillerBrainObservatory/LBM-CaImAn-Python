@@ -22,13 +22,13 @@ from caiman.source_extraction.cnmf import cnmf as cnmf
 from caiman.source_extraction.cnmf import params as params
 from caiman.summary_images import local_correlations_movie_offline
 
-preview=True
+preview = True
+
 
 def benchmark_chunk_sizes(data, chunk_shape, savepath='', overwrite=True):
     savepath = Path(savepath).with_suffix('.zarr')
 
     # benchmark write
-    start = time.time()
     store = zarr.DirectoryStore(savepath)  # save data to persistent disk storage
     z = zarr.zeros(data.shape, chunks=chunk_shape, dtype='int16', store=store, overwrite=overwrite)
 
@@ -37,14 +37,8 @@ def benchmark_chunk_sizes(data, chunk_shape, savepath='', overwrite=True):
     else:
         z[:] = data
 
-    write = time.time() - start
-    formatted_write = f"{write:.2f}"
-
     # benchmark read
-    start = time.time()
     _ = z[:]
-    read = time.time() - start
-    formatted_read = f"{read:.2f}"
 
     chunksize_nbytes = np.prod(chunk_shape) * z.dtype.itemsize  # 2 bytes per int16
     return [
@@ -78,7 +72,7 @@ def main():
 
     if cfg.input is not None:
         opts.change_params({"data": {"fnames": cfg.input}})
-    if not opts.data['fnames']: # Set neither by CLI arg nor through JSON, so use default data
+    if not opts.data['fnames']:  # Set neither by CLI arg nor through JSON, so use default data
         raise NotImplementedError("Data must be provided via CLI or json_params at this time.")
     m_orig = caiman.load_movie_chain(opts.data['fnames'])
     # m_orig.reshape(m_orig.shape[2], m_orig.shape[0], m_orig.shape[1])
@@ -89,7 +83,7 @@ def main():
 
     ds_ratio = 0.2
     moviehandle = m_orig.resize(1, 1, ds_ratio)
-    moviehandle.play(q_max=99.5, fr=60, magnification=2, save_movie=True,movie_name="/home/rbo/caiman_data/test.avi")
+    moviehandle.play(q_max=99.5, fr=60, magnification=2, save_movie=True, movie_name="/home/rbo/caiman_data/test.avi")
 
     if preview:
         return
@@ -110,7 +104,7 @@ def main():
         m_orig = caiman.load_movie_chain(opts.data['fnames'])
         m_els = caiman.load(mc.mmap_file)
         ds_ratio = 0.2
-        moviehandle = caiman.concatenate([m_orig.resize(1, 1, ds_ratio) - mc.min_mov*mc.nonneg_movie,
+        moviehandle = caiman.concatenate([m_orig.resize(1, 1, ds_ratio) - mc.min_mov * mc.nonneg_movie,
                                           m_els.resize(1, 1, ds_ratio)], axis=2)
         moviehandle.play(fr=60, q_max=99.5, magnification=2)  # press q to exit
 
@@ -155,7 +149,7 @@ def main():
 
     # save results
     cnm.estimates.Cn = Cn
-    cnm.save(fname_new[:-5] + '_init.hdf5') # FIXME
+    cnm.save(fname_new[:-5] + '_init.hdf5')  # FIXME
 
     # RE-RUN seeded CNMF on accepted patches to refine and perform deconvolution
     cnm2 = cnm.refit(images, dview=dview)
@@ -207,17 +201,22 @@ def main():
         for log_file in log_files:
             os.remove(log_file)
 
+
 def handle_args():
     parser = argparse.ArgumentParser(description="Demonstrate 2P Pipeline using batch algorithm")
-    parser.add_argument("--configfile", default=os.path.join(caiman.paths.caiman_datadir(), 'demos', 'general', 'params_demo_pipeline.json'), help="JSON Configfile for Caiman parameters")
-    parser.add_argument("--keep_logs",  action="store_true", help="Keep temporary logfiles")
-    parser.add_argument("--no_play",    action="store_true", help="Do not display results")
-    parser.add_argument("--cluster_backend", default="multiprocessing", help="Specify multiprocessing, ipyparallel, or single to pick an engine")
-    parser.add_argument("--cluster_nproc", type=int, default=None, help="Override automatic selection of number of workers to use")
+    parser.add_argument("--configfile", default=os.path.join(caiman.paths.caiman_datadir(), 'demos', 'general',
+                                                             'params_demo_pipeline.json'),
+                        help="JSON Configfile for Caiman parameters")
+    parser.add_argument("--keep_logs", action="store_true", help="Keep temporary logfiles")
+    parser.add_argument("--no_play", action="store_true", help="Do not display results")
+    parser.add_argument("--cluster_backend", default="multiprocessing",
+                        help="Specify multiprocessing, ipyparallel, or single to pick an engine")
+    parser.add_argument("--cluster_nproc", type=int, default=None,
+                        help="Override automatic selection of number of workers to use")
     parser.add_argument("--input", action="append", help="File(s) to work on, provide multiple times for more files")
-    parser.add_argument("--logfile",    help="If specified, log to the named file")
+    parser.add_argument("--logfile", help="If specified, log to the named file")
     return parser.parse_args()
+
 
 ########
 main()
-
