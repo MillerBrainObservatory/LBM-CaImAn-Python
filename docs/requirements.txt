@@ -9,3 +9,5 @@ sphinxcontrib-images
 sphinxcontrib-video
 numpydoc
 ipykernel
+myst-nb
+sphinx_design

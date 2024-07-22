@@ -1,0 +1,12 @@
+{
+    "pythonPath": "/home/rbo/miniconda3/bin/python",
+    "venvPath": "/home/rbo/miniconda3/envs/caiman/",
+    "venv": "caiman",
+    "pythonPlatform": "Linux",
+    "pythonVersion": "3.11.9",
+    "reportUnnecessaryTypeIgnoreComment": false,
+    "typeCheckingMode": "basic",
+    "useLibraryCodeForTypes": true,
+    "reportMissingParameterType": "error",
+    "reportMissingTypeArgument": "error"
+}
