@@ -56,7 +56,36 @@ You may need some additional dependencies on WSL2:
 sudo apt-get update && apt-get install ffmpeg libsm6 libxext6  -y
 ```
 
-### Relative Import
+### Get Files
+
+```{code-block} python
+
+def get_files(pathnames: os.PathLike | List[os.PathLike | str]) -> List[PathLike[AnyStr]]:
+    """
+    Expands a list of pathname patterns to form a sorted list of absolute filenames.
+
+    Parameters
+    ----------
+    pathnames: os.PathLike
+        Pathname(s) or pathname pattern(s) to read.
+
+    Returns
+    -------
+    List[PathLike[AnyStr]]
+        List of absolute filenames.
+    """
+    pathnames = Path(pathnames).expanduser()  # expand ~ to /home/user
+    if not pathnames.exists():
+        raise FileNotFoundError(f'Path {pathnames} does not exist as a file or directory.')
+    if pathnames.is_file():
+        return [pathnames]
+    if pathnames.is_dir():
+        pathnames = [fpath for fpath in pathnames.glob("*.tif*")]  # matches .tif and .tiff
+    return sorted(pathnames, key=path.basename)
+
+```
+
+## Relative Import
 
 `ImportError: attempted relative import with no known parent package`
 
