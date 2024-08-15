@@ -9,6 +9,7 @@ import os
 from pathlib import Path
 
 os.path.abspath(os.path.join(".."))
+os.path.abspath(os.path.join("..", "core"))
 os.path.abspath(os.path.join("..", "demos"))
 os.path.abspath(os.path.join("..", "demos", "notebooks"))
 
@@ -31,15 +32,13 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinxcontrib.images",
     "sphinxcontrib.video",
-    "sphinxcontrib.matlab",
-    # "myst_parser",
     "myst_nb",
     "sphinx_copybutton",
+    "sphinx_togglebutton",
     "numpydoc",
     "sphinx.ext.intersphinx",
     "sphinx.ext.viewcode",
     "sphinx.ext.napoleon",
-    "sphinx_togglebutton",
     "sphinx_design",
     "sphinx_tippy",
 ]
@@ -63,8 +62,7 @@ html_logo = "_static/caiman-python-logo.svg"
 html_favicon = "./_static/icon_caiman_python.png"
 
 html_theme = "sphinx_book_theme"
-html_title = "LBM-CaImAn-Python"
-html_short_title = "MBO.py"
+# html_short_title = "LB.py"
 html_static_path = ["_static"]
 html_css_files = ["custom.css"]
 html_use_modindex = True
@@ -73,7 +71,7 @@ html_file_suffix = ".html"
 
 current_filepath = Path()
 intersphinx_mapping = {
-    "python": ("https://docs.python.org/3.5", None),
+    "python": ("https://docs.python.org/3.9", None),
     "numpydoc": ("https://numpydoc.readthedocs.io/en/latest", None),
     "mbo": (
         "https://millerbrainobservatory.github.io/",
@@ -82,29 +80,12 @@ intersphinx_mapping = {
 }
 
 templates_path = ["_templates"]
-
-html_theme = "sphinx_book_theme"
-
-html_logo = "_static/CaImAn-MATLAB_logo.svg"
-html_short_title = "LBM CaImAn Pipeline"
-html_static_path = ["_static"]
-html_css_files = ["custom.css"]
-# html_js_files = ["subtoc.js"]
-html_favicon = "./_static/lbm_caiman_mat.svg"
-html_copy_source = True
-
 intersphinx_disabled_reftypes = ["*"]
 
 html_theme_options = {
     "path_to_docs": "docs",
-    "repository_url": "https://github.com/executablebooks/sphinx-book-theme",
+    "repository_url": "https://github.com/MillerBrainObservatory/LBM-CaImAn-Python/",
     "repository_branch": "master",
-    "launch_buttons": {
-        "binderhub_url": "https://mybinder.org",
-        "colab_url": "https://colab.research.google.com/",
-        "deepnote_url": "https://deepnote.com/",
-        "notebook_interface": "jupyterlab",
-    },
     "use_edit_page_button": True,
     "use_source_button": True,
     "use_issues_button": True,
