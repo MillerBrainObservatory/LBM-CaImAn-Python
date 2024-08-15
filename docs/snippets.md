@@ -126,7 +126,6 @@ or directly in a notebook:
 # print sys info
 !cms sysinfo
 
-```
 
 Documented commands (type help <topic>):
 ========================================
@@ -180,3 +179,5 @@ Sourcing .zshenv...
 | uname.version       | #1 SMP Thu Mar 7 03:22:57 UTC 2024                                            |
 | user                | mbo                                                                           |
 +---------------------+-------------------------------------------------------------------------------+
+
+```
