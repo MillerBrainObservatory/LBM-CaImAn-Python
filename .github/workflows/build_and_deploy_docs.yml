@@ -1,7 +1,12 @@
 name: build and deploy docs
 
-on: [push, pull_request, workflow_dispatch]
-
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [dev, master]
+  workflow_dispatch:
+    branches: [dev, master]
 
 jobs:
   docs:
