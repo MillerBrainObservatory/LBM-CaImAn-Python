@@ -73,3 +73,20 @@ def get_files(pathnames: os.PathLike | List[os.PathLike | str]) -> List[PathLike
 `ImportError: attempted relative import with no known parent package`
 
 This almost always occurs when you try to run a specific script directly without running the python package i.e. `python -m path/to/project/` vs `python path/to/project/file.py`
+
+```{admonition} __main__.py
+:class: dropdown
+
+The purpose of this file is to tell our python package how to run the code.
+
+You can execute __main__.py as if it were a python module, fixing the above import errors.
+
+Like so:
+
+    `python /home/mbo/repos/scanreader/scanreader/__main__.py`
+
+Equivlent to:
+
+    `python -m /home/mbo/repos/scanreader/scanreader/`
+
+```
