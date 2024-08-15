@@ -4,6 +4,8 @@ furo==2021.11.16
 nbsphinx
 sphinx_gallery
 sphinx_book_theme
+sphinx-copybutton
+sphinx_togglebutton
 sphinxcontrib-matlabdomain
 sphinxcontrib-images
 sphinxcontrib-video

@@ -18,7 +18,6 @@ align: center
 
 ## Documentation Contents
 
-
 ```{toctree}
 ---
 maxdepth: 2
@@ -27,6 +26,6 @@ scanreader
 api/index.md
 ```
 
-image_gallery
-glossary
+<!-- image_gallery -->
+<!-- glossary -->
 <!-- snippets.md -->

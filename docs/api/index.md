@@ -2,9 +2,10 @@
 
 ```{eval-rst}
 
-.. currentmodule:: core
+.. currentmodule:: .
 
-.. autosummary core
+.. automodule:: .
+
 
 ```
 
