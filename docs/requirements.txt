@@ -6,9 +6,8 @@ sphinx_gallery
 sphinx_book_theme
 sphinx_copybutton
 sphinx_togglebutton
-sphinxcontrib_matlabdomain
-sphinxcontrib_images
-sphinxcontrib_video
+sphinxcontrib-images
+sphinxcontrib-video
 numpydoc
 ipykernel
 myst_nb
