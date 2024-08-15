@@ -30,7 +30,9 @@ data_path = Path().home() / 'Documents' / 'data' / 'high_res'
 raw_files = [x for x in data_path.glob(f'*.tif*')]
 
 ```
+
 # Troubleshooting
+
 caiman heavily relies on opencv, but doens't install it for you. It depends on a few dependencies that are often missing from standard machines. 
 
 ```{code-block} python
@@ -65,3 +67,9 @@ def get_files(pathnames: os.PathLike | List[os.PathLike | str]) -> List[PathLike
     return sorted(pathnames, key=path.basename)
 
 ```
+
+## Relative Import
+
+`ImportError: attempted relative import with no known parent package`
+
+This almost always occurs when you try to run a specific script directly without running the python package i.e. `python -m path/to/project/` vs `python path/to/project/file.py`
