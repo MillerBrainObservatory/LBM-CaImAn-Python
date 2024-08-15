@@ -90,3 +90,12 @@ Equivlent to:
     `python -m /home/mbo/repos/scanreader/scanreader/`
 
 ```
+
+## Photometric: MinIsBlack
+
+This is the `PhotometricInterpretation` [TIFF tag](https://www.loc.gov/preservation/digital/formats/content/tiff_tags.shtml), which defines how to interpret the values of the Tiff strips.
+Example: for an RGB Tiff: band 1 = red, band 2 = green, band 3 = blue.
+CMYK stands for the Cyan, Magenta, Yellow, blacK color space, etc.
+
+MinIsBlack defines a gradient from 0 to 1 representing shades of gray.
+
