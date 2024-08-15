@@ -1,11 +1,11 @@
 # API
 
 ```{eval-rst}
+
 .. currentmodule:: .
 
-.. currentmodule:: core
+.. automodule:: .
 
-.. currentmodule:: core
 
 ```
 

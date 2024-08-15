@@ -1,0 +1,29 @@
+[project]
+name = "scanreader"
+version = "0.5.0"
+
+description = "Tiff reader for ScanImage BigTiff files."
+requires-python = ">=3.9"
+readme = "README.md"
+classifiers = [
+    'Intended Audience :: Science/Research',
+    'Intended Audience :: Developers',
+    'License :: OSI Approved :: BSD License',
+    'Programming Language :: Python',
+    'Programming Language :: Python :: 3',
+    'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
+    'Programming Language :: Python :: 3.12',
+    'Programming Language :: Python :: 3 :: Only',
+    'Topic :: Software Development',
+    'Topic :: Scientific/Engineering',
+    'Operating System :: Microsoft :: Windows',
+    'Operating System :: POSIX',
+    'Operating System :: Unix',
+    'Operating System :: MacOS',
+]
+
+[project.urls]
+homepage = "https://millerbrainobservatory.github.io/scanreader/index.html"
+documentation = "https://millerbrainobservatory.github.io/scanreader/index.html"
+source = "https://github.com/MillerBrainObservatory/scanreader/"

@@ -1,7 +1,12 @@
 name: build and deploy docs
 
-on: [push, pull_request, workflow_dispatch]
-
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [dev, master]
+  workflow_dispatch:
+    branches: [dev, master]
 
 jobs:
   docs:
@@ -19,12 +24,6 @@ jobs:
           docs-folder: "docs/"
           pre-build-command: "apt-get update -y && apt-get install -y latexmk texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended"
           build-command: "make html"
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: docs-artifacts
-          path: docs/_build/html/
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
