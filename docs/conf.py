@@ -43,6 +43,8 @@ extensions = [
     "sphinx_tippy",
 ]
 
+images_config = {"cache_path": "./_images/"}
+
 source_suffix = {
     ".rst": "restructuredtext",
     ".ipynb": "myst-nb",

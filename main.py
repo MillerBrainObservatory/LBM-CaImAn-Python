@@ -203,7 +203,7 @@ def main():
 
 
 def handle_args():
-    parser = argparse.ArgumentParser(description="Demonstrate 2P Pipeline using batch algorithm")
+    parser = argparse.ArgumentParser(description="Segment")
     parser.add_argument("--configfile", default=os.path.join(caiman.paths.caiman_datadir(), 'demos', 'general',
                                                              'params_demo_pipeline.json'),
                         help="JSON Configfile for Caiman parameters")

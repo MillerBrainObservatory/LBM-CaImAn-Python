@@ -21,10 +21,10 @@ print(os.name)
 
 pd.options.display.max_colwidth = 120
 
-parent = Path('/home/rbo/caiman_data')
+parent = Path('/home/mbo/caiman_data')
 raw_tiff_name = parent / 'high_res.tif'
-reader = scanreader.read_scan(str(raw_tiff_name), join_contiguous=True)
-reader.num_channels
+# reader = scanreader.read_scan(str(raw_tiff_name), join_contiguous=True)
+# reader.num_channels
 
 #%%
 

@@ -23,7 +23,9 @@ align: center
 maxdepth: 2
 ---
 scanreader
+snippets
 api/index.md
+glossary
 ```
 
 <!-- image_gallery -->
