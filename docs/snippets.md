@@ -2,6 +2,24 @@
 
 Helpful snippets for all things LBM python.
 
+## Pixi
+
+Install Pixi
+
+```{code-block}
+
+# Linux & macOS
+curl -fsSL https://pixi.sh/install.sh | bash
+# Windows
+iwr -useb https://pixi.sh/install.ps1 | iex
+
+Create an environment from a conda file
+
+`pixi init --import ./environment.yml`
+
+```
+
+
 ## Data Paths
 
 ### Foreward slash (`/`) or backwards slash (`\`) ?
