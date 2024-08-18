@@ -59,7 +59,7 @@ html_title = "LBM-CaImAn-Python"
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-html_logo = "_static/caiman-python-logo.svg"
+html_logo = "_static/logo_caiman_python_with_icon.png"
 
 html_favicon = "./_static/icon_caiman_python.png"
 
