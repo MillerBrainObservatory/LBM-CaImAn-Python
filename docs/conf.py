@@ -61,7 +61,7 @@ html_title = "LBM-CaImAn-Python"
 # of the sidebar.
 html_logo = "_static/logo_caiman_python_with_icon.png"
 
-html_favicon = "./_static/icon_caiman_python.png"
+html_favicon = "./_static/icon_caiman_python.svg"
 
 html_theme = "sphinx_book_theme"
 # html_short_title = "LB.py"
