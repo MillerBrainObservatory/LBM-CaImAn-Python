@@ -6,16 +6,19 @@ Helpful snippets for all things LBM python.
 
 ### Install Pixi
 
-:::::{tab-set}
-::::{tab-item} Windows
+`````{tab-set}
+
+````{tab-item} Windows
 
 ```{code-block} bash
 
 iwr -useb https://pixi.sh/install.ps1 | iex
 
 ```
-::::
-::::{tab-item} Linux
+````
+
+````{tab-item} Linux
+
 
 ```{code-block} bash
 
@@ -23,8 +26,9 @@ curl -fsSL https://pixi.sh/install.sh | bash
 
 ```
 
-::::
-:::::
+````
+
+`````
 
 ### Import `conda` environment
 
