@@ -11,14 +11,15 @@ kernelspec:
   name: python3
 ---
 
-# LBM Demo Extraction
+# Pre-Processing
+
+## Imports
 
 ```{code-cell} ipython3
 ---
 jupyter:
   is_executing: true
 ---
-## Imports
 %load_ext autoreload
 %autoreload 2
 
@@ -55,7 +56,7 @@ if get_sys_info:
     !cms sysinfo
 ```
 
-## Set up filepaths
+## Filepaths
 
 ```{code-cell} ipython3
 # ScanReader object holds our image data with tifffile
@@ -65,11 +66,10 @@ raw_files = [str(x) for x in raw_dir.glob("*.tif*")]
 raw_files
 ```
 
-## scanreader
-
-### Extract data using [scanreader (docs)](https://millerbrainobservatory.github.io/scanreader/index.html), joining contiguous ROI's, and plot our mean image
+## Tiff Reader: [scanreader](https://github.com/MillerBrainObservatory/scanreader/)
 
 Our ScanReader object contains all of the properties needed to keep track of our raw data. 
+
 - ScanImage metadata is stored alongside header metadata, this ScanImage specific data is what's needed to assemble frames from constituent ROIs.
 - We calculate the frame rate and time/pixels between scans and ROI's using the following metadata:
 
@@ -96,6 +96,8 @@ Setting `join_contiguous=True` will combine ROI's with the following constraints
 2) Must be located in the same scanning depth
 3) Must be located in the same slice
 
+### Extract data with the reader
+
 ```{code-cell} ipython3
 reader = sr.read_scan(raw_files[0])
 scan = reader[:,1,:,:]
@@ -105,6 +107,8 @@ scan = reader[:,1,:,:]
 plt.imshow(clear_zeros(scan)[1,...], cmap='gray')
 plt.show()
 ```
+
+### Quickly visualize outputs
 
 ```{code-cell} ipython3
 fig, ax = plt.subplots(1, 2, figsize=(15, 15))

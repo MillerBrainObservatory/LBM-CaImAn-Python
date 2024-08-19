@@ -43,7 +43,7 @@ curl -fsSL https://pixi.sh/install.sh | bash
 
 ### OpenCV
 
-[caiman]() (and many other libraries that show image visualizations) heavily rely on [opencv](https://opencv.org/), but don't install it for you.
+Many imaging libraries that show image visualizations heavily rely on [opencv](https://opencv.org/), but don't install it for you.
 
 OpenCV has a plethora of external dependencies that should be installed with your system package manager:
 
