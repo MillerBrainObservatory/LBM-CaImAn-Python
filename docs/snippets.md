@@ -2,6 +2,8 @@
 
 Helpful snippets for all things LBM python.
 
+----
+
 ## Pixi
 
 ### Install Pixi
@@ -34,31 +36,8 @@ curl -fsSL https://pixi.sh/install.sh | bash
 
 `pixi init --import ./environment.yml`
 
-## Data Paths
 
-### Foreward slash (`/`) or backwards slash (`\`) ?
-
-**When in doubt, use a `/` foreward slash.** 
-
-This will work for windows `C:/Users/` without needing a double backslash using [`pathlib.Path()](https://docs.python.org/3/library/pathlib.html#pathlib.Path) (built into python).
-
-This will automatically return you a [Windows Path](https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath) or a [PosixPath](https://docs.python.org/3/library/pathlib.html#pathlib.WindowsPath).
-
-````{admonition} Filepaths on [WSL](https://en.wikipedia.org/wiki/Windows_Subsystem_for_Linux)
-:class: dropdown
-
-Be sure to not confuse your wsl path `//$wsl/home/MBO` with your windows home path `C:/Users/MBO`.
-
-```{code-block} python
-:caption: Data path inputs
-
-# this works on any operating system, any filepath structure
-data_path = Path().home() / 'Documents' / 'data' / 'high_res'
-
-raw_files = [x for x in data_path.glob(f'*.tif*')]
-
-```
-````
+----
 
 ## Troubleshooting
 
@@ -88,7 +67,7 @@ You may need some additional dependencies on WSL2:
 sudo apt-get update && apt-get install ffmpeg libsm6 libxext6  -y
 ```
 
-### Get Files
+### Filepaths and data directories
 
 ```{code-block} python
 
@@ -117,13 +96,11 @@ def get_files(pathnames: os.PathLike | List[os.PathLike | str]) -> List[PathLike
 
 ```
 
-## Relative Import
-
-`ImportError: attempted relative import with no known parent package`
+### `ImportError: attempted relative import with no known parent package`
 
 This almost always occurs when you try to run a specific script directly without running the python package i.e. `python -m path/to/project/` vs `python path/to/project/file.py`
 
-```{admonition} __main__.py
+```{admonition} __main__ python file
 :class: dropdown
 
 The purpose of this file is to tell our python package how to run the code.
@@ -139,6 +116,8 @@ Equivlent to:
     `python -m /home/mbo/repos/scanreader/scanreader/`
 
 ```
+
+----
 
 ## System Information
 
@@ -203,3 +182,31 @@ pip install cloudmesh-sys
 +---------------------+-------------------------------------------------------------------------------+
 
 ```
+
+----
+
+## FAQ
+
+### 1. Foreward slash or backwards slash
+
+**When in doubt, use a `/` foreward slash.** 
+
+This will work for windows `C:/Users/` without needing a double backslash using [`pathlib.Path()](https://docs.python.org/3/library/pathlib.html#pathlib.Path) (built into python).
+
+This will automatically return you a [Windows Path](https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath) or a [PosixPath](https://docs.python.org/3/library/pathlib.html#pathlib.WindowsPath).
+
+````{admonition} Filepaths on [WSL](https://en.wikipedia.org/wiki/Windows_Subsystem_for_Linux)
+:class: dropdown
+
+Be sure to not confuse your wsl path `//$wsl/home/MBO` with your windows home path `C:/Users/MBO`.
+
+```{code-block} python
+:caption: Data path inputs
+
+# this works on any operating system, any filepath structure
+data_path = Path().home() / 'Documents' / 'data' / 'high_res'
+
+raw_files = [x for x in data_path.glob(f'*.tif*')]
+
+```
+````
