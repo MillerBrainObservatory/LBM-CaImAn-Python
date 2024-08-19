@@ -13,3 +13,4 @@ ipykernel
 myst_nb
 sphinx_design
 sphinx_tippy
+jupytext

@@ -8,10 +8,8 @@
 import os
 from pathlib import Path
 
-os.path.abspath(os.path.join(".."))
-os.path.abspath(os.path.join("..", "core"))
-os.path.abspath(os.path.join("..", "demos"))
-os.path.abspath(os.path.join("..", "demos", "notebooks"))
+os.path.abspath(os.path.join("../", "core"))
+os.path.abspath(os.path.join("../", "demos/notebooks/"))
 
 project = "LBM-CaImAn-Python"
 copyright = "2024, Elizabeth R. Miller Brain Observatory | The Rockefeller University. All Rights Reserved"
@@ -22,6 +20,8 @@ release = "0.1.0"
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 exclude_patterns = ["Thumbs.db", ".DS_Store"]
+
+
 myst_enable_extensions = [
     "colon_fence",
     "dollarmath",
@@ -43,13 +43,18 @@ extensions = [
     "sphinx_tippy",
 ]
 
-images_config = {"cache_path": "./_images/"}
-
 source_suffix = {
     ".rst": "restructuredtext",
     ".ipynb": "myst-nb",
     ".md": "myst-nb",
 }
+
+myst_admonition_enable = True
+myst_amsmath_enable = True
+myst_html_img_enable = True
+myst_url_schemes = ("http", "https", "mailto")
+
+images_config = {"cache_path": "./_images/"}
 
 templates_path = ["_templates"]
 html_static_path = ["_static"]
