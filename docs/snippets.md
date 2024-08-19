@@ -4,21 +4,31 @@ Helpful snippets for all things LBM python.
 
 ## Pixi
 
-Install Pixi
+### Install Pixi
 
-```{code-block}
+:::::{tab-set}
+::::{tab-item} Windows
 
-# Linux & macOS
-curl -fsSL https://pixi.sh/install.sh | bash
-# Windows
+```{code-block} bash
+
 iwr -useb https://pixi.sh/install.ps1 | iex
 
-Create an environment from a conda file
+```
+::::
+::::{tab-item} Linux
 
-`pixi init --import ./environment.yml`
+```{code-block} bash
+
+curl -fsSL https://pixi.sh/install.sh | bash
 
 ```
 
+::::
+:::::
+
+### Import `conda` environment
+
+`pixi init --import ./environment.yml`
 
 ## Data Paths
 
@@ -128,33 +138,23 @@ Equivlent to:
 
 ## System Information
 
-[cloudmesh-cmd5](https://github.com/cloudmesh/cloudmesh-cmd5) is a helpful library to view system information. 
+[cloudmesh-cmd5](https://github.com/cloudmesh/cloudmesh-cmd5) is a helpful library to view system information.
 
 Install via [pip](https://pypi.org/project/cloudmesh-sys/):
-`pip install cloudmesh-sys`
 
-or directly in a notebook:
 
 ```{code-block} python
-!pip install cloudmesh-cmd5
 
-# this sets some helpful defaults
-!cms help 
+pip install cloudmesh-sys
 
-# print sys info
-!cms sysinfo
+```
 
+```{table} System Information
+:name: user_information
+:align: center
 
-Documented commands (type help <topic>):
-========================================
-EOF     commands  dryrun  info   py    set    stopwatch  var    
-banner  debug     echo    man    q     shell  sysinfo    version
-clear   default   help    pause  quit  sleep  term     
-
-Sourcing .zshenv...
-+---------------------+-------------------------------------------------------------------------------+
 | Attribute           | Value                                                                         |
-+---------------------+-------------------------------------------------------------------------------+
+| :------------------ | :---------------------------------------------------------------------------- |
 | BUG_REPORT_URL      | "https://bugs.launchpad.net/ubuntu/"                                          |
 | DISTRIB_CODENAME    | jammy                                                                         |
 | DISTRIB_DESCRIPTION | "Ubuntu 22.04.4 LTS"                                                          |
