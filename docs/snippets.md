@@ -4,6 +4,11 @@ Helpful snippets for all things LBM python.
 
 ----
 
+### Napari on WSL
+
+sudo apt install x11-xserver-utils
+
+
 ## Pixi
 
 ### Install Pixi
