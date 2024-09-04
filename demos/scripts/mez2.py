@@ -9,19 +9,9 @@ import mesmerize_core as mc
 import matplotlib.pyplot as plt
 
 import scanreader
-from tifffile import imwrite, imread
 
 import pandas as pd
-import numpy as np
 import dask.array as da
-import zarr
-import numpy as np
-try:
-    if __IPYTHON__:
-        get_ipython().run_line_magic('load_ext', 'autoreload')
-        get_ipython().run_line_magic('autoreload', '2')
-except NameError:
-    pass
 from mesmerize_core.caiman_extensions.cnmf import cnmf_cache
 import fastplotlib as fpl
 
