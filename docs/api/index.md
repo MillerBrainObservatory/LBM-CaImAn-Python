@@ -2,9 +2,8 @@
 
 ```{eval-rst}
 
-.. currentmodule:: core
+.. currentmodule:: LBM_caiman_Python
 
-.. autofunction:: read_scan
+.. autofunction:: get_reader
 
 ```
-

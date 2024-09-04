@@ -6,10 +6,14 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 import os
+import sys
 from pathlib import Path
 
-os.path.abspath(os.path.join("../", "core"))
-os.path.abspath(os.path.join("../", "demos/notebooks/"))
+core_mod = os.path.abspath(os.path.join("../", "core"))
+notebooks_mod = os.path.abspath(os.path.join("../", "demos/notebooks/"))
+sys.path.insert(0, os.path.abspath(os.path.join("..")))
+sys.path.insert(0, os.path.abspath(os.path.join("..", "..")))
+sys.path.insert(0, os.path.abspath(os.path.join("..", "..", "core")))
 
 project = "LBM-CaImAn-Python"
 copyright = "2024, Elizabeth R. Miller Brain Observatory | The Rockefeller University. All Rights Reserved"
