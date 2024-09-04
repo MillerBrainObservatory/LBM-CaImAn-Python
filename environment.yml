@@ -11,6 +11,6 @@ dependencies:
 - pyqt
 - pip
 - napari
-- fastplotlib
+- fastplotlib=0.2.0
 - simplejpeg
 
