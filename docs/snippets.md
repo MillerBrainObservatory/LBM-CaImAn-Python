@@ -2,55 +2,48 @@
 
 Helpful snippets for all things LBM python.
 
+----
+
 ## Pixi
 
-Install Pixi
+### Install Pixi
 
-```{code-block}
+`````{tab-set}
 
-# Linux & macOS
-curl -fsSL https://pixi.sh/install.sh | bash
-# Windows
+````{tab-item} Windows
+
+```{code-block} bash
+
 iwr -useb https://pixi.sh/install.ps1 | iex
-
-Create an environment from a conda file
-
-`pixi init --import ./environment.yml`
-
-```
-
-
-## Data Paths
-
-### Foreward slash (`/`) or backwards slash (`\`) ?
-
-**When in doubt, use a `/` foreward slash.** 
-
-This will work for windows `C:/Users/` without needing a double backslash using [`pathlib.Path()](https://docs.python.org/3/library/pathlib.html#pathlib.Path) (built into python).
-
-This will automatically return you a [Windows Path](https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath) or a [PosixPath](https://docs.python.org/3/library/pathlib.html#pathlib.WindowsPath).
-
-````{admonition} Filepaths on [WSL](https://en.wikipedia.org/wiki/Windows_Subsystem_for_Linux)
-:class: dropdown
-
-Be sure to not confuse your wsl path `//$wsl/home/MBO` with your windows home path `C:/Users/MBO`.
-
-```{code-block} python
-:caption: Data path inputs
-
-# this works on any operating system, any filepath structure
-data_path = Path().home() / 'Documents' / 'data' / 'high_res'
-
-raw_files = [x for x in data_path.glob(f'*.tif*')]
 
 ```
 ````
+
+````{tab-item} Linux
+
+
+```{code-block} bash
+
+curl -fsSL https://pixi.sh/install.sh | bash
+
+```
+
+````
+
+`````
+
+### Import `conda` environment
+
+`pixi init --import ./environment.yml`
+
+
+----
 
 ## Troubleshooting
 
 ### OpenCV
 
-[caiman]() (and many other libraries that show image visualizations) heavily rely on [opencv](https://opencv.org/), but don't install it for you.
+Many imaging libraries that show image visualizations heavily rely on [opencv](https://opencv.org/), but don't install it for you.
 
 OpenCV has a plethora of external dependencies that should be installed with your system package manager:
 
@@ -74,7 +67,7 @@ You may need some additional dependencies on WSL2:
 sudo apt-get update && apt-get install ffmpeg libsm6 libxext6  -y
 ```
 
-### Get Files
+### Filepaths and data directories
 
 ```{code-block} python
 
@@ -103,13 +96,11 @@ def get_files(pathnames: os.PathLike | List[os.PathLike | str]) -> List[PathLike
 
 ```
 
-## Relative Import
-
-`ImportError: attempted relative import with no known parent package`
+### `ImportError: attempted relative import with no known parent package`
 
 This almost always occurs when you try to run a specific script directly without running the python package i.e. `python -m path/to/project/` vs `python path/to/project/file.py`
 
-```{admonition} __main__.py
+```{admonition} __main__ python file
 :class: dropdown
 
 The purpose of this file is to tell our python package how to run the code.
@@ -126,35 +117,27 @@ Equivlent to:
 
 ```
 
+----
+
 ## System Information
 
-[cloudmesh-cmd5](https://github.com/cloudmesh/cloudmesh-cmd5) is a helpful library to view system information. 
+[cloudmesh-cmd5](https://github.com/cloudmesh/cloudmesh-cmd5) is a helpful library to view system information.
 
 Install via [pip](https://pypi.org/project/cloudmesh-sys/):
-`pip install cloudmesh-sys`
 
-or directly in a notebook:
 
 ```{code-block} python
-!pip install cloudmesh-cmd5
 
-# this sets some helpful defaults
-!cms help 
+pip install cloudmesh-sys
 
-# print sys info
-!cms sysinfo
+```
 
+```{table} System Information
+:name: user_information
+:align: center
 
-Documented commands (type help <topic>):
-========================================
-EOF     commands  dryrun  info   py    set    stopwatch  var    
-banner  debug     echo    man    q     shell  sysinfo    version
-clear   default   help    pause  quit  sleep  term     
-
-Sourcing .zshenv...
-+---------------------+-------------------------------------------------------------------------------+
 | Attribute           | Value                                                                         |
-+---------------------+-------------------------------------------------------------------------------+
+| :------------------ | :---------------------------------------------------------------------------- |
 | BUG_REPORT_URL      | "https://bugs.launchpad.net/ubuntu/"                                          |
 | DISTRIB_CODENAME    | jammy                                                                         |
 | DISTRIB_DESCRIPTION | "Ubuntu 22.04.4 LTS"                                                          |
@@ -285,3 +268,29 @@ Cell In[3], line 1
 AttributeError: type object 'GlyphSlot' has no attribute 'render'
 
 ```
+
+## FAQ
+
+### 1. Foreward slash or backwards slash
+
+**When in doubt, use a `/` foreward slash.** 
+
+This will work for windows `C:/Users/` without needing a double backslash using [`pathlib.Path()](https://docs.python.org/3/library/pathlib.html#pathlib.Path) (built into python).
+
+This will automatically return you a [Windows Path](https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath) or a [PosixPath](https://docs.python.org/3/library/pathlib.html#pathlib.WindowsPath).
+
+````{admonition} Filepaths on [WSL](https://en.wikipedia.org/wiki/Windows_Subsystem_for_Linux)
+:class: dropdown
+
+Be sure to not confuse your wsl path `//$wsl/home/MBO` with your windows home path `C:/Users/MBO`.
+
+```{code-block} python
+:caption: Data path inputs
+
+# this works on any operating system, any filepath structure
+data_path = Path().home() / 'Documents' / 'data' / 'high_res'
+
+raw_files = [x for x in data_path.glob(f'*.tif*')]
+
+```
+````

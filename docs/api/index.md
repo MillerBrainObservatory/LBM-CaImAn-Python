@@ -2,10 +2,9 @@
 
 ```{eval-rst}
 
-.. currentmodule:: .
+.. currentmodule:: core
 
-.. automodule:: .
-
+.. autofunction:: read_scan
 
 ```
 
