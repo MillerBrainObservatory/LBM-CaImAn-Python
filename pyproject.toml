@@ -31,3 +31,12 @@ homepage = "https://github.com/MillerBrainObservatory/"
 documentation = "https://millerbrainobservatory.github.io/LBM-CaImAn-Python/index.html"
 source = "https://github.com/MillerBrainObservatory/LBM-CaImAn-Python/"
 
+
+[tool.pixi.project]
+channels = ["conda-forge"]
+platforms = ["linux-64"]
+
+[tool.pixi.pypi-dependencies]
+LBM-CaImAn-Python = { path = ".", editable = true }
+
+[tool.pixi.tasks]

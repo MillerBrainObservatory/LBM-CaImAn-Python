@@ -23,8 +23,9 @@ align: center
 maxdepth: 2
 ---
 scanreader
+notebooks/index
 snippets
-api/index.md
+api/index
 glossary
 ```
 

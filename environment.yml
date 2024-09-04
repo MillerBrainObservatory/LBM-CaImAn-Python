@@ -2,49 +2,15 @@
 #    $ conda install -n base -c conda-forge mamba
 #    $ conda env create -n mbo-py -f /path/to/repo/environment.yml
 #    $ conda activate mbo-caiman
-name: mbo  # changing this will mean changing `conda activate <my-package-name>
 channels:
 - conda-forge
-- default
 dependencies:
-- tensorflow >=2.4.0
+- python
 - mesmerize-core
 - napari
 - pyqt
 - pip
-- pip:
-  - -e git+https://github.com/MillerBrainObservatory/scanreader.git#egg=scanreader
+- napari
+- fastplotlib=0.2.0
+- simplejpeg
 
-# - dask
-# - zarr
-# - moviepy
-# - h5py
-# - pynwb
-# - caiman
-# - matplotlib
-  #- scikit-image
-  #- matplotlib~=3.9.1
-# - python <=3.9 - av
-# - cython
-# - h5py
-# - ipykernel
-# - ipython
-# - ipyparallel
-# - matplotlib
-# - moviepy
-# - nose
-# - numpy <2.0.0
-# - panel >=1.0.2
-# - peakutils
-# - pims
-# - psutil
-# - pyqtgraph
-# - scikit-image >=0.19.0
-# - scikit-learn >=1.2
-# - scipy >= 1.10.1
-# - tifffile
-# - tk
-# - tqdm
-# - yapf
-# - zarr
-# - nbsphinx
