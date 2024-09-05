@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-import core.io as lbm_io
+from core import *
 
 from scanreader import scans
 
@@ -42,7 +42,7 @@ def read_scan(
 
     """
     # Expand wildcards
-    filenames = lbm_io.get_files(pathnames)
+    filenames = core.io.get_files(pathnames)
 
     if isinstance(filenames, (list, tuple)):
         if len(filenames) == 0:
