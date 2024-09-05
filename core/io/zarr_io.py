@@ -3,6 +3,8 @@ from pathlib import Path
 import dask.array as da
 import logging
 
+from scanreader import scans
+
 logging.basicConfig()
 logger = logging.getLogger(__name__)
 
@@ -23,11 +25,21 @@ def get_zarr_files(directory):
     contents = [x for x in directory.glob("*") if x.is_dir()]
     return [x for x in directory.glob("*") if x.suffix == ".zarr"]
 
-def save_as_zarr(data, savedir: os.PathLike, planes=None, frames=None, metadata={}, prepend_str='extracted'):
+
+def save_as_zarr(scan: scans.ScanLBM,
+                 savedir: os.PathLike,
+                 frames=slice(None),
+                 planes=slice(None),
+                 metadata=None,
+                 prepend_str='extracted'):
     savedir = Path(savedir)
-        
-    if not isinstance(planes, (list, tuple)):
+
+    if isinstance(frames, int):
+        frames = [frames]
+    if isinstance(planes, int):
         planes = [planes]
 
-    filename = savedir / f'{prepend_str}_plane_{idx}.zarr'
+    for idx in planes:
+        filename = savedir / f'{prepend_str}_plane_{idx}.zarr'
+
     da.to_zarr(data, filename)
