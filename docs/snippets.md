@@ -8,6 +8,15 @@ Helpful snippets for all things LBM python.
 
 sudo apt install x11-xserver-utils
 
+```{code-block} python
+
+import vispy
+print(vispy.sys_info())
+
+```
+
+[imagesc question](https://forum.image.sc/t/toubles-with-opengl-in-napari-on-server/81950)
+
 
 ## Pixi
 
