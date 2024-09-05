@@ -1,36 +1,33 @@
-import tifffile
-import dask.array
-import scanreader
+import os
+from pathlib import Path
+import dask.array as da
+import logging
+
+logging.basicConfig()
+logger = logging.getLogger(__name__)
+
+LBM_DEBUG_FLAG = os.environ.get('LBM_DEBUG', 1)
+
+if LBM_DEBUG_FLAG:
+    logger.setLevel(logging.DEBUG)
+else:
+    logger.setLevel(logging.INFO)
 
 
-def tiffs2zarr(filenames, zarrurl, chunksize, **kwargs):
-    """Write images from sequence of TIFF files as zarr."""
-    with tifffile.TiffFile(filenames) as tifs:
-        with tifs.aszarr() as store:
-            da = dask.array.from_zarr(store)
-            chunks = (chunksize,) + da.shape[1:]
-            da.rechunk(chunks).to_zarr(zarrurl, **kwargs)
+def get_zarr_files(directory):
+    if not isinstance(directory, (str, os.PathLike)):
+        logger.error("iter_zarr_dir requires a single string/path object")
+    directory = Path(directory)
 
+    # get directory contents
+    contents = [x for x in directory.glob("*") if x.is_dir()]
+    return [x for x in directory.glob("*") if x.suffix == ".zarr"]
 
-if __name__ == '__main__':
-    import zarr
-    from pathlib import Path
+def save_as_zarr(data, savedir: os.PathLike, planes=None, frames=None, metadata={}, prepend_str='extracted'):
+    savedir = Path(savedir)
+        
+    if not isinstance(planes, (list, tuple)):
+        planes = [planes]
 
-    root = Path().home() / 'caiman_data'
-    filename = root / 'high_res.tif'
-    # from argparse import ArgumentParser
-    # parser = ArgumentParser()
-    # parser.add_argument('filenames', nargs='+')
-    # parser.add_argument('--zarrurl', required=True)
-    # parser.add_argument('--chunksize', type=int, default=None)
-    # args = parser.parse_args()
-    reader = scanreader.read_scan(str(filename))
-    for plane in range(0, reader.num_channels):
-        zarr_path = root / 'zarr' / f'plane_{plane + 1}.zarr'
-        print(f'Writing {zarr_path}')
-        data = reader[:, :, :, plane, :].squeeze()
-        zarr.save(str(zarr_path), data)
-        print(f'Wrote {zarr_path} successfully!')
-
-    # tiffs2zarr(filename, zarr_path)
-    # tiffs2zarr(glob('*Ch1*.tif'), 'temp', 1000)
+    filename = savedir / f'{prepend_str}_plane_{idx}.zarr'
+    da.to_zarr(data, filename)
