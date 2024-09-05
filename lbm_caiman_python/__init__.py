@@ -1,5 +1,11 @@
 import os
 from pathlib import Path
+<<<<<<<< HEAD:lbm_caiman_python/__init__.py
+========
+
+from core import *
+
+>>>>>>>> bf19986 (chore: cleanup preprocessing steps complete, registration imports and filetypes):runner.py
 from scanreader import scans
 from .io import get_files, save_as_zarr
 
@@ -40,7 +46,11 @@ def read_scan(
 
     """
     # Expand wildcards
+<<<<<<<< HEAD:lbm_caiman_python/__init__.py
     filenames = get_files(pathnames)
+========
+    filenames = core.io.get_files(pathnames)
+>>>>>>>> bf19986 (chore: cleanup preprocessing steps complete, registration imports and filetypes):runner.py
 
     if isinstance(filenames, (list, tuple)):
         if len(filenames) == 0:
