@@ -16,7 +16,7 @@ install_deps = [
     "matplotlib",
     "scipy>=1.9.0",
     "dask",
-    "scanimage-tiff-reader>=1.4.1",
+    # "scanimage-tiff-reader>=1.4.1",
 ]
 
 gui_deps = [
@@ -34,7 +34,7 @@ io_deps = [
     # "xmltodict",
 ]
 
-notebook_deps = [""]
+notebook_deps = ["jupyterlab"]
 
 all_deps = gui_deps + io_deps
 
@@ -42,8 +42,8 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="LBM-CaImAn-Python",
-    version="0.1.0",
+    name="lbm_caiman_python",
+    version="0.7.0",
     description="Light Beads Microscopy 2P Calcium Imaging Pipeline.",
     long_description=long_description,
     author="Flynn OConnell",
@@ -51,7 +51,7 @@ setuptools.setup(
     license="",
     url="https://github.com/millerbrainobservatory/LBM-CaImAn-Python",
     keywords="Pipeline Numpy Microscopy ScanImage multiROI tiff",
-    packages=setuptools.find_packages(),
+    # packages=setuptools.find_packages(),
     install_requires=install_deps,
     extras_require={
         "docs": [
@@ -66,7 +66,6 @@ setuptools.setup(
         "notebook": notebook_deps,
         "all": all_deps,
     },
-    include_package_data=True,
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Science/Research",
