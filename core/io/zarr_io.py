@@ -22,11 +22,12 @@ else:
 def get_zarr_files(directory):
     if not isinstance(directory, (str, os.PathLike)):
         logger.error("iter_zarr_dir requires a single string/path object")
-    directory = Path(directory)
+    return [x for x in Path(directory).glob("*") if x.suffix == ".zarr"]
 
-    # get directory contents
-    contents = [x for x in directory.glob("*") if x.is_dir()]
-    return [x for x in directory.glob("*") if x.suffix == ".zarr"]
+
+def iter_planes(scan, frames, planes, xslice=slice(None), yslice=slice(None)):
+    for plane in planes:
+        yield da.squeeze(scan[frames, plane, yslice, xslice])
 
 
 def iter_planes(scan, frames, planes, xslice=slice(None), yslice=slice(None)):
@@ -76,14 +77,34 @@ def save_as_zarr(scan: scans.ScanLBM,
                  frames=slice(None),
                  planes=slice(None),
                  metadata=None,
-                 prepend_str='extracted'):
-    savedir = Path(savedir)
+                 prepend_str='extracted',
+                 overwrite=False
+                 ):
+    filestore = zarr.DirectoryStore(str(savedir))
+    root = zarr.group(filestore, overwrite=overwrite)
 
     if isinstance(frames, int):
         frames = [frames]
     if isinstance(planes, int):
         planes = [planes]
 
-    for idx in planes:
-        filename = savedir / f'{prepend_str}_plane_{idx}.zarr'
-        da.to_zarr(scan[frames, planes, :, :], filename)
+    iterator = iter_planes(scan, frames, planes)
+    logging.info(f"Selected planes: {planes}")
+    outer = time.time()
+
+    for idx, array in enumerate(iterator):
+        start = time.time()
+        try:
+            da.to_zarr(
+                arr=array,
+                url=savedir,
+                root=root,
+                component=f"plane_{idx + 1}",
+                overwrite=overwrite,
+            )
+        except ContainsArrayError:
+            logging.info(f"Plane {idx + 1} already exists. Skipping...")
+            continue
+        # root['preprocessed'][f'plane_{idx+1}'].attrs['fps'] = self.metadata['fps']
+        logging.info(f"Plane saved in {time.time() - start} seconds...")
+    logging.info(f"All z-planes saved in {time.time() - outer} seconds...")
