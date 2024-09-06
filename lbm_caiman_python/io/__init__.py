@@ -90,6 +90,27 @@ def get_files(
 def get_single_file(filepath, ext='tif'):
     return [x for x in Path(filepath).glob(f"*{ext}*")][0]
 
+    
+
+def lbm_load_batch(batch_path, overwrite=False):
+    batch_path = Path(batch_path)
+    try:
+        mc.set_parent_raw_data_path(batch_path.parent)
+    except:
+        import mesmerize_core as mc
+
+    batch_path = raw_data_path / 'batch.pickle'
+    mc.set_parent_raw_data_path(str(raw_data_path))
+
+    # you could alos load the registration batch and 
+    # save this patch in a new dataframe (saved to disk automatically)
+    try:
+        df = mc.load_batch(batch_path)
+    except (IsADirectoryError, FileNotFoundError):
+        df = mc.create_batch(batch_path)
+
+    df=df.caiman.reload_from_disk()
+
 __all__ = [
     "save_object",
     "load_object",
