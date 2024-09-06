@@ -8,9 +8,8 @@ dependencies:
 - python
 - mesmerize-core
 - napari
+- h5py
 - pyqt
+- zarr
 - pip
-- napari
-- fastplotlib
-- simplejpeg
 
