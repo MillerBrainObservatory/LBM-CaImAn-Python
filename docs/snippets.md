@@ -212,7 +212,91 @@ pip install cloudmesh-sys
 
 ```
 
-----
+## Same package, Error on conda-forge only
+
+```{code-block} python
+(base)
+mbo at RBO-C2 in ~/repos/LBM-CaImAn-Python (pixi●●)
+$ conda activate mescore
+(mescore)
+mbo at RBO-C2 in ~/repos/LBM-CaImAn-Python (pixi●●)
+$ conda list | grep free
+freetype                  2.12.1               h267a509_2    conda-forge
+freetype-py               2.4.0              pyhd8ed1ab_0    conda-forge
+(mescore)
+mbo at RBO-C2 in ~/repos/LBM-CaImAn-Python (pixi●●)
+$ conda activate mestest
+(mestest)
+mbo at RBO-C2 in ~/repos/LBM-CaImAn-Python (pixi●●)
+$ conda list | grep free
+freeglut                  3.2.2                ha6d2627_3    conda-forge
+freetype                  2.12.1               h267a509_2    conda-forge
+freetype-py               2.4.0                    pypi_0    pypi
+(mestest)
+mbo at RBO-C2 in ~/repos/LBM-CaImAn-Python (pixi●●)
+(mestest)
+mbo at RBO-C2 in ~/repos/LBM-CaImAn-Python (pixi●●)
+$ conda list | grep fast
+fasteners                 0.17.3             pyhd8ed1ab_0    conda-forge
+fastplotlib               0.1.0a16                 pypi_0    pypi
+python-fastjsonschema     2.20.0             pyhd8ed1ab_0    conda-forge
+(mestest)
+mbo at RBO-C2 in ~/repos/LBM-CaImAn-Python (pixi●●)
+$ conda activate mescore
+(mescore)
+mbo at RBO-C2 in ~/repos/LBM-CaImAn-Python (pixi●●)
+$ conda list | grep free
+freeglut                  3.2.2                ha6d2627_3    conda-forge
+freetype                  2.12.1               h267a509_2    conda-forge
+freetype-py               2.4.0              pyhd8ed1ab_0    conda-forge
+(mescore)
+mbo at RBO-C2 in ~/repos/LBM-CaImAn-Python (pixi●●)
+$ conda list | grep fast
+fasteners                 0.17.3             pyhd8ed1ab_0    conda-forge
+fastplotlib               0.1.0a16                 pypi_0    pypi
+python-fastjsonschema     2.20.0             pyhd8ed1ab_0    conda-forge
+(mescore)
+mbo at RBO-C2 in ~/repos/LBM-CaImAn-Python (pixi●●)
+$ conda list | grep mes
+# packages in environment at /home/mbo/miniconda3/envs/mescore:
+cloudmesh-cmd5            5.0.20                   pypi_0    pypi
+cloudmesh-common          5.0.60                   pypi_0    pypi
+mesmerize-core            0.4.0              pyhd8ed1ab_0    conda-forge
+mesmerize-viz             0.1.0                    pypi_0    pypi
+(mescore)
+mbo at RBO-C2 in ~/repos/LBM-CaImAn-Python (pixi●●)
+$ ipython
+Python 3.11.9 | packaged by conda-forge | (main, Apr 19 2024, 18:36:13) [GCC 12.3.0]
+Type 'copyright', 'credits' or 'license' for more information
+IPython 8.26.0 -- An enhanced Interactive Python. Type '?' for help.
+
+In [1]: import freetype
+
+In [2]: freetype.GlyphSlot
+Out[2]: freetype.GlyphSlot
+
+In [3]: freetype.GlyphSlot.render
+Out[3]: <function freetype.GlyphSlot.render(self, render_mode)>
+
+In [4]: exit
+(mescore)
+mbo at RBO-C2 in ~/repos/LBM-CaImAn-Python (pixi●●)
+$ conda activate mestest
+(mestest)
+mbo at RBO-C2 in ~/repos/LBM-CaImAn-Python (pixi●●)
+$ ipython
+
+In [1]: import freetype
+
+In [2]: freetype.GlyphSlot.render
+---------------------------------------------------------------------------
+AttributeError                            Traceback (most recent call last)
+Cell In[3], line 1
+----> 1 freetype.GlyphSlot.render
+
+AttributeError: type object 'GlyphSlot' has no attribute 'render'
+
+```
 
 ## FAQ
 
