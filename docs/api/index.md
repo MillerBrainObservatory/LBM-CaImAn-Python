@@ -2,8 +2,9 @@
 
 ```{eval-rst}
 
-.. currentmodule:: LBM_caiman_Python
+.. currentmodule:: lbm_caiman_python
 
 .. autofunction:: get_reader
+.. autofunction:: get_files
 
 ```
