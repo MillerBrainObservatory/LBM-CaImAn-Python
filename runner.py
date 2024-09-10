@@ -31,7 +31,7 @@ if os.name == "nt":
     cnmf_cache.set_maxsize(0)
 
 raw_data_path = Path().home() / "caiman_data_org"
-movie_path = raw_data_path / 'animal_01' / "session_01" / 'plane_1'
+movie_path = raw_data_path / 'animal_01' / "session_01" / 'plane_1.zarr'
 
 # moviepath
 raw_movie = zarr.open(movie_path).info
