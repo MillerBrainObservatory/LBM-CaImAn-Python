@@ -62,6 +62,6 @@ logger.addHandler(handler)
 if debug:
     logging.getLogger("caiman").setLevel(logging.INFO)
 
-df.iloc[0].caiman.run()
+df.iloc[0].caiman.run(backend='local', wait=False)
 print(df.iloc[0].outputs['traceback'])
 x = 6
