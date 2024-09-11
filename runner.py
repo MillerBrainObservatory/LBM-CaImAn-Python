@@ -13,23 +13,18 @@ import os
 import zarr
 import pandas as pd
 
-pd.options.display.max_colwidth = 120
-
 try:
     import cv2
-
     cv2.setNumThreads(0)
-except():
+except:
     pass
 
 logging.basicConfig()
-
-os.environ['CONDA_EXE'] = str(Path().home() / 'miniconda3' / 'bin' / 'conda')
-
 if os.name == "nt":
     # disable the cache on windows, this will be automatic in a future version
     cnmf_cache.set_maxsize(0)
 
+pd.options.display.max_colwidth = 120
 raw_data_path = Path().home() / "caiman_data_org"
 movie_path = raw_data_path / 'animal_01' / "session_01" / 'plane_1.zarr'
 
@@ -63,5 +58,4 @@ if debug:
     logging.getLogger("caiman").setLevel(logging.INFO)
 
 df.iloc[0].caiman.run(backend='local', wait=False)
-print(df.iloc[0].outputs['traceback'])
 x = 6
