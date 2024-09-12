@@ -1,16 +1,11 @@
+from __future__ import annotations
 import os
 from pathlib import Path
-<<<<<<<< HEAD:lbm_caiman_python/__init__.py
-========
 
-from core import *
-
->>>>>>>> bf19986 (chore: cleanup preprocessing steps complete, registration imports and filetypes):runner.py
 from scanreader import scans
-from .io import get_files, save_as_zarr
+from lbm_io import get_files, save_as_tiff, save_as_zarr
 
-
-def get_reader(datapath):
+def get_reader(datapath: os.PathLike):
     filepath = Path(datapath)
     if filepath.is_file():
         filepath = datapath
@@ -46,12 +41,7 @@ def read_scan(
 
     """
     # Expand wildcards
-<<<<<<<< HEAD:lbm_caiman_python/__init__.py
     filenames = get_files(pathnames)
-========
-    filenames = core.io.get_files(pathnames)
->>>>>>>> bf19986 (chore: cleanup preprocessing steps complete, registration imports and filetypes):runner.py
-
     if isinstance(filenames, (list, tuple)):
         if len(filenames) == 0:
             raise FileNotFoundError(f"Pathname(s) {filenames} do not match any files in disk.")
