@@ -168,7 +168,7 @@ def save_as_tiff(scan: scans.ScanLBM,
     if isinstance(planes, int):
         planes = [planes]
     elif isinstance(planes, slice):
-        planes = range(planes.start or 0, planes.stop or scan.num_planes-1, planes.step or 1)
+        planes = range(planes.start or 0, planes.stop or scan.num_planes, planes.step or 1)
     if not metadata:
         metadata = scan.metadata
 
@@ -176,7 +176,11 @@ def save_as_tiff(scan: scans.ScanLBM,
     outer = time.time()
     for idx, array in enumerate(iterator):
         start = time.time()
-        filename = savedir / f'{prepend_str}_plane_{idx}.tif'
+        filename = savedir / f'{prepend_str}_plane_{idx + 1}.tif'
+        if not overwrite:
+            if filename.is_file():
+                continue
+
         logging.info(f'Saving {filename}')
         tifffile.imwrite(filename, array, bigtiff=True, metadata=metadata,)
         logging.info(f'{filename} saved ...')
