@@ -1,73 +1,66 @@
-import sys
-from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
-from PyQt5.QtWidgets import QWidget, QLCDNumber, QVBoxLayout, QApplication, QSpinBox
 from pathlib import Path
-from skimage.io import imread
-import napari
+from copy import deepcopy
+import os
+import zarr
+import dask.array as da
+from functools import partial
+import glfw
+import numpy as np
+import pandas as pd
+import tifffile
+from ipywidgets import IntSlider, VBox
+import fastplotlib as fpl
 
+from caiman.motion_correction import high_pass_filter_space
+from caiman.summary_images import correlation_pnr
 
-def trim(scan, amounts_x):
-    new_slice_x = [slice(s.start + amounts_x[0], s.stop - amounts_x[1]) for s in scan.fields[0].output_xslices]
-    return [i for s in new_slice_x for i in range(s.start, s.stop)]
+import mesmerize_core as mc
+from mesmerize_core.arrays import LazyTiff
+from mesmerize_viz import *
+#%%
+from mesmerize_core.caiman_extensions.cnmf import cnmf_cache
 
+if os.name == "nt":
+    # disable the cache on windows, this will be automatic in a future version
+    cnmf_cache.set_maxsize(0)
+#%%
+parent_path = Path().home() / "caiman_data_org"
+movie_path = parent_path / 'animal_01' / 'session_01' / 'plane_1.zarr'
 
-class Example(QWidget):
-    def __init__(self, reader, viewer):
-        super().__init__()
-        self.reader = reader
-        self.viewer = viewer
-        self.initUI()
+batch_path = parent_path / 'batch.pickle'
+mc.set_parent_raw_data_path(str(parent_path))
 
-    @pyqtSlot(int)
-    def on_sld_valueChanged(self, value):
-        self.lcd.display(value)
-        self.update_image(value, value)  # Update image based on slider value
+# you could alos load the registration batch and
+# save this patch in a new dataframe (saved to disk automatically)
+try:
+    df = mc.load_batch(batch_path)
+except (IsADirectoryError, FileNotFoundError):
+    df = mc.create_batch(batch_path)
 
-    def update_image(self, tleft=0, tright=0):
-        print('Calling update image')
-        trim_x = range(tleft, self.reader.shape[2] - tright)
-        arr = self.reader[:, :, trim_x, 0, 2]
-        self.viewer.layers[0].data = arr
-        self.viewer.update()
+df=df.caiman.reload_from_disk()
+df
+#%%
+def read_zarr(path):
+    # return zarr.open(path)['mov']
+    return da.from_zarr(path, 'mov').compute()
 
-    def initUI(self):
-        self.lcd = QLCDNumber(self)
-        self.sld = MySpinBox()
+#%%
+filt = lambda x: high_pass_filter_space(x, (3, 3))
 
-        vbox = QVBoxLayout()
-        vbox.addWidget(self.lcd)
-        vbox.addWidget(self.sld)
+funcs = {
+    0: filt,
+    1: filt
+}
 
-        self.setLayout(vbox)
-        self.sld.valueChanged.connect(self.on_sld_valueChanged)
+os.environ['WAYLAND_DISPLAY'] = ''
+os.environ['RUST_LOG'] = 'info'
+os.environ['WINIT_UNIX_BACKEND'] = 'x11'
 
-        self.setWindowTitle('Signal & slot')
+# viewer = napari.Viewer()
+viz_mcor = df.mcorr.viz(
+    input_movie_kwargs={"reader": read_zarr},
+    image_widget_kwargs={"frame_apply": funcs}
+)
+viz_mcor.show()
 
-
-class MySpinBox(QSpinBox):
-    valueHasChanged = pyqtSignal(int)
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.valueChanged.connect(self.valueHasChanged)
-
-    def setValue(self, value, emit=False):
-        if not emit:
-            self.valueChanged.disconnect(self.valueHasChanged)
-        super().setValue(value)
-        if not emit:
-            self.valueChanged.connect(self.valueHasChanged)
-
-
-parent = Path('/home/rbo/caiman_data')
-raw_tiff_name = parent / 'high_res.tif'
-
-reader = imread(raw_tiff_name)
-viewer = napari.Viewer()
-viewer.add_image(reader)
-
-app = QApplication(sys.argv)
-widget = Example(reader, viewer)
-viewer.window.add_dock_widget(widget, area='right')
-napari.run()
-app.exec_()
+x = 5
