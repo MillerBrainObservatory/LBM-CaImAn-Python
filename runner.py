@@ -45,6 +45,7 @@ scan.trim_y = (17, 0)
 
 len(raw_tiff_files)
 lcp.save_as_tiff(scan, savedir=save_path)
+lcp.lbm_load_batch()
 # moviepath
 raw_movie = zarr.open(movie_path).info
 raw_movie

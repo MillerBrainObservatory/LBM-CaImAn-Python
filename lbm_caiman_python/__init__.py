@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 
 from scanreader import scans
-from lbm_io import get_files, save_as_tiff, save_as_zarr
+from lbm_io import get_files, save_as_tiff, save_as_zarr, lbm_load_batch
 
 def get_reader(datapath: os.PathLike):
     filepath = Path(datapath)

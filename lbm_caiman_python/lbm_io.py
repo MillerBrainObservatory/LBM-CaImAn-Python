@@ -35,8 +35,7 @@ def lbm_load_batch(batch_path, overwrite=False):
     except:
         import mesmerize_core as mc
 
-    batch_path = raw_data_path / 'batch.pickle'
-    mc.set_parent_raw_data_path(str(raw_data_path))
+    mc.set_parent_raw_data_path(str(batch_path.parent))
 
     # you could also load the registration batch and
     # save this patch in a new dataframe (saved to disk automatically)
@@ -44,8 +43,8 @@ def lbm_load_batch(batch_path, overwrite=False):
         df = mc.load_batch(batch_path)
     except (IsADirectoryError, FileNotFoundError):
         df = mc.create_batch(batch_path)
-
-    df=df.caiman.reload_from_disk()
+    df = df.caiman.reload_from_disk()
+    return df
 
 def get_files(
         pathnames: os.PathLike | str | list[os.PathLike | str],
