@@ -28,7 +28,7 @@ def iter_planes(scan, frames, planes, xslice=slice(None), yslice=slice(None)):
         yield da.squeeze(scan[frames, plane, yslice, xslice])
 
 
-def lbm_load_batch(batch_path, overwrite=False):
+def lbm_load_batch(batch_path, overwrite=False, create=False):
     batch_path = Path(batch_path)
     try:
         mc.set_parent_raw_data_path(batch_path.parent)
@@ -42,7 +42,8 @@ def lbm_load_batch(batch_path, overwrite=False):
     try:
         df = mc.load_batch(batch_path)
     except (IsADirectoryError, FileNotFoundError):
-        df = mc.create_batch(batch_path)
+        if create:
+            df = mc.create_batch(batch_path)
     df = df.caiman.reload_from_disk()
     return df
 
@@ -124,7 +125,6 @@ def save_as_zarr(scan: scans.ScanLBM,
                  overwrite=False
                  ):
     filestore = zarr.DirectoryStore(str(savedir))
-    root = zarr.group(filestore, overwrite=overwrite)
 
     if isinstance(frames, int):
         frames = [frames]
