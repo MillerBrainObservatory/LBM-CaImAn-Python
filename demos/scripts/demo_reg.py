@@ -1,17 +1,13 @@
-# demo_reg
-# %% [markdown]
-# # LBM Step 2: Registration
-# 
-# ## Registration: Correct for rigid/non-rigid movement
-# 
-# - Apply the nonrigid motion correction (NoRMCorre) algorithm for motion correction.
-# - View pre/most correction movie
-# - Use quality metrics to evaluate registration quality
-
-# %%
 from pathlib import Path
 import zarr
 import mesmerize_core as mc
+from mesmerize_viz import *
+from fastplotlib import GridPlot, ImageWidget, Plot
+from ipywidgets.widgets import IntSlider, VBox
+from mesmerize_viz.cnmfviewer import CNMFViewer
+from mesmerize_viz.mcorrviewer import MCorrViewer
+from mesmerize_viz.dataframeviewer import DataframeViewer
+from mesmerize_viz.selectviewer import SelectViewer
 
 try:
     import cv2
@@ -19,23 +15,8 @@ try:
 except():
     pass
 
-# %% [markdown]
-# ## (optional): View hardware information
-
-# %%
-# !pip install cloudmesh-cmd5
-
-# %% [markdown]
-# ## User input: input data path and plane number
-# 
-# the same path as [pre_processing](./pre_processing.ipynb)
-# parent_dir = Path().home() / 'caiman_data' / 'animal_01' / 'session_01'
-
-# %%
-# path to your planar timeseries
-
-parent_dir = Path().home() / 'caiman_data' / 'animal_01' / 'session_01' / 'save_gui.zarr'
-results_path = parent_dir / 'registration'
+parent_dir = Path().home() / 'caiman_data' / 'animal_01' / 'session_01'
+results_path = parent_dir / 'motion_corrected'
 
 results_path.mkdir(exist_ok=True, parents=True)  
 zarr.open(parent_dir).info
@@ -47,9 +28,9 @@ mc.set_parent_raw_data_path(parent_dir.parent)
 # create a new batch
 try:
 # to load existing batches use `load_batch()`
-    df = mc.load_batch(results_path / 'registration.pickle')
+    df = mc.load_batch(parent_dir / 'batch.pickle')
 except (IsADirectoryError, FileNotFoundError):
-    df = mc.create_batch(results_path / 'registration.pickle')
+    df = mc.create_batch(parent_dir / 'batch.pickle')
 df
 
 # %% [markdown]
@@ -97,15 +78,13 @@ if df.empty:
 df = df.caiman.reload_from_disk()
 df
 
+
+viz = df.mcorr.viz(data_options=["input", "mcorr", "mean", "corr"], start_index=1)
+viz.show()
+
 # %%
 df.iloc[0].caiman.run()
 print(df.iloc[0].outputs['traceback'])
 
 # %%
 df.iloc[0]
-
-# %% [markdown]
-# ### View rigid template
-
-# %%
-# load motion corrected movie
