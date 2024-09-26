@@ -4,15 +4,7 @@ Currently, inputs to this pipeline are limited to ScanImage `.tiff` files.
 
 ## Pipeline Overview
 
-WIP
-
-```{thumbnail} https://github.com/MillerBrainObservatory/static-assets/blob/master/_images/ex_diagram.png
----
-width: 800
-align: center
----
-
-```
+LBM CaImAn Pipeline
 
 ----------------
 
@@ -23,7 +15,6 @@ align: center
 maxdepth: 2
 ---
 scanreader
-notebooks/index
 snippets
 api/index
 glossary

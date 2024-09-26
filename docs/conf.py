@@ -6,10 +6,13 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 import os
+import sys
 from pathlib import Path
 
-os.path.abspath(os.path.join("../", "core"))
-os.path.abspath(os.path.join("../", "demos/notebooks/"))
+notebooks_mod = os.path.abspath(os.path.join("../", "demos/notebooks/"))
+sys.path.insert(0, os.path.abspath(os.path.join("..")))
+sys.path.insert(0, os.path.abspath(os.path.join("..", "lbm_caiman_python")))
+print(os.path.join("..", "lbm_caiman_python"))
 
 project = "LBM-CaImAn-Python"
 copyright = "2024, Elizabeth R. Miller Brain Observatory | The Rockefeller University. All Rights Reserved"
@@ -30,7 +33,7 @@ myst_enable_extensions = [
 
 extensions = [
     "sphinx.ext.autodoc",
-    "sphinxcontrib.images",
+    # "sphinxcontrib.images",
     "sphinxcontrib.video",
     "myst_nb",
     "sphinx_copybutton",
@@ -76,7 +79,6 @@ html_use_modindex = True
 html_copy_source = False
 html_file_suffix = ".html"
 
-current_filepath = Path()
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3.9", None),
     "numpydoc": ("https://numpydoc.readthedocs.io/en/latest", None),
@@ -84,6 +86,8 @@ intersphinx_mapping = {
         "https://millerbrainobservatory.github.io/",
         None,
     ),
+    "caiman": ("https://caiman.readthedocs.io/en/latest/", None),
+    "suite2p": ("https://suite2p.readthedocs.io/en/latest/", None),
 }
 
 templates_path = ["_templates"]

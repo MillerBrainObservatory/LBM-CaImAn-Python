@@ -33,6 +33,7 @@ import datetime
 import glob
 import json
 import logging
+from pathlib import Path
 
 import cv2
 import h5py
@@ -47,6 +48,10 @@ import sys
 import tifffile
 import time
 
+home = Path().home() / 'caiman_data' / 'session_01' / ''
+contents = home.glob("*")
+print([x for x in contents])
+
 # %% USER-DEFINED PARAMETERS
 
 params = dict()
@@ -60,7 +65,7 @@ if not params["reconstruct_all_files"]:
 
 # Directories
 params["raw_data_dirs"] = [
-    "/data2/fpo/data/"
+    str(Path().home() / 'caiman_data' / 'animal_01' / 'session_01')
 ]  # Must be a list with 1 or more dirs
 params[
     "fname_must_contain"
@@ -204,7 +209,7 @@ if params["json_logging"]:
 # %% Look for files used to: 1) make a template and do seam-overlap handling and X-Y shift alignment; 2) pre-process
 path_all_files = []
 for i_dir in params["raw_data_dirs"]:
-    tmp_paths = sorted(glob.glob(i_dir + "/**/*.tif", recursive=True))
+    tmp_paths = sorted(glob.glob(i_dir + "/**/*.tif*", recursive=True))
     for this_tmp_path in tmp_paths:
         if (
             params["fname_must_contain"] in this_tmp_path

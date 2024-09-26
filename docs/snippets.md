@@ -4,6 +4,35 @@ Helpful snippets for all things LBM python.
 
 ----
 
+## Parameters
+[caiman parameters](https://caiman.readthedocs.io/en/latest/Getting_Started.html#parameters)
+
+{ref}`:external+python:py:class:caiman.source_extraction.cnmf.params.CNMFParams`
+
+{py:class}`caiman.source_extraction.cnmf.params.CNMFParams`
+
+```{ref} caiman.source_extraction.cnmf.params.CNMFParams
+```
+
+{any}`caiman.source_extraction.cnmf.params.CNMFParams`
+
+```{any} caiman.source_extraction.cnmf.params.CNMFParams
+```
+
+### Napari on WSL
+
+sudo apt install x11-xserver-utils
+
+```{code-block} python
+
+import vispy
+print(vispy.sys_info())
+
+```
+
+[imagesc question](https://forum.image.sc/t/toubles-with-opengl-in-napari-on-server/81950)
+
+
 ## Pixi
 
 ### Install Pixi
