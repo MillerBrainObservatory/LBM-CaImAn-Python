@@ -16,6 +16,7 @@ install_deps = [
     "matplotlib",
     "scipy>=1.9.0",
     "dask",
+    "scanreader"
     # "scanimage-tiff-reader>=1.4.1",
 ]
 

@@ -6,12 +6,18 @@ Python implementation of the Light Beads Microscopy (LBM) computational pipeline
 
 For the `MATLAB` implementation, see [here](https://github.com/MillerBrainObservatory/LBM-CaImAn-MATLAB/)
 
+# Installation
+
+```
+pip install lbm-caiman-matlab
+```
+
 ## Pipeline Steps:
 
-1. Extraction
-    - De-interleave zT
+1. Assembly
+    - De-interleave planes
     - Scan Phase-Correlation
-2. Registration
+2. Motion Correction
     - Template creation
     - Rigid registration
     - Piecewise-rigid registration
@@ -19,6 +25,9 @@ For the `MATLAB` implementation, see [here](https://github.com/MillerBrainObserv
     - Iterative CNMF segmentation
     - Deconvolution
     - Refinement
+4. Collation (WIP)
+    - Lateral offset correction (between z-planes)
+    - Collate images and metadata into a single volume
 
 # Requirements
 
@@ -27,5 +36,7 @@ For the `MATLAB` implementation, see [here](https://github.com/MillerBrainObserv
 - scipy
 
 ```{note}
+
 See the `environment.yml` file at the root of this project for a complete list of package dependencies.
+
 ```
