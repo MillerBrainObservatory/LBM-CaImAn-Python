@@ -184,7 +184,6 @@ class FileWidget(QWidget):
                                        blending='additive')
 
 
-
 parent = Path('/home/rbo/caiman_data')
 raw_tiff_name = parent / 'high_res.tif'
 reader = scanreader.read_scan(str(raw_tiff_name), join_contiguous=True)
