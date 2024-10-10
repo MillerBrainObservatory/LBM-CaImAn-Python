@@ -9,7 +9,7 @@ For the `MATLAB` implementation, see [here](https://github.com/MillerBrainObserv
 # Installation
 
 ```
-pip install lbm-caiman-matlab
+pip install lbm-caiman-python
 ```
 
 ## Pipeline Steps:
