@@ -6,44 +6,6 @@
 requires = ["setuptools==68.2.2", "wheel", "setuptools_scm"]
 build-backend = "setuptools.build_meta"
 
-[tool.setuptools]
-include-package-data = true
-
-[tool.setuptools.packages.find]
-where = ["lbm_caiman_python"]
-include = ["*"]  # ["*"] by default
-exclude = ["exclude"]  # empty by default
-namespaces = true  # true by default
-
-[project]
-name = "lbm_caiman_python"
-version = "0.7.0"
-
-description = "Python implementation of the Light Beads Microscopy (LBM) computational pipeline."
-requires-python = ">=3.9"
-readme = "README.md"
-classifiers = [
-    'Intended Audience :: Science/Research',
-    'Intended Audience :: Developers',
-    'Programming Language :: Python',
-    'Programming Language :: Python :: 3',
-    'Programming Language :: Python :: 3.10',
-    'Programming Language :: Python :: 3.11',
-    'Programming Language :: Python :: 3.12',
-    'Programming Language :: Python :: 3 :: Only',
-    'Topic :: Software Development',
-    'Topic :: Scientific/Engineering',
-    'Operating System :: Microsoft :: Windows',
-    'Operating System :: POSIX',
-    'Operating System :: Unix',
-    'Operating System :: MacOS',
-]
-
-[project.urls]
-homepage = "https://github.com/MillerBrainObservatory/"
-documentation = "https://millerbrainobservatory.github.io/LBM-CaImAn-Python/index.html"
-source = "https://github.com/MillerBrainObservatory/LBM-CaImAn-Python/"
-
 #[tool.pixi.project]
 #channels = ["conda-forge"]
 #platforms = ["linux-64"]

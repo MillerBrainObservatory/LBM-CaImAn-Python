@@ -8,9 +8,29 @@ For the `MATLAB` implementation, see [here](https://github.com/MillerBrainObserv
 
 # Installation
 
+Download miniforge:
+
+```bash
+curl -L -O "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh"
+bash Miniforge3-$(uname)-$(uname -m).sh
+
 ```
 pip install lbm-caiman-python
 ```
+pip install lbm-caiman-python
+```
+
+For development
+
+
+This can help libmamba errors, for example if you install mamba somewhere other than your base environment:
+```
+mamba update -c conda-forge -all
+
+# install latest pygfx
+pip install git+https://github.com/pygfx/pygfx.git@main
+```
+
 
 ## Pipeline Steps:
 
