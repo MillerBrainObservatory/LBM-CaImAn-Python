@@ -15,8 +15,7 @@ curl -L -O "https://github.com/conda-forge/miniforge/releases/latest/download/Mi
 bash Miniforge3-$(uname)-$(uname -m).sh
 
 ```
-
-To get the latest stable version:
+pip install lbm-caiman-python
 ```
 pip install lbm-caiman-python
 ```
