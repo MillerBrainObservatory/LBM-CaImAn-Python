@@ -1,6 +1,10 @@
 import numpy as np
 
 
+def correlate_gpu():
+    pass
+
+
 def notnan(x, start=0, increment=1):
     while np.isnan(x[start]) and 0 <= start < len(x):
         start += increment
@@ -30,7 +34,7 @@ def mirrconv(signal, f):
     :returns: Filtered signal (same length as signal)
     """
     if signal.ndim != 1 or f.ndim != 1:
-       raise ValueError('Only one-dimensional signals allowed.')
+        raise ValueError('Only one-dimensional signals allowed.')
     if len(f) % 2 != 1:
         raise ValueError('Filter must have odd length')
     if len(f) < 3:
