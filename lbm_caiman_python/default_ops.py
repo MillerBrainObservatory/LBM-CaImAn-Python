@@ -160,16 +160,40 @@ def suite2p_ops():
     }
 
 
-def caiman_ops():
-    return {
-
-    }
-
-def default_ops(pipeline='caiman'):
-    """ default options to run pipeline """
-    if pipeline=='caiman':
-        # return caiman default ops
-        return pass
-    elif pipeline=='suite2p':
-        # return s2p default ops
-        return suite2p_ops()
+def default_ops(algo='mcorr'):
+    if algo == 'mcorr':
+        return {
+            'main': {
+                "pw_rigid": True,
+                "max_shifts": [6, 6],
+                "strides": [50, 50],
+                "overlaps": [24, 24],
+                "max_deviation_rigid": 3,
+                "border_nan": "copy"
+            }
+        },
+    if algo == 'caiman':
+        return {
+            'main': {
+                'fr': 30,
+                'dxy': (1., 1.),
+                'decay_time': 0.4,
+                'p': 2,
+                'nb': 1,
+                'rf': 13,
+                'K': 20,
+                'gSig': (3, 3),
+                # 'gSiz': gSiz,
+                'stride': [50, 50],
+                'method_init': 'greedy_roi',
+                'rolling_sum': True,
+                'use_cnn': False,
+                'ssub': 1,
+                'tsub': 1,
+                'merge_thr': 0.7,
+                'bas_nonneg': True,
+                'min_SNR': 1.4,
+                'rval_thr': 0.8,
+            },
+            'refit': True
+        }
