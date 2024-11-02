@@ -2,7 +2,8 @@ import os
 import time
 import logging
 from pathlib import Path
-import dask.array as da
+import mesmerize_core as mc
+import pandas as pd
 
 import zarr
 from zarr.errors import ContainsArrayError
@@ -28,24 +29,18 @@ def iter_planes(scan, frames, planes, xslice=slice(None), yslice=slice(None)):
         yield da.squeeze(scan[frames, plane, yslice, xslice])
 
 
-def lbm_load_batch(batch_path, overwrite=False, create=False):
+def lbm_load_batch(batch_path: os.PathLike, create: bool = False) -> pd.DataFrame | None:
     batch_path = Path(batch_path)
-    try:
-        mc.set_parent_raw_data_path(batch_path.parent)
-    except:
-        import mesmerize_core as mc
-
-    mc.set_parent_raw_data_path(str(batch_path.parent))
-
-    # you could also load the registration batch and
-    # save this patch in a new dataframe (saved to disk automatically)
     try:
         df = mc.load_batch(batch_path)
     except (IsADirectoryError, FileNotFoundError):
         if create:
             df = mc.create_batch(batch_path)
-    df = df.caiman.reload_from_disk()
-    return df
+        else:
+            print(f'No batch found at {batch_path}')
+            return None
+    return df.caiman.reload_from_disk()
+
 
 def get_files(
         pathnames: os.PathLike | str | list[os.PathLike | str],
