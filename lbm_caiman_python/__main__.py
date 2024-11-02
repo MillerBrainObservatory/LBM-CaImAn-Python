@@ -1,10 +1,16 @@
 # heavily adapted from suite2p
 # https://github.com/MouseLand/suite2p/blob/main/suite2p/__main__.py
 import argparse
+import os
+from pathlib import Path
+
 import numpy as np
+
+import lbm_caiman_python
 from lbm_caiman_python import default_ops
 
-with open("VERSION", "r") as VERSION:
+current_file = Path().resolve() / 'lbm_caiman_python'
+with open(f"{current_file}/VERSION", "r") as VERSION:
     version = VERSION.read().strip()
 
 
@@ -13,6 +19,10 @@ def add_args(parser: argparse.ArgumentParser):
     Adds ops arguments to parser.
     """
     parser.add_argument("--single_plane", action="store_true", help="run single plane ops")
+    parser.add_argument("--print_batch", action="store_true", help="print contents of a batch item")
+    parser.add_argument("--batch-path", action="store_true", help="print contents of a batch item")
+    parser.add_argument("--batch_path", action="store_true", help="print contents of a batch item")
+    parser.add_argument("--version", action="store_true", help="current pipeline version")
     parser.add_argument("--ops", default=[], type=str, help="options")
     parser.add_argument("--db", default=[], type=str, help="options")
     ops0 = default_ops()
@@ -22,6 +32,8 @@ def add_args(parser: argparse.ArgumentParser):
     ## (1,1), registration + segmentation
     ## (1,1,1), assembly + registration + segmentation
     ## not yet implemented
+
+    # Add all of the options to the parameters
     for k in ops0.keys():
         v = dict(default=ops0[k], help=f"{k} : {ops0[k]}")
         if k in ["save_folder", "save_path0"]:
@@ -40,7 +52,7 @@ def parse_args(parser: argparse.ArgumentParser):
     From: https://github.com/MouseLand/suite2p/blob/main/suite2p/__main__.py
     """
     args = parser.parse_args()
-    dargs = vars(args)
+    dargs = vars(args)  # essentially args.__dict__
     ops0 = default_ops()
     ops = np.load(args.ops, allow_pickle=True).item() if args.ops else {}
     set_param_msg = "->> Setting {0} to {1}"
@@ -74,6 +86,11 @@ def main():
         add_args(argparse.ArgumentParser(description="LBM-Caiman pipeline parameters")))
     if args.version:
         print("lbm_caiman_python v{}".format(version))
+    elif args.print_batch and args.ops:
+        if 'batch_path' in args.ops:
+            print(args.ops['batch_path'])
+            batch = lbm_caiman_python.lbm_load_batch(args.ops['batch_path'], create=False)
+            print(batch)
     elif args.single_plane and args.ops:
         from lbm_caiman_python.run_lcp import run_plane
         # run single plane (does registration)
