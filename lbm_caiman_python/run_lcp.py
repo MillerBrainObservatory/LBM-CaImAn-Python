@@ -5,7 +5,6 @@ import logging
 
 import dask.array
 import mesmerize_core as mc
-import napari
 from mesmerize_core.caiman_extensions.cnmf import cnmf_cache
 from caiman.summary_images import correlation_pnr
 import matplotlib.pyplot as plt
