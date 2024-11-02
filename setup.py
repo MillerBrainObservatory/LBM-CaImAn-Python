@@ -46,7 +46,7 @@ setuptools.setup(
         "Programming Language :: Python :: 3 :: Only",
         "Natural Language :: English" "Topic :: Scientific/Engineering",
     ],
-    entry_points={
+    entry_points = {
         "console_scripts": [
             "lcp = lbm_caiman_python.__main__:main",
         ]
