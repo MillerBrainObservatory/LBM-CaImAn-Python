@@ -16,9 +16,15 @@ def add_args(parser: argparse.ArgumentParser):
     parser.add_argument("--ops", default=[], type=str, help="options")
     parser.add_argument("--db", default=[], type=str, help="options")
     ops0 = default_ops()
+
+    ## Handle different sets of parameters
+    ## (1,), only assembly (maybe registration, tbd)
+    ## (1,1), registration + segmentation
+    ## (1,1,1), assembly + registration + segmentation
+    ## not yet implemented
     for k in ops0.keys():
-        v = dict(default=ops0[k], help="{0} : {1}".format(k, ops0[k]))
-        if k in ["fast_disk", "save_folder", "save_path0"]:
+        v = dict(default=ops0[k], help=f"{k} : {ops0[k]}")
+        if k in ["save_folder", "save_path0"]:
             v["default"] = None
             v["type"] = str
         if (type(v["default"]) in [np.ndarray, list]) and len(v["default"]):
