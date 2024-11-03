@@ -12,6 +12,15 @@ with open(f"{current_file}/VERSION", "r") as VERSION:
 
 print = partial(print, flush=True)
 
+DEFAULT_BATCH_PATH = Path().home() / 'caiman_data' / 'batch'
+DEFAULT_DATA_PATH = Path().home() / 'caiman_data' / 'data'
+if not DEFAULT_BATCH_PATH.is_dir():
+    print(f'Creating default batch path in {DEFAULT_BATCH_PATH}.')
+    DEFAULT_BATCH_PATH.mkdir(exist_ok=True, parents=True)
+if not DEFAULT_DATA_PATH.is_dir():
+    print(f'Creating default data path in {DEFAULT_DATA_PATH}.')
+    DEFAULT_DATA_PATH.mkdir(exist_ok=True, parents=True)
+
 
 def add_args(parser: argparse.ArgumentParser):
     """
@@ -35,6 +44,18 @@ def add_args(parser: argparse.ArgumentParser):
         if isinstance(v["default"], (np.ndarray, list)) and v["default"]:
             v["nargs"] = "+"
             v["type"] = type(v["default"][0])
+        if k in ["batch_path", "batch-path"]:
+            v['default'] = None  # required
+            v['type'] = str
+            v["dest"] = "batch_path"
+        if k in ["data_path", "data-path"]:
+            v['default'] = None  # required
+            v['type'] = str
+            v["dest"] = "data_path"
+        if isinstance(v["default"], (np.ndarray, list)) and v["default"]:
+            if (type(v["default"]) in [np.ndarray, list]) and len(v["default"]):
+                v["nargs"] = "+"
+                v["type"] = type(v["default"][0])
         parser.add_argument(f"--{k}", **v)
     return parser
 
@@ -68,7 +89,9 @@ def parse_args(parser: argparse.ArgumentParser):
 
 
 def get_matching_main_params(args):
-    # initialize dictionary with keys from default_ops['main'] and values from args
+    """
+    Match arguments supplied through the cli with parameters found in the defaults.
+    """
     matching_params = {k: getattr(args, k) for k in lcp.default_ops()['main'].keys() if hasattr(args, k)}
     return matching_params
 
@@ -78,59 +101,59 @@ def main():
         add_args(argparse.ArgumentParser(description="LBM-Caiman pipeline parameters")))
     if args.version:
         print("lbm_caiman_python v{}".format(version))
-    if not args.run:
-        if args.batch_path:
-            print('Batch path provided, retrieving batch:')
-            from lbm_caiman_python.io.batch import load_batch
-            print(args.batch_path)
-            df = load_batch(args.batch_path)
-            print(df)
-        if args.rm:
-            print('rm provided')
+    if args.batch_path == "":
+        print('No batch path provided. Provide a path to save results in a dataframe.')
     elif args.run:
+        print('Batch path provided, retrieving batch:')
+        from lbm_caiman_python.io.batch import load_batch
+        print(args.batch_path)
+        df = load_batch(args.batch_path)
+        print(df)
+        if args.rm:
+            try:
+                print(f'deleting row {args.rm}')
+                lcp.batch.delete_batch_rows(df, [args.rm], safe=False)
+                print(f'Row {args.rm} deleted.')
+            except:
+                raise NotImplementedError
+        print('rm provided')
+    elif args.run:
+        # only import mesmerize + its caiman dependencies if we're running an algorithm
         import mesmerize_core as mc
-        if args.batch_path:
-            print(args.batch_path)
-            df = mc.load_batch(args.batch_path)
-            run_path = Path(args.run_path).resolve()
-            mc.set_parent_raw_data_path(run_path.parent)
-            # if run_path.is_dir():
-            #     mc.set_parent_raw_data_path(run_path)
-            # elif run_path.is_file():
-            #     mc.set_parent_raw_data_path(run_path.parent)
-            # clear df
-            df.caiman.add_item(
-                algo='mcorr',
-                input_movie_path=run_path,
-                params={'main': get_matching_main_params(args)},
-                item_name=f'item_name',
-            )
-            algo = 'mcorr'
-            print(f'Running {algo} -----------')
-            df.iloc[-1].caiman.run()
-            df = df.caiman.reload_from_disk()
-            algo = 'cnmf'
-            df.caiman.add_item(
-                algo='cnmf',
-                input_movie_path=df.iloc[-1],
-                params={'main': get_matching_main_params(args)},
-                item_name=f'item_name',
-            )
+        print(args.batch_path)
+        df = mc.load_batch(args.batch_path)
+        run_path = Path(args.run_path).resolve()
+        mc.set_parent_raw_data_path(run_path.parent)
+        # if run_path.is_dir():
+        #     mc.set_parent_raw_data_path(run_path)
+        # elif run_path.is_file():
+        #     mc.set_parent_raw_data_path(run_path.parent)
+        # clear df
+        df.caiman.add_item(
+            algo='mcorr',
+            input_movie_path=run_path,
+            params={'main': get_matching_main_params(args)},
+            item_name=f'item_name',
+        )
+        algo = 'mcorr'
+        print(f'Running {algo} -----------')
+        df.iloc[-1].caiman.run()
+        df = df.caiman.reload_from_disk()
+        algo = 'cnmf'
+        df.caiman.add_item(
+            algo='cnmf',
+            input_movie_path=df.iloc[-1],
+            params={'main': get_matching_main_params(args)},
+            item_name=f'item_name',
+        )
 
-            print(f'Running {algo} -----------')
-            df.iloc[-1].caiman.run()
-            df = df.caiman.reload_from_disk()
-            print('Processing complete -----------')
-        else:
-            raise NotImplementedError
-    elif len(args.db) > 0:
-        db = np.load(args.db, allow_pickle=True).item()
-        # TODO: lcp.run_lcp(df, ops)
-        raise NotImplementedError
+        print(f'Running {algo} -----------')
+        df.iloc[-1].caiman.run()
+        df = df.caiman.reload_from_disk()
+        print('Processing complete -----------')
     else:
         print('else')
         raise NotImplementedError
-    print('Pipeline Finished!')
 
 
 if __name__ == "__main__":

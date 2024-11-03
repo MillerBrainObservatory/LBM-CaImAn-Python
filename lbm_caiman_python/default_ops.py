@@ -1,5 +1,7 @@
 from pathlib import Path
 
+
+
 def suite2p_ops():
     # TODO: move this our of caiman repo
     return {
@@ -163,13 +165,9 @@ def suite2p_ops():
 
 
 def default_ops():
-    default_batch_path = Path().home() / 'caiman_data' / 'batch' / 'batch.pickle'
-    default_data_path = Path().home() / 'caiman_data' / 'batch' / 'batch.pickle'
-    default_data_path = Path().home() / 'caiman_data' / 'data'
-    default_batch_path.parent.mkdir(exist_ok=True, parents=True)
     return {
-        "batch_path": default_batch_path,
-        "run_path": default_data_path,
+        "batch_path": "",
+        "data_path": "",
         "main": {
             "pw_rigid": True,
             "max_shifts": [6, 6],
