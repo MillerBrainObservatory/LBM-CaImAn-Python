@@ -1,9 +1,8 @@
 import numpy as np
 from scipy.sparse import hstack
-from caiman.source_extraction.cnmf import estimates
 
 
-def combine_z_planes(results: dict) -> estimates.Estimates:
+def combine_z_planes(results: dict):
     """
     Combines all z-planes in the results dictionary into a single estimates object.
 
@@ -15,6 +14,7 @@ def combine_z_planes(results: dict) -> estimates.Estimates:
     -------
     estimates.Estimates: Combined estimates for all z-planes.
     """
+    from caiman.source_extraction.cnmf import estimates
     keys = sorted(results.keys())
     e_list = [results[k].estimates for k in keys]
 
