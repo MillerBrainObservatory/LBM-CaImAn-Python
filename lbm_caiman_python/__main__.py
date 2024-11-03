@@ -1,84 +1,76 @@
-# heavily adapted from suite2p
-# https://github.com/MouseLand/suite2p/blob/main/suite2p/__main__.py
+# Heavily adapted from suite2p
 import argparse
-import os
 from pathlib import Path
-
 import numpy as np
+from functools import partial
 
-import lbm_caiman_python
-from lbm_caiman_python import default_ops
+import lbm_caiman_python as lcp
 
-current_file = Path().resolve() / 'lbm_caiman_python'
+current_file = Path(__file__).parent
 with open(f"{current_file}/VERSION", "r") as VERSION:
     version = VERSION.read().strip()
+
+print = partial(print, flush=True)
 
 
 def add_args(parser: argparse.ArgumentParser):
     """
     Adds ops arguments to parser.
     """
-    parser.add_argument("--single_plane", action="store_true", help="run single plane ops")
-    parser.add_argument("--print_batch", action="store_true", help="print contents of a batch item")
-    parser.add_argument("--batch-path", action="store_true", help="print contents of a batch item")
-    parser.add_argument("--batch_path", action="store_true", help="print contents of a batch item")
+    parser.add_argument("--run", type=str, help="algorithm to run, options mcorr, cnmf or cnmfe")
+    parser.add_argument("--rm", type=int, help="0 based int of the row to delete")
     parser.add_argument("--version", action="store_true", help="current pipeline version")
     parser.add_argument("--ops", default=[], type=str, help="options")
-    parser.add_argument("--db", default=[], type=str, help="options")
-    ops0 = default_ops()
+    parser.add_argument("--db", default=[], type=str, help="database options")
 
-    ## Handle different sets of parameters
-    ## (1,), only assembly (maybe registration, tbd)
-    ## (1,1), registration + segmentation
-    ## (1,1,1), assembly + registration + segmentation
-    ## not yet implemented
+    # Load default operations
+    ops0 = lcp.default_ops()
+    main_params = ops0.pop('main', {})
+    ops0.update(main_params)
+    # existing_args = {action.dest for action in parser._actions}
 
-    # Add all of the options to the parameters
-    for k in ops0.keys():
-        v = dict(default=ops0[k], help=f"{k} : {ops0[k]}")
-        if k in ["save_folder", "save_path0"]:
-            v["default"] = None
-            v["type"] = str
-        if (type(v["default"]) in [np.ndarray, list]) and len(v["default"]):
+    # Add arguments for each key in the flattened dictionary
+    for k, default_val in ops0.items():
+        v = dict(default=default_val, help=f"{k} : {default_val}")
+        if isinstance(v["default"], (np.ndarray, list)) and v["default"]:
             v["nargs"] = "+"
             v["type"] = type(v["default"][0])
-        parser.add_argument("--" + k, **v)
+        parser.add_argument(f"--{k}", **v)
     return parser
 
 
 def parse_args(parser: argparse.ArgumentParser):
     """
     Parses arguments and returns ops with parameters filled in.
-    From: https://github.com/MouseLand/suite2p/blob/main/suite2p/__main__.py
     """
     args = parser.parse_args()
-    dargs = vars(args)  # essentially args.__dict__
-    ops0 = default_ops()
+    dargs = vars(args)
+    ops0 = lcp.default_ops()
+
+    main_params = ops0.pop('main', {})
+    ops0.update(main_params)
+
     ops = np.load(args.ops, allow_pickle=True).item() if args.ops else {}
     set_param_msg = "->> Setting {0} to {1}"
-    # options defined in the cli take precedence over the ones in the ops file
+
     for k in ops0:
         default_key = ops0[k]
         args_key = dargs[k]
-        if k in ["fast_disk", "save_folder", "save_path0"]:
-            if args_key:
-                ops[k] = args_key
-                print(set_param_msg.format(k, ops[k]))
-        elif type(default_key) in [np.ndarray, list]:
-            n = np.array(args_key)
-            if np.any(n != np.array(default_key)):
-                ops[k] = n.astype(type(default_key))
-                print(set_param_msg.format(k, ops[k]))
-        elif isinstance(default_key, bool):
+        if isinstance(default_key, bool):
             args_key = bool(int(args_key))  # bool("0") is true, must convert to int
             if default_key != args_key:
                 ops[k] = args_key
                 print(set_param_msg.format(k, ops[k]))
-        # checks default param to args param by converting args to same type
         elif not (default_key == type(default_key)(args_key)):
             ops[k] = type(default_key)(args_key)
             print(set_param_msg.format(k, ops[k]))
     return args, ops
+
+
+def get_matching_main_params(args):
+    # initialize dictionary with keys from default_ops['main'] and values from args
+    matching_params = {k: getattr(args, k) for k in lcp.default_ops()['main'].keys() if hasattr(args, k)}
+    return matching_params
 
 
 def main():
@@ -86,21 +78,59 @@ def main():
         add_args(argparse.ArgumentParser(description="LBM-Caiman pipeline parameters")))
     if args.version:
         print("lbm_caiman_python v{}".format(version))
-    elif args.print_batch and args.ops:
-        if 'batch_path' in args.ops:
-            print(args.ops['batch_path'])
-            batch = lbm_caiman_python.lbm_load_batch(args.ops['batch_path'], create=False)
-            print(batch)
-    elif args.single_plane and args.ops:
-        from lbm_caiman_python.run_lcp import run_plane
-        # run single plane (does registration)
-        run_plane(ops, ops_path=args.ops)
+    if not args.run:
+        if args.batch_path:
+            print('Batch path provided, retrieving batch:')
+            from lbm_caiman_python.io.batch import load_batch
+            print(args.batch_path)
+            df = load_batch(args.batch_path)
+            print(df)
+        if args.rm:
+            print('rm provided')
+    elif args.run:
+        import mesmerize_core as mc
+        if args.batch_path:
+            print(args.batch_path)
+            df = mc.load_batch(args.batch_path)
+            run_path = Path(args.run_path).resolve()
+            mc.set_parent_raw_data_path(run_path.parent)
+            # if run_path.is_dir():
+            #     mc.set_parent_raw_data_path(run_path)
+            # elif run_path.is_file():
+            #     mc.set_parent_raw_data_path(run_path.parent)
+            # clear df
+            df.caiman.add_item(
+                algo='mcorr',
+                input_movie_path=run_path,
+                params={'main': get_matching_main_params(args)},
+                item_name=f'item_name',
+            )
+            algo = 'mcorr'
+            print(f'Running {algo} -----------')
+            df.iloc[-1].caiman.run()
+            df = df.caiman.reload_from_disk()
+            algo = 'cnmf'
+            df.caiman.add_item(
+                algo='cnmf',
+                input_movie_path=df.iloc[-1],
+                params={'main': get_matching_main_params(args)},
+                item_name=f'item_name',
+            )
+
+            print(f'Running {algo} -----------')
+            df.iloc[-1].caiman.run()
+            df = df.caiman.reload_from_disk()
+            print('Processing complete -----------')
+        else:
+            raise NotImplementedError
     elif len(args.db) > 0:
         db = np.load(args.db, allow_pickle=True).item()
-        from lbm_caiman_python import run_lcp
-        run_lcp(ops)
+        # TODO: lcp.run_lcp(df, ops)
+        raise NotImplementedError
     else:
         print('else')
+        raise NotImplementedError
+    print('Pipeline Finished!')
 
 
 if __name__ == "__main__":
