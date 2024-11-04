@@ -16,6 +16,18 @@ DATAFRAME_COLUMNS = ["algo", "item_name", "input_movie_path", "params", "outputs
                      "algo_duration", "comments", "uuid"]
 
 
+def clean_batch(df):
+    for index, row in df.iterrows():
+        # Check if 'outputs' is a dictionary and has 'success' key with value False
+        if isinstance(row['outputs'], dict) and row['outputs'].get('success') is False:
+            uuid = row['uuid']
+            print(f'Removing unsuccessful batch row {row.index}.')
+            df.caiman.remove_item(uuid, remove_data=True, safe_removal=False)
+            print(f'Row {row.index} deleted.')
+    df.caiman.save_to_disk()
+    return df.caiman.reload_from_disk()
+
+
 def delete_batch_rows(df, rows_delete, remove_data=False, safe_removal=True):
     rows_delete = [rows_delete] if isinstance(rows_delete, int) else rows_delete
     uuids_delete = [row.uuid for i, row in df.iterrows() if i in rows_delete]
