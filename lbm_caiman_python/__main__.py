@@ -36,21 +36,19 @@ def add_args(parser: argparse.ArgumentParser):
     """
     Adds ops arguments to parser.
     """
+
+    parser.add_argument("batch_path", type=str, help="Path to batch file")  # Define as positional argument
     parser.add_argument("--run", type=str, nargs='+', help="algorithm to run, options mcorr, cnmf or cnmfe")
     parser.add_argument("--rm", type=int, nargs='+', help="algorithm to run, options mcorr, cnmf or cnmfe")
-    parser.add_argument(
-        "-c", "--clean",
-        help="Clean unsuccessful batch items and associated data.",
-        action="store_true"  # if present, sets args.clean to True
-    )
-    parser.add_argument(
-        "--remove-data",
-        "--remove_data",
-        dest="remove_data",
-        help="If removing a batch item, also delete child results.",
-        action="store_true",  # set to True if present
-    )
-
+    parser.add_argument("-c", "--clean",
+                        help="Clean unsuccessful batch items and associated data.",
+                        action="store_true"  # if present, sets args.clean to True
+                        )
+    parser.add_argument("--remove-data", "--remove_data",
+                        dest="remove_data",
+                        help="If removing a batch item, also delete child results.",
+                        action="store_true",  # set to True if present
+                        )
     parser.add_argument(
         "--f",
         "--force",
@@ -79,7 +77,7 @@ def add_args(parser: argparse.ArgumentParser):
             v["type"] = str
             v["dest"] = "batch_path"
         if k in ["data_path", "data-path"]:
-            v["default"] = None  # required
+            v["default"] = None  # by default, use the first df row
             v["type"] = parse_data_path
             v["dest"] = "data_path"
         parser.add_argument(f"--{k}", **v)
@@ -127,6 +125,14 @@ def get_matching_main_params(args):
 
 
 def main():
+    # 1) parse arguments
+    # 2) handle input batch path
+    # 3) handle actions
+    #    --rm  [IDX]
+    #    --run [ALGO]
+    # *with input modifiers
+    #     --data_path (str to image data)
+    #     --data_idx (by dataframe row)
     print('Beginning lbm_caiman_python run ...')
     args, ops = parse_args(add_args(argparse.ArgumentParser(description="LBM-Caiman pipeline parameters")))
     if args.version:
@@ -187,19 +193,22 @@ def main():
         df = lcp.batch.clean_batch(df)
         print(f"Cleaned DF size: {len(df.index)}")
     if args.run:
-        algo = args.run[0]
         input_movie_path = None  # for setting raw_data_path
         filename = None  # for setting input_data_path
+
         # args.data_path can be an int or str/path
         # if int, use it as an index to the dataframe
+        if not args.data_path:
+            print('No argument given for --data_path. Using the last row of the dataframe.')
+            args.data_path = -1
         if isinstance(args.data_path, int):
             row = df.iloc[args.data_path]
             in_algo = row['algo']
             assert in_algo == 'mcorr', f'Input algoritm must be mcorr, algo at idx {args.data_path}: {in_algo}'
             if isinstance(row['outputs'], dict) and row['outputs'].get('success') is False:
                 raise ValueError(f'Given data_path index {args.data_path} references an unsuccessful batch item.')
-            filename = df.iloc[args.data_path]
-            mc.set_parent_raw_data_path(df.iloc[args.data_path]['input_movie_path'])
+            filename = row
+            mc.set_parent_raw_data_path(Path(row.mcorr.get_output_path()).parent)
         elif isinstance(args.data_path, (Path, str)):
             if Path(args.data_path).is_file():
                 filename = Path(args.data_path)
@@ -213,38 +222,46 @@ def main():
                     # found a pickle file in the data_path
                     filename = files[0]
                     input_movie_path = Path(filename).parent
+                else:
+                    raise NotADirectoryError(f'{args.data_path} is not a valid directory.')
             try:
                 mc.set_parent_raw_data_path(input_movie_path)
             except NotADirectoryError:
                 raise NotADirectoryError(f'{args.data_path} does not exist.')
         else:
             raise ValueError(f'{args.data_path} is not a valid data_path.')
-
-        # RUN MCORR
-        df.caiman.add_item(
-            algo=algo,
-            input_movie_path=filename,
-            params={"main": get_matching_main_params(args)},
-            item_name="lbm-batch-item",
-        )
-        print(f"Running {algo} -----------")
-        df.iloc[-1].caiman.run()
-        df = df.caiman.reload_from_disk()
-
-        # Additional algorithm run (example)
-        algo = "cnmf"
-        df.caiman.add_item(
-            algo=algo,
-            input_movie_path=df.iloc[-1],
-            params={"main": get_matching_main_params(args)},
-            item_name="item_name",
-        )
-        print(f"Running {algo} -----------")
-        df.iloc[-1].caiman.run()
-        df = df.caiman.reload_from_disk()
-        print("Processing complete -----------")
-    else:
+        mcorr_prev = False
+        for algo in args.run:
+            # RUN MCORR
+            if algo == 'mcorr':
+                df.caiman.add_item(
+                    algo=algo,
+                    input_movie_path=filename,
+                    params={"main": get_matching_main_params(args)},
+                    item_name="lbm-batch-item",
+                )
+                print(f"Running {algo} -----------")
+                df.iloc[-1].caiman.run()
+                mcorr_prev = True
+                df = df.caiman.reload_from_disk()
+                print(f'Processing time: {df.iloc[-1].algo_duration}')
+            if algo in ['cnmf', 'cnmfe']:
+                if mcorr_prev:
+                    in_path = df.iloc[-1]
+                else:
+                    in_path = args.data_path
+                df.caiman.add_item(
+                    algo=algo,
+                    input_movie_path=in_path,
+                    params={"main": get_matching_main_params(args)},
+                    item_name="item_name",
+                )
+                print(f"Running {algo} -----------")
+                df.iloc[-1].caiman.run()
+    else:  # if only batch_path was provided
         print(df)
+
+    print("Processing complete -----------")
 
 
 if __name__ == "__main__":
