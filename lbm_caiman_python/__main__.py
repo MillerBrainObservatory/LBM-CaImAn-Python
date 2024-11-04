@@ -1,12 +1,10 @@
 # Heavily adapted from suite2p
-import logging
 import argparse
 from pathlib import Path
 import numpy as np
 from functools import partial
 import lbm_caiman_python as lcp
 import mesmerize_core as mc
-
 
 current_file = Path(__file__).parent
 with open(f"{current_file}/VERSION", "r") as VERSION:
@@ -16,8 +14,8 @@ with open(f"{current_file}/VERSION", "r") as VERSION:
 
 print = partial(print, flush=True)
 
-DEFAULT_BATCH_PATH = Path().home() / "caiman_data" / "batch"
-DEFAULT_DATA_PATH = Path().home() / "caiman_data" / "data"
+DEFAULT_BATCH_PATH = Path().home() / "lbm_data" / "batch"
+DEFAULT_DATA_PATH = Path().home() / "lbm_data" / "data"
 if not DEFAULT_BATCH_PATH.is_dir():
     print(f"Creating default batch path in {DEFAULT_BATCH_PATH}.")
     DEFAULT_BATCH_PATH.mkdir(exist_ok=True, parents=True)
