@@ -1,10 +1,12 @@
 # Heavily adapted from suite2p
+import logging
 import argparse
 from pathlib import Path
 import numpy as np
 from functools import partial
 import lbm_caiman_python as lcp
 import mesmerize_core as mc
+
 
 current_file = Path(__file__).parent
 with open(f"{current_file}/VERSION", "r") as VERSION:
@@ -37,7 +39,12 @@ def add_args(parser: argparse.ArgumentParser):
     Adds ops arguments to parser.
     """
     parser.add_argument("--run", type=str, nargs='+', help="algorithm to run, options mcorr, cnmf or cnmfe")
-    parser.add_argument("--rm", type=int, nargs='+', help="0 based int of the row to delete")
+    parser.add_argument("--rm", type=int, nargs='+', help="algorithm to run, options mcorr, cnmf or cnmfe")
+    parser.add_argument(
+        "-c", "--clean",
+        help="Clean unsuccessful batch items and associated data.",
+        action="store_true"  # if present, sets args.clean to True
+    )
     parser.add_argument(
         "--remove-data",
         "--remove_data",
@@ -122,6 +129,7 @@ def get_matching_main_params(args):
 
 
 def main():
+    print('Beginning lbm_caiman_python run ...')
     args, ops = parse_args(add_args(argparse.ArgumentParser(description="LBM-Caiman pipeline parameters")))
     if args.version:
         print("lbm_caiman_python v{}".format(version))
@@ -153,51 +161,75 @@ def main():
             df = None  # Ensure `df` is unset or handled appropriately for downstream code
 
     # start parsing main arguments (run, rm)
-    if isinstance(args.rm, (int, list)):
-        if args.rm > len(df.index):
-            raise ValueError(f'Attempting to delete row {args.rm}. Dataframe size: {df.index}')
-
-        print(f"Deleting row {args.rm} from the following dataframe:")
-        print(f"--------------------------")
-        print(df)
-        if args.force:
+    if args.rm:
+        print('--rm provided as an argument. Checking the index(s) to delete are valid for this dataframe.')
+        if args.force:  # stored false, access directly
+            print(
+                '--force provided as an argument.'
+                'Performing unsafe deletion.'
+                '(This action may delete an mcorr item with an associated cnmf processing run)'
+            )
             safe = False
         else:
+            print('--force not provided as an argument. Performing safe deletion.')
             safe = True
+        for arg in args.rm:
+            if arg > len(df.index):
+                raise ValueError(f'Attempting to delete row {args.rm}. Dataframe size: {df.index}')
         try:
-            df = lcp.batch.delete_batch_rows(
-                df, [args.rm], remove_data=args.remove_data, safe_removal=safe
-            )
+            df = lcp.batch.delete_batch_rows(df, args.rm, remove_data=args.remove_data, safe_removal=safe)
             df = df.caiman.reload_from_disk()
-            print(df)
         except Exception as e:
             print(f"Cannot remove row, this likely occured because there was a downstream item ran on this batch "
                   f"item. Try with --force.")
+    # Call `lcp.clean()` if the clean flag is set
+    if args.clean:
+        print("Cleaning unsuccessful batch items and associated data.")
+        print(f"Previous DF size: {len(df.index)}")
+        df = lcp.batch.clean_batch(df)
+        print(f"Cleaned DF size: {len(df.index)}")
     if args.run:
+        algo = args.run[0]
+        input_movie_path = None  # for setting raw_data_path
+        filename = None  # for setting input_data_path
+        # args.data_path can be an int or str/path
+        # if int, use it as an index to the dataframe
         if isinstance(args.data_path, int):
-            in_algo = df.iloc[args.data_path]['algo']
+            row = df.iloc[args.data_path]
+            in_algo = row['algo']
             assert in_algo == 'mcorr', f'Input algoritm must be mcorr, algo at idx {args.data_path}: {in_algo}'
-            input_movie_path = df.iloc[args.data_path]
-        elif isinstance(args.data_path, list):
-            if isinstance(args.data_path[0], int):
-                input_movie_path = df.iloc[args.data_path[0]]
-            if isinstance(args.data_path[0], (str, Path)):
-                input_movie_path = args.data_path
-                mc.set_parent_raw_data_path(str(args.data_path))
+            if isinstance(row['outputs'], dict) and row['outputs'].get('success') is False:
+                raise ValueError(f'Given data_path index {args.data_path} references an unsuccessful batch item.')
+            filename = df.iloc[args.data_path]
+            mc.set_parent_raw_data_path(df.iloc[args.data_path]['input_movie_path'])
         elif isinstance(args.data_path, (Path, str)):
-            input_movie_path = args.data_path
-            mc.set_parent_raw_data_path(str(args.data_path))
+            if Path(args.data_path).is_file():
+                filename = Path(args.data_path)
+                input_movie_path = filename.parent
+            if Path(args.data_path).is_dir():
+                # regex all .p files to get pickled files
+                files = [x for x in Path(args.data_path).glob('*.tif*')]
+                if len(files) == 0:
+                    raise ValueError(f'No datafiles found data_path: {args.data_path}')
+                if len(files) == 1:
+                    # found a pickle file in the data_path
+                    filename = files[0]
+                    input_movie_path = Path(filename).parent
+            try:
+                mc.set_parent_raw_data_path(input_movie_path)
+            except NotADirectoryError:
+                raise NotADirectoryError(f'{args.data_path} does not exist.')
         else:
             raise ValueError(f'{args.data_path} is not a valid data_path.')
 
-        # Add and run batch item
+        # RUN MCORR
         df.caiman.add_item(
-            algo=args.run,
-            input_movie_path=input_movie_path,
+            algo=algo,
+            input_movie_path=filename,
             params={"main": get_matching_main_params(args)},
             item_name="lbm-batch-item",
         )
-        print(f"Running {args.run} -----------")
+        print(f"Running {algo} -----------")
         df.iloc[-1].caiman.run()
         df = df.caiman.reload_from_disk()
 
