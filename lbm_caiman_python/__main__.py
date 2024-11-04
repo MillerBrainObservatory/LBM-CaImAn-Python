@@ -29,7 +29,7 @@ def parse_data_path(value):
     try:
         return int(value)
     except ValueError:
-        return Path(value).resolve()
+        return str(Path(value).resolve())  # expand ~
 
 
 def add_args(parser: argparse.ArgumentParser):
@@ -76,7 +76,6 @@ def add_args(parser: argparse.ArgumentParser):
         if k in ["data_path", "data-path"]:
             v["default"] = None  # required
             v["type"] = parse_data_path
-            v["nargs"] = "+"
             v["dest"] = "data_path"
         parser.add_argument(f"--{k}", **v)
     return parser
@@ -152,7 +151,8 @@ def main():
         else:
             print("No new batch created. Exiting.")
             df = None  # Ensure `df` is unset or handled appropriately for downstream code
-    # start batch manipulation
+
+    # start parsing main arguments (run, rm)
     if isinstance(args.rm, (int, list)):
         if args.rm > len(df.index):
             raise ValueError(f'Attempting to delete row {args.rm}. Dataframe size: {df.index}')
@@ -175,10 +175,16 @@ def main():
                   f"item. Try with --force.")
     if args.run:
         if isinstance(args.data_path, int):
+            in_algo = df.iloc[args.data_path]['algo']
+            assert in_algo == 'mcorr', f'Input algoritm must be mcorr, algo at idx {args.data_path}: {in_algo}'
             input_movie_path = df.iloc[args.data_path]
-            if isinstance(args.data_path, list):
-                input_movie_path = df.iloc[args.data_path]
-        elif isinstance(args.data_path, Path):
+        elif isinstance(args.data_path, list):
+            if isinstance(args.data_path[0], int):
+                input_movie_path = df.iloc[args.data_path[0]]
+            if isinstance(args.data_path[0], (str, Path)):
+                input_movie_path = args.data_path
+                mc.set_parent_raw_data_path(str(args.data_path))
+        elif isinstance(args.data_path, (Path, str)):
             input_movie_path = args.data_path
             mc.set_parent_raw_data_path(str(args.data_path))
         else:
