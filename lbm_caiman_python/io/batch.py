@@ -1,6 +1,5 @@
 #  HACK to prevent loading caiman and all of its dependencies when trying to load a batch
 import re as regex
-import os
 from pathlib import Path
 from typing import Union
 
@@ -51,9 +50,9 @@ def get_batch_from_path(batch_path):
     Load or create a batch at the given batch_path.
     """
     try:
-        df = load_batch(batch_path)
+        df = mc.load_batch(batch_path)
         print(f'Batch found at {batch_path}')
     except (IsADirectoryError, FileNotFoundError):
         print(f'Creating batch at {batch_path}')
-        df = create_batch(batch_path)
+        df = mc.create_batch(batch_path)
     return df
