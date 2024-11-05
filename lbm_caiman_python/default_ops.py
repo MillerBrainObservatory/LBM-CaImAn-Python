@@ -196,3 +196,37 @@ def default_ops():
             'rval_thr': 0.8,
         },
     }
+
+
+def mcorr_ops():
+    return {
+        "batch_path": "",           # path to save the dataframe
+        "data_path": "",            # path to the raw input image data
+        "main": {
+            "pw_rigid": True,
+            "max_shifts": [6, 6],
+            "strides": [50, 50],
+            "overlaps": [24, 24],
+            "max_deviation_rigid": 3,
+            "border_nan": "copy",
+            'fr': 30,
+            'dxy': (1., 1.),
+            'decay_time': 0.4,
+            'p': 2,
+            'nb': 1,
+            'rf': 13,
+            'K': 20,
+            'gSig': (3, 3),
+            # 'gSiz': gSiz,
+            'stride': [50, 50],
+            'method_init': 'greedy_roi',
+            'rolling_sum': True,
+            'use_cnn': False,
+            'ssub': 1,
+            'tsub': 1,
+            'merge_thr': 0.7,
+            'bas_nonneg': True,
+            'min_SNR': 1.4,
+            'rval_thr': 0.8,
+        },
+    }
