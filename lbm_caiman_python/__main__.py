@@ -58,6 +58,7 @@ def add_args(parser: argparse.ArgumentParser):
         action="store_true",  # set to True if present
     )
 
+    parser.add_argument("--show_params", help="View parameters for the given index")
     parser.add_argument("--version", action="store_true", help="current pipeline version")
     parser.add_argument("--ops", default=[], type=str, help="options")
 
@@ -192,6 +193,19 @@ def main():
         print(f"Previous DF size: {len(df.index)}")
         df = lcp.batch.clean_batch(df)
         print(f"Cleaned DF size: {len(df.index)}")
+    if args.show_params:
+        params = df.iloc[int(args.show_params)]['params']
+        def print_params(params, indent=5):
+            for k, v in params.items():
+                # if value is a dictionary, recursively call the function
+                if isinstance(v, dict):
+                    print(' ' * indent + f'{k}:')
+                    print_params(v, indent + 4)
+                else:
+                    print(' ' * indent + f'{k}: {v}')
+
+        print_params(params)
+
     if args.run:
         input_movie_path = None  # for setting raw_data_path
         filename = None  # for setting input_data_path
@@ -258,6 +272,7 @@ def main():
                 )
                 print(f"Running {algo} -----------")
                 df.iloc[-1].caiman.run()
+
     else:  # if only batch_path was provided
         print(df)
 
