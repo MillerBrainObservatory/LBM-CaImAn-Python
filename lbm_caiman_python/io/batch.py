@@ -10,25 +10,34 @@ COMPUTE_BACKEND_SUBPROCESS = "subprocess"  #: subprocess backend
 COMPUTE_BACKEND_SLURM = "slurm"  #: SLURM backend
 COMPUTE_BACKEND_LOCAL = "local"
 
-COMPUTE_BACKENDS = [COMPUTE_BACKEND_SUBPROCESS, COMPUTE_BACKEND_SLURM, COMPUTE_BACKEND_LOCAL]
+COMPUTE_BACKENDS = [
+    COMPUTE_BACKEND_SUBPROCESS,
+    COMPUTE_BACKEND_SLURM,
+    COMPUTE_BACKEND_LOCAL,
+]
 
-DATAFRAME_COLUMNS = ["algo", "item_name", "input_movie_path", "params", "outputs", "added_time", "ran_time",
-                     "algo_duration", "comments", "uuid"]
+DATAFRAME_COLUMNS = [
+    "algo",
+    "item_name",
+    "input_movie_path",
+    "params",
+    "outputs",
+    "added_time",
+    "ran_time",
+    "algo_duration",
+    "comments",
+    "uuid",
+]
 
 
 def clean_batch(df):
     for index, row in df.iterrows():
         # Check if 'outputs' is a dictionary and has 'success' key with value False
-        if isinstance(row['outputs'], dict) and row['outputs'].get('success') is False:
-            uuid = row['uuid']
-            print(f'Removing unsuccessful batch row {row.index}.')
+        if isinstance(row["outputs"], dict) and row["outputs"].get("success") is False or row["outputs"] is None:
+            uuid = row["uuid"]
+            print(f"Removing unsuccessful batch row {row.index}.")
             df.caiman.remove_item(uuid, remove_data=True, safe_removal=False)
-            print(f'Row {row.index} deleted.')
-        elif row['outputs'] is None:
-            print(f'Removing unsuccessful batch row {row.index}.')
-            df.caiman.remove_item(uuid, remove_data=True, safe_removal=False)
-            print(f'Row {row.index} deleted.')
-
+            print(f"Row {row.index} deleted.")
     df.caiman.save_to_disk()
     return df.caiman.reload_from_disk()
 
@@ -57,8 +66,8 @@ def get_batch_from_path(batch_path):
     """
     try:
         df = mc.load_batch(batch_path)
-        print(f'Batch found at {batch_path}')
+        print(f"Batch found at {batch_path}")
     except (IsADirectoryError, FileNotFoundError):
-        print(f'Creating batch at {batch_path}')
+        print(f"Creating batch at {batch_path}")
         df = mc.create_batch(batch_path)
     return df
