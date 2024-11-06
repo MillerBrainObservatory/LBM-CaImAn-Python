@@ -2,6 +2,7 @@
 import re as regex
 from pathlib import Path
 from typing import Union
+import mesmerize_core as mc
 
 import pandas as pd
 
@@ -23,6 +24,11 @@ def clean_batch(df):
             print(f'Removing unsuccessful batch row {row.index}.')
             df.caiman.remove_item(uuid, remove_data=True, safe_removal=False)
             print(f'Row {row.index} deleted.')
+        elif row['outputs'] is None:
+            print(f'Removing unsuccessful batch row {row.index}.')
+            df.caiman.remove_item(uuid, remove_data=True, safe_removal=False)
+            print(f'Row {row.index} deleted.')
+
     df.caiman.save_to_disk()
     return df.caiman.reload_from_disk()
 
