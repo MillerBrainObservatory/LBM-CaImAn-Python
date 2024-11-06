@@ -70,6 +70,11 @@ def add_args(parser: argparse.ArgumentParser):
         action="store_true",  # if present, sets args.clean to True
     )
     parser.add_argument(
+        "--create",
+        help="Create a new batch if one is not found at the given batch path.",
+        action="store_true",  # if present, sets args.clean to True
+    )
+    parser.add_argument(
         "--remove-data",
         "--remove_data",
         dest="remove_data",
@@ -181,30 +186,31 @@ def main():
     if not args.batch_path:
         print("No batch path provided. Provide a path to save results in a dataframe.")
         return
+    print("Batch path provided, retrieving batch:")
+    print(args.batch_path)
+    if Path(args.batch_path).is_file():
+        print("Found existing batch.")
+        df = mc.load_batch(args.batch_path)
+    elif Path(args.batch_path).is_dir():
+        print(
+            f"Given batch path {args.batch_path} is a directory. Please use a fully qualified path, including "
+            f"the filename and file extension, i.e. /path/to/batch.pickle."
+        )
+        # see if any existing pickle files
+    elif args.create:
+        df = mc.create_batch(args.batch_path)
+        print(f'Batch created at {args.batch_path}')
     else:
-        print("Batch path provided, retrieving batch:")
-        print(args.batch_path)
-        if Path(args.batch_path).is_file():
-            print("Found existing batch.")
-            df = mc.load_batch(args.batch_path)
-            print(df)
-        elif Path(args.batch_path).is_dir():
-            print(
-                f"Given batch path {args.batch_path} is a directory. Please use a fully qualified path, including "
-                f"the filename and file extension, i.e. /path/to/batch.pickle."
-            )
-            # see if any existing pickle files
-        else:
-            if Path(args.batch_path).parent.is_dir():
-                print(f"Creating batch at {args.batch_path}")
-                mc.create_batch(args.batch_path)
-                print(f"Batch created at {args.batch_path}")
-            print(
-                f"Batch path at {args.batch_path} is not a file or directory. Enter a fully qualified filename or "
-                f"the path to batch item with a .pickle extension."
-            )
-            return None
+        print('No batch found. Use --create to create a new batch.')
 
+        print(f"Creating batch at {args.batch_path}")
+        mc.create_batch(args.batch_path)
+        print(f"Batch created at {args.batch_path}")
+        print(
+            f"Batch path at {args.batch_path} is not a file or directory. Enter a fully qualified filename or "
+            f"the path to batch item with a .pickle extension."
+        )
+        return None
     # start parsing main arguments (run, rm)
     if args.rm:
         print(
