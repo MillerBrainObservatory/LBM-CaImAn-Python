@@ -148,7 +148,9 @@ def main():
         logger = logging.getLogger(__name__)
         logger.setLevel(level=logging.DEBUG)
         logging.basicConfig(level=logging.DEBUG)
-
+        backend = 'local'
+    else:
+        backend = None
     if not args.batch_path:
         print("No batch path provided. Provide a path to save results in a dataframe.")
         return
@@ -205,6 +207,8 @@ def main():
         df = lcp.batch.clean_batch(df)
         print(f"Cleaned DF size: {len(df.index)}")
     elif args.show_params:
+        from caiman.source_extraction.cnmf.params import CNMFParams
+        params = CNMFParams()
         params = df.iloc[int(args.show_params)]['params']
         print_params(params)
     elif args.run:
@@ -256,7 +260,7 @@ def main():
                     item_name="lbm-batch-item",
                 )
                 print(f"Running {algo} -----------")
-                df.iloc[-1].caiman.run()
+                df.iloc[-1].caiman.run(backend=backend)
                 mcorr_prev = True
                 df = df.caiman.reload_from_disk()
                 print(f'Processing time: {df.iloc[-1].algo_duration}')
