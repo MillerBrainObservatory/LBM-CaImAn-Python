@@ -1,5 +1,6 @@
 # Heavily adapted from suite2p
 import argparse
+import logging
 from pathlib import Path
 import numpy as np
 from functools import partial
@@ -22,6 +23,16 @@ if not DEFAULT_BATCH_PATH.is_dir():
 if not DEFAULT_DATA_PATH.is_dir():
     print(f"Creating default data path in {DEFAULT_DATA_PATH}.")
     DEFAULT_DATA_PATH.mkdir(exist_ok=True, parents=True)
+
+
+def print_params(params, indent=5):
+    for k, v in params.items():
+        # if value is a dictionary, recursively call the function
+        if isinstance(v, dict):
+            print(' ' * indent + f'{k}:')
+            print_params(v, indent + 4)
+        else:
+            print(' ' * indent + f'{k}: {v}')
 
 
 def parse_data_path(value):
@@ -58,7 +69,9 @@ def add_args(parser: argparse.ArgumentParser):
         action="store_true",  # set to True if present
     )
 
+    parser.add_argument("-d", "--debug", action="store_false", help="Run with verbose debug logging.")
     parser.add_argument("--show_params", help="View parameters for the given index")
+    parser.add_argument("--save_params", help="Store this parameter set to file")
     parser.add_argument("--version", action="store_true", help="current pipeline version")
     parser.add_argument("--ops", default=[], type=str, help="options")
 
@@ -126,24 +139,23 @@ def get_matching_main_params(args):
 
 
 def main():
-    # 1) parse arguments
-    # 2) handle input batch path
-    # 3) handle actions
-    #    --rm  [IDX]
-    #    --run [ALGO]
-    # *with input modifiers
-    #     --data_path (str to image data)
-    #     --data_idx (by dataframe row)
-    print('Beginning lbm_caiman_python run ...')
+    print('Beginning processing run ...')
     args, ops = parse_args(add_args(argparse.ArgumentParser(description="LBM-Caiman pipeline parameters")))
     if args.version:
         print("lbm_caiman_python v{}".format(version))
         return
+    if args.debug:
+        logger = logging.getLogger(__name__)
+        logger.setLevel(level=logging.DEBUG)
+        logging.basicConfig(level=logging.DEBUG)
+
     if not args.batch_path:
         print("No batch path provided. Provide a path to save results in a dataframe.")
         return
-    print("Batch path provided, retrieving batch:")
-    print(args.batch_path)
+    else:
+        print("Batch path provided, retrieving batch:")
+        print(args.batch_path)
+        # validate_path()  # TODO
     try:
         df = mc.load_batch(args.batch_path)
     except:
@@ -187,26 +199,15 @@ def main():
         except Exception as e:
             print(f"Cannot remove row, this likely occured because there was a downstream item ran on this batch "
                   f"item. Try with --force.")
-    # Call `lcp.clean()` if the clean flag is set
-    if args.clean:
+    elif args.clean:
         print("Cleaning unsuccessful batch items and associated data.")
         print(f"Previous DF size: {len(df.index)}")
         df = lcp.batch.clean_batch(df)
         print(f"Cleaned DF size: {len(df.index)}")
-    if args.show_params:
+    elif args.show_params:
         params = df.iloc[int(args.show_params)]['params']
-        def print_params(params, indent=5):
-            for k, v in params.items():
-                # if value is a dictionary, recursively call the function
-                if isinstance(v, dict):
-                    print(' ' * indent + f'{k}:')
-                    print_params(v, indent + 4)
-                else:
-                    print(' ' * indent + f'{k}: {v}')
-
         print_params(params)
-
-    if args.run:
+    elif args.run:
         input_movie_path = None  # for setting raw_data_path
         filename = None  # for setting input_data_path
 
@@ -272,7 +273,6 @@ def main():
                 )
                 print(f"Running {algo} -----------")
                 df.iloc[-1].caiman.run()
-
     else:  # if only batch_path was provided
         print(df)
 
