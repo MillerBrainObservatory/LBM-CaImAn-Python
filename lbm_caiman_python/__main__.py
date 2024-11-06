@@ -70,6 +70,7 @@ def add_args(parser: argparse.ArgumentParser):
     )
 
     parser.add_argument("-d", "--debug", action="store_false", help="Run with verbose debug logging.")
+    parser.add_argument("--name", type=str, help="Name of the batch, qualified as path/to/name.pickle.")
     parser.add_argument("--show_params", help="View parameters for the given index")
     parser.add_argument("--save_params", help="Store this parameter set to file")
     parser.add_argument("--version", action="store_true", help="current pipeline version")
@@ -157,27 +158,22 @@ def main():
     else:
         print("Batch path provided, retrieving batch:")
         print(args.batch_path)
-        # validate_path()  # TODO
-    try:
-        df = mc.load_batch(args.batch_path)
-    except:
-        print(f"No dataframe exists at {args.batch_path}")
-
-        # Ask user if they want to create a new DataFrame
-        create_new = input("Would you like to create a new batch DataFrame? (yes/no): ").strip().lower()
-
-        if create_new == 'yes':
-            # Prompt for save location, defaulting to the current batch path
-            save_path = input(f"Enter save path (default: {args.batch_path}): ").strip()
-            if not save_path:
-                save_path = args.batch_path
-
-            # Create a new DataFrame and save it to the specified location
-            df = mc.create_batch(save_path)
-            print(f"New batch DataFrame created and saved at {save_path}.")
+        if Path(args.batch_path).is_file():
+            print("Found existing batch.")
+            df = mc.load_batch(args.batch_path)
+            print(df)
+        elif Path(args.batch_path).is_dir():
+            print(f'Given batch path {args.batch_path} is a directory. Please use a fully qualified path, including '
+                  f'the filename and file extension, i.e. /path/to/batch.pickle.')
+            # see if any existing pickle files
         else:
-            print("No new batch created. Exiting.")
-            df = None  # Ensure `df` is unset or handled appropriately for downstream code
+            if Path(args.batch_path).parent.is_dir():
+                print(f'Creating batch at {args.batch_path}')
+                mc.create_batch(args.batch_path)
+                print(f'Batch created at {args.batch_path}')
+            print(f'Batch path at {args.batch_path} is not a file or directory. Enter a fully qualified filename or '
+                  f'the path to batch item with a .pickle extension.')
+            return None
 
     # start parsing main arguments (run, rm)
     if args.rm:
