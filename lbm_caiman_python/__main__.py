@@ -29,10 +29,10 @@ def print_params(params, indent=5):
     for k, v in params.items():
         # if value is a dictionary, recursively call the function
         if isinstance(v, dict):
-            print(' ' * indent + f'{k}:')
+            print(" " * indent + f"{k}:")
             print_params(v, indent + 4)
         else:
-            print(' ' * indent + f'{k}: {v}')
+            print(" " * indent + f"{k}: {v}")
 
 
 def parse_data_path(value):
@@ -48,18 +48,34 @@ def add_args(parser: argparse.ArgumentParser):
     Adds ops arguments to parser.
     """
 
-    parser.add_argument("batch_path", type=str, help="Path to batch file")  # Define as positional argument
-    parser.add_argument("--run", type=str, nargs='+', help="algorithm to run, options mcorr, cnmf or cnmfe")
-    parser.add_argument("--rm", type=int, nargs='+', help="algorithm to run, options mcorr, cnmf or cnmfe")
-    parser.add_argument("-c", "--clean",
-                        help="Clean unsuccessful batch items and associated data.",
-                        action="store_true"  # if present, sets args.clean to True
-                        )
-    parser.add_argument("--remove-data", "--remove_data",
-                        dest="remove_data",
-                        help="If removing a batch item, also delete child results.",
-                        action="store_true",  # set to True if present
-                        )
+    parser.add_argument(
+        "batch_path", type=str, help="Path to batch file"
+    )  # Define as positional argument
+    parser.add_argument(
+        "--run",
+        type=str,
+        nargs="+",
+        help="algorithm to run, options mcorr, cnmf or cnmfe",
+    )
+    parser.add_argument(
+        "--rm",
+        type=int,
+        nargs="+",
+        help="algorithm to run, options mcorr, cnmf or cnmfe",
+    )
+    parser.add_argument(
+        "-c",
+        "--clean",
+        help="Clean unsuccessful batch items and associated data.",
+        action="store_true",  # if present, sets args.clean to True
+    )
+    parser.add_argument(
+        "--remove-data",
+        "--remove_data",
+        dest="remove_data",
+        help="If removing a batch item, also delete child results.",
+        action="store_true",  # set to True if present
+    )
     parser.add_argument(
         "--f",
         "--force",
@@ -69,11 +85,17 @@ def add_args(parser: argparse.ArgumentParser):
         action="store_true",  # set to True if present
     )
 
-    parser.add_argument("-d", "--debug", action="store_false", help="Run with verbose debug logging.")
-    parser.add_argument("--name", type=str, help="Name of the batch, qualified as path/to/name.pickle.")
+    parser.add_argument(
+        "-d", "--debug", action="store_false", help="Run with verbose debug logging."
+    )
+    parser.add_argument(
+        "--name", type=str, help="Name of the batch, qualified as path/to/name.pickle."
+    )
     parser.add_argument("--show_params", help="View parameters for the given index")
     parser.add_argument("--save_params", help="Store this parameter set to file")
-    parser.add_argument("--version", action="store_true", help="current pipeline version")
+    parser.add_argument(
+        "--version", action="store_true", help="current pipeline version"
+    )
     parser.add_argument("--ops", default=[], type=str, help="options")
 
     # uncollapse dict['main'], used by mescore for parameters
@@ -121,7 +143,9 @@ def parse_args(parser: argparse.ArgumentParser):
             if default_key != args_key:
                 ops[k] = args_key
                 print(set_param_msg.format(k, ops[k]))
-        elif not (default_key == type(default_key)(args_key)):  # type conversion, ensure type match
+        elif not (
+            default_key == type(default_key)(args_key)
+        ):  # type conversion, ensure type match
             ops[k] = type(default_key)(args_key)
             print(set_param_msg.format(k, ops[k]))
     return args, ops
@@ -140,8 +164,10 @@ def get_matching_main_params(args):
 
 
 def main():
-    print('Beginning processing run ...')
-    args, ops = parse_args(add_args(argparse.ArgumentParser(description="LBM-Caiman pipeline parameters")))
+    print("Beginning processing run ...")
+    args, ops = parse_args(
+        add_args(argparse.ArgumentParser(description="LBM-Caiman pipeline parameters"))
+    )
     if args.version:
         print("lbm_caiman_python v{}".format(version))
         return
@@ -149,7 +175,7 @@ def main():
         logger = logging.getLogger(__name__)
         logger.setLevel(level=logging.DEBUG)
         logging.basicConfig(level=logging.DEBUG)
-        backend = 'local'
+        backend = "local"
     else:
         backend = None
     if not args.batch_path:
@@ -163,40 +189,52 @@ def main():
             df = mc.load_batch(args.batch_path)
             print(df)
         elif Path(args.batch_path).is_dir():
-            print(f'Given batch path {args.batch_path} is a directory. Please use a fully qualified path, including '
-                  f'the filename and file extension, i.e. /path/to/batch.pickle.')
+            print(
+                f"Given batch path {args.batch_path} is a directory. Please use a fully qualified path, including "
+                f"the filename and file extension, i.e. /path/to/batch.pickle."
+            )
             # see if any existing pickle files
         else:
             if Path(args.batch_path).parent.is_dir():
-                print(f'Creating batch at {args.batch_path}')
+                print(f"Creating batch at {args.batch_path}")
                 mc.create_batch(args.batch_path)
-                print(f'Batch created at {args.batch_path}')
-            print(f'Batch path at {args.batch_path} is not a file or directory. Enter a fully qualified filename or '
-                  f'the path to batch item with a .pickle extension.')
+                print(f"Batch created at {args.batch_path}")
+            print(
+                f"Batch path at {args.batch_path} is not a file or directory. Enter a fully qualified filename or "
+                f"the path to batch item with a .pickle extension."
+            )
             return None
 
     # start parsing main arguments (run, rm)
     if args.rm:
-        print('--rm provided as an argument. Checking the index(s) to delete are valid for this dataframe.')
+        print(
+            "--rm provided as an argument. Checking the index(s) to delete are valid for this dataframe."
+        )
         if args.force:  # stored false, access directly
             print(
-                '--force provided as an argument.'
-                'Performing unsafe deletion.'
-                '(This action may delete an mcorr item with an associated cnmf processing run)'
+                "--force provided as an argument."
+                "Performing unsafe deletion."
+                "(This action may delete an mcorr item with an associated cnmf processing run)"
             )
             safe = False
         else:
-            print('--force not provided as an argument. Performing safe deletion.')
+            print("--force not provided as an argument. Performing safe deletion.")
             safe = True
         for arg in args.rm:
             if arg > len(df.index):
-                raise ValueError(f'Attempting to delete row {args.rm}. Dataframe size: {df.index}')
+                raise ValueError(
+                    f"Attempting to delete row {args.rm}. Dataframe size: {df.index}"
+                )
         try:
-            df = lcp.batch.delete_batch_rows(df, args.rm, remove_data=args.remove_data, safe_removal=safe)
+            df = lcp.batch.delete_batch_rows(
+                df, args.rm, remove_data=args.remove_data, safe_removal=safe
+            )
             df = df.caiman.reload_from_disk()
         except Exception as e:
-            print(f"Cannot remove row, this likely occured because there was a downstream item ran on this batch "
-                  f"item. Try with --force.")
+            print(
+                f"Cannot remove row, this likely occured because there was a downstream item ran on this batch "
+                f"item. Try with --force."
+            )
     elif args.clean:
         print("Cleaning unsuccessful batch items and associated data.")
         print(f"Previous DF size: {len(df.index)}")
@@ -204,8 +242,9 @@ def main():
         print(f"Cleaned DF size: {len(df.index)}")
     elif args.show_params:
         from caiman.source_extraction.cnmf.params import CNMFParams
+
         params = CNMFParams()
-        params = df.iloc[int(args.show_params)]['params']
+        params = df.iloc[int(args.show_params)]["params"]
         print_params(params)
     elif args.run:
         input_movie_path = None  # for setting raw_data_path
@@ -214,14 +253,23 @@ def main():
         # args.data_path can be an int or str/path
         # if int, use it as an index to the dataframe
         if not args.data_path:
-            print('No argument given for --data_path. Using the last row of the dataframe.')
+            print(
+                "No argument given for --data_path. Using the last row of the dataframe."
+            )
             args.data_path = -1
         if isinstance(args.data_path, int):
             row = df.iloc[args.data_path]
-            in_algo = row['algo']
-            assert in_algo == 'mcorr', f'Input algoritm must be mcorr, algo at idx {args.data_path}: {in_algo}'
-            if isinstance(row['outputs'], dict) and row['outputs'].get('success') is False:
-                raise ValueError(f'Given data_path index {args.data_path} references an unsuccessful batch item.')
+            in_algo = row["algo"]
+            assert (
+                in_algo == "mcorr"
+            ), f"Input algoritm must be mcorr, algo at idx {args.data_path}: {in_algo}"
+            if (
+                isinstance(row["outputs"], dict)
+                and row["outputs"].get("success") is False
+            ):
+                raise ValueError(
+                    f"Given data_path index {args.data_path} references an unsuccessful batch item."
+                )
             filename = row
             mc.set_parent_raw_data_path(Path(row.mcorr.get_output_path()).parent)
         elif isinstance(args.data_path, (Path, str)):
@@ -230,25 +278,27 @@ def main():
                 input_movie_path = filename.parent
             if Path(args.data_path).is_dir():
                 # regex all .p files to get pickled files
-                files = [x for x in Path(args.data_path).glob('*.tif*')]
+                files = [x for x in Path(args.data_path).glob("*.tif*")]
                 if len(files) == 0:
-                    raise ValueError(f'No datafiles found data_path: {args.data_path}')
+                    raise ValueError(f"No datafiles found data_path: {args.data_path}")
                 if len(files) == 1:
                     # found a pickle file in the data_path
                     filename = files[0]
                     input_movie_path = Path(filename).parent
                 else:
-                    raise NotADirectoryError(f'{args.data_path} is not a valid directory.')
+                    raise NotADirectoryError(
+                        f"{args.data_path} is not a valid directory."
+                    )
             try:
                 mc.set_parent_raw_data_path(input_movie_path)
             except NotADirectoryError:
-                raise NotADirectoryError(f'{args.data_path} does not exist.')
+                raise NotADirectoryError(f"{args.data_path} does not exist.")
         else:
-            raise ValueError(f'{args.data_path} is not a valid data_path.')
+            raise ValueError(f"{args.data_path} is not a valid data_path.")
         mcorr_prev = False
         for algo in args.run:
             # RUN MCORR
-            if algo == 'mcorr':
+            if algo == "mcorr":
                 df.caiman.add_item(
                     algo=algo,
                     input_movie_path=filename,
@@ -259,8 +309,8 @@ def main():
                 df.iloc[-1].caiman.run(backend=backend)
                 mcorr_prev = True
                 df = df.caiman.reload_from_disk()
-                print(f'Processing time: {df.iloc[-1].algo_duration}')
-            if algo in ['cnmf', 'cnmfe']:
+                print(f"Processing time: {df.iloc[-1].algo_duration}")
+            if algo in ["cnmf", "cnmfe"]:
                 if mcorr_prev:
                     in_path = df.iloc[-1]
                 else:
