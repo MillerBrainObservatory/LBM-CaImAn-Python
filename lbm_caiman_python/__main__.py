@@ -169,6 +169,7 @@ def get_matching_main_params(args):
 
 
 def main():
+    df = None
     print("Beginning processing run ...")
     args, ops = parse_args(
         add_args(argparse.ArgumentParser(description="LBM-Caiman pipeline parameters"))
@@ -202,15 +203,7 @@ def main():
         print(f'Batch created at {args.batch_path}')
     else:
         print('No batch found. Use --create to create a new batch.')
-
-        print(f"Creating batch at {args.batch_path}")
-        mc.create_batch(args.batch_path)
-        print(f"Batch created at {args.batch_path}")
-        print(
-            f"Batch path at {args.batch_path} is not a file or directory. Enter a fully qualified filename or "
-            f"the path to batch item with a .pickle extension."
-        )
-        return None
+        return
     # start parsing main arguments (run, rm)
     if args.rm:
         print(
@@ -262,7 +255,12 @@ def main():
             print(
                 "No argument given for --data_path. Using the last row of the dataframe."
             )
-            args.data_path = -1
+            if len(df.index) > 0:
+                args.data_path = -1
+            else:
+                raise ValueError('Attemtping to run a batch item without giving a datapath and with an empty '
+                                 'dataframe. Supply a data path with --data_path followed by the path to your input '
+                                 'data.')
         if isinstance(args.data_path, int):
             row = df.iloc[args.data_path]
             in_algo = row["algo"]
