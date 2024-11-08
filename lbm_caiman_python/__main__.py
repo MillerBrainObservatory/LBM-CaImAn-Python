@@ -251,7 +251,7 @@ def main():
 
         # args.data_path can be an int or str/path
         # if int, use it as an index to the dataframe
-        if not args.data_path:
+        if args.data_path is None:
             print(
                 "No argument given for --data_path. Using the last row of the dataframe."
             )
