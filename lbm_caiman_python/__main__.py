@@ -274,7 +274,7 @@ def main():
                 raise ValueError(
                     f"Given data_path index {args.data_path} references an unsuccessful batch item."
                 )
-            filename = row
+            input_movie_path = row
             mc.set_parent_raw_data_path(Path(row.mcorr.get_output_path()).parent)
         elif isinstance(args.data_path, (Path, str)):
             if Path(args.data_path).is_file():
@@ -299,7 +299,6 @@ def main():
                 raise NotADirectoryError(f"{args.data_path} does not exist.")
         else:
             raise ValueError(f"{args.data_path} is not a valid data_path.")
-        mcorr_prev = False
         for algo in args.run:
             # RUN MCORR
             if algo == "mcorr":
@@ -311,17 +310,12 @@ def main():
                 )
                 print(f"Running {algo} -----------")
                 df.iloc[-1].caiman.run(backend=backend)
-                mcorr_prev = True
                 df = df.caiman.reload_from_disk()
                 print(f"Processing time: {df.iloc[-1].algo_duration}")
             if algo in ["cnmf", "cnmfe"]:
-                if mcorr_prev:
-                    in_path = df.iloc[-1]
-                else:
-                    in_path = args.data_path
                 df.caiman.add_item(
                     algo=algo,
-                    input_movie_path=in_path,
+                    input_movie_path=input_movie_path,
                     params={"main": get_matching_main_params(args)},
                     item_name="item_name",
                 )
