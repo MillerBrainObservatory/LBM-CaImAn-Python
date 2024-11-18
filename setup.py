@@ -18,6 +18,16 @@ install_deps = [
     "jupyterlab",
 ]
 
+docs_deps = [
+    "sphinx",
+    "sphinx-gallery",
+    "pydata-sphinx-theme",
+    "jupyter-rfb>=0.4.1",  # required so ImageWidget docs show up
+    "sphinx-copybutton",
+    "sphinx-design",
+    "matplotlib",
+]
+
 with open(Path(__file__).parent.joinpath("README.md")) as f:
     readme = f.read()
 
