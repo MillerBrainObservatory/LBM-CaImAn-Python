@@ -17,7 +17,25 @@ print(os.path.join("..", "lbm_caiman_python"))
 project = "LBM-CaImAn-Python"
 copyright = "2024, Elizabeth R. Miller Brain Observatory | The Rockefeller University. All Rights Reserved"
 author = "Flynn OConnell"
-release = "0.1.0"
+release = "0.8.0"
+
+def fetch_readme():
+    import requests
+    README_URL = "https://raw.githubusercontent.com/MillerBrainObservatory/scanreader/master/README.md"
+    OUTPUT_DIR = "."  # Sphinx's source directory
+    OUTPUT_FILE_MD = os.path.join(OUTPUT_DIR, "scanreader.md")
+
+    # Download the README.md
+    response = requests.get(README_URL)
+    if response.status_code == 200:
+        with open(OUTPUT_FILE_MD, "wb") as f:
+            f.write(response.content)
+        print(f"scanreader README.md downloaded to {OUTPUT_FILE_MD}")
+    else:
+        raise RuntimeError(f"Failed to download README.md: {response.status_code}")
+
+print('fetching readme')
+fetch_readme()
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -72,6 +90,7 @@ html_logo = "_static/logo_caiman_python_with_icon.png"
 html_favicon = "./_static/icon_caiman_python.svg"
 
 html_theme = "sphinx_book_theme"
+
 # html_short_title = "LB.py"
 html_static_path = ["_static"]
 html_css_files = ["custom.css"]
