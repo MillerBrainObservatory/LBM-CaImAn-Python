@@ -138,7 +138,20 @@ For more information on the available options, run:
 python scanreader.py --help
 ```
 
-### Details on data loading (for future developers)
+## Benchmarks
+
+CPU: 13th Gen Intel(R) Core(TM) i9-13900KS   3.20 GHz
+RAM: 128 GB usable
+OS: Windows 10 Pro, 22H2
+
+| **Command**                      | **Time (seconds)** | **Details**                            |
+|----------------------------------|--------------------|----------------------------------------|
+| **--save**                       | **87.02**          | Save each ROI to disk without overwriting data  |
+| **--save --roi**                 | **92.26**          | Save each ROI to disk without overwriting data  |
+| **--save --assemble**            | **167.44**         | Save .tiffs with ROI's assembled       |
+
+
+## Details on data loading (for future developers)
 
 Matlab stores data column by column ("Fortran order"), while NumPy by default stores them row by row ("C order").
 This **doesn't affect indexing**, but **may affect performance**.
@@ -155,3 +168,4 @@ Reading a scan happens in three stages:
 This reader and documentation are based off of  is based on a previous [version](https://github.com/atlab/scanreader) developed by [atlab](https://github.com/atlab/).
 
 Some of the older scans have been removed for general cleanliness. These can be reimplemented by cherry-picking the commit. See documentation on `git reflog` to find the commits you want and `git cherry-pick` to apply changes that were introduced by those commits.
+

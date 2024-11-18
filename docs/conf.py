@@ -19,8 +19,10 @@ copyright = "2024, Elizabeth R. Miller Brain Observatory | The Rockefeller Unive
 author = "Flynn OConnell"
 release = "0.8.0"
 
+
 def fetch_readme():
     import requests
+
     README_URL = "https://raw.githubusercontent.com/MillerBrainObservatory/scanreader/master/README.md"
     OUTPUT_DIR = "."  # Sphinx's source directory
     OUTPUT_FILE_MD = os.path.join(OUTPUT_DIR, "scanreader.md")
@@ -34,7 +36,8 @@ def fetch_readme():
     else:
         raise RuntimeError(f"Failed to download README.md: {response.status_code}")
 
-print('fetching readme')
+
+print("fetching readme")
 fetch_readme()
 
 # -- General configuration ---------------------------------------------------
@@ -106,6 +109,7 @@ intersphinx_mapping = {
         None,
     ),
     "caiman": ("https://caiman.readthedocs.io/en/latest/", None),
+    "mesmerize": ("https://mesmerize-core.readthedocs.io/en/latest", None),
     "suite2p": ("https://suite2p.readthedocs.io/en/latest/", None),
 }
 
