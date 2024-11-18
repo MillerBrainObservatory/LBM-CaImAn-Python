@@ -14,7 +14,6 @@ LBM CaImAn Pipeline
 ---
 maxdepth: 2
 ---
-scanreader
 snippets
 api/index
 glossary
