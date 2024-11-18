@@ -3,5 +3,4 @@ from .batch import (
     get_batch_from_path,
     clean_batch,
     validate_path,
-
 )
