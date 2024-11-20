@@ -1,54 +1,60 @@
+import argparse
+import functools
 import os
+import time
+import warnings
 from pathlib import Path
-from scanreader import scans
+import numpy as np
+import zarr
+from scanreader import read_scan
+from scanreader.utils import listify_index
+from lbm_caiman_python.util.io import get_files, get_metadata, make_json_serializable
 
+import tifffile
+import logging
 
-def get_reader(datapath: os.PathLike):
-    filepath = Path(datapath)
-    if filepath.is_file():
-        filepath = datapath
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.WARNING)
+
+ARRAY_METADATA = ["dtype", "shape", "nbytes", "size"]
+
+CHUNKS = {0: 'auto', 1: -1, 2: -1}
+
+# https://brainglobe.info/documentation/brainglobe-atlasapi/adding-a-new-atlas.html
+BRAINGLOBE_STRUCTURE_TEMPLATE = {
+    "acronym": "VIS",  # shortened name of the region
+    "id": 3,  # region id
+    "name": "visual cortex",  # full region name
+    "structure_id_path": [1, 2, 3],  # path to the structure in the structures hierarchy, up to current id
+    "rgb_triplet": [255, 255, 255],
+    # default color for visualizing the region, feel free to leave white or randomize it
+}
+
+# suppress warnings
+warnings.filterwarnings("ignore")
+
+print = functools.partial(print, flush=True)
+
+def process_slice_str(slice_str):
+    if not isinstance(slice_str, str):
+        raise ValueError(f"Expected a string argument, received: {slice_str}")
+    if slice_str.isdigit():
+        return int(slice_str)
     else:
-        filepath = [
-            files for files in datapath.glob("*.tif")
-        ]  # this accumulates a list of every filepath which contains a .tif file
-    return filepath
+        parts = slice_str.split(":")
+    return slice(*[int(p) if p else None for p in parts])
 
+def process_slice_objects(slice_str):
+    return tuple(map(process_slice_str, slice_str.split(",")))
 
-def read_scan(
-    pathnames: os.PathLike | str | list,
-    trim_roi_x: list | tuple = (0, 0),
-    trim_roi_y: list | tuple = (0, 0),
-) -> scans.ScanLBM:
-    """
-    Reads a ScanImage scan.
-
-    Parameters
-    ----------
-    pathnames: os.PathLike
-        Pathname(s) or pathname pattern(s) to read.
-    trim_roi_x: tuple, list, optional
-        Indexable (trim_roi_x[0], trim_roi_x[1]) item with 2 integers denoting the amount of pixels to trim on the left [0] and right [1] side of **each roi**.
-    trim_roi_y: tuple, list, optional
-        Indexable (trim_roi_y[0], trim_roi_y[1]) item with 2 integers denoting the amount of pixels to trim on the top [0] and bottom [1] side of **each roi**.
-
-    Returns
-    -------
-    ScanLBM
-        A Scan object (subclass of ScanMultiROI) with metadata and different offset correction methods.
-        See Readme for details.
-
-    """
-    # Expand wildcards
-    filenames = lbm_io.get_files(pathnames)
-    if isinstance(filenames, (list, tuple)):
-        if len(filenames) == 0:
-            raise FileNotFoundError(
-                f"Pathname(s) {filenames} do not match any files in disk."
-            )
-
-    # Get metadata from first file
-    return scans.ScanLBM(filenames, trim_roi_x=trim_roi_x, trim_roi_y=trim_roi_y)
-
+def print_params(params, indent=5):
+    for k, v in params.items():
+        # if value is a dictionary, recursively call the function
+        if isinstance(v, dict):
+            print(" " * indent + f"{k}:")
+            print_params(v, indent + 4)
+        else:
+            print(" " * indent + f"{k}: {v}")
 
 def return_scan_offset(image_in, nvals: int = 8):
     """
@@ -140,7 +146,6 @@ def return_scan_offset(image_in, nvals: int = 8):
     correction_index = np.argmax(r)
     return lags[correction_index]
 
-
 def fix_scan_phase(
     data_in,
     offset,
@@ -210,3 +215,243 @@ def fix_scan_phase(
         return data_out
 
     raise NotImplementedError()
+
+def save_as(
+        scan,
+        savedir: os.PathLike,
+        planes=None,
+        frames=None,
+        metadata=None,
+        overwrite=True,
+        by_roi=False,
+        ext='.tiff',
+        assemble=False,
+):
+    savedir = Path(savedir)
+    if planes is None:
+        planes = list(range(scan.num_channels))
+    elif not isinstance(planes, (list, tuple)):
+        planes = [planes]
+    if frames is None:
+        frames = list(range(scan.num_frames))
+    if metadata:
+        scan.metadata.update(metadata)
+
+    scan.metadata = make_json_serializable(scan.metadata)
+    if not savedir.exists():
+        logger.debug(f"Creating directory: {savedir}")
+        savedir.mkdir(parents=True)
+    _save_data(savedir, planes, frames, overwrite, ext, by_roi)
+
+def _save_data(scan, path, planes, frames, overwrite, ext, by_roi):
+    p = None
+
+    path.mkdir(parents=True, exist_ok=True)
+    print(f'Planes: {planes}')
+
+    file_writer = _get_file_writer(ext, overwrite)
+    roi_slices = list(zip(scan.yslices, scan.xslices, scan.rois))
+
+    if by_roi:
+        # When saving by ROI
+        outer_iter = enumerate(roi_slices)
+        outer_label = 'ROI'
+        inner_label = 'Plane'
+    else:
+        # When saving by Plane
+        outer_iter = enumerate(planes)
+        outer_label = 'Plane'
+        inner_label = 'ROI'
+
+    for outer_idx, outer_val in outer_iter:
+        print(f'-- Saving {outer_label} {outer_idx + 1} --')
+
+        if by_roi:
+            # Outer loop over ROIs
+            slce_y, slce_x, roi = outer_val
+            subdir = path / f'roi_{outer_idx + 1}'
+            inner_iter = planes  # Inner loop over planes
+        else:
+            # Outer loop over planes
+            p = outer_val
+            subdir = path / f'plane_{p + 1}'
+            inner_iter = roi_slices  # Inner loop over ROIs
+
+        subdir.mkdir(parents=True, exist_ok=True)
+
+        for inner_idx, inner_val in enumerate(inner_iter):
+            if by_roi:
+                # Inner loop over planes
+                p = inner_val
+                name = f'plane_{p + 1}'
+            else:
+                # Inner loop over ROIs
+                slce_y, slce_x, roi = inner_val
+                name = f'roi_{inner_idx + 1}'
+
+            print(f'-- Reading pages: {outer_label} {outer_idx + 1}, {inner_label} {inner_idx + 1} --')
+            t_start = time.time()
+            pages = scan._read_pages([0], [p], frames, slce_y, slce_x)
+            t_end = time.time() - t_start
+            logger.info(f"TiffFile pages read in {t_end:.2f} seconds.")
+            file_writer(subdir, name, pages, roi.roi_info if roi else None)
+
+def _get_file_writer(ext, overwrite):
+    if ext in ['.tif', '.tiff']:
+        return functools.partial(_write_tiff, overwrite=overwrite)
+    elif ext == '.zarr':
+        return functools.partial(_write_zarr, overwrite=overwrite)
+    else:
+        raise ValueError(f'Unsupported file extension: {ext}')
+
+def _write_tiff(path, name, data, metadata=None, overwrite=True):
+    filename = Path(path / f'{name}.tiff')
+    if filename.exists() and not overwrite:
+        logger.warning(
+            f'File already exists: {filename}. To overwrite, set overwrite=True (--overwrite in command line)')
+        return
+    logger.info(f"Writing {filename}")
+    t_write = time.time()
+    tifffile.imwrite(filename, data.squeeze(), bigtiff=True, metadata=metadata, photometric='minisblack', )
+    t_write_end = time.time() - t_write
+    logger.info(f"Data written in {t_write_end:.2f} seconds.")
+
+def _write_zarr(path, name, data, metadata=None, overwrite=True):
+    store = zarr.DirectoryStore(path)
+    root = zarr.group(store, overwrite=overwrite)
+    ds = root.create_dataset(name=name, data=data.squeeze(), overwrite=True)
+    if metadata:
+        ds.attrs['metadata'] = metadata
+
+
+def main():
+    parser = argparse.ArgumentParser(description="CLI for processing ScanImage tiff files.")
+    parser.add_argument("path",
+                        type=str,
+                        default=None,
+                        help="Path to the file or directory to process.")
+    parser.add_argument("--frames",
+                        type=str,
+                        default=":",  # all frames
+                        help="Frames to read. Use slice notation like NumPy arrays ("
+                             "e.g., 1:50 gives frames 1 to 50, 10:100:2 gives frames 10, 20, 30...)."
+                        )
+    parser.add_argument("--planes",
+                        type=str,
+                        default=":",  # all planes
+                        help="Z-Planes to read. Use slice notation like NumPy arrays (e.g., 1:50, 5:15:2).")
+    parser.add_argument("--trimx",
+                        type=int,
+                        nargs=2,
+                        default=(0, 0),
+                        help="Number of x-pixels to trim from each ROI. Tuple or list (e.g., 4 4 for left and right "
+                             "edges).")
+    parser.add_argument("--trimy", type=int, nargs=2, default=(0, 0),
+                        help="Number of y-pixels to trim from each ROI. Tuple or list (e.g., 4 4 for top and bottom "
+                             "edges).")
+    # Boolean Flags
+    parser.add_argument("--metadata", action="store_true",
+                        help="Print a dictionary of scanimage metadata for files at the given path.")
+    parser.add_argument("--roi",
+                        action='store_true',
+                        help="Save each ROI in its own folder, organized like 'zarr/roi_1/plane_1/, without this "
+                             "arguemnet it would save like 'zarr/plane_1/roi_1'."
+                        )
+
+    parser.add_argument("--save", type=str, nargs='?', help="Path to save data to. If not provided, the path will be "
+                                                            "printed.")
+    parser.add_argument("--overwrite", action='store_true', help="Overwrite existing files if saving data..")
+    parser.add_argument("--tiff", action='store_false', help="Flag to save as .tiff. Default is True")
+    parser.add_argument("--zarr", action='store_true', help="Flag to save as .zarr. Default is False")
+    parser.add_argument("--assemble", action='store_true', help="Flag to assemble the each ROI into a single image.")
+    parser.add_argument("--debug", action='store_true', help="Output verbose debug information.")
+
+    # Commands
+    args = parser.parse_args()
+    if not args.path:
+        logger.warning("No path provided. Exiting.")
+        return
+
+    if args.debug:
+        logger.setLevel(logging.DEBUG)
+        logger.debug("Debug mode enabled.")
+
+    files = [str(x) for x in Path(args.path).glob('*.tif*')]
+    logger.debug(f"Files found: {files}")
+    if len(files) < 1:
+        raise ValueError(
+            f"Input path given is a non-tiff file: {args.path}.\n"
+            f"scanreader is currently limited to scanimage .tiff files."
+        )
+    else:
+        print(f'Found {len(files)} file(s) in {args.path}')
+
+    if args.metadata:
+        t_metadata = time.time()
+        metadata = get_metadata(files[0])
+        t_metadata_end = time.time() - t_metadata
+        print(f"Metadata read in {t_metadata_end:.2f} seconds.")
+        print(f"Metadata for {files[0]}:")
+        # filter out the verbose scanimage frame/roi metadata
+        print_params({k: v for k, v in metadata.items() if k not in ['si', 'roi_info']})
+
+    if args.assemble:
+        join_contiguous = True
+    else:
+        join_contiguous = False
+
+    # if args.dtype:
+    #     dtype = dtype
+    # else:
+    #    dtype = np.int16
+
+    if args.save:
+
+        savepath = Path(args.save).expanduser()
+        logger.info(f"Saving data to {savepath}.")
+
+        t_scan_init = time.time()
+        scan = read_scan(files, join_contiguous=join_contiguous,)
+        t_scan_init_end = time.time() - t_scan_init
+        logger.info(f"--- Scan initialized in {t_scan_init_end:.2f} seconds.")
+
+        frames = listify_index(process_slice_str(args.frames), scan.num_frames)
+        zplanes = listify_index(process_slice_str(args.planes), scan.num_channels)
+
+        logger.debug(f"Frames: {len(frames)}")
+        logger.debug(f"Z-Planes: {len(zplanes)}")
+
+        if args.zarr:
+            ext = '.zarr'
+            logger.debug("Saving as .zarr.")
+        elif args.tiff:
+            ext = '.tiff'
+            logger.debug("Saving as .tiff.")
+        else:
+            raise NotImplementedError("Only .zarr and .tif are supported file formats.")
+
+        t_save = time.time()
+        save_as(
+            scan,
+            savepath,
+            frames=frames,
+            planes=zplanes,
+            by_roi=args.roi,
+            overwrite=args.overwrite,
+            ext=ext,
+        )
+        t_save_end = time.time() - t_save
+        logger.info(f"--- Processing complete in {t_save_end:.2f} seconds. --")
+        return scan
+    else:
+        print(args.path)
+
+
+
+if __name__ == '__main__':
+    main()
+
+    file = str(Path().home() / 'caiman_data' / 'test' / '*.tiff')
+    scan = read_scan(file)
+    data = scan[:, :, :, 0, 1:50]
+    x = 5

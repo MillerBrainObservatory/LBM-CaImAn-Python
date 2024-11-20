@@ -166,8 +166,6 @@ def suite2p_ops():
 
 def default_ops():
     return {
-        "batch_path": "",           # path to save the dataframe
-        "data_path": "",            # path to the raw input image data
         "main": {
             "pw_rigid": True,
             "max_shifts": [6, 6],

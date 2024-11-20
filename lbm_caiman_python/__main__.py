@@ -48,9 +48,7 @@ def add_args(parser: argparse.ArgumentParser):
     Adds ops arguments to parser.
     """
 
-    parser.add_argument(
-        "batch_path", type=str, help="Path to batch file"
-    )  # Define as positional argument
+    parser.add_argument("batch_path", type=str, help="Path to batch file")  # Define as positional argument
     parser.add_argument(
         "--run",
         type=str,
