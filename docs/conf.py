@@ -81,7 +81,7 @@ templates_path = ["_templates"]
 # A shorter title for the navigation bar.  Default is the same as html_title.
 html_title = "LBM-CaImAn-Python"
 
-html_logo = "_static/logo_caiman_python_with_icon.png"
+html_logo = "./_static/logo_py.png"
 html_favicon = "_static/icon_caiman_python.svg"
 html_theme = "sphinx_book_theme"
 
