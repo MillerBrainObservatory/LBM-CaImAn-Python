@@ -35,6 +35,7 @@ warnings.filterwarnings("ignore")
 
 print = functools.partial(print, flush=True)
 
+
 def process_slice_str(slice_str):
     if not isinstance(slice_str, str):
         raise ValueError(f"Expected a string argument, received: {slice_str}")
@@ -225,7 +226,6 @@ def save_as(
         overwrite=True,
         by_roi=False,
         ext='.tiff',
-        assemble=False,
 ):
     savedir = Path(savedir)
     if planes is None:
@@ -237,64 +237,66 @@ def save_as(
     if metadata:
         scan.metadata.update(metadata)
 
-    scan.metadata = make_json_serializable(scan.metadata)
     if not savedir.exists():
         logger.debug(f"Creating directory: {savedir}")
         savedir.mkdir(parents=True)
-    _save_data(savedir, planes, frames, overwrite, ext, by_roi)
+    _save_data(scan, savedir, planes, frames, overwrite, ext, by_roi)
 
-def _save_data(scan, path, planes, frames, overwrite, ext, by_roi):
+def _save_data(scan, path, planes, frames, overwrite, file_extension, by_roi=False):
     p = None
 
     path.mkdir(parents=True, exist_ok=True)
     print(f'Planes: {planes}')
 
-    file_writer = _get_file_writer(ext, overwrite)
-    roi_slices = list(zip(scan.yslices, scan.xslices, scan.rois))
+    file_writer = _get_file_writer(file_extension, overwrite)
+    for idx, field in enumerate(scan.fields):
+        for chan in range(scan.num_channels):
+            if 'tif' in file_extension:
+                _write_tiff(path, f'plane_{chan}', scan[idx, :, :, chan, :])
 
-    if by_roi:
-        # When saving by ROI
-        outer_iter = enumerate(roi_slices)
-        outer_label = 'ROI'
-        inner_label = 'Plane'
-    else:
-        # When saving by Plane
-        outer_iter = enumerate(planes)
-        outer_label = 'Plane'
-        inner_label = 'ROI'
+    # if by_roi:
+    #     # When saving by ROI
+    #     outer_iter = enumerate(roi_slices)
+    #     outer_label = 'ROI'
+    #     inner_label = 'Plane'
+    # else:
+    #     # When saving by Plane
+    #     outer_iter = enumerate(planes)
+    #     outer_label = 'Plane'
+    #     inner_label = 'ROI'
 
-    for outer_idx, outer_val in outer_iter:
-        print(f'-- Saving {outer_label} {outer_idx + 1} --')
-
-        if by_roi:
-            # Outer loop over ROIs
-            slce_y, slce_x, roi = outer_val
-            subdir = path / f'roi_{outer_idx + 1}'
-            inner_iter = planes  # Inner loop over planes
-        else:
-            # Outer loop over planes
-            p = outer_val
-            subdir = path / f'plane_{p + 1}'
-            inner_iter = roi_slices  # Inner loop over ROIs
-
-        subdir.mkdir(parents=True, exist_ok=True)
-
-        for inner_idx, inner_val in enumerate(inner_iter):
-            if by_roi:
-                # Inner loop over planes
-                p = inner_val
-                name = f'plane_{p + 1}'
-            else:
-                # Inner loop over ROIs
-                slce_y, slce_x, roi = inner_val
-                name = f'roi_{inner_idx + 1}'
-
-            print(f'-- Reading pages: {outer_label} {outer_idx + 1}, {inner_label} {inner_idx + 1} --')
-            t_start = time.time()
-            pages = scan._read_pages([0], [p], frames, slce_y, slce_x)
-            t_end = time.time() - t_start
-            logger.info(f"TiffFile pages read in {t_end:.2f} seconds.")
-            file_writer(subdir, name, pages, roi.roi_info if roi else None)
+    # for outer_idx, outer_val in outer_iter:
+    #     print(f'-- Saving {outer_label} {outer_idx + 1} --')
+    #
+    #     if by_roi:
+    #         # Outer loop over ROIs
+    #         slce_y, slce_x, roi = outer_val
+    #         subdir = path / f'roi_{outer_idx + 1}'
+    #         inner_iter = planes  # Inner loop over planes
+    #     else:
+    #         # Outer loop over planes
+    #         p = outer_val
+    #         subdir = path / f'plane_{p + 1}'
+    #         inner_iter = roi_slices  # Inner loop over ROIs
+    #
+    #     subdir.mkdir(parents=True, exist_ok=True)
+    #
+    #     for inner_idx, inner_val in enumerate(inner_iter):
+    #         if by_roi:
+    #             # Inner loop over planes
+    #             p = inner_val
+    #             name = f'plane_{p + 1}'
+    #         else:
+    #             # Inner loop over ROIs
+    #             slce_y, slce_x, roi = inner_val
+    #             name = f'roi_{inner_idx + 1}'
+    #
+    #         print(f'-- Reading pages: {outer_label} {outer_idx + 1}, {inner_label} {inner_idx + 1} --')
+    #         t_start = time.time()
+    #         pages = scan._read_pages([0], [p], frames, slce_y, slce_x)
+    #         t_end = time.time() - t_start
+    #         logger.info(f"TiffFile pages read in {t_end:.2f} seconds.")
+    #         file_writer(subdir, name, pages, roi.roi_info if roi else None)
 
 def _get_file_writer(ext, overwrite):
     if ext in ['.tif', '.tiff']:
