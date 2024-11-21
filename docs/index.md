@@ -11,6 +11,7 @@ For current installation instructions, see the project [README](https://github.c
 maxdepth: 2
 ---
 user_guide/index
+examples/index
 snippets
 api/index
 glossary
