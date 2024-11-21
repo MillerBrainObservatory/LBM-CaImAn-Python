@@ -36,7 +36,6 @@ extras_require = {
     ],
     "notebook": [
         "fastplotlib[notebook]",
-        "jupyterlab",
         "scikit-ophys @ git+https://github.com/kushalkolar/scikit-ophys.git",
     ],
 }
