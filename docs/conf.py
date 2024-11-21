@@ -9,10 +9,8 @@ import os
 import sys
 from pathlib import Path
 
-notebooks_mod = os.path.abspath(os.path.join("../", "demos/notebooks/"))
 sys.path.insert(0, os.path.abspath(os.path.join("..")))
 sys.path.insert(0, os.path.abspath(os.path.join("..", "lbm_caiman_python")))
-print(os.path.join("..", "lbm_caiman_python"))
 
 project = "LBM-CaImAn-Python"
 copyright = "2024, Elizabeth R. Miller Brain Observatory | The Rockefeller University. All Rights Reserved"
@@ -37,14 +35,12 @@ def fetch_readme():
         raise RuntimeError(f"Failed to download README.md: {response.status_code}")
 
 
-print("fetching readme")
 fetch_readme()
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 exclude_patterns = ["Thumbs.db", ".DS_Store"]
-
 
 myst_enable_extensions = [
     "colon_fence",
@@ -88,7 +84,7 @@ html_title = "LBM-CaImAn-Python"
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-html_logo = "_static/logo_caiman_python_with_icon.png"
+html_logo = "./_static/logo_caiman_python_with_icon.png"
 
 html_favicon = "./_static/icon_caiman_python.svg"
 
