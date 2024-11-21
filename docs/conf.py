@@ -77,25 +77,20 @@ myst_url_schemes = ("http", "https", "mailto")
 images_config = {"cache_path": "./_images/"}
 
 templates_path = ["_templates"]
-html_static_path = ["_static"]
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 html_title = "LBM-CaImAn-Python"
 
-# The name of an image file (relative to this directory) to place at the top
-# of the sidebar.
-html_logo = "./_static/logo_caiman_python_with_icon.png"
-
-html_favicon = "./_static/icon_caiman_python.svg"
-
+html_logo = "_static/logo_caiman_python_with_icon.png"
+html_favicon = "_static/icon_caiman_python.svg"
 html_theme = "sphinx_book_theme"
 
-# html_short_title = "LB.py"
+html_short_title = "LBM CaImAn Pipeline"
 html_static_path = ["_static"]
 html_css_files = ["custom.css"]
-html_use_modindex = True
-html_copy_source = False
+html_copy_source = True
 html_file_suffix = ".html"
+# html_use_modindex = True
 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3.9", None),
@@ -121,6 +116,7 @@ html_theme_options = {
     "use_issues_button": True,
     "use_download_button": True,
     "show_toc_level": 3,
+    "navbar_align": "content",
     "icon_links": [
         {
             "name": "MBO User Hub",
