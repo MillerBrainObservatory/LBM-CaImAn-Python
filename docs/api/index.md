@@ -6,7 +6,6 @@
 
 .. autofunction:: default_ops
 .. autofunction:: read_scan
-.. autofunction:: get_reader
 .. autofunction:: combine_z_planes
 
 .. autofunction:: delete_batch_rows

@@ -1,8 +1,87 @@
 # User Guide
 
+How to process your data!
+
 ## Image Assembly
 
-Usage:
+Before running motion-correction or segmentation, we need to de-interleave raw `.tiff` files. This is done internally with the [scanreader](https://github.com/atlab/scanreader).
+
+The first thing you need to do is initialize a scan. This is done with {ref}`read_scan`.
+
+```{tip}
+Using `pathlib.Path().home()` can give quick filepaths to your home directory. 
+From there, you can `.glob('*')` to grab all files in a given directory.
+```
+
+```{code-block} Python
+import lbm_caiman_python as lcp
+
+scan = lcp.read_scan('path/to/data/*.tiff')
+
+```
+
+If you give a string with a wildcard (like an asterisk), this wildcard will expand to match all files around the asterisk. 
+
+In the above example. every file inside `/path/to/data/` ending in `.tiff` will be included in the scan.
+
+```{important}
+
+Make sure your `data_path` contains only `.tiff` files for this imaging session. If there are other `.tiff` files, such as from another session or a processed file for this session, those files will be included in the scan and lead to errors.
+
+```
+
+The default: `lcp.read_scan(data_path, join_contiguous=False)` will give a 5D array, `[rois, y, x, channels, Time]` that can be index just like a numpy array.
+
+
+```{code-block} Python
+scan = lcp.read_scan('path/to/data/*.tiff')
+scan[:].shape
+
+>>> (4, 600, 144, 30, 1730)
+
+```
+
+Depending on your scanimage configuration, contiguous ROIs can be joined together via the `join_contiguous` parameter to {ref}`read_scan()`
+
+
+```{code-block} Python
+scan = lcp.read_scan('path/to/data/*.tiff', join_contiguous=True)
+scan[:].shape
+
+>>> (600, 576, 30, 1730)
+
+```
+
+If your configuration has combinations of contiguous ROI's, such as left-hemisphere / right-hemisphere pairs of ROI's, they will be only merge the contiguous ROI's based on the metadata x-center-coordinate and y-center-coordinate.
+
+```{code-block} Python
+scan = lcp.read_scan('path/to/hemispheric/*.tiff', join_contiguous=True)
+scan[:].shape
+
+>>> (2, 212, 212, 30, 1730)
+
+```
+
+## Batch Setup with {ref}`mesmerize-core`
+
+`````{tab-set}
+````{tab-item} CLI
+``` bash
+lcp /batch/path --create
+```
+````
+
+````{tab-item} Python
+```python
+df = mc.create_batch('/batch/path')
+```
+````
+`````
+
+
+
+
+### Command Line Usage Overview:
 
 | Command                                                          | Description                                    |
 |------------------------------------------------------------------|------------------------------------------------|
