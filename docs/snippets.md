@@ -4,64 +4,10 @@ Helpful snippets for all things LBM python.
 
 ----
 
-## Parameters
+## CaImAn Parameters
 [caiman parameters](https://caiman.readthedocs.io/en/latest/Getting_Started.html#parameters)
 
-{ref}`:external+python:py:class:caiman.source_extraction.cnmf.params.CNMFParams`
-
-{py:class}`caiman.source_extraction.cnmf.params.CNMFParams`
-
-```{ref} caiman.source_extraction.cnmf.params.CNMFParams
-```
-
-{any}`caiman.source_extraction.cnmf.params.CNMFParams`
-
-```{any} caiman.source_extraction.cnmf.params.CNMFParams
-```
-
-### Napari on WSL
-
-sudo apt install x11-xserver-utils
-
-```{code-block} python
-
-import vispy
-print(vispy.sys_info())
-
-```
-
-[imagesc question](https://forum.image.sc/t/toubles-with-opengl-in-napari-on-server/81950)
-
-
-## Pixi
-
-### Install Pixi
-
-`````{tab-set}
-
-````{tab-item} Windows
-
-```{code-block} bash
-
-iwr -useb https://pixi.sh/install.ps1 | iex
-
-```
-````
-
-````{tab-item} Linux
-
-
-```{code-block} bash
-
-curl -fsSL https://pixi.sh/install.sh | bash
-
-```
-
-````
-
-`````
-
-### Import `conda` environment
+## Import `conda` environment
 
 `pixi init --import ./environment.yml`
 
@@ -69,26 +15,6 @@ curl -fsSL https://pixi.sh/install.sh | bash
 ----
 
 ## Troubleshooting
-
-### OpenCV
-
-Many imaging libraries that show image visualizations heavily rely on [opencv](https://opencv.org/), but don't install it for you.
-
-OpenCV has a plethora of external dependencies that should be installed with your system package manager:
-
-Windows:
-- Scoop
-- Winget
-- Brew
-
-Linux:
-- apt
-- Brew
-- conda
-
-[Linux Install Guide](https://docs.opencv.org/4.x/d7/d9f/tutorial_linux_install.html)
-[Windows Install Guide](https://docs.opencv.org/4.x/d3/d52/tutorial_windows_install.html)
-[MacOS Install Guide](https://docs.opencv.org/4.x/d0/db2/tutorial_macos_install.html) (untested support)
 
 You may need some additional dependencies on WSL2:
 
@@ -209,92 +135,6 @@ pip install cloudmesh-sys
 | uname.version       | #1 SMP Thu Mar 7 03:22:57 UTC 2024                                            |
 | user                | mbo                                                                           |
 +---------------------+-------------------------------------------------------------------------------+
-
-```
-
-## Same package, Error on conda-forge only
-
-```{code-block} python
-(base)
-mbo at RBO-C2 in ~/repos/LBM-CaImAn-Python (pixi●●)
-$ conda activate mescore
-(mescore)
-mbo at RBO-C2 in ~/repos/LBM-CaImAn-Python (pixi●●)
-$ conda list | grep free
-freetype                  2.12.1               h267a509_2    conda-forge
-freetype-py               2.4.0              pyhd8ed1ab_0    conda-forge
-(mescore)
-mbo at RBO-C2 in ~/repos/LBM-CaImAn-Python (pixi●●)
-$ conda activate mestest
-(mestest)
-mbo at RBO-C2 in ~/repos/LBM-CaImAn-Python (pixi●●)
-$ conda list | grep free
-freeglut                  3.2.2                ha6d2627_3    conda-forge
-freetype                  2.12.1               h267a509_2    conda-forge
-freetype-py               2.4.0                    pypi_0    pypi
-(mestest)
-mbo at RBO-C2 in ~/repos/LBM-CaImAn-Python (pixi●●)
-(mestest)
-mbo at RBO-C2 in ~/repos/LBM-CaImAn-Python (pixi●●)
-$ conda list | grep fast
-fasteners                 0.17.3             pyhd8ed1ab_0    conda-forge
-fastplotlib               0.1.0a16                 pypi_0    pypi
-python-fastjsonschema     2.20.0             pyhd8ed1ab_0    conda-forge
-(mestest)
-mbo at RBO-C2 in ~/repos/LBM-CaImAn-Python (pixi●●)
-$ conda activate mescore
-(mescore)
-mbo at RBO-C2 in ~/repos/LBM-CaImAn-Python (pixi●●)
-$ conda list | grep free
-freeglut                  3.2.2                ha6d2627_3    conda-forge
-freetype                  2.12.1               h267a509_2    conda-forge
-freetype-py               2.4.0              pyhd8ed1ab_0    conda-forge
-(mescore)
-mbo at RBO-C2 in ~/repos/LBM-CaImAn-Python (pixi●●)
-$ conda list | grep fast
-fasteners                 0.17.3             pyhd8ed1ab_0    conda-forge
-fastplotlib               0.1.0a16                 pypi_0    pypi
-python-fastjsonschema     2.20.0             pyhd8ed1ab_0    conda-forge
-(mescore)
-mbo at RBO-C2 in ~/repos/LBM-CaImAn-Python (pixi●●)
-$ conda list | grep mes
-# packages in environment at /home/mbo/miniconda3/envs/mescore:
-cloudmesh-cmd5            5.0.20                   pypi_0    pypi
-cloudmesh-common          5.0.60                   pypi_0    pypi
-mesmerize-core            0.4.0              pyhd8ed1ab_0    conda-forge
-mesmerize-viz             0.1.0                    pypi_0    pypi
-(mescore)
-mbo at RBO-C2 in ~/repos/LBM-CaImAn-Python (pixi●●)
-$ ipython
-Python 3.11.9 | packaged by conda-forge | (main, Apr 19 2024, 18:36:13) [GCC 12.3.0]
-Type 'copyright', 'credits' or 'license' for more information
-IPython 8.26.0 -- An enhanced Interactive Python. Type '?' for help.
-
-In [1]: import freetype
-
-In [2]: freetype.GlyphSlot
-Out[2]: freetype.GlyphSlot
-
-In [3]: freetype.GlyphSlot.render
-Out[3]: <function freetype.GlyphSlot.render(self, render_mode)>
-
-In [4]: exit
-(mescore)
-mbo at RBO-C2 in ~/repos/LBM-CaImAn-Python (pixi●●)
-$ conda activate mestest
-(mestest)
-mbo at RBO-C2 in ~/repos/LBM-CaImAn-Python (pixi●●)
-$ ipython
-
-In [1]: import freetype
-
-In [2]: freetype.GlyphSlot.render
----------------------------------------------------------------------------
-AttributeError                            Traceback (most recent call last)
-Cell In[3], line 1
-----> 1 freetype.GlyphSlot.render
-
-AttributeError: type object 'GlyphSlot' has no attribute 'render'
 
 ```
 
