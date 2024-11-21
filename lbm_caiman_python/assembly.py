@@ -373,6 +373,8 @@ def main():
     parser.add_argument("--zarr", action='store_true', help="Flag to save as .zarr. Default is False")
     parser.add_argument("--assemble", action='store_true', help="Flag to assemble the each ROI into a single image.")
     parser.add_argument("--debug", action='store_true', help="Output verbose debug information.")
+    parser.add_argument("--delete_first_frame", action='store_false', help="Flag to delete the first frame of the "
+                                                                           "scan when saving.")
 
     # Commands
     args = parser.parse_args()
@@ -421,6 +423,10 @@ def main():
         frames = listify_index(process_slice_str(args.frames), scan.num_frames)
         zplanes = listify_index(process_slice_str(args.planes), scan.num_channels)
 
+        if args.delete_first_frame:
+            frames = frames[1:]
+            logger.debug(f"Deleting first frame. New frames: {frames}")
+
         logger.debug(f"Frames: {len(frames)}")
         logger.debug(f"Z-Planes: {len(zplanes)}")
 
@@ -451,8 +457,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-    file = str(Path().home() / 'caiman_data' / 'test' / '*.tiff')
-    scan = read_scan(file)
-    data = scan[:, :, :, 0, 1:50]
-    x = 5
