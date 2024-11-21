@@ -237,8 +237,7 @@ def main():
         print(f"Cleaned DF size: {len(df.index)}")
     elif args.show_params:
         from caiman.source_extraction.cnmf.params import CNMFParams
-
-        params = CNMFParams()
+        # params = CNMFParams()
         params = df.iloc[int(args.show_params)]["params"]
         print_params(params)
     elif args.run:
