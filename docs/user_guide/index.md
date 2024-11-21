@@ -11,4 +11,7 @@ numbered: 3
 
 assembly
 batch
+registration
+segmentation
+collation
 ```

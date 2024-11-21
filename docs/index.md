@@ -10,7 +10,7 @@ For current installation instructions, see the project [README](https://github.c
 ---
 maxdepth: 2
 ---
-user_guide
+user_guide/index
 snippets
 api/index
 glossary
