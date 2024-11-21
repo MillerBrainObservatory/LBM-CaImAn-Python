@@ -15,18 +15,33 @@ install_deps = [
     "matplotlib",
     "dask",
     "zarr",
-    "jupyterlab",
 ]
 
-docs_deps = [
-    "sphinx",
-    "sphinx-gallery",
-    "pydata-sphinx-theme",
-    "jupyter-rfb>=0.4.1",  # required so ImageWidget docs show up
-    "sphinx-copybutton",
-    "sphinx-design",
-    "matplotlib",
-]
+extras_require = {
+    "docs": [
+        "sphinx>=6.1.3",
+        "docutils>=0.19",
+        "nbsphinx",
+        "numpydoc",
+        "sphinx-autodoc2",
+        "sphinx_gallery",
+        "sphinx-togglebutton",
+        "sphinx-copybutton",
+        "sphinx_book_theme",
+        "pydata_sphinx_theme",
+        "sphinx_design",
+        "sphinxcontrib-images",
+        "sphinxcontrib-video",
+        "myst_nb",
+    ],
+    "notebook": [
+        "fastplotlib[notebook]",
+        "jupyterlab",
+        "scikit-ophys @ git+https://github.com/kushalkolar/scikit-ophys.git",
+    ],
+}
+
+extras_require["all"] = extras_require["docs"] + extras_require["notebook"]
 
 with open(Path(__file__).parent.joinpath("README.md")) as f:
     readme = f.read()
@@ -48,6 +63,7 @@ setuptools.setup(
     url="https://github.com/millerbrainobservatory/LBM-CaImAn-Python",
     keywords="Pipeline Numpy Microscopy ScanImage multiROI tiff",
     install_requires=install_deps,
+    extras_require=extras_require,
     packages=setuptools.find_packages(),
     include_package_data=True,
     classifiers=[
@@ -56,9 +72,10 @@ setuptools.setup(
         "Programming Language :: Python :: 3 :: Only",
         "Natural Language :: English" "Topic :: Scientific/Engineering",
     ],
-    entry_points = {
+    entry_points={
         "console_scripts": [
             "lcp = lbm_caiman_python.__main__:main",
+            "assemble = lbm_caiman_python.assembly:main",
         ]
     },
 )
