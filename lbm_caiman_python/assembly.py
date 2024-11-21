@@ -45,8 +45,10 @@ def process_slice_str(slice_str):
         parts = slice_str.split(":")
     return slice(*[int(p) if p else None for p in parts])
 
+
 def process_slice_objects(slice_str):
     return tuple(map(process_slice_str, slice_str.split(",")))
+
 
 def print_params(params, indent=5):
     for k, v in params.items():
@@ -56,6 +58,7 @@ def print_params(params, indent=5):
             print_params(v, indent + 4)
         else:
             print(" " * indent + f"{k}: {v}")
+
 
 def return_scan_offset(image_in, nvals: int = 8):
     """
@@ -147,9 +150,10 @@ def return_scan_offset(image_in, nvals: int = 8):
     correction_index = np.argmax(r)
     return lags[correction_index]
 
+
 def fix_scan_phase(
-    data_in,
-    offset,
+        data_in,
+        offset,
 ):
     """
     Corrects the scan phase of the data based on a given offset along a specified dimension.
@@ -180,11 +184,11 @@ def fix_scan_phase(
 
         if offset > 0:
             data_out[:, :, 0::2, :sx] = data_in[:, :, 0::2, :]
-            data_out[:, :, 1::2, offset : offset + sx] = data_in[:, :, 1::2, :]
+            data_out[:, :, 1::2, offset: offset + sx] = data_in[:, :, 1::2, :]
             data_out = data_out[:, :, :, : sx + offset]
         elif offset < 0:
             offset = abs(offset)
-            data_out[:, :, 0::2, offset : offset + sx] = data_in[:, :, 0::2, :]
+            data_out[:, :, 0::2, offset: offset + sx] = data_in[:, :, 0::2, :]
             data_out[:, :, 1::2, :sx] = data_in[:, :, 1::2, :]
             data_out = data_out[:, :, :, offset:]
 
@@ -202,13 +206,13 @@ def fix_scan_phase(
         if offset > 0:
             # For positive offset
             data_out[:, 0::2, :sx] = data_in[:, 0::2, :]
-            data_out[:, 1::2, offset : offset + sx] = data_in[:, 1::2, :]
+            data_out[:, 1::2, offset: offset + sx] = data_in[:, 1::2, :]
             # Trim output by excluding columns that contain only zeros
             data_out = data_out[:, :, : sx + offset]
         elif offset < 0:
             # For negative offset
             offset = abs(offset)
-            data_out[:, 0::2, offset : offset + sx] = data_in[:, 0::2, :]
+            data_out[:, 0::2, offset: offset + sx] = data_in[:, 0::2, :]
             data_out[:, 1::2, :sx] = data_in[:, 1::2, :]
             # Trim output by excluding the first 'offset' columns
             data_out = data_out[:, :, offset:]
@@ -217,6 +221,7 @@ def fix_scan_phase(
 
     raise NotImplementedError()
 
+
 def save_as(
         scan,
         savedir: os.PathLike,
@@ -224,9 +229,43 @@ def save_as(
         frames=None,
         metadata=None,
         overwrite=True,
-        by_roi=False,
         ext='.tiff',
 ):
+    """
+    Save scan data to the specified directory in the desired format.
+
+    Parameters
+    ----------
+    scan : scanreader.ScanMultiROI
+        An object representing scan data. Must have attributes such as `num_channels`,
+        `num_frames`, `fields`, and `rois`, and support indexing for retrieving frame data.
+    savedir : os.PathLike
+        Path to the directory where the data will be saved.
+    planes : int, list, or tuple, optional
+        Plane indices to save. If `None`, all planes are saved. Default is `None`.
+    frames : list or tuple, optional
+        Frame indices to save. If `None`, all frames are saved. Default is `None`.
+    metadata : dict, optional
+        Additional metadata to update the scan object's metadata. Default is `None`.
+    overwrite : bool, optional
+        Whether to overwrite existing files. Default is `True`.
+    by_roi : bool, optional
+        Whether to save data grouped by ROIs. Default is `False`.
+    ext : str, optional
+        File extension for the saved data. Supported options are `'.tiff'` and `'.zarr'`.
+        Default is `'.tiff'`.
+
+    Raises
+    ------
+    ValueError
+        If an unsupported file extension is provided.
+
+    Notes
+    -----
+    This function creates the specified directory if it does not already exist.
+    Data is saved per channel, organized by planes.
+    """
+
     savedir = Path(savedir)
     if planes is None:
         planes = list(range(scan.num_channels))
@@ -234,25 +273,32 @@ def save_as(
         planes = [planes]
     if frames is None:
         frames = list(range(scan.num_frames))
+    elif not isinstance(planes, (list, tuple)):
+        frames = [frames]
     if metadata:
         scan.metadata.update(metadata)
 
     if not savedir.exists():
         logger.debug(f"Creating directory: {savedir}")
         savedir.mkdir(parents=True)
-    _save_data(scan, savedir, planes, frames, overwrite, ext, by_roi)
+    _save_data(scan, savedir, planes, frames, overwrite, ext)
 
-def _save_data(scan, path, planes, frames, overwrite, file_extension, by_roi=False):
 
+def _save_data(scan, path, planes, frames, overwrite, file_extension):
     path.mkdir(parents=True, exist_ok=True)
     print(f'Planes: {planes}')
 
     file_writer = _get_file_writer(file_extension, overwrite)
-    for idx, field in enumerate(scan.fields):
-        metadata = make_json_serializable(scan.rois[idx].roi_info)
-        for chan in range(scan.num_channels):
+    if len(scan.fields) > 1:
+        for idx, field in enumerate(scan.fields):
+            for chan in planes:
+                if 'tif' in file_extension:
+                    file_writer(path, f'roi_{idx}_plane_{chan}', scan[idx, :, :, chan, frames])
+    else:
+        for chan in planes:
             if 'tif' in file_extension:
-                file_writer(path, f'plane_{chan + 1}', scan[idx, :, :, chan, :], metadata)
+                file_writer(path, f'assembled_plane_{chan}', scan[:, :, :, chan, frames])
+
 
 def _get_file_writer(ext, overwrite):
     if ext in ['.tif', '.tiff']:
@@ -262,7 +308,10 @@ def _get_file_writer(ext, overwrite):
     else:
         raise ValueError(f'Unsupported file extension: {ext}')
 
+
 def _write_tiff(path, name, data, metadata=None, overwrite=True):
+    if data.ndim == 3:
+        data = np.transpose(data, (2, 0, 1))
     filename = Path(path / f'{name}.tiff')
     if filename.exists() and not overwrite:
         logger.warning(
@@ -270,9 +319,10 @@ def _write_tiff(path, name, data, metadata=None, overwrite=True):
         return
     logger.info(f"Writing {filename}")
     t_write = time.time()
-    tifffile.imwrite(filename, data.squeeze(), bigtiff=True, metadata=metadata, photometric='minisblack', )
+    tifffile.imwrite(filename, data.squeeze(), metadata=metadata)
     t_write_end = time.time() - t_write
     logger.info(f"Data written in {t_write_end:.2f} seconds.")
+
 
 def _write_zarr(path, name, data, metadata=None, overwrite=True):
     store = zarr.DirectoryStore(path)
@@ -291,13 +341,13 @@ def main():
     parser.add_argument("--frames",
                         type=str,
                         default=":",  # all frames
-                        help="Frames to read. Use slice notation like NumPy arrays ("
-                             "e.g., 1:50 gives frames 1 to 50, 10:100:2 gives frames 10, 20, 30...)."
+                        help="Frames to read (0 based). Use slice notation like NumPy arrays ("
+                             "e.g., :50 gives frames 0 to 50, 5:15:2 gives frames 5 to 15 in steps of 2)."
                         )
     parser.add_argument("--planes",
                         type=str,
                         default=":",  # all planes
-                        help="Z-Planes to read. Use slice notation like NumPy arrays (e.g., 1:50, 5:15:2).")
+                        help="Planes to read (0 based). Use slice notation like NumPy arrays (e.g., :50 gives planes 0 to 49")
     parser.add_argument("--trimx",
                         type=int,
                         nargs=2,
@@ -334,7 +384,7 @@ def main():
         logger.setLevel(logging.DEBUG)
         logger.debug("Debug mode enabled.")
 
-    files = [str(x) for x in Path(args.path).glob('*.tif*')]
+    files = [str(x) for x in Path(args.path).expanduser().glob('*.tif*')]
     logger.debug(f"Files found: {files}")
     if len(files) < 1:
         raise ValueError(
@@ -364,7 +414,7 @@ def main():
         logger.info(f"Saving data to {savepath}.")
 
         t_scan_init = time.time()
-        scan = read_scan(files, join_contiguous=join_contiguous,)
+        scan = read_scan(files, join_contiguous=join_contiguous, )
         t_scan_init_end = time.time() - t_scan_init
         logger.info(f"--- Scan initialized in {t_scan_init_end:.2f} seconds.")
 
@@ -389,7 +439,6 @@ def main():
             savepath,
             frames=frames,
             planes=zplanes,
-            by_roi=args.roi,
             overwrite=args.overwrite,
             ext=ext,
         )
@@ -398,7 +447,6 @@ def main():
         return scan
     else:
         print(args.path)
-
 
 
 if __name__ == '__main__':
