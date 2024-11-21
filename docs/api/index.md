@@ -19,5 +19,4 @@
 .. autofunction:: fix_scan_phase
 .. autofunction:: save_as
 
-
 ```
