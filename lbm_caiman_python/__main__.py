@@ -88,9 +88,7 @@ def add_args(parser: argparse.ArgumentParser):
         action="store_true",  # set to True if present
     )
 
-    parser.add_argument(
-        "-d", "--debug", action="store_false", help="Run with verbose debug logging."
-    )
+    parser.add_argument("-d", "--debug", action="store_false", help="Run with verbose debug logging.")
     parser.add_argument(
         "--name", type=str, help="Name of the batch, qualified as path/to/name.pickle."
     )
