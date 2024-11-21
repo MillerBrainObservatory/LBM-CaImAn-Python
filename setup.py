@@ -32,6 +32,7 @@ extras_require = {
         "sphinx_design",
         "sphinxcontrib-images",
         "sphinxcontrib-video",
+        "sphinx_tippy",
         "myst_nb",
     ],
     "notebook": [
