@@ -1,3 +1,3 @@
 # Collation
 
-Placeholder
+Placeholder (see the notebook)

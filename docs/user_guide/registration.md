@@ -42,7 +42,7 @@ df.caiman.add_item(
 
 ## Registration Parameters
 
-Parameters for motion correction are fed into `CaImAn`, someone confusingly, via the {external:func}`CNMFParams` function which holds and organizes parameters for registration, segmentation, deconvolution, and pre-processing steps. 
+Parameters for motion correction are fed into `CaImAn`, someone confusingly, via the {external:func}`CNMFSetParams` function which holds and organizes parameters for registration, segmentation, deconvolution, and pre-processing steps. 
 
 As such, you can put any parameter found in that structure into the parameters dictionary. Only the parameters that apply to registration will be used.
 
@@ -95,7 +95,7 @@ Following a registration run, results can be quickly viewed with the help of [me
 
 <!-- TODO: The installation instructions wont properly install mesmerize-viz until the changes are merged -->
 
-```{warn}
+```{important}
 Mesmerize-viz needs a separate install step, this will be fixed once the [pull request](https://github.com/kushalkolar/mesmerize-viz/pull/45) is merged
 
 Until then:
@@ -114,7 +114,7 @@ viz = df.mcorr.viz(start_index=0)
 viz.show()
 ```
 
-:::{figure} ../../_images/mv_mcorr.PNG
+:::{figure} ../_images/mv_mcorr.png
 :align: center
 :width: 40%
 :::
