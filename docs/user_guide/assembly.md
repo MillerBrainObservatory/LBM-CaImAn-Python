@@ -3,7 +3,9 @@
 
 ## Overview
 
-Before running motion-correction or segmentation, we need to de-interleave raw `.tiff` files. This is done internally with the [scanreader](https://github.com/atlab/scanreader).
+Before running motion-correction or segmentation, we need to de-interleave raw `.tiff` files.
+
+This is done internally with the [scanreader](https://github.com/atlab/scanreader).
 
 ## scanreader
 
@@ -64,6 +66,23 @@ scan[:].shape
 >>> (2, 212, 212, 30, 1730)
 
 ```
+
+```{admonition} A note on performance
+:class: dropdown
+
+When you initialize a scan with `read_scan`, [tifffile](https://github.com/cgohlke/tifffile/blob/master/tifffile/tifffile.py) is going to iterate through every page in your tiff to "count" how many pages there are.
+. Only a single page of data is held in memory, and using that information we can lazily load the scan (this is what the scanreader does).
+
+For a single 35 Gb file, this process takes ~10 seconds.
+For 216 files totaling 231 GB, ~ 2 minutes.
+
+This only occurs once, and is cached by your operating system. So the next time you read the same scan, a 35GB file will be nearly instant, and a series of 216 files ~8 seconds.
+
+```
+
+## Save your data
+
+
 
 ## Command Line Usage
 

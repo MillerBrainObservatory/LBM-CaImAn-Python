@@ -89,14 +89,76 @@ We limit the largest allowed shift with the {code}`max_shift` parameter.
 
 :::
 
-:::{figure} ../_images/gsig_1.PNG
+### gSig_filt visualization
+
+gSig_filt is an especially useful parameter for handling noisy datasets.
+
+To register your movie, CaImAn needs a "template", or a 2D image, to align each frame to. Applying a gaussian filter can help make the neurons have more contrast relative to the background.
+
+Using [fastplotlib](https://github.com/fastplotlib/fastplotlib) we can easily create a visualization to gather which value of `gSig_filt` will give our neuronal landmarks the most contrast for alignmnet.
+
+Setting `gSig_filt = (1, 1)` yields the following:
+
+:::{figure} ../_images/gsig_1.png
 :align: center
 :::
 
-:::{figure} ../_images/gsig_2.PNG
+Comparing the above image with `gSig_filt = (2, 2)`:
+
+:::{figure} ../_images/gsig_2.png
 :align: center
 :::
 
+... we can see much more clearly the neurons that will be used for alignment.
+
+
+````{admonition} How To: Create the above visualization
+:class: dropdown
+
+```{code-block} python
+
+## slider
+from ipywidgets import IntSlider, VBox
+slider_gsig_filt = IntSlider(value=3, min=1, max=33, step=1,  description="gSig_filt")
+
+from caiman.motion_correction import high_pass_filter_space
+
+def apply_filter(frame):
+    gSig_filt = (slider_gsig_filt.value, slider_gsig_filt.value)
+
+    # apply filter
+    return high_pass_filter_space(frame, gSig_filt)
+
+# filter shown on 2 right plots, index 1 and 2
+funcs = {1:apply_filter}
+
+iw = fpl.ImageWidget(
+    data=[movie[:500], movie[:500]], # we'll apply the filter to the second movie
+    frame_apply=funcs,
+    figure_kwargs={"size": (1200, 600)},
+    names=['raw', 'filtered'],
+    cmap="gnuplot2"
+)
+iw.figure[0, 0].auto_scale()
+iw.figure[0, 1].auto_scale()
+
+iw.figure["filtered"].set_title(f"filtered: σ={slider_gsig_filt.value}")
+iw.window_funcs = {"t": (np.mean, 3)}
+
+def force_update(*args):
+    # forces the images to update when the gSig_filt slider is moved
+    iw.current_index = iw.current_index
+    iw.reset_vmin_vmax()
+    iw.figure["filtered"].set_title(f"filtered: σ={slider_gsig_filt.value}")
+
+iw.reset_vmin_vmax()
+
+slider_gsig_filt.observe(force_update, "value")
+
+VBox([iw.show(), slider_gsig_filt])
+
+```
+````
 
 ## Registration Results
 
