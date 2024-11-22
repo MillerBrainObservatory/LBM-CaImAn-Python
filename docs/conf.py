@@ -17,29 +17,6 @@ copyright = "2024, Elizabeth R. Miller Brain Observatory | The Rockefeller Unive
 author = "Flynn OConnell"
 release = "0.8.0"
 
-
-def fetch_readme():
-    import requests
-
-    README_URL = "https://raw.githubusercontent.com/MillerBrainObservatory/scanreader/master/README.md"
-    OUTPUT_DIR = "."  # Sphinx's source directory
-    OUTPUT_FILE_MD = os.path.join(OUTPUT_DIR, "scanreader.md")
-
-    # Download the README.md
-    response = requests.get(README_URL)
-    if response.status_code == 200:
-        with open(OUTPUT_FILE_MD, "wb") as f:
-            f.write(response.content)
-        print(f"scanreader README.md downloaded to {OUTPUT_FILE_MD}")
-    else:
-        raise RuntimeError(f"Failed to download README.md: {response.status_code}")
-
-
-fetch_readme()
-
-# -- General configuration ---------------------------------------------------
-# https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
-
 exclude_patterns = ["Thumbs.db", ".DS_Store"]
 
 myst_enable_extensions = [
@@ -69,6 +46,8 @@ source_suffix = {
     ".md": "myst-nb",
 }
 
+nb_execution_mode = "off"
+
 myst_admonition_enable = True
 myst_amsmath_enable = True
 myst_html_img_enable = True
@@ -81,7 +60,7 @@ templates_path = ["_templates"]
 # A shorter title for the navigation bar.  Default is the same as html_title.
 html_title = "LBM-CaImAn-Python"
 
-html_logo = "./_static/logo_py.png"
+html_logo = "./_static/lcp_logo.svg"
 html_favicon = "_static/icon_caiman_python.svg"
 html_theme = "sphinx_book_theme"
 

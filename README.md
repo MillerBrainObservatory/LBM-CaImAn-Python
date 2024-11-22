@@ -26,7 +26,7 @@ Or download the installer for your operating system [here](https://github.com/co
 # if conda is behaving slow, clean/update the **base** environment
 conda activate base
 conda clean -a
-conda update -c conda-forge -all
+conda update -c conda-forge --all
 ```
 
 Next, install [`mesmerize-core`](https://github.com/nel-lab/mesmerize-core)
@@ -57,6 +57,7 @@ pip install lbm_caiman_python
 pip install git+https://github.com/pygfx/pygfx.git@main
 ```
 
+
 ## Pipeline Steps:
 
 1. Motion Correction
@@ -81,3 +82,14 @@ pip install git+https://github.com/pygfx/pygfx.git@main
 ```{note}
 See the `environment.yml` file at the root of this project for a complete list of package dependencies.
 ```
+
+## For Developers
+
+To get the newest version of this package: 
+
+git clone https://github.com/MillerBrainObservatory/LBM-CaImAn-Python.git
+# to change a branch
+cd LBM-CaImAn-Python
+git checkout [branch] # optional
+pip install .
+

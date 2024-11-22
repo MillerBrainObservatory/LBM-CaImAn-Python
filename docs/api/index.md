@@ -18,6 +18,4 @@
 .. autofunction:: return_scan_offset
 .. autofunction:: fix_scan_phase
 .. autofunction:: save_as
-
-
 ```

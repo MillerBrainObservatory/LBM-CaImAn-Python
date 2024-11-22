@@ -3,11 +3,13 @@
 
 ## Overview
 
-Before running motion-correction or segmentation, we need to de-interleave raw `.tiff` files. This is done internally with the [scanreader](https://github.com/atlab/scanreader).
+Before running motion-correction or segmentation, we need to de-interleave raw `.tiff` files.
+
+This is done internally with the [scanreader](https://github.com/atlab/scanreader).
 
 ## scanreader
 
-The first thing you need to do is initialize a scan. This is done with {ref}`read_scan`.
+The first thing you need to do is initialize a scan. This is done with `read_scan`.
 
 ```{tip}
 Using `pathlib.Path().home()` can give quick filepaths to your home directory. 
@@ -21,7 +23,13 @@ scan = lcp.read_scan('path/to/data/*.tiff')
 
 ```
 
-If you give a string with a wildcard (like an asterisk), this wildcard will expand to match all files around the asterisk. 
+`lcp.read_scan(data_path, join_contiguous=False)` gives you back an object that you can use like a numpy array.
+
+By default, this array has dims: `[rois, y, x, channels, Time]`.
+
+If your recording only has 1 [scanimage region-of-interest (ROI)](https://docs.scanimage.org/Premium+Features/Multiple+Region+of+Interest+(MROI).html), this array will be 4 dimensions `[y, x, channels, Time]`.
+
+If you give a string with a wildcard (like an asterisk), this wildcard will expand to match all files around the wildcard. There are examples of wildcard usage to gather lists of files throughout the [example notebooks](https://github.com/MillerBrainObservatory/LBM-CaImAn-Python/tree/master/demos/notebooks).
 
 In the above example. every file inside `/path/to/data/` ending in `.tiff` will be included in the scan.
 
@@ -31,9 +39,6 @@ Make sure your `data_path` contains only `.tiff` files for this imaging session.
 
 ```
 
-The default: `lcp.read_scan(data_path, join_contiguous=False)` will give a 5D array, `[rois, y, x, channels, Time]` that can be index just like a numpy array.
-
-
 ```{code-block} Python
 scan = lcp.read_scan('path/to/data/*.tiff')
 scan[:].shape
@@ -42,7 +47,7 @@ scan[:].shape
 
 ```
 
-Depending on your scanimage configuration, contiguous ROIs can be joined together via the `join_contiguous` parameter to {ref}`read_scan()`
+Depending on your scanimage configuration, contiguous ROIs can be joined together via the `join_contiguous` parameter to {ref}`read_scan`
 
 ```{code-block} Python
 scan = lcp.read_scan('path/to/data/*.tiff', join_contiguous=True)
@@ -62,11 +67,79 @@ scan[:].shape
 
 ```
 
+```{admonition} A note on performance
+:class: dropdown
+
+When you initialize a scan with `read_scan`, [tifffile](https://github.com/cgohlke/tifffile/blob/master/tifffile/tifffile.py) is going to iterate through every page in your tiff to "count" how many pages there are.
+. Only a single page of data is held in memory, and using that information we can lazily load the scan (this is what the scanreader does).
+
+For a single 35 Gb file, this process takes ~10 seconds.
+For 216 files totaling 231 GB, ~ 2 minutes.
+
+This only occurs once, and is cached by your operating system. So the next time you read the same scan, a 35GB file will be nearly instant, and a series of 216 files ~8 seconds.
+
+```
+
+## Save your data
+
+The scan object returned by `read_scan` can be fed into {ref}`save_as` to save as a `.tiff` or `.zarr`.
+
+```{code-block} python
+
+scan = lcp.read_scan(path/to/scan)
+savepath = Path().home() / 'lbm_data' / 'output'
+lcp.save_as(scan, savepath)
+```
+
+By default, each `z-plane` plane is saved to a separate `.tiff` file.
+
+You can also specify which z-planes and which frames you want to be saved:
+
+```{code-block} python
+
+scan = lcp.read_scan(path/to/scan)
+savepath = Path().home() / 'lbm_data' / 'output'
+lcp.save_as(scan, savepath, planes=[0, 1, 30], frames=np.arange(1, 1000), ext='.tiff')
+```
+
+## Data Preview
+
+To get a rough idea of the quality of your extracted timeseries, we can create a fastplotlib visualization to preview traces of individual pixels.
+
+Here, we simply click on any pixel in the movie, and we get a 2D trace (or "temporal component" as used in this field) of the pixel through the course of the movie:
+
+:::{figure} ../_images/raw_preview.png
+:align: center
+:::
+
+More advanced visualizations can be easily created, i.e. adding a baseline subtracted element to the trace, or passing the trace through a frequency filter.
+
+````{admonition} How To: Create the above visualization
+:class: dropdown
+
+```{code-block} python
+
+iw_movie = fpl.ImageWidget(movie, cmap="viridis")
+
+tfig = fpl.Figure()
+
+raw_trace = tfig[0, 0].add_line(np.zeros(movie.shape[0]))
+
+@iw_movie.managed_graphics[0].add_event_handler("click")
+def pixel_clicked(ev):
+    col, row = ev.pick_info["index"]
+    raw_trace.data[:, 1] =  iw_movie.data[0][:, row, col]
+    tfig[0, 0].auto_scale(maintain_aspect=False)
+
+VBox([iw_movie.show(), tfig.show()])
+
+```
+````
 
 ## Command Line Usage
 
 ```bash
-python scanreader.py [OPTIONS] PATH
+sr [OPTIONS] PATH
 ```
 
 - `PATH`: Path to the file or directory containing the ScanImage TIFF files to process.
@@ -102,7 +175,7 @@ python scanreader.py [OPTIONS] PATH
 To print metadata for the TIFF files in a directory:
 
 ```bash
-python scanreader.py /path/to/data --metadata
+sr /path/to/data --metadata
 ```
 
 #### Save All Planes and Frames as TIFF
@@ -110,7 +183,7 @@ python scanreader.py /path/to/data --metadata
 To save all planes and frames to a specified directory in TIFF format:
 
 ```bash
-python scanreader.py /path/to/data --save /path/to/output --tiff
+sr /path/to/data --save /path/to/output --tiff
 ```
 
 #### Save Specific Frames and Planes as Zarr
@@ -118,7 +191,7 @@ python scanreader.py /path/to/data --save /path/to/output --tiff
 To save frames 10 to 50 and planes 1 to 5 in Zarr format:
 
 ```bash
-python scanreader.py /path/to/data --frames 10:51 --zplanes 1:6 --save /path/to/output --zarr
+sr /path/to/data --frames 10:51 --zplanes 1:6 --save /path/to/output --zarr
 ```
 
 #### Save with Trimming and Overwrite Existing Files
@@ -126,7 +199,7 @@ python scanreader.py /path/to/data --frames 10:51 --zplanes 1:6 --save /path/to/
 To trim 4 pixels from each edge, overwrite existing files, and save:
 
 ```bash
-python scanreader.py /path/to/data --trim_x 4 4 --trim_y 4 4 --save /path/to/output --overwrite
+sr /path/to/data --trim_x 4 4 --trim_y 4 4 --save /path/to/output --overwrite
 ```
 
 #### Save Each ROI Separately
@@ -134,7 +207,7 @@ python scanreader.py /path/to/data --trim_x 4 4 --trim_y 4 4 --save /path/to/out
 To save each ROI in its own folder:
 
 ```bash
-python scanreader.py /path/to/data --save /path/to/output --roi
+sr /path/to/data --save /path/to/output --roi
 ```
 
 ### Notes
@@ -146,14 +219,6 @@ python scanreader.py /path/to/data --save /path/to/output --roi
 - **File Formats**: By default, data is saved in TIFF format unless `--zarr` is specified.
 
 - **Trimming**: The `--trim_x` and `--trim_y` options allow you to remove unwanted pixels from the edges of each ROI.
-
-### Help
-
-For more information on the available options, run:
-
-```bash
-python scanreader.py --help
-```
 
 ## Assembly Benchmarks
 
