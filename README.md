@@ -46,8 +46,6 @@ caimanmanager install
 
 3. Install [LBM-CaImAn-Python](https://pypi.org/project/lbm-caiman-python/) from pip:
 
-Install the minimal `lbm_caiman_python`:
-
 ``` bash
 
 pip install lbm_caiman_python
