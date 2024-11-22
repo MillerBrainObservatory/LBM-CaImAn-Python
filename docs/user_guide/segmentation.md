@@ -11,6 +11,5 @@ viz.show()
 
 :::{figure} ../_images/mv_cnmf.png
 :align: center
-:width: 40%
 :::
 
