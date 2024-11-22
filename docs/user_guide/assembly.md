@@ -82,7 +82,25 @@ This only occurs once, and is cached by your operating system. So the next time 
 
 ## Save your data
 
+The scan object returned by `read_scan` can be fed into {ref}`save_as` to save as a `.tiff` or `.zarr`.
 
+```{code-block} python
+
+scan = lcp.read_scan(path/to/scan)
+savepath = Path().home() / 'lbm_data' / 'output'
+lcp.save_as(scan, savepath)
+```
+
+By default, each `z-plane` plane is saved to a separate `.tiff` file.
+
+You can also specify which z-planes and which frames you want to be saved:
+
+```{code-block} python
+
+scan = lcp.read_scan(path/to/scan)
+savepath = Path().home() / 'lbm_data' / 'output'
+lcp.save_as(scan, savepath, planes=[0, 1, 30], frames=np.arange(1, 1000), ext='.tiff')
+```
 
 ## Command Line Usage
 
