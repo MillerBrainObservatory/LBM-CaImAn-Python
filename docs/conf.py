@@ -17,7 +17,6 @@ copyright = "2024, Elizabeth R. Miller Brain Observatory | The Rockefeller Unive
 author = "Flynn OConnell"
 release = "0.8.0"
 
-
 exclude_patterns = ["Thumbs.db", ".DS_Store"]
 
 myst_enable_extensions = [
