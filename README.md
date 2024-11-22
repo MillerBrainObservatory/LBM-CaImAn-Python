@@ -44,7 +44,7 @@ conda activate lbm
 caimanmanager install
 ```
 
-3. pip install lbm_caiman_python
+3. Install [LBM-CaImAn-Python](https://pypi.org/project/lbm-caiman-python/) from pip:
 
 Install the minimal `lbm_caiman_python`:
 
@@ -54,7 +54,7 @@ pip install lbm_caiman_python
 
 ```
 
-4. Install [scanreader](https://github.com/atlab/scanreader)
+4. Install [scanreader](https://github.com/atlab/scanreader):
 
 ``` bash
 
@@ -62,7 +62,7 @@ pip install git+https://github.com/atlab/scanreader.git
 
 ```
 
-5. (Optional) Install `mesmerize-viz`
+5. (Optional) Install `mesmerize-viz`:
 
 Several notebooks make use of [mesmerize-viz](https://github.com/kushalkolar/mesmerize-viz) for visualizing registration/segmentation results.
 
@@ -92,7 +92,7 @@ pip install ".[docs]"
 
 ## Troubleshooting
 
-### Conda Issues
+### Conda Slow / Stalling
 
 if conda is behaving slow, clean the conda installation and update `conda-forge`:
 
@@ -103,6 +103,8 @@ conda clean -a
 conda update -c conda-forge --all
 
 ```
+
+Don't forget to press enter a few times if conda is taking a long time.
 
 ### Recommended Conda Distribution
 
@@ -126,7 +128,7 @@ Or download the installer for your operating system [here](https://github.com/co
 
 ### Graphics Driver Issues
 
-If you opted into installing fastplotlib and receive errors about graphics drivers, see the [fastplotlib driver documentation](https://github.com/fastplotlib/fastplotlib?tab=readme-ov-file#gpu-drivers-and-requirements).
+If you are attempting to use fastplotlib and receive errors about graphics drivers, see the [fastplotlib driver documentation](https://github.com/fastplotlib/fastplotlib?tab=readme-ov-file#gpu-drivers-and-requirements).
 
 ## Pipeline Steps:
 
