@@ -102,6 +102,40 @@ savepath = Path().home() / 'lbm_data' / 'output'
 lcp.save_as(scan, savepath, planes=[0, 1, 30], frames=np.arange(1, 1000), ext='.tiff')
 ```
 
+## Data Preview
+
+To get a rough idea of the quality of your extracted timeseries, we can create a fastplotlib visualization to preview traces of individual pixels.
+
+Here, we simply click on any pixel in the movie, and we get a 2D trace (or "temporal component" as used in this field) of the pixel through the course of the movie:
+
+:::{figure} ../_images/raw_preview.png
+:align: center
+:::
+
+More advanced visualizations can be easily created, i.e. adding a baseline subtracted element to the trace, or passing the trace through a frequency filter.
+
+````{admonition} How To: Create the above visualization
+:class: dropdown
+
+```{code-block} python
+
+iw_movie = fpl.ImageWidget(movie, cmap="viridis")
+
+tfig = fpl.Figure()
+
+raw_trace = tfig[0, 0].add_line(np.zeros(movie.shape[0]))
+
+@iw_movie.managed_graphics[0].add_event_handler("click")
+def pixel_clicked(ev):
+    col, row = ev.pick_info["index"]
+    raw_trace.data[:, 1] =  iw_movie.data[0][:, row, col]
+    tfig[0, 0].auto_scale(maintain_aspect=False)
+
+VBox([iw_movie.show(), tfig.show()])
+
+```
+````
+
 ## Command Line Usage
 
 ```bash
