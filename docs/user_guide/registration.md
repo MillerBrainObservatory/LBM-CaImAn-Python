@@ -89,6 +89,15 @@ We limit the largest allowed shift with the {code}`max_shift` parameter.
 
 :::
 
+:::{figure} ../_images/gsig_1.PNG
+:align: center
+:::
+
+:::{figure} ../_images/gsig_2.PNG
+:align: center
+:::
+
+
 ## Registration Results
 
 Following a registration run, results can be quickly viewed with the help of [mesmerize-viz](https://github.com/kushalkolar/mesmerize-viz).
@@ -116,6 +125,5 @@ viz.show()
 
 :::{figure} ../_images/mv_mcorr.png
 :align: center
-:width: 40%
 :::
 
