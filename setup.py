@@ -37,26 +37,23 @@ extras_require = {
     ],
     "notebook": [
         "fastplotlib[notebook]",
-        "scikit-ophys @ git+https://github.com/kushalkolar/scikit-ophys.git",
     ],
 }
 
 extras_require["all"] = extras_require["docs"] + extras_require["notebook"]
 
-with open(Path(__file__).parent.joinpath("README.md")) as f:
-    readme = f.read()
+with open(Path(__file__).parent / "README.md", "r", encoding="utf-8") as fh:
+    long_description = fh.read()
 
 with open(Path(__file__).parent.joinpath("lbm_caiman_python", "VERSION"), "r") as f:
     ver = f.read().split("\n")[0]
-
-with open("README.md", "r") as fh:
-    long_description = fh.read()
 
 setuptools.setup(
     name="lbm_caiman_python",
     version=ver,
     description="Light Beads Microscopy 2P Calcium Imaging Pipeline.",
-    long_description=readme,
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     author="Flynn OConnell",
     author_email="foconnell@rockefeller.edu",
     license="",
@@ -70,7 +67,6 @@ setuptools.setup(
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Science/Research",
         "Programming Language :: Python :: 3 :: Only",
-        "Natural Language :: English" "Topic :: Scientific/Engineering",
     ],
     entry_points={
         "console_scripts": [

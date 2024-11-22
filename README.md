@@ -51,6 +51,7 @@ Install the minimal `lbm_caiman_python`:
 ``` bash
 
 pip install lbm_caiman_python
+
 # or, to get fastplotlib + jupyter lab
 pip install "lbm_caiman_python[all]"
 
