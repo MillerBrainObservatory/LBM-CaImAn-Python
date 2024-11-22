@@ -46,6 +46,8 @@ source_suffix = {
     ".md": "myst-nb",
 }
 
+nb_execution_mode = "off"
+
 myst_admonition_enable = True
 myst_amsmath_enable = True
 myst_html_img_enable = True
