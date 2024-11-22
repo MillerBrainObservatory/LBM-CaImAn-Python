@@ -1,62 +1,115 @@
 # LBM-CaImAn-Python
 
+[**Installation**](https://github.com/MillerBrainObservatory/LBM-CaImAn-Python#installation) | [**Notebooks**](https://github.com/MillerBrainObservatory/LBM-CaImAn-Python/tree/master/demos/notebooks)
+ 
 Python implementation of the Light Beads Microscopy (LBM) computational pipeline.
 
 For the `MATLAB` implementation, see [here](https://github.com/MillerBrainObservatory/LBM-CaImAn-MATLAB/)
 
 ## Installation
 
-We need to set up a conda installation for `CaImAn` and `mesmerize-core` to be properly installed.
+Installation requires an active `conda` installation.
 
-The recommended conda installer is [miniforge](https://github.com/conda-forge/miniforge).
-This is a community-driven `conda`/`mamba` installer with pre-configured packages specific to [conda-forge](https://conda-forge.org/).
+Note: Sometimes conda or mamba will get stuck at a step, such as creating an environment or installing a package. Pressing Enter on your keyboard can sometimes help it continue when it pauses.
 
-This helps avoid `conda-channel` conflicts and avoids any issues with the Anaconda TOS.
+1. Install `mamba` into your *base* environment:
 
-You can install the installer from the command line in a bash/zsh shell:
+- :exclamation: This step may take 10 minutes and display several messages like "Solving environment: failed with..." but it should eventually install mamba.
 
 ``` bash
-curl -L -O "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh"
-bash Miniforge3-$(uname)-$(uname -m).sh
+conda activate base 
+conda install -c conda-forge mamba
 ```
 
-Or download the installer for your operating system [here](https://github.com/conda-forge/miniforge/releases).
+2. Create a new environment and install [mesmerize-core](https://github.com/nel-lab/mesmerize-core/tree/master)
 
-```
-# if conda is behaving slow, clean/update the **base** environment
-conda activate base
-conda clean -a
-conda update -c conda-forge --all
-```
+- Here, we use the `-n` flag to name the environment `lbm` , but you can name it whatever you'd like.
+- This step will install Python, mesmerize-core, CaImAn, and all required dependencies for those packages.
 
-Next, install [`mesmerize-core`](https://github.com/nel-lab/mesmerize-core)
-```
-conda create -n lbm_py -c conda-forge mesmerize-core
-
+``` bash
+conda create -n lbm -c conda-forge mesmerize-core
 ```
 
 If you already have `CaImAn` installed:
 
-```
+``` bash
 conda install -n name-of-env-with-caiman mesmerize-core
 ```
 
 Activate the environment and install `caimanmanager`:
+- if you used a name other than `lbm`, be sure to match the name you use here.
 
-```
-conda activate mesmerize-core
+``` bash
+conda activate lbm
 caimanmanager install
 ```
 
-Now you are ready to install lbm_caiman_python and the latest fastplotlib:
+3. pip install lbm_caiman_python
 
-```
+Install the minimal `lbm_caiman_python`:
+
+``` bash
+
 pip install lbm_caiman_python
+# or, to get fastplotlib + jupyter lab
+pip install "lbm_caiman_python[all]"
 
-# install latest pygfx
-pip install git+https://github.com/pygfx/pygfx.git@main
 ```
 
+The example notebooks include visualizations using [fastplotlib](https://github.com/fastplotlib/fastplotlib), install with:
+
+## For Developers
+
+To get the newest version of this package:
+
+``` bash
+
+git clone https://github.com/MillerBrainObservatory/LBM-CaImAn-Python.git
+
+cd LBM-CaImAn-Python
+
+pip install ".[all]"
+
+```
+
+
+## Troubleshooting
+
+### Conda Issues
+
+if conda is behaving slow, clean the conda installation and update `conda-forge`:
+
+``` bash
+
+conda clean -a
+
+conda update -c conda-forge --all
+
+```
+
+### Recommended Conda Distribution
+
+The recommended conda installer is [miniforge](https://github.com/conda-forge/miniforge).
+
+This is a community-driven `conda`/`mamba` installer with pre-configured packages specific to [conda-forge](https://conda-forge.org/).
+
+This helps avoid `conda-channel` conflicts and avoids any issues with the Anaconda TOS.
+
+You can install the installer from a unix command line:
+
+``` bash
+
+curl -L -O "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh"
+
+bash Miniforge3-$(uname)-$(uname -m).sh
+
+```
+
+Or download the installer for your operating system [here](https://github.com/conda-forge/miniforge/releases).
+
+### Graphics Driver Issues
+
+If you opted into installing fastplotlib and receive errors about graphics drivers, see the [fastplotlib driver documentation](https://github.com/fastplotlib/fastplotlib?tab=readme-ov-file#gpu-drivers-and-requirements).
 
 ## Pipeline Steps:
 
@@ -72,24 +125,15 @@ pip install git+https://github.com/pygfx/pygfx.git@main
     - Lateral offset correction (between z-planes)
     - Collate images and metadata into a single volume
 
-# Requirements
+## Requirements
 
 - caiman
 - mesmerize-core
 - numpy
 - scipy
 
-```{note}
-See the `environment.yml` file at the root of this project for a complete list of package dependencies.
-```
+Optional:
 
-## For Developers
-
-To get the newest version of this package: 
-
-git clone https://github.com/MillerBrainObservatory/LBM-CaImAn-Python.git
-# to change a branch
-cd LBM-CaImAn-Python
-git checkout [branch] # optional
-pip install .
+- fastplotlib
+- mesmerize-viz
 
