@@ -12,7 +12,6 @@ maxdepth: 2
 ---
 user_guide/index
 examples/index
-snippets
 api/index
 glossary
 ```

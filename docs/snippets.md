@@ -5,14 +5,8 @@ Helpful snippets for all things LBM python.
 ----
 
 ## CaImAn Parameters
+
 [caiman parameters](https://caiman.readthedocs.io/en/latest/Getting_Started.html#parameters)
-
-## Import `conda` environment
-
-`pixi init --import ./environment.yml`
-
-
-----
 
 ## Troubleshooting
 
