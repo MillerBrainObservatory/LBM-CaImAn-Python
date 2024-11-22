@@ -7,7 +7,7 @@ Before running motion-correction or segmentation, we need to de-interleave raw `
 
 ## scanreader
 
-The first thing you need to do is initialize a scan. This is done with {ref}`read_scan`.
+The first thing you need to do is initialize a scan. This is done with `read_scan`.
 
 ```{tip}
 Using `pathlib.Path().home()` can give quick filepaths to your home directory. 
@@ -21,11 +21,13 @@ scan = lcp.read_scan('path/to/data/*.tiff')
 
 ```
 
-When you call read_scan(), you get back an object that you can use like a numpy array.
+`lcp.read_scan(data_path, join_contiguous=False)` gives you back an object that you can use like a numpy array.
 
-By default: `lcp.read_scan(data_path, join_contiguous=False)` will give an array of dims: `[rois, y, x, channels, Time]`.
+By default, this array has dims: `[rois, y, x, channels, Time]`.
 
-If you give a string with a wildcard (like an asterisk), this wildcard will expand to match all files around the asterisk. 
+If your recording only has 1 [scanimage region-of-interest (ROI)](https://docs.scanimage.org/Premium+Features/Multiple+Region+of+Interest+(MROI).html), this array will be 4 dimensions `[y, x, channels, Time]`.
+
+If you give a string with a wildcard (like an asterisk), this wildcard will expand to match all files around the wildcard. There are examples of wildcard usage to gather lists of files throughout the [example notebooks](https://github.com/MillerBrainObservatory/LBM-CaImAn-Python/tree/master/demos/notebooks).
 
 In the above example. every file inside `/path/to/data/` ending in `.tiff` will be included in the scan.
 
@@ -35,8 +37,6 @@ Make sure your `data_path` contains only `.tiff` files for this imaging session.
 
 ```
 
-
-
 ```{code-block} Python
 scan = lcp.read_scan('path/to/data/*.tiff')
 scan[:].shape
@@ -45,7 +45,7 @@ scan[:].shape
 
 ```
 
-Depending on your scanimage configuration, contiguous ROIs can be joined together via the `join_contiguous` parameter to {ref}`read_scan()`
+Depending on your scanimage configuration, contiguous ROIs can be joined together via the `join_contiguous` parameter to {ref}`read_scan`
 
 ```{code-block} Python
 scan = lcp.read_scan('path/to/data/*.tiff', join_contiguous=True)
@@ -65,11 +65,10 @@ scan[:].shape
 
 ```
 
-
 ## Command Line Usage
 
 ```bash
-python scanreader.py [OPTIONS] PATH
+sr [OPTIONS] PATH
 ```
 
 - `PATH`: Path to the file or directory containing the ScanImage TIFF files to process.
@@ -105,7 +104,7 @@ python scanreader.py [OPTIONS] PATH
 To print metadata for the TIFF files in a directory:
 
 ```bash
-python scanreader.py /path/to/data --metadata
+sr /path/to/data --metadata
 ```
 
 #### Save All Planes and Frames as TIFF
@@ -113,7 +112,7 @@ python scanreader.py /path/to/data --metadata
 To save all planes and frames to a specified directory in TIFF format:
 
 ```bash
-python scanreader.py /path/to/data --save /path/to/output --tiff
+sr /path/to/data --save /path/to/output --tiff
 ```
 
 #### Save Specific Frames and Planes as Zarr
@@ -121,7 +120,7 @@ python scanreader.py /path/to/data --save /path/to/output --tiff
 To save frames 10 to 50 and planes 1 to 5 in Zarr format:
 
 ```bash
-python scanreader.py /path/to/data --frames 10:51 --zplanes 1:6 --save /path/to/output --zarr
+sr /path/to/data --frames 10:51 --zplanes 1:6 --save /path/to/output --zarr
 ```
 
 #### Save with Trimming and Overwrite Existing Files
@@ -129,7 +128,7 @@ python scanreader.py /path/to/data --frames 10:51 --zplanes 1:6 --save /path/to/
 To trim 4 pixels from each edge, overwrite existing files, and save:
 
 ```bash
-python scanreader.py /path/to/data --trim_x 4 4 --trim_y 4 4 --save /path/to/output --overwrite
+sr /path/to/data --trim_x 4 4 --trim_y 4 4 --save /path/to/output --overwrite
 ```
 
 #### Save Each ROI Separately
@@ -137,7 +136,7 @@ python scanreader.py /path/to/data --trim_x 4 4 --trim_y 4 4 --save /path/to/out
 To save each ROI in its own folder:
 
 ```bash
-python scanreader.py /path/to/data --save /path/to/output --roi
+sr /path/to/data --save /path/to/output --roi
 ```
 
 ### Notes
@@ -149,14 +148,6 @@ python scanreader.py /path/to/data --save /path/to/output --roi
 - **File Formats**: By default, data is saved in TIFF format unless `--zarr` is specified.
 
 - **Trimming**: The `--trim_x` and `--trim_y` options allow you to remove unwanted pixels from the edges of each ROI.
-
-### Help
-
-For more information on the available options, run:
-
-```bash
-python scanreader.py --help
-```
 
 ## Assembly Benchmarks
 

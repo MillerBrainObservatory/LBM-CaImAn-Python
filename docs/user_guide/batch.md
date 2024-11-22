@@ -1,5 +1,5 @@
 (batch)=
-# Batch Setup with {ref}`mesmerize-core`
+# Batch
 
 Before continuing, users should review the [mesmerize-core user guide](https://mesmerize-core.readthedocs.io/en/latest/user_guide.html).
 
@@ -36,6 +36,8 @@ df = mc.create_batch('/batch/path')
 ```
 ````
 `````
+
+See {external:func}`mesmerize_core.load_batch()`, {external:func}`mesmerize_core.create_batch()`,
 
 (batch_add)=
 ## Add a batch item
@@ -135,4 +137,3 @@ $ lcp /home/mbo/lbm_data/batch/batch.pickle --create --run mcorr cnmf --strides 
 
 ## Mesmerize-Core
 
-{external:func}`mesmerize_core.load_batch()`
