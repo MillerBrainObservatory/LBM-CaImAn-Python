@@ -8,10 +8,10 @@ from pathlib import Path
 
 install_deps = [
     "tifffile",
-    "scanreader @ git+https://github.com/atlab/scanreader.git",
     "numpy>=1.24.3",
     "numba>=0.57.0",
     "scipy>=1.9.0",
+    "fastplotlib[notebook]",
     "matplotlib",
     "dask",
     "zarr",
@@ -35,12 +35,7 @@ extras_require = {
         "sphinx_tippy",
         "myst_nb",
     ],
-    "notebook": [
-        "fastplotlib[notebook]",
-    ],
 }
-
-extras_require["all"] = extras_require["docs"] + extras_require["notebook"]
 
 with open(Path(__file__).parent / "README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
@@ -71,7 +66,7 @@ setuptools.setup(
     entry_points={
         "console_scripts": [
             "lcp = lbm_caiman_python.__main__:main",
-            "assemble = lbm_caiman_python.assembly:main",
+            "sr = lbm_caiman_python.assembly:main",
         ]
     },
 )

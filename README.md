@@ -14,7 +14,7 @@ Note: Sometimes conda or mamba will get stuck at a step, such as creating an env
 
 1. Install `mamba` into your *base* environment:
 
-- :exclamation: This step may take 10 minutes and display several messages like "Solving environment: failed with..." but it should eventually install mamba.
+:exclamation: This step may take 10 minutes and display several messages like "Solving environment: failed with..." but it should eventually install mamba.
 
 ``` bash
 conda activate base 
@@ -52,12 +52,29 @@ Install the minimal `lbm_caiman_python`:
 
 pip install lbm_caiman_python
 
-# or, to get fastplotlib + jupyter lab
-pip install "lbm_caiman_python[all]"
+```
+
+4. Install [scanreader](https://github.com/atlab/scanreader)
+
+``` bash
+
+pip install git+https://github.com/atlab/scanreader.git
 
 ```
 
-The example notebooks include visualizations using [fastplotlib](https://github.com/fastplotlib/fastplotlib), install with:
+5. (Optional) Install `mesmerize-viz`
+
+Several notebooks make use of [mesmerize-viz](https://github.com/kushalkolar/mesmerize-viz) for visualizing registration/segmentation results.
+
+``` bash
+
+pip install https://github.com/kushalkolar/mesmerize-viz.git
+
+```
+
+:exclamation: **Harware requirements** The large CNMF visualizations with contours etc. usually require either a dedicated GPU or integrated GPU with access to at least 1GB of VRAM.
+
+https://www.youtube.com/watch?v=GWvaEeqA1hw
 
 ## For Developers
 
@@ -69,10 +86,9 @@ git clone https://github.com/MillerBrainObservatory/LBM-CaImAn-Python.git
 
 cd LBM-CaImAn-Python
 
-pip install ".[all]"
+pip install ".[docs]"
 
 ```
-
 
 ## Troubleshooting
 
@@ -132,9 +148,4 @@ If you opted into installing fastplotlib and receive errors about graphics drive
 - mesmerize-core
 - numpy
 - scipy
-
-Optional:
-
-- fastplotlib
-- mesmerize-viz
 
