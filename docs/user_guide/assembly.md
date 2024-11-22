@@ -21,6 +21,10 @@ scan = lcp.read_scan('path/to/data/*.tiff')
 
 ```
 
+When you call read_scan(), you get back an object that you can use like a numpy array.
+
+By default: `lcp.read_scan(data_path, join_contiguous=False)` will give an array of dims: `[rois, y, x, channels, Time]`.
+
 If you give a string with a wildcard (like an asterisk), this wildcard will expand to match all files around the asterisk. 
 
 In the above example. every file inside `/path/to/data/` ending in `.tiff` will be included in the scan.
@@ -31,7 +35,6 @@ Make sure your `data_path` contains only `.tiff` files for this imaging session.
 
 ```
 
-The default: `lcp.read_scan(data_path, join_contiguous=False)` will give a 5D array, `[rois, y, x, channels, Time]` that can be index just like a numpy array.
 
 
 ```{code-block} Python

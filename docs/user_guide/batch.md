@@ -89,7 +89,15 @@ df.caiman.add_item(
 (batch_run)=
 ## Run a batch item
 
-After 
+After adding an item, running the item is as easy as calling `row.caiman.run()`:
+
+``` python
+df.iloc[-1].caiman.run()
+```
+
+Here, we are using pandas.iloc[index], where index is the row in the dataframe containing the algorithm you wish to run. 
+
+Choosing -1 indicates the "last item" in the dataframe, which is often the item you just added in the previous step. 
 
 (lcp-cli)=
 ## Command Line Usage Overview:
