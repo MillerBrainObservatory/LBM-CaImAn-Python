@@ -15,3 +15,5 @@ sphinxcontrib-images
 sphinxcontrib-video
 myst_nb
 jupytext
+fastplotlib
+git+https://github.com/kushalkolar/scikit-ophys.git@preprocessing#egg=scikit-ophys

@@ -17,51 +17,6 @@ copyright = "2024, Elizabeth R. Miller Brain Observatory | The Rockefeller Unive
 author = "Flynn OConnell"
 release = "0.8.0"
 
-# def fetch_notebooks():
-    # import requests
-    # from bs4 import BeautifulSoup
-#     BASE_URL = "https://github.com/MillerBrainObservatory/LBM-CaImAn-Python/blob/master/demos/render/"
-#     RAW_BASE_URL = "https://raw.githubusercontent.com/MillerBrainObservatory/LBM-CaImAn-Python/master/demos/render/"
-#     OUTPUT_DIR = "./notebooks"  # Destination for notebooks
-
-#     # Ensure the output directory exists
-#     os.makedirs(OUTPUT_DIR, exist_ok=True)
-
-#     # Get the HTML content of the GitHub directory
-#     response = requests.get(BASE_URL)
-#     if response.status_code != 200:
-#         raise RuntimeError(f"Failed to fetch directory listing: {response.status_code}")
-
-#     # Parse the HTML to find links to .ipynb files
-#     soup = BeautifulSoup(response.text, 'html.parser')
-#     notebook_links = [
-#         a['href'] for a in soup.find_all('a', href=True)
-#         if a['href'].endswith(".ipynb")
-#     ]
-
-#     if not notebook_links:
-#         raise RuntimeError("No .ipynb files found in the specified directory.")
-
-#     # Download each notebook
-#     for link in notebook_links:
-#         notebook_name = os.path.basename(link)
-#         raw_url = RAW_BASE_URL + notebook_name
-
-#         notebook_response = requests.get(raw_url)
-#         if notebook_response.status_code == 200:
-#             output_path = os.path.join(OUTPUT_DIR, notebook_name)
-#             with open(output_path, "wb") as f:
-#                 f.write(notebook_response.content)
-#             print(f"Downloaded {notebook_name} to {output_path}")
-#         else:
-#             print(f"Failed to download {notebook_name}: {notebook_response.status_code}")
-
-#     print(f"All notebooks downloaded to {OUTPUT_DIR}")
-
-# fetch_notebooks()
-
-# -- General configuration ---------------------------------------------------
-# https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 exclude_patterns = ["Thumbs.db", ".DS_Store"]
 
