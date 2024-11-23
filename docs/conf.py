@@ -14,7 +14,6 @@ sys.path.insert(0, os.path.abspath(os.path.join("..", "lbm_caiman_python")))
 
 project = "LBM-CaImAn-Python"
 copyright = "2024, Elizabeth R. Miller Brain Observatory | The Rockefeller University. All Rights Reserved"
-author = "Flynn OConnell"
 release = "0.8.0"
 
 exclude_patterns = ["Thumbs.db", ".DS_Store"]
