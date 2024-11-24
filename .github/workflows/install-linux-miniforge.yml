@@ -16,23 +16,31 @@ jobs:
       matrix:
         os: ["ubuntu", "windows"]
     steps:
-      - uses: actions/checkout@v4
-      - uses: conda-incubator/setup-miniconda@v3
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Set up Miniforge
+        uses: conda-incubator/setup-miniconda@v3
         with:
           miniforge-version: latest
 
       - name: Create and activate LBM environment
         shell: bash
+        env:
+          CONDA: ${{ env.CONDA }}
         run: |
+          source $CONDA/etc/profile.d/conda.sh
           conda create -n lbm -c conda-forge mesmerize-core -y
           echo "conda activate lbm" >> $GITHUB_ENV
+          echo "Conda activated successfully!"
 
       # - name: Install CaImAn and other dependencies
       #   shell: bash
       #   env:
-      #     PATH: ${{ env.PATH }}:/opt/hostedtoolcache/miniconda3/bin
+      #     CONDA: ${{ env.CONDA }}
       #   run: |
-      #     source $CONDA/bin/activate lbm
+      #     source $CONDA/etc/profile.d/conda.sh
+      #     conda activate lbm
       #     caimanmanager install
       #     pip install lbm_caiman_python
       #     pip install git+https://github.com/atlab/scanreader.git
