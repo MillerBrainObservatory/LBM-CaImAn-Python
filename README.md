@@ -6,11 +6,127 @@ Python implementation of the Light Beads Microscopy (LBM) computational pipeline
 
 For the `MATLAB` implementation, see [here](https://github.com/MillerBrainObservatory/LBM-CaImAn-MATLAB/)
 
+
 ## Installation
 
-Installation requires an active `conda` installation.
+### (Option 1). Python Virtual Environments
 
-Note: Sometimes conda or mamba will get stuck at a step, such as creating an environment or installing a package. Pressing Enter on your keyboard can sometimes help it continue when it pauses.
+Ensure you have a system-wide Python installation.
+
+This project and it's dependencies are tested using `Python 3.9` and `Python 3.10`.
+
+Deactivate any active `conda` environments to avoid conflicts:
+
+```bash
+
+conda deactivate
+
+```
+
+Verify `Python` and `pip` installations:
+
+```bash
+
+python --version
+
+pip --version
+
+```
+
+You should see a Python version output like `3.10.x` and a corresponding `pip` version.
+
+If Python is not installed, or an unsupported version is installed (i.e. 3.7),
+
+download and install [python.org](https://www.python.org/) or refer to this [installation guide](https://docs.python-guide.org/starting/installation/).
+
+You will also need [`git`](https://git-scm.com/):
+
+```bash
+git --version
+```
+
+---
+
+Create a virtual environment. This is normally in a directory dedicated to virtual environments, but can be anywhere you wish:
+
+```bash
+python -m venv ~/venv/lbm_caiman_python
+```
+
+Activate the virtual environment:
+
+- **Linux/macOS:**
+
+  ```bash
+  source ~/venv/lbm_caiman_python/bin/activate
+  ```
+
+- **Windows:**
+
+  ```bash
+  source ~/venv/lbm_caiman_python/Scripts/activate
+  ```
+
+Upgrade core tools in the virtual environment:
+
+```bash
+pip install --upgrade setuptools wheel pip
+```
+
+---
+
+## Clone and install CaImAn
+
+Create a directory to store the cloned repositories.
+
+Again, this can be anywhere you wish:
+
+```bash
+
+cd ~
+mkdir repos
+cd repos
+
+```
+
+Use git to clone CaImAn:
+
+```bash
+git clone https://github.com/flatironinstitute/CaImAn.git
+```
+
+Install the projects:
+
+1. **CaImAn:**
+   ```bash
+   cd CaImAn
+   pip install -r requirements.txt
+   pip install .
+   ```
+
+2. **Mesmerize Core:**
+   ```bash
+   cd ../mesmerize-core
+   pip install .
+   ```
+
+---
+
+### virtualenv Troubleshooting
+
+#### Error During `pip install .` (CaImAn) on Linux
+If you encounter errors during the installation of `CaImAn`, install the necessary development tools:
+```bash
+sudo apt-get install python3-dev
+```
+
+### (Option 2). Conda
+
+Miniforge is the supported `conda` distribution. Anaconda and Miniconda require extra steps and is not covered in this guide.
+
+Note: Sometimes conda or mamba will get stuck at a step, such as creating an environment or installing a package.
+
+Pressing Enter on your keyboard can sometimes help it continue when it pauses.
 
 1. Install `mamba` into your *base* environment:
 
