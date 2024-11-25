@@ -98,6 +98,7 @@ def add_args(parser: argparse.ArgumentParser):
         "--version", action="store_true", help="current pipeline version"
     )
     parser.add_argument("--ops", default=[], type=str, help="options")
+    parser.add_argument("--data_path", "--data-path",dest="data_path", type=parse_data_path ,default=None, help="Path to data file or index of data in batch")
 
     # uncollapse dict['main'], used by mescore for parameters
     ops0 = lcp.default_ops()
@@ -110,14 +111,6 @@ def add_args(parser: argparse.ArgumentParser):
         if isinstance(v["default"], (np.ndarray, list)) and v["default"]:
             v["nargs"] = "+"
             v["type"] = type(v["default"][0])
-        if k in ["batch_path", "batch-path"]:
-            v["default"] = None  # required
-            v["type"] = str
-            v["dest"] = "batch_path"
-        if k in ["data_path", "data-path"]:
-            v["default"] = None  # by default, use the first df row
-            v["type"] = parse_data_path
-            v["dest"] = "data_path"
         parser.add_argument(f"--{k}", **v)
     return parser
 
@@ -184,6 +177,7 @@ def main():
         print("No batch path provided. Provide a path to save results in a dataframe.")
         return
     print("Batch path provided, retrieving batch:")
+    args.batch_path = Path(args.batch_path).expanduser()
     print(args.batch_path)
     if Path(args.batch_path).is_file():
         print("Found existing batch.")
@@ -299,7 +293,7 @@ def main():
             if algo == "mcorr":
                 df.caiman.add_item(
                     algo=algo,
-                    input_movie_path=filename,
+                    input_movie_path=input_movie_path,
                     params={"main": get_matching_main_params(args)},
                     item_name="lbm-batch-item",
                 )
