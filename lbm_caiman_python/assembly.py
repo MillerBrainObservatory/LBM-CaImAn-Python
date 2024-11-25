@@ -294,15 +294,13 @@ def _save_data(scan, path, planes, frames, overwrite, file_extension):
             for chan in planes:
                 if 'tif' in file_extension:
                     arr = scan[idx, :, :, chan, frames]
-                    if arr.ndim == 3:
-                        arr = np.transpose(arr, (2, 0, 1))
-                    file_writer(path, f'roi_{idx}_plane_{chan}', arr)
+                    logger.debug('arr shape:', arr.shape)
+                    file_writer(path, f'plane_{chan}_roi_{idx + 1}', arr)
     else:
         for chan in planes:
             if 'tif' in file_extension:
                 arr = scan[:, :, :, chan, frames]
-                if arr.ndim == 3:
-                    arr = np.transpose(arr, (2, 0, 1))
+                logger.debug('arr shape:', arr.shape)
                 file_writer(path, f'plane_{chan}', arr)
 
 
