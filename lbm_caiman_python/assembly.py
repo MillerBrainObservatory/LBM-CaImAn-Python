@@ -293,11 +293,17 @@ def _save_data(scan, path, planes, frames, overwrite, file_extension):
         for idx, field in enumerate(scan.fields):
             for chan in planes:
                 if 'tif' in file_extension:
-                    file_writer(path, f'roi_{idx}_plane_{chan}', scan[idx, :, :, chan, frames])
+                    arr = scan[idx, :, :, chan, frames]
+                    if arr.ndim == 3:
+                        arr = np.transpose(arr, (2, 0, 1))
+                    file_writer(path, f'roi_{idx}_plane_{chan}', arr)
     else:
         for chan in planes:
             if 'tif' in file_extension:
-                file_writer(path, f'assembled_plane_{chan}', scan[:, :, :, chan, frames])
+                arr = scan[:, :, :, chan, frames]
+                if arr.ndim == 3:
+                    arr = np.transpose(arr, (2, 0, 1))
+                file_writer(path, f'plane_{chan}', arr)
 
 
 def _get_file_writer(ext, overwrite):
@@ -375,7 +381,6 @@ def main():
     parser.add_argument("--debug", action='store_true', help="Output verbose debug information.")
     parser.add_argument("--delete_first_frame", action='store_false', help="Flag to delete the first frame of the "
                                                                            "scan when saving.")
-
     # Commands
     args = parser.parse_args()
     if not args.path:
@@ -386,8 +391,14 @@ def main():
         logger.setLevel(logging.DEBUG)
         logger.debug("Debug mode enabled.")
 
-    files = [str(x) for x in Path(args.path).expanduser().glob('*.tif*')]
-    logger.debug(f"Files found: {files}")
+    path = Path(args.path).expanduser()
+    if path.is_dir():
+        files = [str(x) for x in Path(args.path).expanduser().glob('*.tif*')]
+    elif path.is_file():
+        files = [str(path)]
+    else:
+        raise FileNotFoundError(f"File or directory not found: {args.path}")
+
     if len(files) < 1:
         raise ValueError(
             f"Input path given is a non-tiff file: {args.path}.\n"
