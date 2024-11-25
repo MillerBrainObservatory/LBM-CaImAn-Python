@@ -1,0 +1,38 @@
+name: Miniforge Windows
+
+on:
+  pull_request:
+    branches:
+      - master
+      - dev
+  push:
+    branches: [ master ]
+
+jobs:
+  install-with-miniforge:
+    name: Install with (${{ matrix.os }}, Miniforge)
+    runs-on: ${{ matrix.os }}-latest
+    strategy:
+      matrix:
+        os: ["windows"]
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Set up Miniforge
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          miniforge-version: latest
+          python-version: 3.10.0
+          channels: conda-forge,defaults
+          channel-priority: flexible
+          show-channel-urls: true
+
+      - name: Create LBM environment
+        shell: bash
+        env:
+          CONDA: ${{ env.CONDA }}
+        run: |
+          source $CONDA/etc/profile.d/conda.sh
+          conda create -n lbm -c conda-forge mesmerize-core -y
+          conda activate lbm
