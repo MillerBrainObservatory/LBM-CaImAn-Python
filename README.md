@@ -32,9 +32,16 @@ For the `MATLAB` implementation, see [here](https://github.com/MillerBrainObserv
 
 :exclamation: **Note:** This package makes heavy use of Fastplotlib for visualizations.
 
-Fastplotlib runs on Jupyter Lab, but is not guarenteed to work with Jupyter Notebook or Visual Studio Code. 
+Fastplotlib runs on [Jupyter Lab](https://jupyterlab.readthedocs.io/en/stable/getting_started/installation.html),
+but is not guarenteed to work with Jupyter Notebook or Visual Studio Code notebook environments. 
 
 ## Installation
+
+This project is tested on Linux and Windows 10 using `Python 3.9` and `Python 3.10`.
+
+Environment setup is tested using `virtualenv` and `miniforge`.
+
+We suggest using python virtual environments for the best results.
 
 ### (Option 1). Python Virtual Environments
 
