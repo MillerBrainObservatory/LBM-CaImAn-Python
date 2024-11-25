@@ -1,0 +1,50 @@
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: Install with pip
+
+on:
+  pull_request:
+    branches:
+      - master
+      - dev
+  push:
+    branches: [ master ]
+
+permissions:
+  contents: read
+
+jobs:
+  build-linux-pip:
+    name: Install with (${{ matrix.os }}, Pip)
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: ["ubuntu", "windows"]
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.9"
+        
+    - name: Install deps
+      run: |
+        python -m pip install --upgrade pip setuptools wheel
+        
+    - name: install caiman
+      run: |
+        cd ..
+        git clone https://github.com/flatironinstitute/CaImAn.git
+        cd CaImAn
+        pip install -r requirements.txt
+        pip install .
+        caimanmanager install
+        pip install mesmerize-core
+        pip install lbm_caiman_python
+        pip install git+https://github.com/atlab/scanreader.git
+        
+    - name: Test with pytest
+      run: |
+        pip install pytest
