@@ -30,7 +30,10 @@ jobs:
           CONDA: ${{ env.CONDA }}
         run: |
           source $CONDA/etc/profile.d/conda.sh
-          conda create -n lbm -c conda-forge mesmerize-core -y
+          conda create -n lbm -c conda-forge python=3.10 -y
+          if [[ "${{ matrix.os }}" == "windows" ]]; then
+            pip install tensorflow>=2.4.0
+          fi
 
       - name: Activate LBM environment and install dependencies
         shell: bash
@@ -39,6 +42,7 @@ jobs:
         run: |
           source $CONDA/etc/profile.d/conda.sh
           conda activate lbm
+          conda install -n lbm -c conda-forge mesmerize-core
           caimanmanager install
           pip install lbm_caiman_python
           pip install git+https://github.com/atlab/scanreader.git
