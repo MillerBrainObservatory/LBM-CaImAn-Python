@@ -47,11 +47,21 @@ conda deactivate
 
 Verify `Python` and `pip` installations:
 
+- **Linux/macOS:**
+  
 ```bash
 
 python --version
 
 pip --version
+```
+
+- **Windows:**
+
+```bash
+py --version
+
+py - m pip --version 
 
 ```
 
