@@ -1,4 +1,4 @@
-name: Install with Miniforge
+name: Install with Miniforge (Linux)
 
 on:
   pull_request:
@@ -14,7 +14,7 @@ jobs:
     runs-on: ${{ matrix.os }}-latest
     strategy:
       matrix:
-        os: ["ubuntu", "windows"]
+        os: ["ubuntu"]
     steps:
       - name: Check out the repository
         uses: actions/checkout@v4
@@ -31,9 +31,6 @@ jobs:
         run: |
           source $CONDA/etc/profile.d/conda.sh
           conda create -n lbm -c conda-forge python=3.10 -y
-          if [[ "${{ matrix.os }}" == "windows" ]]; then
-            pip install tensorflow>=2.4.0
-          fi
 
       - name: Activate LBM environment and install dependencies
         shell: bash
