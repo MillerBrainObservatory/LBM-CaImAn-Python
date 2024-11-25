@@ -67,7 +67,9 @@ You will also need [`git`](https://git-scm.com/):
 git --version
 ```
 
-Create a virtual environment. This is normally in a directory dedicated to virtual environments, but can be anywhere you wish:
+#### Create a virtual environment
+
+This is normally in a directory dedicated to virtual environments, but can be anywhere you wish:
 
 ```bash
 python -m venv ~/venv/lbm_caiman_python
@@ -93,7 +95,7 @@ Upgrade core tools in the virtual environment:
 pip install --upgrade setuptools wheel pip
 ```
 
-## Clone and install CaImAn
+#### Clone and install CaImAn
 
 Create a directory to store the cloned repositories.
 
@@ -130,7 +132,7 @@ Install CaImAn:
     pip install git+https://github.com/atlab/scanreader.git
     ```
 
-Run ipython to make sure everyting works:
+#### Run ipython to make sure everyting works
 
 ``` python
 
