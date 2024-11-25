@@ -6,6 +6,28 @@ Python implementation of the Light Beads Microscopy (LBM) computational pipeline
 
 For the `MATLAB` implementation, see [here](https://github.com/MillerBrainObservatory/LBM-CaImAn-MATLAB/)
 
+## Pipeline Steps:
+
+1. Image Assembly
+    - Extract raw `tiffs` to planar timeseries
+2. Motion Correction
+    - Template creation
+    - Piecewise-rigid or non-rigid registration
+3. Segmentation
+    - Iterative CNMF segmentation
+    - Deconvolution
+    - Refinement
+4. Collation
+    - Lateral offset correction (between z-planes)
+    - Collate images and metadata into a single volume
+
+## Requirements
+
+- caiman
+- mesmerize-core
+- scanreader
+- numpy
+- scipy
 
 ## Installation
 
@@ -45,8 +67,6 @@ You will also need [`git`](https://git-scm.com/):
 git --version
 ```
 
----
-
 Create a virtual environment. This is normally in a directory dedicated to virtual environments, but can be anywhere you wish:
 
 ```bash
@@ -72,8 +92,6 @@ Upgrade core tools in the virtual environment:
 ```bash
 pip install --upgrade setuptools wheel pip
 ```
-
----
 
 ## Clone and install CaImAn
 
@@ -112,7 +130,17 @@ Install CaImAn:
     pip install git+https://github.com/atlab/scanreader.git
     ```
 
----
+Run ipython to make sure everyting works:
+
+``` python
+
+import lbm_caiman_python as lcp
+import mesmerize_core as mc
+import scanreader as sr
+
+scan = sr.read_scan('path/to/data/*.tif', join_contiguous=True)
+
+```
 
 ### virtualenv Troubleshooting
 
@@ -121,6 +149,8 @@ If you encounter errors during the installation of `CaImAn`, install the necessa
 ```bash
 sudo apt-get install python3-dev
 ```
+
+---
 
 ### (Option 2). Conda
 
@@ -246,24 +276,4 @@ Or download the installer for your operating system [here](https://github.com/co
 
 If you are attempting to use fastplotlib and receive errors about graphics drivers, see the [fastplotlib driver documentation](https://github.com/fastplotlib/fastplotlib?tab=readme-ov-file#gpu-drivers-and-requirements).
 
-## Pipeline Steps:
-
-1. Motion Correction
-    - Template creation
-    - Rigid registration
-    - Piecewise-rigid registration
-2. Segmentation
-    - Iterative CNMF segmentation
-    - Deconvolution
-    - Refinement
-3. Collation
-    - Lateral offset correction (between z-planes)
-    - Collate images and metadata into a single volume
-
-## Requirements
-
-- caiman
-- mesmerize-core
-- numpy
-- scipy
 

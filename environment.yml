@@ -1,0 +1,13 @@
+name: lbm
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - tensorflow=2.10.0
+  - mesmerize-core
+  - pip
+  - pip:
+      - lbm_caiman_python
+      - git+https://github.com/atlab/scanreader.git
+
