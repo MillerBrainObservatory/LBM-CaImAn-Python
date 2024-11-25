@@ -95,7 +95,7 @@ Use git to clone CaImAn:
 git clone https://github.com/flatironinstitute/CaImAn.git
 ```
 
-Install the projects:
+Install CaImAn:
 
 1. **CaImAn:**
    ```bash
@@ -104,11 +104,13 @@ Install the projects:
    pip install .
    ```
 
-2. **Mesmerize Core:**
-   ```bash
-   cd ../mesmerize-core
-   pip install .
-   ```
+2. **Other dependencies:**
+
+    ```bash
+    pip install mesmerize-core
+    pip install lbm_caiman_python
+    pip install git+https://github.com/atlab/scanreader.git
+    ```
 
 ---
 
@@ -182,7 +184,7 @@ Several notebooks make use of [mesmerize-viz](https://github.com/kushalkolar/mes
 
 ``` bash
 
-pip install https://github.com/kushalkolar/mesmerize-viz.git
+pip install mesmerize-viz
 
 ```
 
