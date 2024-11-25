@@ -1,4 +1,4 @@
-name: Install with Miniforge
+name: Miniforge Windows
 
 on:
   pull_request:
@@ -14,7 +14,7 @@ jobs:
     runs-on: ${{ matrix.os }}-latest
     strategy:
       matrix:
-        os: ["ubuntu", "windows"]
+        os: ["windows"]
     steps:
       - name: Check out the repository
         uses: actions/checkout@v4
@@ -23,6 +23,8 @@ jobs:
         uses: conda-incubator/setup-miniconda@v3
         with:
           miniforge-version: latest
+          channel-priority: strict
+          channels: conda-forge,defaults
 
       - name: Create LBM environment
         shell: bash
@@ -30,24 +32,24 @@ jobs:
           CONDA: ${{ env.CONDA }}
         run: |
           source $CONDA/etc/profile.d/conda.sh
-          conda create -n lbm -c conda-forge python=3.10 -y
+          conda create -n lbm -c conda-forge mesmerize-core -y
           conda activate lbm
-          python -m pip install --upgrade pip setuptools wheel
+          # python -m pip install --upgrade pip setuptools wheel
 
-      - name: Activate LBM environment and install dependencies
-        shell: bash
-        env:
-          CONDA: ${{ env.CONDA }}
-        run: |
-          source $CONDA/etc/profile.d/conda.sh
-          conda activate lbm
-          cd ..
-          git clone https://github.com/flatironinstitute/CaImAn.git
-          cd CaImAn
-          pip install -r requirements.txt
-          pip install .
-          caimanmanager install
-          pip install mesmerize-core
-          pip install lbm_caiman_python
-          pip install git+https://github.com/atlab/scanreader.git
-
+      # - name: Activate LBM environment and install dependencies
+      #   shell: bash
+      #   env:
+      #     CONDA: ${{ env.CONDA }}
+      #   run: |
+      #     source $CONDA/etc/profile.d/conda.sh
+      #     conda activate lbm
+      #     cd ..
+      #     git clone https://github.com/flatironinstitute/CaImAn.git
+      #     cd CaImAn
+      #     pip install -r requirements.txt
+      #     pip install .
+      #     caimanmanager install
+      #     pip install mesmerize-core
+      #     pip install lbm_caiman_python
+      #     pip install git+https://github.com/atlab/scanreader.git
+      #
