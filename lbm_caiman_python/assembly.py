@@ -249,8 +249,6 @@ def save_as(
         Additional metadata to update the scan object's metadata. Default is `None`.
     overwrite : bool, optional
         Whether to overwrite existing files. Default is `True`.
-    by_roi : bool, optional
-        Whether to save data grouped by ROIs. Default is `False`.
     ext : str, optional
         File extension for the saved data. Supported options are `'.tiff'` and `'.zarr'`.
         Default is `'.tiff'`.
@@ -275,45 +273,46 @@ def save_as(
         frames = list(range(scan.num_frames))
     elif not isinstance(planes, (list, tuple)):
         frames = [frames]
-    if metadata:
-        scan.metadata.update(metadata)
+    if not metadata:
+        metadata = {'si': scan.tiff_files[0].scanimage_metadata,
+                    'image': make_json_serializable(get_metadata(scan.tiff_files[0].filehandle.path))}
 
     if not savedir.exists():
         logger.debug(f"Creating directory: {savedir}")
         savedir.mkdir(parents=True)
-    _save_data(scan, savedir, planes, frames, overwrite, ext)
+    _save_data(scan, savedir, planes, frames, overwrite, ext, metadata)
 
 
-def _save_data(scan, path, planes, frames, overwrite, file_extension):
+def _save_data(scan, path, planes, frames, overwrite, file_extension, metadata):
     path.mkdir(parents=True, exist_ok=True)
     print(f'Planes: {planes}')
 
-    file_writer = _get_file_writer(file_extension, overwrite)
+    file_writer = _get_file_writer(file_extension, overwrite, metadata)
     if len(scan.fields) > 1:
         for idx, field in enumerate(scan.fields):
             for chan in planes:
                 if 'tif' in file_extension:
-                    arr = scan[idx, :, :, chan, frames]
+                    arr = scan[idx, :, :, chan, frames]  # [y,x,T]
                     logger.debug('arr shape:', arr.shape)
                     file_writer(path, f'plane_{chan + 1}_roi_{idx + 1}', arr.T)
     else:
         for chan in planes:
             if 'tif' in file_extension:
-                arr = scan[:, :, :, chan, frames]
+                arr = scan[:, :, :, chan, frames]  # [y,x,T]
                 logger.debug('arr shape:', arr.shape)
                 file_writer(path, f'plane_{chan + 1}', arr.T)
 
 
-def _get_file_writer(ext, overwrite):
+def _get_file_writer(ext, overwrite, metadata=None):
     if ext in ['.tif', '.tiff']:
-        return functools.partial(_write_tiff, overwrite=overwrite)
+        return functools.partial(_write_tiff, overwrite=overwrite, metadata=metadata)
     elif ext == '.zarr':
-        return functools.partial(_write_zarr, overwrite=overwrite)
+        return functools.partial(_write_zarr, overwrite=overwrite, metadata=metadata)
     else:
         raise ValueError(f'Unsupported file extension: {ext}')
 
 
-def _write_tiff(path, name, data, metadata=None, overwrite=True):
+def _write_tiff(path, name, data, overwrite=True, metadata=None):
     filename = Path(path / f'{name}.tiff')
     if filename.exists() and not overwrite:
         logger.warning(
