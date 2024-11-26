@@ -277,18 +277,20 @@ def save_as(
         frames = [frames]
     if metadata:
         scan.metadata.update(metadata)
+    else:
+        metadata = make_json_serializable(get_metadata(scan.tiff_files[0].filehandle.path))
 
     if not savedir.exists():
         logger.debug(f"Creating directory: {savedir}")
         savedir.mkdir(parents=True)
-    _save_data(scan, savedir, planes, frames, overwrite, ext)
+    _save_data(scan, savedir, planes, frames, overwrite, ext, metadata)
 
 
-def _save_data(scan, path, planes, frames, overwrite, file_extension):
+def _save_data(scan, path, planes, frames, overwrite, file_extension, metadata=None):
     path.mkdir(parents=True, exist_ok=True)
     print(f'Planes: {planes}')
 
-    file_writer = _get_file_writer(file_extension, overwrite)
+    file_writer = _get_file_writer(file_extension, overwrite, metadata)
     if len(scan.fields) > 1:
         for idx, field in enumerate(scan.fields):
             for chan in planes:
@@ -296,21 +298,21 @@ def _save_data(scan, path, planes, frames, overwrite, file_extension):
                     arr = scan[idx, :, :, chan, frames]
                     if arr.ndim == 3:
                         arr = np.transpose(arr, (2, 0, 1))
-                    file_writer(path, f'roi_{idx}_plane_{chan}', arr)
+                    file_writer(path, f'roi_{idx}_plane_{chan}', arr,)
     else:
         for chan in planes:
             if 'tif' in file_extension:
                 arr = scan[:, :, :, chan, frames]
                 if arr.ndim == 3:
                     arr = np.transpose(arr, (2, 0, 1))
-                file_writer(path, f'plane_{chan}', arr)
+                file_writer(path, f'plane_{chan}', arr, metadata)
 
 
-def _get_file_writer(ext, overwrite):
+def _get_file_writer(ext, overwrite, metadata=None):
     if ext in ['.tif', '.tiff']:
-        return functools.partial(_write_tiff, overwrite=overwrite)
+        return functools.partial(_write_tiff, overwrite=overwrite, metadata=metadata)
     elif ext == '.zarr':
-        return functools.partial(_write_zarr, overwrite=overwrite)
+        return functools.partial(_write_zarr, overwrite=overwrite, metadata=metadata)
     else:
         raise ValueError(f'Unsupported file extension: {ext}')
 
