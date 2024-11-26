@@ -28,8 +28,20 @@ For the `MATLAB` implementation, see [here](https://github.com/MillerBrainObserv
 - scanreader
 - numpy
 - scipy
+- fastplotlib
+
+:exclamation: **Note:** This package makes heavy use of Fastplotlib for visualizations.
+
+Fastplotlib runs on [Jupyter Lab](https://jupyterlab.readthedocs.io/en/stable/getting_started/installation.html),
+but is not guarenteed to work with Jupyter Notebook or Visual Studio Code notebook environments. 
 
 ## Installation
+
+This project is tested on Linux and Windows 10 using `Python 3.9` and `Python 3.10`.
+
+Environment setup is tested using `virtualenv` and `miniforge`.
+
+We suggest using python virtual environments for the best results.
 
 ### (Option 1). Python Virtual Environments
 
@@ -37,13 +49,7 @@ Ensure you have a system-wide Python installation.
 
 This project and it's dependencies are tested using `Python 3.9` and `Python 3.10`.
 
-Deactivate any active `conda` environments to avoid conflicts:
-
-```bash
-
-conda deactivate
-
-```
+**Note:** Make sure you deactivate `conda` environments before proceeding (`conda deactivate`).
 
 Verify `Python` and `pip` installations:
 
@@ -64,6 +70,9 @@ py --version
 py - m pip --version 
 
 ```
+
+:exclamation: Depending on how Python was installed,
+you may need to use `python3` or `python3.x` and `pip3` or `pip3.x` instead of `python` and `pip`.
 
 You should see a Python version output like `3.10.x` and a corresponding `pip` version.
 
@@ -133,6 +142,7 @@ Install CaImAn:
    pip install -r requirements.txt
    pip install .
    ```
+    :exclamation: **Note:** If you encounter errors during the installation of `CaImAn`, you may need to install Microsoft Visual C++ Build Tools. You can download them from [here](https://visualstudio.microsoft.com/visual-cpp-build-tools/).
 
 2. **Other dependencies:**
 

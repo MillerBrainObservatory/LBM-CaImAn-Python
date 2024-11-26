@@ -294,16 +294,14 @@ def _save_data(scan, path, planes, frames, overwrite, file_extension):
             for chan in planes:
                 if 'tif' in file_extension:
                     arr = scan[idx, :, :, chan, frames]
-                    if arr.ndim == 3:
-                        arr = np.transpose(arr, (2, 0, 1))
-                    file_writer(path, f'roi_{idx}_plane_{chan}', arr)
+                    logger.debug('arr shape:', arr.shape)
+                    file_writer(path, f'plane_{chan + 1}_roi_{idx + 1}', arr.T)
     else:
         for chan in planes:
             if 'tif' in file_extension:
                 arr = scan[:, :, :, chan, frames]
-                if arr.ndim == 3:
-                    arr = np.transpose(arr, (2, 0, 1))
-                file_writer(path, f'plane_{chan}', arr)
+                logger.debug('arr shape:', arr.shape)
+                file_writer(path, f'plane_{chan + 1}', arr.T)
 
 
 def _get_file_writer(ext, overwrite):
@@ -316,8 +314,6 @@ def _get_file_writer(ext, overwrite):
 
 
 def _write_tiff(path, name, data, metadata=None, overwrite=True):
-    if data.ndim == 3:
-        data = np.transpose(data, (2, 0, 1))
     filename = Path(path / f'{name}.tiff')
     if filename.exists() and not overwrite:
         logger.warning(
@@ -325,7 +321,8 @@ def _write_tiff(path, name, data, metadata=None, overwrite=True):
         return
     logger.info(f"Writing {filename}")
     t_write = time.time()
-    tifffile.imwrite(filename, data.squeeze(), metadata=metadata)
+    data = np.transpose(data.squeeze(), (0, 2, 1))
+    tifffile.imwrite(filename, data, metadata=metadata)
     t_write_end = time.time() - t_write
     logger.info(f"Data written in {t_write_end:.2f} seconds.")
 
