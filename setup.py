@@ -8,7 +8,7 @@ from pathlib import Path
 
 install_deps = [
     "tifffile",
-    "numpy>=1.24.3",
+    "numpy>=1.24.3,<2.0",
     "numba>=0.57.0",
     "scipy>=1.9.0",
     "fastplotlib[notebook]",
