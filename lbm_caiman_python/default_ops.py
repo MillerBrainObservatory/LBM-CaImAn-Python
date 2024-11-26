@@ -173,7 +173,7 @@ def default_ops():
             "overlaps": [24, 24],
             "max_deviation_rigid": 3,
             "border_nan": "copy",
-            'fr': 30,
+            'fr': 10,
             'dxy': (1., 1.),
             'decay_time': 0.4,
             'p': 2,

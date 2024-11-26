@@ -1,8 +1,8 @@
 # Heavily adapted from suite2p
+import numpy as np
 import argparse
 import logging
 from pathlib import Path
-import numpy as np
 from functools import partial
 import lbm_caiman_python as lcp
 import mesmerize_core as mc
@@ -40,7 +40,7 @@ def parse_data_path(value):
     try:
         return int(value)
     except ValueError:
-        return str(Path(value).resolve())  # expand ~
+        return str(Path(value).expanduser().resolve())  # expand ~
 
 
 def add_args(parser: argparse.ArgumentParser):
@@ -98,7 +98,8 @@ def add_args(parser: argparse.ArgumentParser):
         "--version", action="store_true", help="current pipeline version"
     )
     parser.add_argument("--ops", default=[], type=str, help="options")
-    parser.add_argument("--data_path", "--data-path",dest="data_path", type=parse_data_path ,default=None, help="Path to data file or index of data in batch")
+    parser.add_argument("--data_path", "--data-path", dest="data_path", type=parse_data_path, default=None,
+                        help="Path to data file or index of data in batch")
 
     # uncollapse dict['main'], used by mescore for parameters
     ops0 = lcp.default_ops()
@@ -138,7 +139,7 @@ def parse_args(parser: argparse.ArgumentParser):
                 ops[k] = args_key
                 print(set_param_msg.format(k, ops[k]))
         elif not (
-            default_key == type(default_key)(args_key)
+                default_key == type(default_key)(args_key)
         ):  # type conversion, ensure type match
             ops[k] = type(default_key)(args_key)
             print(set_param_msg.format(k, ops[k]))
@@ -236,7 +237,6 @@ def main():
         print_params(params)
     elif args.run:
         input_movie_path = None  # for setting raw_data_path
-        filename = None  # for setting input_data_path
 
         # args.data_path can be an int or str/path
         # if int, use it as an index to the dataframe
@@ -254,36 +254,41 @@ def main():
             row = df.iloc[args.data_path]
             in_algo = row["algo"]
             assert (
-                in_algo == "mcorr"
+                    in_algo == "mcorr"
             ), f"Input algoritm must be mcorr, algo at idx {args.data_path}: {in_algo}"
             if (
-                isinstance(row["outputs"], dict)
-                and row["outputs"].get("success") is False
+                    isinstance(row["outputs"], dict)
+                    and row["outputs"].get("success") is False
             ):
                 raise ValueError(
                     f"Given data_path index {args.data_path} references an unsuccessful batch item."
                 )
             input_movie_path = row
-            mc.set_parent_raw_data_path(Path(row.mcorr.get_output_path()).parent)
+            filename = Path(df.iloc[0].caiman.get_input_movie())
+            metadata = lcp.get_metadata(filename)
+            parent = filename.parent
+            mc.set_parent_raw_data_path(parent)
         elif isinstance(args.data_path, (Path, str)):
             if Path(args.data_path).is_file():
-                filename = Path(args.data_path)
-                input_movie_path = filename.parent
-            if Path(args.data_path).is_dir():
+                input_movie_path = Path(args.data_path)
+                parent = input_movie_path.parent
+                metadata = lcp.get_metadata(input_movie_path)
+            elif Path(args.data_path).is_dir():
                 # regex all .p files to get pickled files
                 files = [x for x in Path(args.data_path).glob("*.tif*")]
                 if len(files) == 0:
                     raise ValueError(f"No datafiles found data_path: {args.data_path}")
                 if len(files) == 1:
                     # found a pickle file in the data_path
-                    filename = files[0]
-                    input_movie_path = Path(filename).parent
+                    input_movie_path = files[0]
+                    metadata = lcp.get_metadata(input_movie_path)
+                    parent = Path(input_movie_path).parent
                 else:
                     raise NotADirectoryError(
                         f"{args.data_path} is not a valid directory."
                     )
             try:
-                mc.set_parent_raw_data_path(input_movie_path)
+                mc.set_parent_raw_data_path(parent)
             except NotADirectoryError:
                 raise NotADirectoryError(f"{args.data_path} does not exist.")
         else:
@@ -291,10 +296,22 @@ def main():
         for algo in args.run:
             # RUN MCORR
             if algo == "mcorr":
+                if metadata:
+                    fr = metadata["frame_rate"]
+                    dxy = metadata["pixel_resolution"]
+                    params = {"main": get_matching_main_params(args)}
+                    params["main"]["fr"] = fr
+                    params["main"]["dxy"] = dxy
+                else:
+                    raise ValueError(
+                        ## TODO: update this to be more descriptive
+                        "No metadata found for the input data. Please provide metadata."
+                    )
+
                 df.caiman.add_item(
                     algo=algo,
                     input_movie_path=input_movie_path,
-                    params={"main": get_matching_main_params(args)},
+                    params=params,
                     item_name="lbm-batch-item",
                 )
                 print(f"Running {algo} -----------")
