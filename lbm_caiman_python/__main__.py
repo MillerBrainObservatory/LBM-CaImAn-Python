@@ -296,19 +296,24 @@ def main():
         for algo in args.run:
             # RUN MCORR
             if algo == "mcorr":
+                params = {"main": get_matching_main_params(args)}
                 if metadata:
                     fr = metadata["frame_rate"]
                     dxy = metadata["pixel_resolution"]
-                    params = {"main": get_matching_main_params(args)}
                     params["main"]["fr"] = fr
                     params["main"]["dxy"] = dxy
                 else:
                     metadata = lcp.get_metadata(input_movie_path)
-                    print(
-                        ## TODO: update this to be more descriptive
-                        "No metadata found for the input data. Please provide metadata."
-                    )
-
+                    if metadata is None:
+                        print(
+                            ## TODO: update this to be more descriptive
+                            "No metadata found for the input data. Please provide metadata."
+                        )
+                    else:
+                        fr = metadata["frame_rate"]
+                        dxy = metadata["pixel_resolution"]
+                        params["main"]["fr"] = fr
+                        params["main"]["dxy"] = dxy
 
                 df.caiman.add_item(
                     algo=algo,
