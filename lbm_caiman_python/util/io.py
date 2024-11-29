@@ -25,11 +25,12 @@ def get_metadata(file: os.PathLike | str):
 
     tiff_file = tifffile.TiffFile(file)
     if hasattr(tiff_file, 'shaped_metadata'):
-        return tiff_file.shaped_metadata[0]['image']
-    elif hasattr(tiff_file, 'scanimage_metadata'):
+        if tiff_file.shaped_metadata[0] and 'image' in tiff_file.shaped_metadata[0]:
+            return tiff_file.shaped_metadata[0]['image']
+    if hasattr(tiff_file, 'scanimage_metadata'):
         meta = tiff_file.scanimage_metadata
         if meta is None:
-            raise ValueError(f"No metadata found in {file}.")
+            return None
 
         si = meta.get('FrameData', {})
         if not si:
