@@ -303,10 +303,12 @@ def main():
                     params["main"]["fr"] = fr
                     params["main"]["dxy"] = dxy
                 else:
-                    raise ValueError(
+                    metadata = lcp.get_metadata(input_movie_path)
+                    print(
                         ## TODO: update this to be more descriptive
                         "No metadata found for the input data. Please provide metadata."
                     )
+
 
                 df.caiman.add_item(
                     algo=algo,
