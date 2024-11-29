@@ -219,7 +219,7 @@ def main():
             df = lcp.batch.delete_batch_rows(
                 df, args.rm, remove_data=args.remove_data, safe_removal=safe
             )
-            df = df.caiman.reload_from_disk()
+            df.caiman.reload_from_disk()
         except Exception as e:
             print(
                 f"Cannot remove row, this likely occured because there was a downstream item ran on this batch "
