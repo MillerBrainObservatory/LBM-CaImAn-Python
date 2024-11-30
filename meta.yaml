@@ -1,5 +1,5 @@
 {% set name = "lbm-caiman-python" %}
-{% set version = "1.0.4" %}
+{% set version = os.environ.get("PKG_VERSION", "1.0.5") %}
 
 package:
   name: {{ name|lower }}
@@ -22,6 +22,7 @@ requirements:
     - python
     - setuptools ==68.2.2
     - wheel
+    - numpy >=1.24.3
     - setuptools-scm
     - pip
   run:
@@ -48,9 +49,9 @@ test:
 about:
   home: https://github.com/millerbrainobservatory/LBM-CaImAn-Python
   summary: Light Beads Microscopy 2P Calcium Imaging Pipeline.
-  license: ''
-  license_file: PLEASE_ADD_LICENSE_FILE
+  license: BSD-3-Clause
+  license_file: LICENSE.md
 
 extra:
   recipe-maintainers:
-    - AddYourGitHubIdHere
+    - FlynnOConnell
