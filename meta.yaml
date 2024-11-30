@@ -6,16 +6,16 @@ package:
   version: {{ version }}
 
 source:
-  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/lbm_caiman_python-{{ version }}.tar.gz
-  sha256: 3de56411551a0262c0aa9ab4d378687e16815363f80f733b988dd85d51798a00
+  git_url: https://github.com/millerbrainobservatory/LBM-CaImAn-Python.git
+  git_rev: {{ environ.get('GIT_REV', 'master') }}
 
 build:
-  entry_points:
-    - lcp = lbm_caiman_python.__main__:main
-    - sr = lbm_caiman_python.assembly:main
   noarch: python
-  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
-  number: 0
+  number: '0'
+  script: |
+    $PYTHON -m pip install . --no-deps --no-build-isolation
+    $PYTHON -m pip install git+https://github.com/atlab/scanreader.git
+    $PYTHON -m pip install git+https://github.com/fastplotlib/fastplotlib.git
 
 requirements:
   host:
@@ -26,6 +26,8 @@ requirements:
     - setuptools-scm
     - pip
   run:
+    - mesmerize-core
+    - tensorflow=2.10.0
     - python
     - tifffile
     - numpy >=1.24.3
@@ -39,12 +41,11 @@ requirements:
 test:
   imports:
     - lbm_caiman_python
+    - scanreader
   commands:
     - pip check
     - lcp --help
     - sr --help
-  requires:
-    - pip
 
 about:
   home: https://github.com/millerbrainobservatory/LBM-CaImAn-Python
@@ -55,3 +56,4 @@ about:
 extra:
   recipe-maintainers:
     - FlynnOConnell
+
