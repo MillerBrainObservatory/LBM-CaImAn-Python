@@ -160,6 +160,7 @@ def get_matching_main_params(args):
 
 def main():
     df = None
+    parent = None
     print("Beginning processing run ...")
     args, ops = parse_args(
         add_args(argparse.ArgumentParser(description="LBM-Caiman pipeline parameters"))
