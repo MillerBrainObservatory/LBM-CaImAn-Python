@@ -274,24 +274,26 @@ def main():
                 input_movie_path = Path(args.data_path)
                 parent = input_movie_path.parent
                 metadata = lcp.get_metadata(input_movie_path)
+                mc.set_parent_raw_data_path(parent)
             elif Path(args.data_path).is_dir():
                 # regex all .p files to get pickled files
                 files = [x for x in Path(args.data_path).glob("*.tif*")]
                 if len(files) == 0:
                     raise ValueError(f"No datafiles found data_path: {args.data_path}")
-                if len(files) == 1:
+                if len(files) >= 1:
                     # found a pickle file in the data_path
                     input_movie_path = files[0]
                     metadata = lcp.get_metadata(input_movie_path)
                     parent = Path(input_movie_path).parent
+                    mc.set_parent_raw_data_path(parent)
                 else:
                     raise NotADirectoryError(
                         f"{args.data_path} is not a valid directory."
                     )
-            try:
-                mc.set_parent_raw_data_path(parent)
-            except NotADirectoryError:
-                raise NotADirectoryError(f"{args.data_path} does not exist.")
+            else:
+                raise NotADirectoryError(
+                    f"{args.data_path} is not a valid directory."
+                )
         else:
             raise ValueError(f"{args.data_path} is not a valid data_path.")
         for algo in args.run:
