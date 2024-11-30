@@ -24,9 +24,10 @@ def get_metadata(file: os.PathLike | str):
         return None
 
     tiff_file = tifffile.TiffFile(file)
-    if hasattr(tiff_file, 'shaped_metadata'):
+    if hasattr(tiff_file, 'shaped_metadata') and tiff_file.shaped_metadata is not None:
         if tiff_file.shaped_metadata[0] and 'image' in tiff_file.shaped_metadata[0]:
             return tiff_file.shaped_metadata[0]['image']
+
     if hasattr(tiff_file, 'scanimage_metadata'):
         meta = tiff_file.scanimage_metadata
         if meta is None:
@@ -73,13 +74,13 @@ def get_metadata(file: os.PathLike | str):
             "image_height": pages[0].shape[0],
             "image_width": pages[0].shape[1],
             "num_pages": len(pages),
-            "dims": series.dims,
+            # "dims": series.dims,
             "ndim": series.ndim,
             "dtype": 'uint16',
-            "is_multifile": series.is_multifile,
-            "nbytes": series.nbytes,
+            # "is_multifile": series.is_multifile,
+            # "nbytes": series.nbytes,
             "size": series.size,
-            "dim_labels": series.sizes,
+            # "dim_labels": series.sizes,
             "shape": series.shape,
             "num_planes": num_planes,
             "num_rois": num_rois,
