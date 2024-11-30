@@ -1,0 +1,56 @@
+{% set name = "lbm-caiman-python" %}
+{% set version = "1.0.4" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/lbm_caiman_python-{{ version }}.tar.gz
+  sha256: 3de56411551a0262c0aa9ab4d378687e16815363f80f733b988dd85d51798a00
+
+build:
+  entry_points:
+    - lcp = lbm_caiman_python.__main__:main
+    - sr = lbm_caiman_python.assembly:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+
+requirements:
+  host:
+    - python
+    - setuptools ==68.2.2
+    - wheel
+    - setuptools-scm
+    - pip
+  run:
+    - python
+    - tifffile
+    - numpy >=1.24.3
+    - numba >=0.57.0
+    - scipy >=1.9.0
+    - fastplotlib[notebook]
+    - matplotlib-base
+    - dask-core
+    - zarr
+
+test:
+  imports:
+    - lbm_caiman_python
+  commands:
+    - pip check
+    - lcp --help
+    - sr --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/millerbrainobservatory/LBM-CaImAn-Python
+  summary: Light Beads Microscopy 2P Calcium Imaging Pipeline.
+  license: ''
+  license_file: PLEASE_ADD_LICENSE_FILE
+
+extra:
+  recipe-maintainers:
+    - AddYourGitHubIdHere
