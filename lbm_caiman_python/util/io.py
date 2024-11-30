@@ -18,81 +18,88 @@ def make_json_serializable(obj):
     else:
         return obj
 
-def get_metadata(file: os.PathLike):
+
+def get_metadata(file: os.PathLike | str):
     if not file:
         return None
 
     tiff_file = tifffile.TiffFile(file)
-    meta = tiff_file.scanimage_metadata
-    str_f = tiff_file.filename
+    if hasattr(tiff_file, 'shaped_metadata') and tiff_file.shaped_metadata is not None:
+        if tiff_file.shaped_metadata[0] and 'image' in tiff_file.shaped_metadata[0]:
+            return tiff_file.shaped_metadata[0]['image']
 
-    if 'plane_' in str_f and meta is None:
-        raise ValueError(f"No metadata found in {str_f}. This appears to be a processed file. "
-                         f"The called function operates only on raw scanimage tiff files.")
+    if hasattr(tiff_file, 'scanimage_metadata'):
+        meta = tiff_file.scanimage_metadata
+        if meta is None:
+            return None
 
-    si = meta.get('FrameData', {})
-    if not si:
-        print(f"No FrameData found in {file}.")
-        return None
+        si = meta.get('FrameData', {})
+        if not si:
+            print(f"No FrameData found in {file}.")
+            return None
 
-    series = tiff_file.series[0]
-    pages = tiff_file.pages
+        series = tiff_file.series[0]
+        pages = tiff_file.pages
 
-    # Extract ROI and imaging metadata
-    roi_group = meta["RoiGroups"]["imagingRoiGroup"]["rois"]
+        # Extract ROI and imaging metadata
+        roi_group = meta["RoiGroups"]["imagingRoiGroup"]["rois"]
 
-    num_rois = len(roi_group)
-    num_planes = len(si["SI.hChannels.channelSave"])
-    scanfields = roi_group[0]["scanfields"]  # assuming single ROI scanfield configuration
+        num_rois = len(roi_group)
+        num_planes = len(si["SI.hChannels.channelSave"])
+        scanfields = roi_group[0]["scanfields"]  # assuming single ROI scanfield configuration
 
-    # ROI metadata
-    center_xy = scanfields["centerXY"]
-    size_xy = scanfields["sizeXY"]
-    num_pixel_xy = scanfields["pixelResolutionXY"]
+        # ROI metadata
+        center_xy = scanfields["centerXY"]
+        size_xy = scanfields["sizeXY"]
+        num_pixel_xy = scanfields["pixelResolutionXY"]
 
-    # TIFF header-derived metadata
-    sample_format = pages[0].dtype.name
-    objective_resolution = si["SI.objectiveResolution"]
-    frame_rate = si["SI.hRoiManager.scanFrameRate"]
+        # TIFF header-derived metadata
+        sample_format = pages[0].dtype.name
+        objective_resolution = si["SI.objectiveResolution"]
+        frame_rate = si["SI.hRoiManager.scanFrameRate"]
 
-    # Field-of-view calculations
-    fov_x = round(objective_resolution * size_xy[0])  # adjusted for number of ROIs
-    fov_y = round(objective_resolution * size_xy[1])
-    fov_xy = (fov_x, fov_y)
+        # Field-of-view calculations
+        # TODO: We may want an FOV measure that takes into account contiguous ROIs
+        # As of now, this is for a single ROI
+        fov_x = round(objective_resolution * size_xy[0])
+        fov_y = round(objective_resolution * size_xy[1])
+        fov_xy = (fov_x, fov_y)
 
-    # Pixel resolution calculation
-    pixel_resolution = (fov_x / num_pixel_xy[0], fov_y / num_pixel_xy[1])
+        # Pixel resolution calculation
+        pixel_resolution = (fov_x / num_pixel_xy[0], fov_y / num_pixel_xy[1])
 
-    # Assembling metadata
-    return {
-        "image_height": pages[0].shape[0],
-        "image_width": pages[0].shape[1],
-        "num_pages": len(pages),
-        "dims": series.dims,
-        "ndim": series.ndim,
-        "dtype": 'uint16',
-        "is_multifile": series.is_multifile,
-        "nbytes": series.nbytes,
-        "size": series.size,
-        "dim_labels": series.sizes,
-        "shape": series.shape,
-        "num_planes": num_planes,
-        "num_rois": num_rois,
-        "num_frames": len(pages) / num_planes,
-        "frame_rate": frame_rate,
-        "fov": fov_xy,  # in microns
-        "pixel_resolution": np.round(pixel_resolution, 2),
-        "roi_width_px": num_pixel_xy[0],
-        "roi_height_px": num_pixel_xy[1],
-        "sample_format": sample_format,
-        "num_lines_between_scanfields": round(si["SI.hScan2D.flytoTimePerScanfield"] / si["SI.hRoiManager.linePeriod"]),
-        "center_xy": center_xy,
-        "line_period": si["SI.hRoiManager.linePeriod"],
-        "size_xy": size_xy,
-        "objective_resolution": objective_resolution,
-        "si": si,
-        "roi_info": roi_group
-    }
+        # Assembling metadata
+        # TODO: Split this into separate primary/secondary metadata
+        return {
+            "image_height": pages[0].shape[0],
+            "image_width": pages[0].shape[1],
+            "num_pages": len(pages),
+            # "dims": series.dims,
+            "ndim": series.ndim,
+            "dtype": 'uint16',
+            # "is_multifile": series.is_multifile,
+            # "nbytes": series.nbytes,
+            "size": series.size,
+            # "dim_labels": series.sizes,
+            "shape": series.shape,
+            "num_planes": num_planes,
+            "num_rois": num_rois,
+            "num_frames": len(pages) / num_planes,
+            "frame_rate": frame_rate,
+            "fov": fov_xy,  # in microns
+            "pixel_resolution": np.round(pixel_resolution, 2),
+            "roi_width_px": num_pixel_xy[0],
+            "roi_height_px": num_pixel_xy[1],
+            "sample_format": sample_format,
+            "num_lines_between_scanfields": round(si["SI.hScan2D.flytoTimePerScanfield"] / si["SI.hRoiManager.linePeriod"]),
+            "center_xy": center_xy,
+            "line_period": si["SI.hRoiManager.linePeriod"],
+            "size_xy": size_xy,
+            "objective_resolution": objective_resolution,
+        }
+    else:
+        raise ValueError(f"No metadata found in {file}.")
+
 
 def get_files(
         pathnames: os.PathLike | str | list[os.PathLike | str],
