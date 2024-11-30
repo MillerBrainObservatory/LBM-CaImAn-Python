@@ -292,7 +292,7 @@ def main():
                     )
             else:
                 raise NotADirectoryError(
-                    f"{args.data_path} is not a valid directory."
+                    f"{args.data_path} is not a valid file or directory."
                 )
         else:
             raise ValueError(f"{args.data_path} is not a valid data_path.")
