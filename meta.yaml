@@ -7,7 +7,7 @@ package:
 
 source:
   git_url: https://github.com/millerbrainobservatory/LBM-CaImAn-Python.git
-  git_rev: {{ environ.get('GIT_REV', 'master') }}
+  git_rev: master
 
 build:
   noarch: python
@@ -16,6 +16,7 @@ build:
     $PYTHON -m pip install . --no-deps --no-build-isolation
     $PYTHON -m pip install git+https://github.com/atlab/scanreader.git
     $PYTHON -m pip install git+https://github.com/fastplotlib/fastplotlib.git
+    $PYTHON -m pip install git+https://github.com/pygfx/pygfx.git@main
 
 requirements:
   host:
@@ -25,15 +26,17 @@ requirements:
     - numpy >=1.24.3
     - setuptools-scm
     - pip
+    - versioneer
   run:
+    - python
     - mesmerize-core
     - tensorflow=2.10.0
-    - python
+    - cmap
+    - wgpu
     - tifffile
     - numpy >=1.24.3
     - numba >=0.57.0
     - scipy >=1.9.0
-    - fastplotlib[notebook]
     - matplotlib-base
     - dask-core
     - zarr
@@ -49,8 +52,8 @@ test:
 
 about:
   home: https://github.com/millerbrainobservatory/LBM-CaImAn-Python
-  summary: Light Beads Microscopy 2P Calcium Imaging Pipeline.
   license: BSD-3-Clause
+  summary: Light Beads Microscopy 2P Calcium Imaging Pipeline.
   license_file: LICENSE.md
 
 extra:
