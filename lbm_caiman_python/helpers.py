@@ -2,6 +2,45 @@ import matplotlib.pyplot as plt
 import numpy as np
 from numpy.typing import ArrayLike
 
+def plot_with_scalebars(image: ArrayLike, pixel_resolution: float):
+    """
+    Plot a 2D image with scale bars of 5, 10, and 20 microns.
+
+    Parameters
+    ----------
+    image : ndarray
+        A 2D NumPy array representing the image to be plotted.
+    pixel_resolution : float
+        The resolution of the image in microns per pixel.
+
+    Returns
+    -------
+    None
+    """
+    import matplotlib.patches as patches
+
+    scale_bar_sizes = [5, 10, 20]
+    
+    # Calculate the size of scale bars in pixels
+    scale_bar_lengths = [int(size / pixel_resolution) for size in scale_bar_sizes]
+
+    _, axes = plt.subplots(1, 3, figsize=(15, 5))
+    for ax, scale_length, size in zip(axes, scale_bar_lengths, scale_bar_sizes):
+        ax.imshow(image, cmap='gray')
+
+        # Add a scale bar (bottom-left corner of the image)
+        bar_x = 10  # Horizontal position of the bar (pixels)
+        bar_y = image.shape[0] - 20  # Vertical position of the bar (pixels)
+        ax.add_patch(patches.Rectangle((bar_x, bar_y), scale_length, 5, color='white'))
+
+        # Annotate
+        ax.text(bar_x + scale_length / 2, bar_y - 10, f'{size} μm', color='white',
+                ha='center', va='bottom', fontsize=10)
+        ax.axis('off')
+
+    # Adjust layout
+    plt.tight_layout()
+    plt.show()
 
 def generate_patch_view(image: ArrayLike, pixel_resolution: float, target_patch_size: int=40, overlap_fraction: float=0.5):
     """
@@ -37,11 +76,12 @@ def generate_patch_view(image: ArrayLike, pixel_resolution: float, target_patch_
     """
 
     from caiman.utils.visualization import get_rectangle_coords, rect_draw
+
     # Calculate stride and overlap in pixels
     stride = int(target_patch_size / pixel_resolution)
     overlap = int(overlap_fraction * stride)
 
-    # Ensure even distribution of patches by padding the image
+    # pad the image like caiman does
     def pad_image_for_even_patches(image, stride, overlap):
         patch_width = stride + overlap
         padded_x = int(np.ceil(image.shape[0] / patch_width) * patch_width) - image.shape[0]
@@ -53,7 +93,6 @@ def generate_patch_view(image: ArrayLike, pixel_resolution: float, target_patch_
     # Get patch coordinates
     patch_rows, patch_cols = get_rectangle_coords(padded_image.shape, stride, overlap)
 
-    # Create figure and axes
     fig, ax = plt.subplots(figsize=(8, 8))
     ax.imshow(padded_image, cmap='gray')
 
