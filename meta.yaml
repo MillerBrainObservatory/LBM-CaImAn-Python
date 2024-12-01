@@ -32,7 +32,6 @@ requirements:
     - mesmerize-core
     - tensorflow=2.10.0
     - cmap
-    - wgpu
     - tifffile
     - numpy >=1.24.3
     - numba >=0.57.0
