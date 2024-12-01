@@ -16,7 +16,7 @@ build:
     $PYTHON -m pip install . --no-deps --no-build-isolation
     $PYTHON -m pip install git+https://github.com/atlab/scanreader.git
     $PYTHON -m pip install git+https://github.com/fastplotlib/fastplotlib.git
-    $PYTHON -m pip install git+https://github.com/pygfx/pygfx.git@main
+    $PYTHON -m pip install wgpu
 
 requirements:
   host:
