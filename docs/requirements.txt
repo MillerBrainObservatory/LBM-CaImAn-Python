@@ -18,3 +18,14 @@ sphinxcontrib-video
 myst_nb
 jupytext
 fastplotlib
+av
+matplotlib
+numpy
+scikit-image
+scikit-learn
+tifffile
+tk
+tqdm
+yapf
+zarr
+
