@@ -28,4 +28,6 @@ tk
 tqdm
 yapf
 zarr
-
+mesmerize-core
+lbm_caiman_python
+git+https://github.com/atlab/scanreader.git@main
