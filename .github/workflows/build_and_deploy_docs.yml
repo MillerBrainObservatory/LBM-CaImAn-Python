@@ -26,6 +26,10 @@ jobs:
             apt-get install --no-install-recommends -y build-essential
             apt-get install --no-install-recommends -y git
             apt-get install --no-install-recommends -y libegl1-mesa libgl1-mesa-dri libxcb-xfixes0-dev mesa-vulkan-drivers git-lfs
+            git clone https://github.com/flatironinstitute/CaImAn.git
+            cd CaImAn
+            pip install -r requirements.txt
+            pip install .
             pip install mesmerize-core
             pip install git+https://github.com/atlab/scanreader.git 
             pip install -e .
