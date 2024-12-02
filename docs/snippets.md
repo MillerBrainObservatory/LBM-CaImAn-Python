@@ -2,6 +2,22 @@
 
 Helpful snippets for all things LBM python.
 
+# Tutorial
+
+## Contents
+
+```{toctree}
+---
+maxdepth: 2
+---
+assembly.ipynb
+preprocessing.ipynb
+batch_helpers.ipynb
+motion_correction.ipynb
+segmentation.ipynb
+collation.ipynb
+```
+
 ----
 
 ## CaImAn Parameters
