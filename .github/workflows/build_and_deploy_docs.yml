@@ -17,21 +17,38 @@ jobs:
       group: ${{ github.workflow }}-${{ github.ref }}
     steps:
       - uses: actions/checkout@v4
-      - name: Build html
+
+      - name: Build HTML Documentation
         uses: ammaraskar/sphinx-action@8.0.2
         with:
           docs-folder: "docs/"
           pre-build-command: |
-            apt-get update -y -qq
-            apt-get install --no-install-recommends -y build-essential
-            apt-get install --no-install-recommends -y libegl1-mesa libgl1-mesa-dri libxcb-xfixes0-dev mesa-vulkan-drivers git-lfs
+            # Install required system dependencies
+            apt-get update -y --allow-releaseinfo-change -qq
+            apt-get install --no-install-recommends -y \
+              build-essential \
+              libegl1-mesa \
+              libgl1-mesa-dri \
+              libxcb-xfixes0-dev \
+              mesa-vulkan-drivers \
+              git-lfs \
+              libglvnd-dev \
+              python3-pip
+
+            # Clone and install CaImAn
             git clone https://github.com/flatironinstitute/CaImAn.git
             cd CaImAn
+            pip install --upgrade pip
             pip install -r requirements.txt
             pip install -e .
+            cd ..
+
+            # Install Python dependencies
+            pip install -r docs/requirements.txt
             pip install mesmerize-core
-            pip install git+https://github.com/atlab/scanreader.git 
+            pip install git+https://github.com/atlab/scanreader.git
             pip install lbm_caiman_python
+
           build-command: "make html"
 
       - name: Deploy to GitHub Pages
