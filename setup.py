@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
-# twine upload dist/rbo-lbm-x.x.x.tar.gz
-# twine upload dist/rbo-lbm.x.x.tar.gz -r test
-# pip install --index-url https://test.pypi.org/simple/ --upgrade rbo-lbm
 
 import setuptools
+import versioneer
 from pathlib import Path
 
 install_deps = [
@@ -40,18 +38,16 @@ extras_require = {
 with open(Path(__file__).parent / "README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
-with open(Path(__file__).parent.joinpath("lbm_caiman_python", "VERSION"), "r") as f:
-    ver = f.read().split("\n")[0]
-
 setuptools.setup(
     name="lbm_caiman_python",
-    version=ver,
+    version=versioneer.get_version(),
+    cmdclass=versioneer.get_cmdclass(),
     description="Light Beads Microscopy 2P Calcium Imaging Pipeline.",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    author="",
-    author_email="",
-    license="",
+    author="Your Name Here",
+    author_email="your_email@example.com",
+    license="BSD-3-Clause",
     url="https://github.com/millerbrainobservatory/LBM-CaImAn-Python",
     keywords="Pipeline Numpy Microscopy ScanImage multiROI tiff",
     install_requires=install_deps,
@@ -70,3 +66,4 @@ setuptools.setup(
         ]
     },
 )
+

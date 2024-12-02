@@ -7,14 +7,33 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 import os
 import sys
+import shutil
 from pathlib import Path
 
 sys.path.insert(0, os.path.abspath(os.path.join("..")))
 sys.path.insert(0, os.path.abspath(os.path.join("..", "lbm_caiman_python")))
 
+from lbm_caiman_python import __version__
+
 project = "LBM-CaImAn-Python"
 copyright = "2024, Elizabeth R. Miller Brain Observatory | The Rockefeller University. All Rights Reserved"
-release = "0.8.0"
+release = __version__
+
+# Copy example notebooks for rendering in the docs
+source_dir = Path(__file__).resolve().parent.parent / "demos" / "notebooks"
+dest_dir = Path(__file__).resolve().parent / "examples" / "render"
+
+if source_dir.exists():
+    if dest_dir.exists():
+        shutil.rmtree(dest_dir)  # Remove existing directory
+    dest_dir.mkdir(parents=True, exist_ok=True)  # Create fresh directory
+    
+    for item in source_dir.iterdir():
+        if item.is_dir():
+            shutil.copytree(item, dest_dir / item.name)
+        else:
+            shutil.copy2(item, dest_dir / item.name)
+
 
 exclude_patterns = ["Thumbs.db", ".DS_Store"]
 
@@ -44,6 +63,8 @@ source_suffix = {
     ".ipynb": "myst-nb",
     ".md": "myst-nb",
 }
+
+autodoc_mock_imports = ['scanreader', 'caiman']
 
 nb_execution_mode = "off"
 
