@@ -64,6 +64,8 @@ source_suffix = {
     ".md": "myst-nb",
 }
 
+autodoc_mock_imports = ['scanreader', 'zarr', 'scipy']
+
 nb_execution_mode = "off"
 
 myst_admonition_enable = True
