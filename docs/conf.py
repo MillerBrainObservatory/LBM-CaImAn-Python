@@ -64,7 +64,7 @@ source_suffix = {
     ".md": "myst-nb",
 }
 
-autodoc_mock_imports = ['scanreader']
+autodoc_mock_imports = ['scanreader', 'caiman']
 
 nb_execution_mode = "off"
 
