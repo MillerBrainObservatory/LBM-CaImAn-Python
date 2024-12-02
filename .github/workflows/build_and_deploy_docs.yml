@@ -24,15 +24,14 @@ jobs:
           pre-build-command: |
             apt-get update -y -qq
             apt-get install --no-install-recommends -y build-essential
-            apt-get install --no-install-recommends -y git
             apt-get install --no-install-recommends -y libegl1-mesa libgl1-mesa-dri libxcb-xfixes0-dev mesa-vulkan-drivers git-lfs
             git clone https://github.com/flatironinstitute/CaImAn.git
             cd CaImAn
             pip install -r requirements.txt
-            pip install .
+            pip install -e .
             pip install mesmerize-core
             pip install git+https://github.com/atlab/scanreader.git 
-            pip install -e .
+            pip install lbm_caiman_python
           build-command: "make html"
 
       - name: Deploy to GitHub Pages
