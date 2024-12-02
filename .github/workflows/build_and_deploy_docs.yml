@@ -18,6 +18,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install System Dependencies
+        run: |
+          sudo apt-get update --allow-releaseinfo-change -y
+          sudo apt-get install -y latexmk texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended git python3-pip
+          pip install --upgrade pip
+
+      - name: Install Python Dependencies
+        run: pip install -r docs/requirements.txt
+
       - name: Build html
         uses: ammaraskar/sphinx-action@master
         with:
