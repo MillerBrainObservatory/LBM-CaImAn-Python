@@ -17,21 +17,18 @@ jobs:
       group: ${{ github.workflow }}-${{ github.ref }}
     steps:
       - uses: actions/checkout@v4
-
-      - name: Install System Dependencies
-        run: |
-          sudo apt-get update --allow-releaseinfo-change -y
-          sudo apt-get install -y latexmk texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended git python3-pip
-          pip install --upgrade pip
-
-      - name: Install Python Dependencies
-        run: pip install -r docs/requirements.txt
-
       - name: Build html
-        uses: ammaraskar/sphinx-action@master
+        uses: ammaraskar/sphinx-action@8.0.2
         with:
           docs-folder: "docs/"
-          pre-build-command: "apt-get update -y && apt-get install -y latexmk texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended git"
+          pre-build-command: |
+            apt-get update -y -qq
+            apt-get install --no-install-recommends -y build-essential
+            apt-get install --no-install-recommends -y git
+            apt-get install --no-install-recommends -y libegl1-mesa libgl1-mesa-dri libxcb-xfixes0-dev mesa-vulkan-drivers git-lfs
+            pip install mesmerize-core
+            pip install git+https://github.com/atlab/scanreader.git 
+            pip install -e .
           build-command: "make html"
 
       - name: Deploy to GitHub Pages
