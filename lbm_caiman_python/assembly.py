@@ -152,8 +152,8 @@ def return_scan_offset(image_in, nvals: int = 8):
 
 
 def fix_scan_phase(
-        data_in,
-        offset,
+        data_in: np.ndarray,
+        offset: int,
 ):
     """
     Corrects the scan phase of the data based on a given offset along a specified dimension.
@@ -173,7 +173,23 @@ def fix_scan_phase(
     dims = data_in.shape
     ndim = len(dims)
     if ndim == 2:
-        raise NotImplementedError("Array must be > 2 dimensions.")
+        sy, sx = data_in.shape
+        data_out = np.zeros_like(data_in)
+
+        if offset > 0:
+            # Shift even rows left and odd rows right by 'offset'
+            data_out[0::2, :sx - offset] = data_in[0::2, offset:]
+            data_out[1::2, offset:] = data_in[1::2, :sx - offset]
+        elif offset < 0:
+            offset = abs(offset)
+            # Shift even rows right and odd rows left by 'offset'
+            data_out[0::2, offset:] = data_in[0::2, :sx - offset]
+            data_out[1::2, :sx - offset] = data_in[1::2, offset:]
+        else:
+            print("Phase = 0, no correction applied.")
+            return data_in
+
+        return data_out
     if ndim == 4:
         st, sc, sy, sx = data_in.shape
         if offset != 0:
