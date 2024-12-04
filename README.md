@@ -53,7 +53,7 @@ Note: If conda gets stuck `Solving Environment`, hitting enter can sometimes hel
 - This step will install Python, mesmerize-core, CaImAn, and all required dependencies for those packages.
 
 ``` bash
-conda create -n lbm -c conda-forge mesmerize-core
+conda create -n lbm -c defaults -c conda-forge mesmerize-core
 ```
 
 If you already have `CaImAn` installed, replace `-n lbm` with `-n name-of-env-with-caiman`.
