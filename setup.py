@@ -14,7 +14,7 @@ install_deps = [
     "matplotlib",
     "dask",
     "zarr",
-    "pynapple",
+    # "pynapple",
 ]
 
 extras_require = {
