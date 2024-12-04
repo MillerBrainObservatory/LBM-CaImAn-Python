@@ -73,7 +73,19 @@ pip install lbm_caiman_python
 pip install git+https://github.com/atlab/scanreader.git
 ```
 
-3. (Optional) Install `mesmerize-viz`:
+3. Install `caimanmanager`
+
+CaImAn will sometimes look for neural network models, unless you tell it not to with parameters `use_cnn=False` during segmentation.
+
+To install these models, and CaImAn demo data to follow along with their notebooks:
+
+``` bash
+caimanmanager install
+```
+
+This will create a directory in your home folder `~/caiman_data/`. We recommend doing this step, though it may be safe to skip.
+
+4. (Optional) Install `mesmerize-viz`:
 
 Several notebooks make use of [mesmerize-viz](https://github.com/kushalkolar/mesmerize-viz) for visualizing registration/segmentation results.
 
@@ -83,7 +95,7 @@ pip install mesmerize-viz
 
 :exclamation: **Harware requirements** The large CNMF visualizations with contours etc. usually require either a dedicated GPU or integrated GPU with access to at least 1GB of VRAM.
 
-[mesmerize-core youtube video demonstration](https://www.youtube.com/watch?v=GWvaEeqA1hw)
+[mesmerize-viz youtube video demonstration](https://www.youtube.com/watch?v=GWvaEeqA1hw)
 
 4. Stay up-to-date
 
