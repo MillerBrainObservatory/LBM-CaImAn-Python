@@ -43,7 +43,65 @@ Environment setup is tested using `virtualenv` and `miniforge`.
 
 We suggest using python virtual environments for the best results.
 
-### (Option 1). Python Virtual Environments
+
+### (Option 1). Miniforge
+
+Miniforge is the supported `conda` distribution. Anaconda and Miniconda will likely not work due to package conflicts.
+
+Note: If conda gets stuck `Solving Environment`, hitting enter can sometimes help.
+
+1. Create a new environment and install [mesmerize-core](https://github.com/nel-lab/mesmerize-core/tree/master)
+
+- Here, we use the `-n` flag to name the environment `lbm` , but you can name it whatever you'd like.
+- This step will install Python, mesmerize-core, CaImAn, and all required dependencies for those packages.
+
+``` bash
+conda create -n lbm -c conda-forge mesmerize-core
+```
+
+If you already have `CaImAn` installed, replace `-n lbm` with `-n name-of-env-with-caiman`.
+
+Activate the environment:
+
+- if you used a name other than `lbm`, be sure to match the name you use here.
+
+``` bash
+conda activate lbm
+```
+
+2. Install [LBM-CaImAn-Python](https://pypi.org/project/lbm-caiman-python/) and [scanreader](https://github.com/atlab/scanreader):
+
+``` bash
+pip install lbm_caiman_python
+pip install git+https://github.com/atlab/scanreader.git
+```
+
+3. (Optional) Install `mesmerize-viz`:
+
+Several notebooks make use of [mesmerize-viz](https://github.com/kushalkolar/mesmerize-viz) for visualizing registration/segmentation results.
+
+``` bash
+pip install mesmerize-viz
+```
+
+:exclamation: **Harware requirements** The large CNMF visualizations with contours etc. usually require either a dedicated GPU or integrated GPU with access to at least 1GB of VRAM.
+
+[mesmerize-core youtube video demonstration](https://www.youtube.com/watch?v=GWvaEeqA1hw)
+
+4. Stay up-to-date
+
+LBM-CaImAn-Python is in active development. To update to the latest release:
+
+```python
+pip install -U lbm_caiman_python
+```
+
+
+----
+
+### (Option 2). Python Virtual Environments (WIP)
+
+:exclimation: With numpy 2.0 official release, there may be errors for this method. File an issue if you have conflicts.
 
 Ensure you have a system-wide Python installation.
 
@@ -164,96 +222,16 @@ scan = sr.read_scan('path/to/data/*.tif', join_contiguous=True)
 
 ```
 
-### virtualenv Troubleshooting
-
-#### Error During `pip install .` (CaImAn) on Linux
-If you encounter errors during the installation of `CaImAn`, install the necessary development tools:
-```bash
-sudo apt-get install python3-dev
-```
 
 ---
 
-### (Option 2). Conda
-
-Miniforge is the supported `conda` distribution. Anaconda and Miniconda require extra steps and is not covered in this guide.
-
-Note: Sometimes conda or mamba will get stuck at a step, such as creating an environment or installing a package.
-
-Pressing Enter on your keyboard can sometimes help it continue when it pauses.
-
-1. Install `mamba` into your *base* environment:
-
-:exclamation: This step may take 10 minutes and display several messages like "Solving environment: failed with..." but it should eventually install mamba.
-
-``` bash
-conda activate base 
-conda install -c conda-forge mamba
-```
-
-2. Create a new environment and install [mesmerize-core](https://github.com/nel-lab/mesmerize-core/tree/master)
-
-- Here, we use the `-n` flag to name the environment `lbm` , but you can name it whatever you'd like.
-- This step will install Python, mesmerize-core, CaImAn, and all required dependencies for those packages.
-
-``` bash
-conda create -n lbm -c conda-forge mesmerize-core
-```
-
-If you already have `CaImAn` installed:
-
-``` bash
-conda install -n name-of-env-with-caiman mesmerize-core
-```
-
-Activate the environment and install `caimanmanager`:
-- if you used a name other than `lbm`, be sure to match the name you use here.
-
-``` bash
-conda activate lbm
-caimanmanager install
-```
-
-3. Install [LBM-CaImAn-Python](https://pypi.org/project/lbm-caiman-python/) from pip:
-
-``` bash
-
-pip install lbm_caiman_python
-
-```
-
-4. Install [scanreader](https://github.com/atlab/scanreader):
-
-``` bash
-
-pip install git+https://github.com/atlab/scanreader.git
-
-```
-
-5. (Optional) Install `mesmerize-viz`:
-
-Several notebooks make use of [mesmerize-viz](https://github.com/kushalkolar/mesmerize-viz) for visualizing registration/segmentation results.
-
-``` bash
-
-pip install mesmerize-viz
-
-```
-
-:exclamation: **Harware requirements** The large CNMF visualizations with contours etc. usually require either a dedicated GPU or integrated GPU with access to at least 1GB of VRAM.
-
-https://www.youtube.com/watch?v=GWvaEeqA1hw
-
 ## For Developers
 
-To get the newest version of this package:
+To get the newest version of this package, rather than `pip install lbm_caiman_python`:
 
 ``` bash
-
 git clone https://github.com/MillerBrainObservatory/LBM-CaImAn-Python.git
-
 cd LBM-CaImAn-Python
-
 pip install ".[docs]"
 
 ```
@@ -272,6 +250,14 @@ conda update -c conda-forge --all
 
 ```
 
+### virtualenv Troubleshooting
+
+#### Error During `pip install .` (CaImAn) on Linux
+If you encounter errors during the installation of `CaImAn`, install the necessary development tools:
+```bash
+sudo apt-get install python3-dev
+```
+
 Don't forget to press enter a few times if conda is taking a long time.
 
 ### Recommended Conda Distribution
@@ -285,11 +271,8 @@ This helps avoid `conda-channel` conflicts and avoids any issues with the Anacon
 You can install the installer from a unix command line:
 
 ``` bash
-
 curl -L -O "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh"
-
 bash Miniforge3-$(uname)-$(uname -m).sh
-
 ```
 
 Or download the installer for your operating system [here](https://github.com/conda-forge/miniforge/releases).
@@ -297,5 +280,4 @@ Or download the installer for your operating system [here](https://github.com/co
 ### Graphics Driver Issues
 
 If you are attempting to use fastplotlib and receive errors about graphics drivers, see the [fastplotlib driver documentation](https://github.com/fastplotlib/fastplotlib?tab=readme-ov-file#gpu-drivers-and-requirements).
-
 
