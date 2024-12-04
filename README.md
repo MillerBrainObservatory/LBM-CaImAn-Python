@@ -236,6 +236,8 @@ scan = sr.read_scan('path/to/data/*.tif', join_contiguous=True)
 
 ## For Developers
 
+### Newest `LBM-CaImAn-Python`
+
 To get the newest version of this package, rather than `pip install lbm_caiman_python`:
 
 ``` bash
@@ -243,6 +245,20 @@ git clone https://github.com/MillerBrainObservatory/LBM-CaImAn-Python.git
 cd LBM-CaImAn-Python
 pip install ".[docs]"
 
+```
+
+### Newest `fastplotlib`
+
+```bash
+
+git clone https://github.com/fastplotlib/fastplotlib.git
+cd fastplotlib
+
+# install all extras in place
+pip install -e ".[notebook,docs,tests]"
+
+# install latest pygfx
+pip install git+https://github.com/pygfx/pygfx.git@main
 ```
 
 ## Troubleshooting
@@ -256,9 +272,13 @@ HINT: This error might have occurred since this system does not have Windows Lon
  information on how to enable this at https://pip.pypa.io/warnings/enable-long-paths
 ```
 
-> Open Group Policy Editor (Press Windows Key and type gpedit.msc and hit Enter key.
-> Navigate to the following directory:  Local Computer Policy > Computer Configuration > Administrative Templates > System > Filesystem > NTFS.
-> Click Enable NTFS long paths option and enable it.
+- Open Group Policy Editor (Press Windows Key and type gpedit.msc and hit Enter key.
+
+- Navigate to the following directory:  
+
+`Local Computer Policy > Computer Configuration > Administrative Templates > System > Filesystem > NTFS.`
+
+- Click Enable NTFS long paths option and enable it.
 
 ### Conda Slow / Stalling
 
