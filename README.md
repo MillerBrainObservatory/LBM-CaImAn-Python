@@ -247,6 +247,19 @@ pip install ".[docs]"
 
 ## Troubleshooting
 
+### Error during pip install: OSError: [Errno 2] No such file or directory
+
+If you recieve an error during pip installation with the hint:
+
+```bash
+HINT: This error might have occurred since this system does not have Windows Long Path support enabled. You can find
+ information on how to enable this at https://pip.pypa.io/warnings/enable-long-paths
+```
+
+> Open Group Policy Editor (Press Windows Key and type gpedit.msc and hit Enter key.
+> Navigate to the following directory:  Local Computer Policy > Computer Configuration > Administrative Templates > System > Filesystem > NTFS.
+> Click Enable NTFS long paths option and enable it.
+
 ### Conda Slow / Stalling
 
 if conda is behaving slow, clean the conda installation and update `conda-forge`:
