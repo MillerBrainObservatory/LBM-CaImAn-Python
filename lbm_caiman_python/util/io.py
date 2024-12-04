@@ -24,8 +24,14 @@ def get_metadata(file: os.PathLike | str):
         return None
 
     tiff_file = tifffile.TiffFile(file)
-    if hasattr(tiff_file, 'shaped_metadata') and tiff_file.shaped_metadata is not None:
-        if tiff_file.shaped_metadata[0] and 'image' in tiff_file.shaped_metadata[0]:
+    if (
+            hasattr(tiff_file, 'shaped_metadata')
+            and tiff_file.shaped_metadata is not None
+            and isinstance(tiff_file.shaped_metadata, (list, tuple))
+            and tiff_file.shaped_metadata
+            and tiff_file.shaped_metadata[0] not in ([], (), None)
+    ):
+        if 'image' in tiff_file.shaped_metadata[0]:
             return tiff_file.shaped_metadata[0]['image']
 
     if hasattr(tiff_file, 'scanimage_metadata'):
