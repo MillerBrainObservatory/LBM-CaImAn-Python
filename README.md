@@ -272,6 +272,12 @@ HINT: This error might have occurred since this system does not have Windows Lon
  information on how to enable this at https://pip.pypa.io/warnings/enable-long-paths
 ```
 
+In Windows Powershell, as Administrator:
+
+`New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name "LongPathsEnabled" -Value 1 -PropertyType DWORD -Force`
+
+Or:
+
 - Open Group Policy Editor (Press Windows Key and type gpedit.msc and hit Enter key.
 
 - Navigate to the following directory:  
