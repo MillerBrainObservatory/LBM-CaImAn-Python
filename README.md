@@ -41,7 +41,7 @@ This project is tested on Linux and Windows 10 using `Python 3.9` and `Python 3.
 
 Installation is tested using [miniforge](https://github.com/conda-forge/miniforge). Python [virtual-environments](https://virtualenv.pypa.io/en/latest/) are a not fully developed/tested yet but is left as an optional installation method for python-savvy users.
 
-:exclimation: Anaconda and Miniconda will likely not work due to package conflicts.
+:exclamation: Anaconda and Miniconda will likely not work due to package conflicts.
 
 ### (Option 1). Miniforge (conda)
 
