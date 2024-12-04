@@ -39,14 +39,11 @@ but is not guarenteed to work with Jupyter Notebook or Visual Studio Code notebo
 
 This project is tested on Linux and Windows 10 using `Python 3.9` and `Python 3.10`.
 
-Environment setup is tested using `virtualenv` and `miniforge`.
+Installation is tested using [miniforge](https://github.com/conda-forge/miniforge). Python [virtual-environments](https://virtualenv.pypa.io/en/latest/) are a not fully developed/tested yet but is left as an optional installation method for python-savvy users.
 
-We suggest using python virtual environments for the best results.
+:exclimation: Anaconda and Miniconda will likely not work due to package conflicts.
 
-
-### (Option 1). Miniforge
-
-Miniforge is the supported `conda` distribution. Anaconda and Miniconda will likely not work due to package conflicts.
+### (Option 1). Miniforge (conda)
 
 Note: If conda gets stuck `Solving Environment`, hitting enter can sometimes help.
 
@@ -262,7 +259,7 @@ Don't forget to press enter a few times if conda is taking a long time.
 
 ### Recommended Conda Distribution
 
-The recommended conda installer is [miniforge](https://github.com/conda-forge/miniforge).
+The recommended conda installer is 
 
 This is a community-driven `conda`/`mamba` installer with pre-configured packages specific to [conda-forge](https://conda-forge.org/).
 
