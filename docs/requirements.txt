@@ -18,6 +18,7 @@ sphinxcontrib-images
 sphinxcontrib-video
 myst_nb
 jupytext
+glfw
 fastplotlib
 av
 matplotlib
