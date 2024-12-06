@@ -17,6 +17,7 @@ sphinx_design
 sphinxcontrib-images
 sphinxcontrib-video
 myst_nb
+pynapple
 jupytext
 glfw
 fastplotlib
