@@ -39,11 +39,78 @@ but is not guarenteed to work with Jupyter Notebook or Visual Studio Code notebo
 
 This project is tested on Linux and Windows 10 using `Python 3.9` and `Python 3.10`.
 
-Environment setup is tested using `virtualenv` and `miniforge`.
+Installation is tested using [miniforge](https://github.com/conda-forge/miniforge). Python [virtual-environments](https://virtualenv.pypa.io/en/latest/) are a not fully developed/tested yet but is left as an optional installation method for python-savvy users.
 
-We suggest using python virtual environments for the best results.
+:exclamation: Anaconda and Miniconda will likely not work due to package conflicts.
 
-### (Option 1). Python Virtual Environments
+### (Option 1). Miniforge (conda)
+
+Note: If conda gets stuck `Solving Environment`, hitting enter can sometimes help.
+
+1. Create a new environment and install [mesmerize-core](https://github.com/nel-lab/mesmerize-core/tree/master)
+
+- Here, we use the `-n` flag to name the environment `lbm` , but you can name it whatever you'd like.
+- This step will install Python, mesmerize-core, CaImAn, and all required dependencies for those packages.
+
+``` bash
+conda create -n lbm -c defaults -c conda-forge mesmerize-core
+```
+
+If you already have `CaImAn` installed, replace `-n lbm` with `-n name-of-env-with-caiman`.
+
+Activate the environment:
+
+- if you used a name other than `lbm`, be sure to match the name you use here.
+
+``` bash
+conda activate lbm
+```
+
+2. Install [LBM-CaImAn-Python](https://pypi.org/project/lbm-caiman-python/) and [scanreader](https://github.com/atlab/scanreader):
+
+``` bash
+pip install lbm_caiman_python
+pip install git+https://github.com/atlab/scanreader.git
+```
+
+3. Install `caimanmanager`
+
+CaImAn will sometimes look for neural network models, unless you tell it not to with parameters `use_cnn=False` during segmentation.
+
+To install these models, and CaImAn demo data to follow along with their notebooks:
+
+``` bash
+caimanmanager install
+```
+
+This will create a directory in your home folder `~/caiman_data/`. We recommend doing this step, though it may be safe to skip.
+
+4. (Optional) Install `mesmerize-viz`:
+
+Several notebooks make use of [mesmerize-viz](https://github.com/kushalkolar/mesmerize-viz) for visualizing registration/segmentation results.
+
+``` bash
+pip install mesmerize-viz
+```
+
+:exclamation: **Harware requirements** The large CNMF visualizations with contours etc. usually require either a dedicated GPU or integrated GPU with access to at least 1GB of VRAM.
+
+[mesmerize-viz youtube video demonstration](https://www.youtube.com/watch?v=GWvaEeqA1hw)
+
+4. Stay up-to-date
+
+LBM-CaImAn-Python is in active development. To update to the latest release:
+
+```python
+pip install -U lbm_caiman_python
+```
+
+
+----
+
+### (Option 2). Python Virtual Environments (WIP)
+
+:exclimation: With numpy 2.0 official release, there may be errors for this method. File an issue if you have conflicts.
 
 Ensure you have a system-wide Python installation.
 
@@ -164,101 +231,60 @@ scan = sr.read_scan('path/to/data/*.tif', join_contiguous=True)
 
 ```
 
-### virtualenv Troubleshooting
-
-#### Error During `pip install .` (CaImAn) on Linux
-If you encounter errors during the installation of `CaImAn`, install the necessary development tools:
-```bash
-sudo apt-get install python3-dev
-```
 
 ---
 
-### (Option 2). Conda
-
-Miniforge is the supported `conda` distribution. Anaconda and Miniconda require extra steps and is not covered in this guide.
-
-Note: Sometimes conda or mamba will get stuck at a step, such as creating an environment or installing a package.
-
-Pressing Enter on your keyboard can sometimes help it continue when it pauses.
-
-1. Install `mamba` into your *base* environment:
-
-:exclamation: This step may take 10 minutes and display several messages like "Solving environment: failed with..." but it should eventually install mamba.
-
-``` bash
-conda activate base 
-conda install -c conda-forge mamba
-```
-
-2. Create a new environment and install [mesmerize-core](https://github.com/nel-lab/mesmerize-core/tree/master)
-
-- Here, we use the `-n` flag to name the environment `lbm` , but you can name it whatever you'd like.
-- This step will install Python, mesmerize-core, CaImAn, and all required dependencies for those packages.
-
-``` bash
-conda create -n lbm -c conda-forge mesmerize-core
-```
-
-If you already have `CaImAn` installed:
-
-``` bash
-conda install -n name-of-env-with-caiman mesmerize-core
-```
-
-Activate the environment and install `caimanmanager`:
-- if you used a name other than `lbm`, be sure to match the name you use here.
-
-``` bash
-conda activate lbm
-caimanmanager install
-```
-
-3. Install [LBM-CaImAn-Python](https://pypi.org/project/lbm-caiman-python/) from pip:
-
-``` bash
-
-pip install lbm_caiman_python
-
-```
-
-4. Install [scanreader](https://github.com/atlab/scanreader):
-
-``` bash
-
-pip install git+https://github.com/atlab/scanreader.git
-
-```
-
-5. (Optional) Install `mesmerize-viz`:
-
-Several notebooks make use of [mesmerize-viz](https://github.com/kushalkolar/mesmerize-viz) for visualizing registration/segmentation results.
-
-``` bash
-
-pip install mesmerize-viz
-
-```
-
-:exclamation: **Harware requirements** The large CNMF visualizations with contours etc. usually require either a dedicated GPU or integrated GPU with access to at least 1GB of VRAM.
-
-https://www.youtube.com/watch?v=GWvaEeqA1hw
-
 ## For Developers
 
-To get the newest version of this package:
+### Newest `LBM-CaImAn-Python`
+
+To get the newest version of this package, rather than `pip install lbm_caiman_python`:
 
 ``` bash
-
 git clone https://github.com/MillerBrainObservatory/LBM-CaImAn-Python.git
-
 cd LBM-CaImAn-Python
-
 pip install ".[docs]"
 
 ```
 
+### Newest `fastplotlib`
+
+```bash
+
+git clone https://github.com/fastplotlib/fastplotlib.git
+cd fastplotlib
+
+# install all extras in place
+pip install -e ".[notebook,docs,tests]"
+
+# install latest pygfx
+pip install git+https://github.com/pygfx/pygfx.git@main
+```
+
 ## Troubleshooting
+
+### Error during pip install: OSError: [Errno 2] No such file or directory
+
+If you recieve an error during pip installation with the hint:
+
+```bash
+HINT: This error might have occurred since this system does not have Windows Long Path support enabled. You can find
+ information on how to enable this at https://pip.pypa.io/warnings/enable-long-paths
+```
+
+In Windows Powershell, as Administrator:
+
+`New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name "LongPathsEnabled" -Value 1 -PropertyType DWORD -Force`
+
+Or:
+
+- Open Group Policy Editor (Press Windows Key and type gpedit.msc and hit Enter key.
+
+- Navigate to the following directory:  
+
+`Local Computer Policy > Computer Configuration > Administrative Templates > System > Filesystem > NTFS.`
+
+- Click Enable NTFS long paths option and enable it.
 
 ### Conda Slow / Stalling
 
@@ -272,11 +298,19 @@ conda update -c conda-forge --all
 
 ```
 
+### virtualenv Troubleshooting
+
+#### Error During `pip install .` (CaImAn) on Linux
+If you encounter errors during the installation of `CaImAn`, install the necessary development tools:
+```bash
+sudo apt-get install python3-dev
+```
+
 Don't forget to press enter a few times if conda is taking a long time.
 
 ### Recommended Conda Distribution
 
-The recommended conda installer is [miniforge](https://github.com/conda-forge/miniforge).
+The recommended conda installer is 
 
 This is a community-driven `conda`/`mamba` installer with pre-configured packages specific to [conda-forge](https://conda-forge.org/).
 
@@ -285,11 +319,8 @@ This helps avoid `conda-channel` conflicts and avoids any issues with the Anacon
 You can install the installer from a unix command line:
 
 ``` bash
-
 curl -L -O "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh"
-
 bash Miniforge3-$(uname)-$(uname -m).sh
-
 ```
 
 Or download the installer for your operating system [here](https://github.com/conda-forge/miniforge/releases).
@@ -297,5 +328,4 @@ Or download the installer for your operating system [here](https://github.com/co
 ### Graphics Driver Issues
 
 If you are attempting to use fastplotlib and receive errors about graphics drivers, see the [fastplotlib driver documentation](https://github.com/fastplotlib/fastplotlib?tab=readme-ov-file#gpu-drivers-and-requirements).
-
 
