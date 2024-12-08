@@ -1,0 +1,532 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>scanreader.core &#8212; LBM-CaImAn-Python</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!-- 
+    this give us a css class that will be invisible only if js is disabled 
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=475cc00c" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
+
+    <script src="../../_static/documentation_options.js?v=e4c16dfd"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/scanreader/core';</script>
+    <link rel="icon" href="../../_static/icon_caiman_python.svg"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/lcp_logo.svg" class="logo__image only-light" alt="LBM-CaImAn-Python - Home"/>
+    <img src="../../_static/lcp_logo.svg" class="logo__image only-dark pst-js-only" alt="LBM-CaImAn-Python - Home"/>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://millerbrainobservatory.github.io/" title="MBO User Hub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../.././_static/icon_mbo_home.png" class="icon-link-image" alt="MBO User Hub"/></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/MillerBrainObservatory/" title="MBO Github" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">MBO Github</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://mbo.rockefeller.edu/contact/" title="Connect with MBO" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-regular fa-address-card fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Connect with MBO</span></a>
+        </li>
+</ul></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../user_guide/index.html">User Guide</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/assembly.html">1. Image Assembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/batch.html">2. Batch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/registration.html">3. Registration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/segmentation.html">4. Segmentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/collation.html">5. Collation</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../examples/index.html">Tutorial</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../examples/render/assembly.html">Image Assembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../examples/render/batch_helpers.html">Batch Helpers</a></li>
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="../../examples/render/motion_correction.html">Registration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../examples/render/segmentation.html">Segmentation</a></li>
+
+
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="../../examples/render/collation.html">Collate Planes</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../glossary.html">Glossary</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/MillerBrainObservatory/LBM-CaImAn-Python/issues/new?title=Issue%20on%20page%20%2F_modules/scanreader/core.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button"
+   title="Open an issue"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+
+</a>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1></h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for scanreader.core</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Reader for ScanImage 5 scans (including multiROI).</span>
+
+<span class="sd">Example:</span>
+<span class="sd">    import scanreader</span>
+<span class="sd">    scan = scanreader.read_scan(&#39;my_scan_*.tif&#39;)</span>
+<span class="sd">    for field in scan:</span>
+<span class="sd">        #process field</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">tifffile</span> <span class="kn">import</span> <span class="n">TiffFile</span>
+<span class="kn">from</span> <span class="nn">glob</span> <span class="kn">import</span> <span class="n">glob</span>
+<span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">path</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">.exceptions</span> <span class="kn">import</span> <span class="n">ScanImageVersionError</span><span class="p">,</span> <span class="n">PathnameError</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">scans</span>
+
+<span class="n">_scans</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;5.1&#39;</span><span class="p">:</span> <span class="n">scans</span><span class="o">.</span><span class="n">Scan5Point1</span><span class="p">,</span> <span class="s1">&#39;5.2&#39;</span><span class="p">:</span> <span class="n">scans</span><span class="o">.</span><span class="n">Scan5Point2</span><span class="p">,</span> <span class="s1">&#39;5.3&#39;</span><span class="p">:</span> <span class="n">scans</span><span class="o">.</span><span class="n">Scan5Point3</span><span class="p">,</span>
+          <span class="s1">&#39;5.4&#39;</span><span class="p">:</span> <span class="n">scans</span><span class="o">.</span><span class="n">Scan5Point4</span><span class="p">,</span> <span class="s1">&#39;5.5&#39;</span><span class="p">:</span> <span class="n">scans</span><span class="o">.</span><span class="n">Scan5Point5</span><span class="p">,</span> 
+          <span class="s1">&#39;5.6&#39;</span><span class="p">:</span> <span class="n">scans</span><span class="o">.</span><span class="n">Scan5Point6</span><span class="p">,</span> <span class="s1">&#39;5.7&#39;</span><span class="p">:</span> <span class="n">scans</span><span class="o">.</span><span class="n">Scan5Point7</span><span class="p">,</span> 
+          <span class="s1">&#39;2016b&#39;</span><span class="p">:</span> <span class="n">scans</span><span class="o">.</span><span class="n">Scan2016b</span><span class="p">,</span> 
+          <span class="s1">&#39;2017a&#39;</span><span class="p">:</span> <span class="n">scans</span><span class="o">.</span><span class="n">Scan2017a</span><span class="p">,</span> <span class="s1">&#39;2017b&#39;</span><span class="p">:</span> <span class="n">scans</span><span class="o">.</span><span class="n">Scan2017b</span><span class="p">,</span> 
+          <span class="s1">&#39;2018a&#39;</span><span class="p">:</span> <span class="n">scans</span><span class="o">.</span><span class="n">Scan2018a</span><span class="p">,</span> <span class="s1">&#39;2018b&#39;</span><span class="p">:</span> <span class="n">scans</span><span class="o">.</span><span class="n">Scan2018b</span><span class="p">,</span>
+          <span class="s1">&#39;2019a&#39;</span><span class="p">:</span> <span class="n">scans</span><span class="o">.</span><span class="n">Scan2019a</span><span class="p">,</span> <span class="s1">&#39;2019b&#39;</span><span class="p">:</span> <span class="n">scans</span><span class="o">.</span><span class="n">Scan2019b</span><span class="p">,</span>
+          <span class="s1">&#39;2020&#39;</span><span class="p">:</span> <span class="n">scans</span><span class="o">.</span><span class="n">Scan2020</span><span class="p">,</span> <span class="s1">&#39;2021&#39;</span><span class="p">:</span> <span class="n">scans</span><span class="o">.</span><span class="n">Scan2021</span><span class="p">}</span>
+
+<div class="viewcode-block" id="read_scan">
+<a class="viewcode-back" href="../../api/index.html#lbm_caiman_python.read_scan">[docs]</a>
+<span class="k">def</span> <span class="nf">read_scan</span><span class="p">(</span><span class="n">pathnames</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int16</span><span class="p">,</span> <span class="n">join_contiguous</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Reads a ScanImage scan.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        pathnames: String or list of strings. Pathname(s) or pathname pattern(s) to read.</span>
+<span class="sd">        dtype: Data-type. Data type of the output array.</span>
+<span class="sd">        join_contiguous: Boolean. For multiROI scans (2016b and beyond) it will join</span>
+<span class="sd">            contiguous scanfields in the same depth. No effect in non-multiROI scans. See</span>
+<span class="sd">            help of ScanMultiROI._join_contiguous_fields for details.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A Scan object (subclass of BaseScan) with metadata and data. See Readme for details.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Expand wildcards</span>
+    <span class="n">filenames</span> <span class="o">=</span> <span class="n">expand_wildcard</span><span class="p">(</span><span class="n">pathnames</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">filenames</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">error_msg</span> <span class="o">=</span> <span class="s1">&#39;Pathname(s) </span><span class="si">{}</span><span class="s1"> do not match any files in disk.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pathnames</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">PathnameError</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
+
+    <span class="c1"># Read version from one of the tiff files</span>
+    <span class="k">with</span> <span class="n">TiffFile</span><span class="p">(</span><span class="n">filenames</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">as</span> <span class="n">tiff_file</span><span class="p">:</span>
+        <span class="n">file_info</span> <span class="o">=</span> <span class="n">tiff_file</span><span class="o">.</span><span class="n">pages</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">description</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">tiff_file</span><span class="o">.</span><span class="n">pages</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">software</span>
+    <span class="n">version</span> <span class="o">=</span> <span class="n">get_scanimage_version</span><span class="p">(</span><span class="n">file_info</span><span class="p">)</span>
+
+    <span class="c1"># Select the appropriate scan object</span>
+    
+    <span class="k">if</span> <span class="p">(</span><span class="n">version</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;2016b&#39;</span><span class="p">,</span> <span class="s1">&#39;2017a&#39;</span><span class="p">,</span> <span class="s1">&#39;2017b&#39;</span><span class="p">,</span> <span class="s1">&#39;2018a&#39;</span><span class="p">,</span> <span class="s1">&#39;2018b&#39;</span><span class="p">,</span> <span class="s1">&#39;2019a&#39;</span><span class="p">,</span> <span class="s1">&#39;2019b&#39;</span><span class="p">,</span> <span class="s1">&#39;2020&#39;</span><span class="p">,</span> <span class="s1">&#39;2021&#39;</span><span class="p">]</span> <span class="ow">and</span>
+            <span class="n">is_scan_multiROI</span><span class="p">(</span><span class="n">file_info</span><span class="p">)):</span>
+        <span class="n">scan</span> <span class="o">=</span> <span class="n">scans</span><span class="o">.</span><span class="n">ScanMultiROI</span><span class="p">(</span><span class="n">join_contiguous</span><span class="o">=</span><span class="n">join_contiguous</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">version</span> <span class="ow">in</span> <span class="n">_scans</span><span class="p">:</span>
+        <span class="n">scan</span> <span class="o">=</span> <span class="n">_scans</span><span class="p">[</span><span class="n">version</span><span class="p">]()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">error_msg</span> <span class="o">=</span> <span class="s1">&#39;Sorry, ScanImage version </span><span class="si">{}</span><span class="s1"> is not supported&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">version</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">ScanImageVersionError</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
+
+    <span class="c1"># Read metadata and data (lazy operation)</span>
+    <span class="n">scan</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">filenames</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">scan</span></div>
+
+
+<span class="k">def</span> <span class="nf">expand_wildcard</span><span class="p">(</span><span class="n">wildcard</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Expands a list of pathname patterns to form a sorted list of absolute filenames.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        wildcard: String or list of strings. Pathname pattern(s) to be extended with glob.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A list of string. Absolute filenames.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">wildcard</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">wildcard_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">wildcard</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">wildcard</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+        <span class="n">wildcard_list</span> <span class="o">=</span> <span class="n">wildcard</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">error_msg</span> <span class="o">=</span> <span class="s1">&#39;Expected string or list of strings, received </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">wildcard</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
+
+    <span class="c1"># Expand wildcards</span>
+    <span class="n">rel_filenames</span> <span class="o">=</span> <span class="p">[</span><span class="n">glob</span><span class="p">(</span><span class="n">wildcard</span><span class="p">)</span> <span class="k">for</span> <span class="n">wildcard</span> <span class="ow">in</span> <span class="n">wildcard_list</span><span class="p">]</span>
+    <span class="n">rel_filenames</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">sublist</span> <span class="ow">in</span> <span class="n">rel_filenames</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">sublist</span><span class="p">]</span> <span class="c1"># flatten list</span>
+
+    <span class="c1"># Make absolute filenames</span>
+    <span class="n">abs_filenames</span> <span class="o">=</span> <span class="p">[</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">rel_filenames</span><span class="p">]</span>
+
+    <span class="c1"># Sort</span>
+    <span class="n">sorted_filenames</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">abs_filenames</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">sorted_filenames</span>
+
+<span class="k">def</span> <span class="nf">get_scanimage_version</span><span class="p">(</span><span class="n">info</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Looks for the ScanImage version in the tiff file headers.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        info: A string. All headers from tiff tags.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A string. ScanImage version</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;SI.?\.VERSION_MAJOR = &#39;?(?P&lt;version&gt;[^\s&#39;]*)&#39;?&quot;</span><span class="p">)</span>
+    <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">info</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+        <span class="n">version</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;version&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">ScanImageVersionError</span><span class="p">(</span><span class="s1">&#39;Could not find ScanImage version in the tiff header&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">version</span>
+
+<span class="k">def</span> <span class="nf">is_scan_multiROI</span><span class="p">(</span><span class="n">info</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Looks whether the scan is multiROI in the tiff file headers.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        info: A string. All headers from tiff tags.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A bool. Whether scan is multiroi or not.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;hRoiManager\.mroiEnable = (?P&lt;is_multiROI&gt;.)&#39;</span><span class="p">,</span> <span class="n">info</span><span class="p">)</span>
+    <span class="n">is_multiROI</span> <span class="o">=</span> <span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;is_multiROI&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;1&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">match</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">is_multiROI</span>
+</pre></div>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Author name not set
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, Elizabeth R. Miller Brain Observatory | The Rockefeller University. All Rights Reserved.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
