@@ -10,9 +10,12 @@ install_deps = [
     "numba>=0.57.0",
     "scipy>=1.9.0",
     "fastplotlib[notebook]",
+    # "simplejpeg", # add once libturbo steps are tested
+    "opencv-python",
     "matplotlib",
     "dask",
     "zarr",
+    # "pynapple",
 ]
 
 extras_require = {
