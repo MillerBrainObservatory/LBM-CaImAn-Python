@@ -20,7 +20,7 @@ def plot_with_scalebars(image: ArrayLike, pixel_resolution: float):
     import matplotlib.patches as patches
 
     scale_bar_sizes = [5, 10, 20]
-    
+
     # Calculate the size of scale bars in pixels
     scale_bar_lengths = [int(size / pixel_resolution) for size in scale_bar_sizes]
 
@@ -102,7 +102,6 @@ def generate_patch_view(image: ArrayLike, pixel_resolution: float, target_patch_
             rect_draw(patch_row, patch_col, color='white', alpha=0.2, ax=ax)
 
     ax.set_title(f"Stride: {stride} pixels (~{stride * pixel_resolution:.1f} μm)\n"
-                 f"Overlap: {overlap} pixels (~{overlap * pixel_resolution:.1f} μm)\n"
-                 f"Padding: X={pad_x}, Y={pad_y} pixels")
+                 f"Overlap: {overlap} pixels (~{overlap * pixel_resolution:.1f} μm)\n")
     plt.tight_layout()
-    return fig, ax
+    return fig, ax, stride, overlap
