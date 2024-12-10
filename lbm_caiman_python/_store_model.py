@@ -1,7 +1,7 @@
 from typing import *
-from fastplotlib import ImageGraphic, LinearSelector, ScatterGraphic
+import numpy as np
+from fastplotlib import ImageGraphic, LinearSelector, ScatterGraphic, ImageWidget
 from ipywidgets import IntSlider, FloatSlider
-from pynapple import TsdFrame, TsdTensor
 
 from fastplotlib.graphics._features import FeatureEvent
 
@@ -17,7 +17,7 @@ class TimeStoreComponent:
         return self._subscriber
 
     @property
-    def data(self) -> TsdFrame | TsdTensor | None:
+    def data(self) -> np.ndarray | None:
         return self._data
 
     @property
@@ -39,10 +39,11 @@ class TimeStoreComponent:
 
         # must have data if ImageGraphic
         if isinstance(self.subscriber, (ImageGraphic, ScatterGraphic)):
-            if not isinstance(data, (TsdFrame, TsdTensor)):
-                raise ValueError("If passing in `ImageGraphic` must provide associated `TsdFrame` to update data with.")
+            # LazyArrayRCM has no `__array__`, using `shape` for now
+            if not hasattr(data, 'shape'):
+                raise ValueError("If passing in `ImageGraphic` must provide associated `ndarray` object to update "
+                                 "data with.")
             self._data = data
-
         self._data_filter = data_filter
 
 
@@ -55,7 +56,7 @@ class TimeStore:
     @time.setter
     def time(self, value: int | float):
         """Set the current time."""
-        self._time = value
+        self._time = int(value)
 
     @property
     def store(self) -> List[TimeStoreComponent]:
@@ -68,7 +69,7 @@ class TimeStore:
         fastplotlib.LinearSelector, or fastplotlob.ImageGraphic).
 
         NOTE: If passing a `fastplotlib.ImageGraphic`, it is understood that there should be an associated
-        `pynapple.TsdFrame` given.
+        `ndarray` given.
         """
         # initialize store
         self._store = list()
@@ -76,8 +77,8 @@ class TimeStore:
         self._time = 0
 
     def subscribe(self,
-                  subscriber: ImageGraphic | LinearSelector | ScatterGraphic | IntSlider | FloatSlider,
-                  data: TsdFrame | TsdTensor = None,
+                  subscriber: ImageWidget | ImageGraphic | LinearSelector | ScatterGraphic | IntSlider | FloatSlider,
+                  data: np.ndarray = None,
                   data_filter: callable = None,
                   multiplier: int | float = None) -> None:
         """
@@ -87,8 +88,8 @@ class TimeStore:
         ----------
         subscriber: fastplotlib.ImageGraphic, fastplotlib.LinearSelector, ipywidgets.IntSlider, or ipywidgets.FloatSlider
             ipywidget or fastplotlib object to be synchronized
-        data: pynapple.TsdFrame, optional
-            If subscriber is a fastplotlib.ImageGraphic, must have an associating pynapple.TsdFrame to update data with.
+        data: np.ndarray, optional
+            If subscriber is a fastplotlib.ImageGraphic, must have an associating numpy.ndarray to update data with.
         data_filter: callable, optional
             Function to apply to data before updating. Must return data in the same shape as input.
         multiplier: int | float, optional
@@ -103,7 +104,8 @@ class TimeStore:
         # add component to the store
         self._store.append(component)
 
-        # add event handler to component.subscriber to call update_store
+        if isinstance(component.subscriber, ImageWidget):
+            component.subscriber.add_event_handler(self._update_store, "current_index")
         if isinstance(component.subscriber, (IntSlider, FloatSlider)):
             component.subscriber.observe(self._update_store, "value")
         if isinstance(component.subscriber, LinearSelector):
@@ -130,18 +132,28 @@ class TimeStore:
                 if isinstance(component.subscriber, LinearSelector):
                     if ev.graphic == component.subscriber:
                         self.time = ev.info["value"] / component.multiplier
+        elif isinstance(ev, dict):
+            self.time = ev["t"]
         else:
             self.time = ev["new"]
 
+        print('Iterating components')
         for component in self.store:
+            print('Component 1')
+            if isinstance(component.subscriber, ImageWidget):
+                # user moved qslider, don't update imagewidget
+                if isinstance(ev, dict) and 't' in ev:
+                    pass
+                else:
+                    component.subscriber.current_index = {"t": self.time}
+            elif isinstance(component.subscriber, ScatterGraphic):
+                component.subscriber.data = component.data[self.time]
             # update ImageGraphic data no matter what
-            if isinstance(component.subscriber, ScatterGraphic):
-                component.subscriber.data = component.data.get(self.time)
             elif isinstance(component.subscriber, ImageGraphic):
                 if component.data_filter is None:
-                    new_data = component.data.get(self.time)
+                    new_data = component.data[self.time]
                 else:
-                    new_data = component.data_filter(component.data.get(self.time))
+                    new_data = component.data_filter(component.data[self.time])
                 if new_data.shape != component.subscriber.data.value.shape:
                     raise ValueError(f"data filter function: {component.data_filter} must return data in the same shape"
                                      f"as the current data")
@@ -149,9 +161,10 @@ class TimeStore:
             elif isinstance(component.subscriber, LinearSelector):
                 # only update if different
                 if abs(component.subscriber.selection - (self.time * component.multiplier)) > MARGIN:
+                    print('Is LinearSelector and abs(component.subscriber.selection - (self.time * '
+                          'component.multiplier)) > MARGIN')
                     component.subscriber.selection = self.time * component.multiplier
             else:
                 # only update if different
                 if abs(component.subscriber.value - self.time) > MARGIN:
                     component.subscriber.value = self.time
-

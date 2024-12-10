@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from numpy.typing import ArrayLike
 
+
 def plot_with_scalebars(image: ArrayLike, pixel_resolution: float):
     """
     Plot a 2D image with scale bars of 5, 10, and 20 microns.
@@ -42,7 +43,9 @@ def plot_with_scalebars(image: ArrayLike, pixel_resolution: float):
     plt.tight_layout()
     plt.show()
 
-def generate_patch_view(image: ArrayLike, pixel_resolution: float, target_patch_size: int=40, overlap_fraction: float=0.5):
+
+def generate_patch_view(image: ArrayLike, pixel_resolution: float, target_patch_size: int = 40,
+                        overlap_fraction: float = 0.5):
     """
     Generate a patch visualization for a 2D image with approximately square patches of a specified size in microns.
     Patches are evenly distributed across the image, using calculated strides and overlaps.
