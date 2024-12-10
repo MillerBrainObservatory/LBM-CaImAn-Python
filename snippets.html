@@ -1,0 +1,803 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Code Snippets &#8212; LBM-CaImAn-Python</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!-- 
+    this give us a css class that will be invisible only if js is disabled 
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=475cc00c" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
+
+    <script src="_static/documentation_options.js?v=e4c16dfd"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
+    <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
+    <script defer="defer" src="_static/tippy/snippets.4db8f16c-785c-467c-a8a8-a2a32251a615.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'snippets';</script>
+    <link rel="icon" href="_static/icon_caiman_python.svg"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/lcp_logo.svg" class="logo__image only-light" alt="LBM-CaImAn-Python - Home"/>
+    <img src="_static/lcp_logo.svg" class="logo__image only-dark pst-js-only" alt="LBM-CaImAn-Python - Home"/>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://millerbrainobservatory.github.io/" title="MBO User Hub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="./_static/icon_mbo_home.png" class="icon-link-image" alt="MBO User Hub"/></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/MillerBrainObservatory/" title="MBO Github" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">MBO Github</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://mbo.rockefeller.edu/contact/" title="Connect with MBO" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-regular fa-address-card fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Connect with MBO</span></a>
+        </li>
+</ul></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="user_guide/index.html">User Guide</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/assembly.html">1. Image Assembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/batch.html">2. Batch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/registration.html">3. Registration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/segmentation.html">4. Segmentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/collation.html">5. Collation</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="examples/index.html">Tutorial</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="examples/render/assembly.html">Image Assembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/render/batch_helpers.html">Batch Helpers</a></li>
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="examples/render/motion_correction.html">Registration</a></li>
+
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="examples/render/segmentation.html">Segmentation</a></li>
+
+
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="examples/render/collation.html">Collate Planes</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/MillerBrainObservatory/LBM-CaImAn-Python/blob/master/docs/snippets.md?plain=1" target="_blank"
+   class="btn btn-sm btn-source-file-button dropdown-item"
+   title="Show source"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-code"></i>
+  </span>
+<span class="btn__text-container">Show source</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/MillerBrainObservatory/LBM-CaImAn-Python/edit/master/docs/snippets.md" target="_blank"
+   class="btn btn-sm btn-source-edit-button dropdown-item"
+   title="Suggest edit"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-pencil-alt"></i>
+  </span>
+<span class="btn__text-container">Suggest edit</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/MillerBrainObservatory/LBM-CaImAn-Python/issues/new?title=Issue%20on%20page%20%2Fsnippets.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/snippets.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Code Snippets</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Code Snippets</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#tutorial">Tutorial</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#contents">Contents</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#caiman-parameters">CaImAn Parameters</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#troubleshooting">Troubleshooting</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#filepaths-and-data-directories">Filepaths and data directories</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#importerror-attempted-relative-import-with-no-known-parent-package"><code class="docutils literal notranslate"><span class="pre">ImportError:</span> <span class="pre">attempted</span> <span class="pre">relative</span> <span class="pre">import</span> <span class="pre">with</span> <span class="pre">no</span> <span class="pre">known</span> <span class="pre">parent</span> <span class="pre">package</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#system-information">System Information</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#faq">FAQ</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#foreward-slash-or-backwards-slash">1. Foreward slash or backwards slash</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="code-snippets">
+<h1>Code Snippets<a class="headerlink" href="#code-snippets" title="Link to this heading">#</a></h1>
+<p>Helpful snippets for all things LBM python.</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="tutorial">
+<h1>Tutorial<a class="headerlink" href="#tutorial" title="Link to this heading">#</a></h1>
+<section id="contents">
+<h2>Contents<a class="headerlink" href="#contents" title="Link to this heading">#</a></h2>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+<hr class="docutils" />
+<section id="caiman-parameters">
+<h2>CaImAn Parameters<a class="headerlink" href="#caiman-parameters" title="Link to this heading">#</a></h2>
+<p><a class="reference external" href="https://caiman.readthedocs.io/en/latest/Getting_Started.html#parameters">caiman parameters</a></p>
+</section>
+<section id="troubleshooting">
+<h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Link to this heading">#</a></h2>
+<p>You may need some additional dependencies on WSL2:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">update</span> <span class="o">&amp;&amp;</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">ffmpeg</span> <span class="n">libsm6</span> <span class="n">libxext6</span>  <span class="o">-</span><span class="n">y</span>
+</pre></div>
+</div>
+<section id="filepaths-and-data-directories">
+<h3>Filepaths and data directories<a class="headerlink" href="#filepaths-and-data-directories" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">get_files</span><span class="p">(</span><span class="n">pathnames</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span> <span class="o">|</span> <span class="n">List</span><span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">PathLike</span> <span class="o">|</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">PathLike</span><span class="p">[</span><span class="n">AnyStr</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Expands a list of pathname patterns to form a sorted list of absolute filenames.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    pathnames: os.PathLike</span>
+<span class="sd">        Pathname(s) or pathname pattern(s) to read.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    List[PathLike[AnyStr]]</span>
+<span class="sd">        List of absolute filenames.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">pathnames</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">pathnames</span><span class="p">)</span><span class="o">.</span><span class="n">expanduser</span><span class="p">()</span>  <span class="c1"># expand ~ to /home/user</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">pathnames</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Path </span><span class="si">{</span><span class="n">pathnames</span><span class="si">}</span><span class="s1"> does not exist as a file or directory.&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">pathnames</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">pathnames</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">pathnames</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+        <span class="n">pathnames</span> <span class="o">=</span> <span class="p">[</span><span class="n">fpath</span> <span class="k">for</span> <span class="n">fpath</span> <span class="ow">in</span> <span class="n">pathnames</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;*.tif*&quot;</span><span class="p">)]</span>  <span class="c1"># matches .tif and .tiff</span>
+    <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">pathnames</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="importerror-attempted-relative-import-with-no-known-parent-package">
+<h3><code class="docutils literal notranslate"><span class="pre">ImportError:</span> <span class="pre">attempted</span> <span class="pre">relative</span> <span class="pre">import</span> <span class="pre">with</span> <span class="pre">no</span> <span class="pre">known</span> <span class="pre">parent</span> <span class="pre">package</span></code><a class="headerlink" href="#importerror-attempted-relative-import-with-no-known-parent-package" title="Link to this heading">#</a></h3>
+<p>This almost always occurs when you try to run a specific script directly without running the python package i.e. <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">path/to/project/</span></code> vs <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">path/to/project/file.py</span></code></p>
+<div class="dropdown admonition">
+<p class="admonition-title"><strong>main</strong> python file</p>
+<p>The purpose of this file is to tell our python package how to run the code.</p>
+<p>You can execute <strong>main</strong>.py as if it were a python module, fixing the above import errors.</p>
+<p>Like so:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>`python /home/mbo/repos/scanreader/scanreader/__main__.py`
+</pre></div>
+</div>
+<p>Equivlent to:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>`python -m /home/mbo/repos/scanreader/scanreader/`
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+<hr class="docutils" />
+<section id="system-information">
+<h2>System Information<a class="headerlink" href="#system-information" title="Link to this heading">#</a></h2>
+<p><a class="reference external" href="https://github.com/cloudmesh/cloudmesh-cmd5">cloudmesh-cmd5</a> is a helpful library to view system information.</p>
+<p>Install via <a class="reference external" href="https://pypi.org/project/cloudmesh-sys/">pip</a>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">cloudmesh</span><span class="o">-</span><span class="n">sys</span>
+</pre></div>
+</div>
+<div class="pst-scrollable-table-container"><table class="table table-center" id="user-information">
+<caption><span class="caption-text">System Information</span><a class="headerlink" href="#user-information" title="Link to this table">#</a></caption>
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>Attribute</p></th>
+<th class="head text-left"><p>Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p>BUG_REPORT_URL</p></td>
+<td class="text-left"><p>“https://bugs.launchpad.net/ubuntu/”</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>DISTRIB_CODENAME</p></td>
+<td class="text-left"><p>jammy</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>DISTRIB_DESCRIPTION</p></td>
+<td class="text-left"><p>“Ubuntu 22.04.4 LTS”</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>DISTRIB_ID</p></td>
+<td class="text-left"><p>Ubuntu</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>DISTRIB_RELEASE</p></td>
+<td class="text-left"><p>22.04</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>HOME_URL</p></td>
+<td class="text-left"><p>“https://www.ubuntu.com/”</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>ID</p></td>
+<td class="text-left"><p>ubuntu</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>ID_LIKE</p></td>
+<td class="text-left"><p>debian</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>NAME</p></td>
+<td class="text-left"><p>“Ubuntu”</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>PRETTY_NAME</p></td>
+<td class="text-left"><p>“Ubuntu 22.04.4 LTS”</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>PRIVACY_POLICY_URL</p></td>
+<td class="text-left"><p>“https://www.ubuntu.com/legal/terms-and-policies/privacy-policy”</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>SUPPORT_URL</p></td>
+<td class="text-left"><p>“https://help.ubuntu.com/”</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>UBUNTU_CODENAME</p></td>
+<td class="text-left"><p>jammy</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>VERSION</p></td>
+<td class="text-left"><p>“22.04.4 LTS (Jammy Jellyfish)”</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>VERSION_CODENAME</p></td>
+<td class="text-left"><p>jammy</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>VERSION_ID</p></td>
+<td class="text-left"><p>“22.04”</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>cpu</p></td>
+<td class="text-left"><p>13th Gen Intel(R) Core(TM) i9-13900KS</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>cpu_cores</p></td>
+<td class="text-left"><p>16</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>cpu_count</p></td>
+<td class="text-left"><p>32</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>cpu_threads</p></td>
+<td class="text-left"><p>32</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>date</p></td>
+<td class="text-left"><p>2024-08-15 15:59:58.462764</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>frequency</p></td>
+<td class="text-left"><p>scpufreq(current=3187.198999999998, min=0.0, max=0.0)</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>mem.active</p></td>
+<td class="text-left"><p>248.8 MiB</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>mem.available</p></td>
+<td class="text-left"><p>56.3 GiB</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>mem.free</p></td>
+<td class="text-left"><p>55.7 GiB</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>mem.inactive</p></td>
+<td class="text-left"><p>5.8 GiB</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>mem.percent</p></td>
+<td class="text-left"><p>10.2 %</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>mem.total</p></td>
+<td class="text-left"><p>62.7 GiB</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>mem.used</p></td>
+<td class="text-left"><p>5.7 GiB</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>platform.version</p></td>
+<td class="text-left"><p>#1 SMP Thu Mar 7 03:22:57 UTC 2024</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>python</p></td>
+<td class="text-left"><p>3.11.9</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>python.pip</p></td>
+<td class="text-left"><p>24.2</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>python.version</p></td>
+<td class="text-left"><p>3.11.9</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>sys.platform</p></td>
+<td class="text-left"><p>linux</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>uname.machine</p></td>
+<td class="text-left"><p>x86_64</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>uname.node</p></td>
+<td class="text-left"><p>RBO-C2</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>uname.processor</p></td>
+<td class="text-left"><p>x86_64</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>uname.release</p></td>
+<td class="text-left"><p>5.15.150.1-microsoft-standard-WSL2</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>uname.system</p></td>
+<td class="text-left"><p>Linux</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>uname.version</p></td>
+<td class="text-left"><p>#1 SMP Thu Mar 7 03:22:57 UTC 2024</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>user</p></td>
+<td class="text-left"><p>mbo</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>+———————+——————————————————————————-+</p></td>
+<td class="text-left"><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="faq">
+<h2>FAQ<a class="headerlink" href="#faq" title="Link to this heading">#</a></h2>
+<section id="foreward-slash-or-backwards-slash">
+<h3>1. Foreward slash or backwards slash<a class="headerlink" href="#foreward-slash-or-backwards-slash" title="Link to this heading">#</a></h3>
+<p><strong>When in doubt, use a <code class="docutils literal notranslate"><span class="pre">/</span></code> foreward slash.</strong></p>
+<p>This will work for windows <code class="docutils literal notranslate"><span class="pre">C:/Users/</span></code> without needing a double backslash using <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">`pathlib.Path()</a> (built into python).</p>
+<p>This will automatically return you a <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath">Windows Path</a> or a <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.WindowsPath">PosixPath</a>.</p>
+<div class="dropdown admonition">
+<p class="admonition-title">Filepaths on <a class="reference external" href="https://en.wikipedia.org/wiki/Windows_Subsystem_for_Linux">WSL</a></p>
+<p>Be sure to not confuse your wsl path <code class="docutils literal notranslate"><span class="pre">//$wsl/home/MBO</span></code> with your windows home path <code class="docutils literal notranslate"><span class="pre">C:/Users/MBO</span></code>.</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">Data path inputs</span><a class="headerlink" href="#id1" title="Link to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># this works on any operating system, any filepath structure</span>
+<span class="n">data_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">()</span><span class="o">.</span><span class="n">home</span><span class="p">()</span> <span class="o">/</span> <span class="s1">&#39;Documents&#39;</span> <span class="o">/</span> <span class="s1">&#39;data&#39;</span> <span class="o">/</span> <span class="s1">&#39;high_res&#39;</span>
+
+<span class="n">raw_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">data_path</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;*.tif*&#39;</span><span class="p">)]</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Code Snippets</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#tutorial">Tutorial</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#contents">Contents</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#caiman-parameters">CaImAn Parameters</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#troubleshooting">Troubleshooting</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#filepaths-and-data-directories">Filepaths and data directories</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#importerror-attempted-relative-import-with-no-known-parent-package"><code class="docutils literal notranslate"><span class="pre">ImportError:</span> <span class="pre">attempted</span> <span class="pre">relative</span> <span class="pre">import</span> <span class="pre">with</span> <span class="pre">no</span> <span class="pre">known</span> <span class="pre">parent</span> <span class="pre">package</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#system-information">System Information</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#faq">FAQ</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#foreward-slash-or-backwards-slash">1. Foreward slash or backwards slash</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Author name not set
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, Elizabeth R. Miller Brain Observatory | The Rockefeller University. All Rights Reserved.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

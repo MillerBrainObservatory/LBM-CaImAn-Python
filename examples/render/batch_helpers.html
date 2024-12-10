@@ -1,0 +1,1357 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Batch Helpers &#8212; LBM-CaImAn-Python</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!-- 
+    this give us a css class that will be invisible only if js is disabled 
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=475cc00c" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
+
+    <script src="../../_static/documentation_options.js?v=e4c16dfd"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
+    <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
+    <script defer="defer" src="../../_static/tippy/examples/render/batch_helpers.04f6ef23-a77d-43c9-a445-00b753d491d1.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'examples/render/batch_helpers';</script>
+    <link rel="icon" href="../../_static/icon_caiman_python.svg"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Registration" href="motion_correction.html" />
+    <link rel="prev" title="Image Assembly" href="assembly.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/lcp_logo.svg" class="logo__image only-light" alt="LBM-CaImAn-Python - Home"/>
+    <img src="../../_static/lcp_logo.svg" class="logo__image only-dark pst-js-only" alt="LBM-CaImAn-Python - Home"/>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://millerbrainobservatory.github.io/" title="MBO User Hub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../.././_static/icon_mbo_home.png" class="icon-link-image" alt="MBO User Hub"/></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/MillerBrainObservatory/" title="MBO Github" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">MBO Github</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://mbo.rockefeller.edu/contact/" title="Connect with MBO" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-regular fa-address-card fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Connect with MBO</span></a>
+        </li>
+</ul></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../user_guide/index.html">User Guide</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/assembly.html">1. Image Assembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/batch.html">2. Batch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/registration.html">3. Registration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/segmentation.html">4. Segmentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/collation.html">5. Collation</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../index.html">Tutorial</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="assembly.html">Image Assembly</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Batch Helpers</a></li>
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="motion_correction.html">Registration</a></li>
+
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="segmentation.html">Segmentation</a></li>
+
+
+
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="collation.html">Collate Planes</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../glossary.html">Glossary</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/MillerBrainObservatory/LBM-CaImAn-Python/blob/master/docs/examples/render/batch_helpers.ipynb?plain=1" target="_blank"
+   class="btn btn-sm btn-source-file-button dropdown-item"
+   title="Show source"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-code"></i>
+  </span>
+<span class="btn__text-container">Show source</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/MillerBrainObservatory/LBM-CaImAn-Python/edit/master/docs/examples/render/batch_helpers.ipynb" target="_blank"
+   class="btn btn-sm btn-source-edit-button dropdown-item"
+   title="Suggest edit"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-pencil-alt"></i>
+  </span>
+<span class="btn__text-container">Suggest edit</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/MillerBrainObservatory/LBM-CaImAn-Python/issues/new?title=Issue%20on%20page%20%2Fexamples/render/batch_helpers.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/examples/render/batch_helpers.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Batch Helpers</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Batch Helpers</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#manage-batch-and-dataframe-filepath-locations">Manage batch and dataframe filepath locations</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#remove-rows-with-no-output-accidental-entries">Remove rows with no output (accidental entries)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selectively-remove-rows-by-index">Selectively remove rows by index</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#add-a-comment">Add a <code class="docutils literal notranslate"><span class="pre">comment</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#change-the-item-name">Change the <code class="docutils literal notranslate"><span class="pre">item_name</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#change-correct-input-movie-path">Change/correct <code class="docutils literal notranslate"><span class="pre">input_movie_path</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#convert-intermediate-mmmap-to-zarr">Convert intermediate <code class="docutils literal notranslate"><span class="pre">.mmmap</span></code> to <code class="docutils literal notranslate"><span class="pre">.zarr</span></code></a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#rechunk-outputs-for-fast-frame-access-view-movies">Rechunk outputs for fast frame access (view movies)</a></li>
+</ul>
+
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="batch-helpers">
+<h1>Batch Helpers<a class="headerlink" href="#batch-helpers" title="Link to this heading">#</a></h1>
+<p>Notebook cells to help:</p>
+<ul class="simple">
+<li><p>manage your results for motion correction and segmentation.</p></li>
+<li><p>remove results from a dataframe</p></li>
+<li><p>correct filenames</p></li>
+<li><p>convert intermediate .mmemap to other filetypes</p></li>
+<li><p>rechunk outputs for faster file access</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span> <span class="nn">lbm_caiman_python</span> <span class="k">as</span> <span class="nn">lcp</span>
+
+<span class="kn">import</span> <span class="nn">dask.array</span> <span class="k">as</span> <span class="nn">da</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">zarr</span>
+
+<span class="kn">import</span> <span class="nn">mesmerize_core</span> <span class="k">as</span> <span class="nn">mc</span>
+<span class="kn">from</span> <span class="nn">mesmerize_core.caiman_extensions.cnmf</span> <span class="kn">import</span> <span class="n">cnmf_cache</span>
+<span class="kn">from</span> <span class="nn">caiman.source_extraction.cnmf</span> <span class="kn">import</span> <span class="n">cnmf</span><span class="p">,</span> <span class="n">params</span>
+
+<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;nt&quot;</span><span class="p">:</span>
+    <span class="c1"># disable the cache on windows, this will be automatic in a future version</span>
+    <span class="n">cnmf_cache</span><span class="o">.</span><span class="n">set_maxsize</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="n">pd</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">max_colwidth</span> <span class="o">=</span> <span class="mi">120</span>
+
+<span class="c1"># set up logging</span>
+<span class="n">debug</span> <span class="o">=</span> <span class="kc">True</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;caiman&quot;</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+<span class="n">handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">()</span>
+<span class="n">log_format</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%(relativeCreated)12d</span><span class="s2"> [</span><span class="si">%(filename)s</span><span class="s2">:</span><span class="si">%(funcName)10s</span><span class="s2">():</span><span class="si">%(lineno)s</span><span class="s2">] [</span><span class="si">%(process)d</span><span class="s2">] </span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">log_format</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+   <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;caiman&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="manage-batch-and-dataframe-filepath-locations">
+<h1>Manage batch and dataframe filepath locations<a class="headerlink" href="#manage-batch-and-dataframe-filepath-locations" title="Link to this heading">#</a></h1>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">parent_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">()</span><span class="o">.</span><span class="n">home</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;caiman_data&quot;</span>
+<span class="n">data_path</span> <span class="o">=</span> <span class="n">parent_path</span> <span class="o">/</span> <span class="s1">&#39;out&#39;</span>  <span class="c1"># where the output files from the assembly step are located</span>
+<span class="n">batch_path</span> <span class="o">=</span> <span class="n">data_path</span> <span class="o">/</span> <span class="s1">&#39;batch.pickle&#39;</span>
+
+<span class="n">mc</span><span class="o">.</span><span class="n">set_parent_raw_data_path</span><span class="p">(</span><span class="n">data_path</span><span class="p">)</span>
+
+<span class="n">df</span><span class="o">=</span><span class="n">mc</span><span class="o">.</span><span class="n">load_batch</span><span class="p">(</span><span class="n">batch_path</span><span class="p">)</span>
+<span class="n">df</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>algo</th>
+      <th>item_name</th>
+      <th>input_movie_path</th>
+      <th>params</th>
+      <th>outputs</th>
+      <th>added_time</th>
+      <th>ran_time</th>
+      <th>algo_duration</th>
+      <th>comments</th>
+      <th>uuid</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>mcorr</td>
+      <td>mcorr</td>
+      <td>plane_10.tiff</td>
+      <td>{'main': {'dxy': (1.04, 1.0), 'fr': 9.60806, 'max_shifts': (32, 32), 'strides': (64, 64), 'overlaps': (32, 32), 'max...</td>
+      <td>{'mean-projection-path': 2bfd5a28-202a-426d-b74b-02105ea885a5\2bfd5a28-202a-426d-b74b-02105ea885a5_mean_projection.n...</td>
+      <td>2024-12-06T10:59:47</td>
+      <td>2024-12-06T11:01:36</td>
+      <td>105.4 sec</td>
+      <td>None</td>
+      <td>2bfd5a28-202a-426d-b74b-02105ea885a5</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>mcorr</td>
+      <td>plane_1.tiff</td>
+      <td>plane_1.tiff</td>
+      <td>{'main': {'dxy': (1.04, 1.0), 'fr': 9.60806, 'max_shifts': (32, 32), 'strides': (64, 64), 'overlaps': (32, 32), 'max...</td>
+      <td>None</td>
+      <td>2024-12-06T12:04:14</td>
+      <td>None</td>
+      <td>None</td>
+      <td>None</td>
+      <td>064f4b03-678f-4bdd-af1c-c0ac9cc62650</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>mcorr</td>
+      <td>plane_11.tiff</td>
+      <td>plane_11.tiff</td>
+      <td>{'main': {'dxy': (1.04, 1.0), 'fr': 9.60806, 'max_shifts': (32, 32), 'strides': (64, 64), 'overlaps': (32, 32), 'max...</td>
+      <td>None</td>
+      <td>2024-12-06T12:04:14</td>
+      <td>None</td>
+      <td>None</td>
+      <td>None</td>
+      <td>63dd8cb1-9cba-4e0f-9931-ec401cbcb07b</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>mcorr</td>
+      <td>plane_12.tiff</td>
+      <td>plane_12.tiff</td>
+      <td>{'main': {'dxy': (1.04, 1.0), 'fr': 9.60806, 'max_shifts': (32, 32), 'strides': (64, 64), 'overlaps': (32, 32), 'max...</td>
+      <td>None</td>
+      <td>2024-12-06T12:04:14</td>
+      <td>None</td>
+      <td>None</td>
+      <td>None</td>
+      <td>a1507467-fe53-492c-8975-fb09d871706a</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>mcorr</td>
+      <td>plane_13.tiff</td>
+      <td>plane_13.tiff</td>
+      <td>{'main': {'dxy': (1.04, 1.0), 'fr': 9.60806, 'max_shifts': (32, 32), 'strides': (64, 64), 'overlaps': (32, 32), 'max...</td>
+      <td>None</td>
+      <td>2024-12-06T12:04:14</td>
+      <td>None</td>
+      <td>None</td>
+      <td>None</td>
+      <td>95e49c3b-4bf0-4dff-9eff-9e7727ed5692</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>mcorr</td>
+      <td>plane_14.tiff</td>
+      <td>plane_14.tiff</td>
+      <td>{'main': {'dxy': (1.04, 1.0), 'fr': 9.60806, 'max_shifts': (32, 32), 'strides': (64, 64), 'overlaps': (32, 32), 'max...</td>
+      <td>None</td>
+      <td>2024-12-06T12:04:14</td>
+      <td>None</td>
+      <td>None</td>
+      <td>None</td>
+      <td>bd6f420f-8c9f-441e-ae32-82e1fbfbb6c0</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>mcorr</td>
+      <td>plane_15.tiff</td>
+      <td>plane_15.tiff</td>
+      <td>{'main': {'dxy': (1.04, 1.0), 'fr': 9.60806, 'max_shifts': (32, 32), 'strides': (64, 64), 'overlaps': (32, 32), 'max...</td>
+      <td>None</td>
+      <td>2024-12-06T12:04:14</td>
+      <td>None</td>
+      <td>None</td>
+      <td>None</td>
+      <td>2ffac9e6-1ff0-4525-8040-549b578af49b</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>mcorr</td>
+      <td>plane_16.tiff</td>
+      <td>plane_16.tiff</td>
+      <td>{'main': {'dxy': (1.04, 1.0), 'fr': 9.60806, 'max_shifts': (32, 32), 'strides': (64, 64), 'overlaps': (32, 32), 'max...</td>
+      <td>None</td>
+      <td>2024-12-06T12:04:14</td>
+      <td>None</td>
+      <td>None</td>
+      <td>None</td>
+      <td>5256d5b0-29bb-46df-9410-6a4e56811f01</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>mcorr</td>
+      <td>plane_17.tiff</td>
+      <td>plane_17.tiff</td>
+      <td>{'main': {'dxy': (1.04, 1.0), 'fr': 9.60806, 'max_shifts': (32, 32), 'strides': (64, 64), 'overlaps': (32, 32), 'max...</td>
+      <td>None</td>
+      <td>2024-12-06T12:04:14</td>
+      <td>None</td>
+      <td>None</td>
+      <td>None</td>
+      <td>b837754b-0174-4511-a16a-3804c532aa83</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>mcorr</td>
+      <td>plane_18.tiff</td>
+      <td>plane_18.tiff</td>
+      <td>{'main': {'dxy': (1.04, 1.0), 'fr': 9.60806, 'max_shifts': (32, 32), 'strides': (64, 64), 'overlaps': (32, 32), 'max...</td>
+      <td>None</td>
+      <td>2024-12-06T12:04:14</td>
+      <td>None</td>
+      <td>None</td>
+      <td>None</td>
+      <td>919f7d1a-7e4c-4c8e-aec0-575168504704</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>mcorr</td>
+      <td>plane_19.tiff</td>
+      <td>plane_19.tiff</td>
+      <td>{'main': {'dxy': (1.04, 1.0), 'fr': 9.60806, 'max_shifts': (32, 32), 'strides': (64, 64), 'overlaps': (32, 32), 'max...</td>
+      <td>None</td>
+      <td>2024-12-06T12:04:14</td>
+      <td>None</td>
+      <td>None</td>
+      <td>None</td>
+      <td>a1f62086-d346-46b4-bc35-8aca304f7e6a</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>mcorr</td>
+      <td>plane_2.tiff</td>
+      <td>plane_2.tiff</td>
+      <td>{'main': {'dxy': (1.04, 1.0), 'fr': 9.60806, 'max_shifts': (32, 32), 'strides': (64, 64), 'overlaps': (32, 32), 'max...</td>
+      <td>None</td>
+      <td>2024-12-06T12:04:14</td>
+      <td>None</td>
+      <td>None</td>
+      <td>None</td>
+      <td>0898476f-0545-4d66-8419-0654c3667f54</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>mcorr</td>
+      <td>plane_20.tiff</td>
+      <td>plane_20.tiff</td>
+      <td>{'main': {'dxy': (1.04, 1.0), 'fr': 9.60806, 'max_shifts': (32, 32), 'strides': (64, 64), 'overlaps': (32, 32), 'max...</td>
+      <td>None</td>
+      <td>2024-12-06T12:04:14</td>
+      <td>None</td>
+      <td>None</td>
+      <td>None</td>
+      <td>6a1093c9-5a91-4ea5-97b0-7ab3676e6d22</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>mcorr</td>
+      <td>plane_21.tiff</td>
+      <td>plane_21.tiff</td>
+      <td>{'main': {'dxy': (1.04, 1.0), 'fr': 9.60806, 'max_shifts': (32, 32), 'strides': (64, 64), 'overlaps': (32, 32), 'max...</td>
+      <td>None</td>
+      <td>2024-12-06T12:04:14</td>
+      <td>None</td>
+      <td>None</td>
+      <td>None</td>
+      <td>af4185d2-8bb4-4737-bc05-c898eefe65ee</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>mcorr</td>
+      <td>plane_22.tiff</td>
+      <td>plane_22.tiff</td>
+      <td>{'main': {'dxy': (1.04, 1.0), 'fr': 9.60806, 'max_shifts': (32, 32), 'strides': (64, 64), 'overlaps': (32, 32), 'max...</td>
+      <td>None</td>
+      <td>2024-12-06T12:04:14</td>
+      <td>None</td>
+      <td>None</td>
+      <td>None</td>
+      <td>0af436a5-23f3-4259-95a3-598bb55bc3ed</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>mcorr</td>
+      <td>plane_23.tiff</td>
+      <td>plane_23.tiff</td>
+      <td>{'main': {'dxy': (1.04, 1.0), 'fr': 9.60806, 'max_shifts': (32, 32), 'strides': (64, 64), 'overlaps': (32, 32), 'max...</td>
+      <td>None</td>
+      <td>2024-12-06T12:04:14</td>
+      <td>None</td>
+      <td>None</td>
+      <td>None</td>
+      <td>8a67fd88-a3b7-422c-8dbc-76848a5b17d4</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>mcorr</td>
+      <td>plane_24.tiff</td>
+      <td>plane_24.tiff</td>
+      <td>{'main': {'dxy': (1.04, 1.0), 'fr': 9.60806, 'max_shifts': (32, 32), 'strides': (64, 64), 'overlaps': (32, 32), 'max...</td>
+      <td>None</td>
+      <td>2024-12-06T12:04:14</td>
+      <td>None</td>
+      <td>None</td>
+      <td>None</td>
+      <td>4c799ba4-d2da-4815-ab4d-cd1fd6c2cb96</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>mcorr</td>
+      <td>plane_25.tiff</td>
+      <td>plane_25.tiff</td>
+      <td>{'main': {'dxy': (1.04, 1.0), 'fr': 9.60806, 'max_shifts': (32, 32), 'strides': (64, 64), 'overlaps': (32, 32), 'max...</td>
+      <td>None</td>
+      <td>2024-12-06T12:04:14</td>
+      <td>None</td>
+      <td>None</td>
+      <td>None</td>
+      <td>3ac47e39-02e7-4bbe-bb52-2929a39fd5bb</td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>mcorr</td>
+      <td>plane_26.tiff</td>
+      <td>plane_26.tiff</td>
+      <td>{'main': {'dxy': (1.04, 1.0), 'fr': 9.60806, 'max_shifts': (32, 32), 'strides': (64, 64), 'overlaps': (32, 32), 'max...</td>
+      <td>None</td>
+      <td>2024-12-06T12:04:14</td>
+      <td>None</td>
+      <td>None</td>
+      <td>None</td>
+      <td>2a82e18b-2915-4443-807a-764d81aea82c</td>
+    </tr>
+    <tr>
+      <th>19</th>
+      <td>mcorr</td>
+      <td>plane_27.tiff</td>
+      <td>plane_27.tiff</td>
+      <td>{'main': {'dxy': (1.04, 1.0), 'fr': 9.60806, 'max_shifts': (32, 32), 'strides': (64, 64), 'overlaps': (32, 32), 'max...</td>
+      <td>None</td>
+      <td>2024-12-06T12:04:14</td>
+      <td>None</td>
+      <td>None</td>
+      <td>None</td>
+      <td>d36e9241-9b9a-43ae-9802-c956abc57323</td>
+    </tr>
+    <tr>
+      <th>20</th>
+      <td>mcorr</td>
+      <td>plane_28.tiff</td>
+      <td>plane_28.tiff</td>
+      <td>{'main': {'dxy': (1.04, 1.0), 'fr': 9.60806, 'max_shifts': (32, 32), 'strides': (64, 64), 'overlaps': (32, 32), 'max...</td>
+      <td>None</td>
+      <td>2024-12-06T12:04:14</td>
+      <td>None</td>
+      <td>None</td>
+      <td>None</td>
+      <td>74358316-c150-498f-85dd-8ed5803676a1</td>
+    </tr>
+    <tr>
+      <th>21</th>
+      <td>mcorr</td>
+      <td>plane_29.tiff</td>
+      <td>plane_29.tiff</td>
+      <td>{'main': {'dxy': (1.04, 1.0), 'fr': 9.60806, 'max_shifts': (32, 32), 'strides': (64, 64), 'overlaps': (32, 32), 'max...</td>
+      <td>None</td>
+      <td>2024-12-06T12:04:14</td>
+      <td>None</td>
+      <td>None</td>
+      <td>None</td>
+      <td>b287dd1a-17a7-43d4-b793-a75cf94eeceb</td>
+    </tr>
+    <tr>
+      <th>22</th>
+      <td>mcorr</td>
+      <td>plane_3.tiff</td>
+      <td>plane_3.tiff</td>
+      <td>{'main': {'dxy': (1.04, 1.0), 'fr': 9.60806, 'max_shifts': (32, 32), 'strides': (64, 64), 'overlaps': (32, 32), 'max...</td>
+      <td>None</td>
+      <td>2024-12-06T12:04:14</td>
+      <td>None</td>
+      <td>None</td>
+      <td>None</td>
+      <td>f70f7b62-bb85-48cd-9a6a-b95419b0efaf</td>
+    </tr>
+    <tr>
+      <th>23</th>
+      <td>mcorr</td>
+      <td>plane_30.tiff</td>
+      <td>plane_30.tiff</td>
+      <td>{'main': {'dxy': (1.04, 1.0), 'fr': 9.60806, 'max_shifts': (32, 32), 'strides': (64, 64), 'overlaps': (32, 32), 'max...</td>
+      <td>None</td>
+      <td>2024-12-06T12:04:14</td>
+      <td>None</td>
+      <td>None</td>
+      <td>None</td>
+      <td>84dc46ca-0cb0-44d4-8be1-00b0aa739c1c</td>
+    </tr>
+    <tr>
+      <th>24</th>
+      <td>mcorr</td>
+      <td>plane_4.tiff</td>
+      <td>plane_4.tiff</td>
+      <td>{'main': {'dxy': (1.04, 1.0), 'fr': 9.60806, 'max_shifts': (32, 32), 'strides': (64, 64), 'overlaps': (32, 32), 'max...</td>
+      <td>None</td>
+      <td>2024-12-06T12:04:14</td>
+      <td>None</td>
+      <td>None</td>
+      <td>None</td>
+      <td>1edf7874-7aba-4081-83a7-8687b7d95814</td>
+    </tr>
+    <tr>
+      <th>25</th>
+      <td>mcorr</td>
+      <td>plane_5.tiff</td>
+      <td>plane_5.tiff</td>
+      <td>{'main': {'dxy': (1.04, 1.0), 'fr': 9.60806, 'max_shifts': (32, 32), 'strides': (64, 64), 'overlaps': (32, 32), 'max...</td>
+      <td>None</td>
+      <td>2024-12-06T12:04:14</td>
+      <td>None</td>
+      <td>None</td>
+      <td>None</td>
+      <td>171d8a95-f9e0-4ec4-9dc1-c3e23e4a2b59</td>
+    </tr>
+    <tr>
+      <th>26</th>
+      <td>mcorr</td>
+      <td>plane_6.tiff</td>
+      <td>plane_6.tiff</td>
+      <td>{'main': {'dxy': (1.04, 1.0), 'fr': 9.60806, 'max_shifts': (32, 32), 'strides': (64, 64), 'overlaps': (32, 32), 'max...</td>
+      <td>None</td>
+      <td>2024-12-06T12:04:14</td>
+      <td>None</td>
+      <td>None</td>
+      <td>None</td>
+      <td>7385c0d7-4069-4610-ad7c-5c4706e74749</td>
+    </tr>
+    <tr>
+      <th>27</th>
+      <td>mcorr</td>
+      <td>plane_7.tiff</td>
+      <td>plane_7.tiff</td>
+      <td>{'main': {'dxy': (1.04, 1.0), 'fr': 9.60806, 'max_shifts': (32, 32), 'strides': (64, 64), 'overlaps': (32, 32), 'max...</td>
+      <td>None</td>
+      <td>2024-12-06T12:04:14</td>
+      <td>None</td>
+      <td>None</td>
+      <td>None</td>
+      <td>c3a74f4f-0eec-4e85-bb64-f565c5f910da</td>
+    </tr>
+    <tr>
+      <th>28</th>
+      <td>mcorr</td>
+      <td>plane_8.tiff</td>
+      <td>plane_8.tiff</td>
+      <td>{'main': {'dxy': (1.04, 1.0), 'fr': 9.60806, 'max_shifts': (32, 32), 'strides': (64, 64), 'overlaps': (32, 32), 'max...</td>
+      <td>None</td>
+      <td>2024-12-06T12:04:14</td>
+      <td>None</td>
+      <td>None</td>
+      <td>None</td>
+      <td>aaddf7ef-8663-49a0-bcd2-543e657ae8af</td>
+    </tr>
+    <tr>
+      <th>29</th>
+      <td>mcorr</td>
+      <td>plane_9.tiff</td>
+      <td>plane_9.tiff</td>
+      <td>{'main': {'dxy': (1.04, 1.0), 'fr': 9.60806, 'max_shifts': (32, 32), 'strides': (64, 64), 'overlaps': (32, 32), 'max...</td>
+      <td>None</td>
+      <td>2024-12-06T12:04:14</td>
+      <td>None</td>
+      <td>None</td>
+      <td>None</td>
+      <td>e360dc55-41ae-44d8-a9f4-e80e0997e306</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<section id="remove-rows-with-no-output-accidental-entries">
+<h2>Remove rows with no output (accidental entries)<a class="headerlink" href="#remove-rows-with-no-output-accidental-entries" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+    <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;outputs&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">caiman</span><span class="o">.</span><span class="n">remove_item</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">uuid</span><span class="p">)</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">caiman</span><span class="o">.</span><span class="n">reload_from_disk</span><span class="p">()</span>
+<span class="n">df</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>algo</th>
+      <th>item_name</th>
+      <th>input_movie_path</th>
+      <th>params</th>
+      <th>outputs</th>
+      <th>added_time</th>
+      <th>ran_time</th>
+      <th>algo_duration</th>
+      <th>comments</th>
+      <th>uuid</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>mcorr</td>
+      <td>mcorr</td>
+      <td>plane_10.tiff</td>
+      <td>{'main': {'dxy': (1.04, 1.0), 'fr': 9.60806, 'max_shifts': (32, 32), 'strides': (64, 64), 'overlaps': (32, 32), 'max...</td>
+      <td>{'mean-projection-path': 2bfd5a28-202a-426d-b74b-02105ea885a5\2bfd5a28-202a-426d-b74b-02105ea885a5_mean_projection.n...</td>
+      <td>2024-12-06T10:59:47</td>
+      <td>2024-12-06T11:01:36</td>
+      <td>105.4 sec</td>
+      <td>None</td>
+      <td>2bfd5a28-202a-426d-b74b-02105ea885a5</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="selectively-remove-rows-by-index">
+<h2>Selectively remove rows by index<a class="headerlink" href="#selectively-remove-rows-by-index" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">good_rows</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">31</span><span class="p">)</span>
+<span class="n">good_rows</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([ 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16,
+       17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30])
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># good_rows = np.concatenate(([0, 1], np.arange(2, 30)))</span>
+<span class="c1"># good_rows = [0, 1, 2]</span>
+
+<span class="n">rows_keep</span> <span class="o">=</span> <span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">uuid</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">good_rows</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+    <span class="k">if</span> <span class="n">row</span><span class="o">.</span><span class="n">uuid</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">rows_keep</span><span class="p">:</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">caiman</span><span class="o">.</span><span class="n">remove_item</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">uuid</span><span class="p">)</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">caiman</span><span class="o">.</span><span class="n">reload_from_disk</span><span class="p">()</span>
+<span class="n">df</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="add-a-comment">
+<h2>Add a <code class="docutils literal notranslate"><span class="pre">comment</span></code><a class="headerlink" href="#add-a-comment" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">comment_row</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="c1">## Add comments to dataframe</span>
+<span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">comment_row</span><span class="p">]</span><span class="o">.</span><span class="n">comments</span> <span class="o">=</span> <span class="s2">&quot;Motion correction round 1!&quot;</span>
+<span class="n">df</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>algo</th>
+      <th>item_name</th>
+      <th>input_movie_path</th>
+      <th>params</th>
+      <th>outputs</th>
+      <th>added_time</th>
+      <th>ran_time</th>
+      <th>algo_duration</th>
+      <th>comments</th>
+      <th>uuid</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>mcorr</td>
+      <td>extracted_plane_1</td>
+      <td>tiff\extracted_plane_1.tif</td>
+      <td>{'main': {'var_name_hdf5': 'mov', 'max_shifts': (10, 10), 'strides': (48, 48), 'overlaps': (24, 24), 'max_deviation_...</td>
+      <td>{'mean-projection-path': b32f41bf-a9a5-4965-be7c-e6779e854328\b32f41bf-a9a5-4965-be7c-e6779e854328_mean_projection.n...</td>
+      <td>2024-09-26T11:56:54</td>
+      <td>2024-09-26T12:02:55</td>
+      <td>77.3 sec</td>
+      <td>Motion correction round 1!</td>
+      <td>b32f41bf-a9a5-4965-be7c-e6779e854328</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>cnmf</td>
+      <td>cnmf_1</td>
+      <td>b32f41bf-a9a5-4965-be7c-e6779e854328\b32f41bf-a9a5-4965-be7c-e6779e854328-extracted_plane_1_els__d1_583_d2_536_d3_1_...</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'decay_time': 0.4, 'strides': (48, 48), 'overlaps': (24, 24), 'max_shifts':...</td>
+      <td>{'mean-projection-path': a057e39e-a2df-41d3-8217-83c9cd7ffb6d\a057e39e-a2df-41d3-8217-83c9cd7ffb6d_mean_projection.n...</td>
+      <td>2024-09-26T16:26:20</td>
+      <td>2024-09-26T16:28:48</td>
+      <td>143.18 sec</td>
+      <td>None</td>
+      <td>a057e39e-a2df-41d3-8217-83c9cd7ffb6d</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>cnmf</td>
+      <td>extracted_plane_1</td>
+      <td>b32f41bf-a9a5-4965-be7c-e6779e854328\b32f41bf-a9a5-4965-be7c-e6779e854328-extracted_plane_1_els__d1_583_d2_536_d3_1_...</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'decay_time': 0.4, 'strides': (48, 48), 'overlaps': (24, 24), 'max_shifts':...</td>
+      <td>{'mean-projection-path': 5cb543ec-5358-4b35-83cf-bfd19fa06a68\5cb543ec-5358-4b35-83cf-bfd19fa06a68_mean_projection.n...</td>
+      <td>2024-09-27T14:48:59</td>
+      <td>2024-09-27T14:50:30</td>
+      <td>80.14 sec</td>
+      <td>None</td>
+      <td>5cb543ec-5358-4b35-83cf-bfd19fa06a68</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>cnmf</td>
+      <td>extracted_plane_1</td>
+      <td>b32f41bf-a9a5-4965-be7c-e6779e854328\b32f41bf-a9a5-4965-be7c-e6779e854328-extracted_plane_1_els__d1_583_d2_536_d3_1_...</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'decay_time': 0.4, 'strides': (48, 48), 'overlaps': (24, 24), 'max_shifts':...</td>
+      <td>{'mean-projection-path': df52a609-d986-4bc0-a0a2-526cbfda057d\df52a609-d986-4bc0-a0a2-526cbfda057d_mean_projection.n...</td>
+      <td>2024-09-27T14:48:59</td>
+      <td>2024-09-27T14:51:46</td>
+      <td>75.93 sec</td>
+      <td>None</td>
+      <td>df52a609-d986-4bc0-a0a2-526cbfda057d</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>cnmf</td>
+      <td>extracted_plane_1</td>
+      <td>b32f41bf-a9a5-4965-be7c-e6779e854328\b32f41bf-a9a5-4965-be7c-e6779e854328-extracted_plane_1_els__d1_583_d2_536_d3_1_...</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'decay_time': 0.4, 'strides': (48, 48), 'overlaps': (24, 24), 'max_shifts':...</td>
+      <td>{'mean-projection-path': b68a8efe-1a3b-4392-b6e7-416312f1f945\b68a8efe-1a3b-4392-b6e7-416312f1f945_mean_projection.n...</td>
+      <td>2024-09-27T14:48:59</td>
+      <td>2024-09-30T10:30:15</td>
+      <td>96.62 sec</td>
+      <td>None</td>
+      <td>b68a8efe-1a3b-4392-b6e7-416312f1f945</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>cnmf</td>
+      <td>extracted_plane_1</td>
+      <td>b32f41bf-a9a5-4965-be7c-e6779e854328\b32f41bf-a9a5-4965-be7c-e6779e854328-extracted_plane_1_els__d1_583_d2_536_d3_1_...</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'decay_time': 0.4, 'strides': (48, 48), 'overlaps': (24, 24), 'max_shifts':...</td>
+      <td>{'mean-projection-path': 15e6fb81-fac4-457b-96da-dbb8e2d7b669\15e6fb81-fac4-457b-96da-dbb8e2d7b669_mean_projection.n...</td>
+      <td>2024-09-27T14:48:59</td>
+      <td>2024-09-30T10:20:28</td>
+      <td>109.54 sec</td>
+      <td>None</td>
+      <td>15e6fb81-fac4-457b-96da-dbb8e2d7b669</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="change-the-item-name">
+<h2>Change the <code class="docutils literal notranslate"><span class="pre">item_name</span></code><a class="headerlink" href="#change-the-item-name" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">comment_row</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="c1">## Add comments to dataframe</span>
+<span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">comment_row</span><span class="p">]</span><span class="o">.</span><span class="n">item_name</span> <span class="o">=</span> <span class="s2">&quot;Motion correction round 1!&quot;</span>
+<span class="n">df</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="change-correct-input-movie-path">
+<h2>Change/correct <code class="docutils literal notranslate"><span class="pre">input_movie_path</span></code><a class="headerlink" href="#change-correct-input-movie-path" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>for example, add .zarr ext to directory for caiman compatibility</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">## Correct filenames</span>
+<span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+    <span class="n">row</span><span class="o">.</span><span class="n">input_movie_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">input_movie_path</span><span class="p">)</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s1">&#39;.zarr&#39;</span><span class="p">)</span>
+<span class="n">df</span><span class="o">.</span><span class="n">caiman</span><span class="o">.</span><span class="n">save_to_disk</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="convert-intermediate-mmmap-to-zarr">
+<h1>Convert intermediate <code class="docutils literal notranslate"><span class="pre">.mmmap</span></code> to <code class="docutils literal notranslate"><span class="pre">.zarr</span></code><a class="headerlink" href="#convert-intermediate-mmmap-to-zarr" title="Link to this heading">#</a></h1>
+<p>TODO: Move these to a separate ‘helpers’ notebook as they aren’t related specifically to batch management</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">res_path</span> <span class="o">=</span> <span class="n">movie_path</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s1">&#39;registered&#39;</span>
+<span class="n">res_path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">store</span> <span class="o">=</span> <span class="n">zarr</span><span class="o">.</span><span class="n">open_like</span><span class="p">(</span><span class="n">mcorr_movie</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">res_path</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,)</span>  <span class="c1"># read/write, create if it doesnt exist</span>
+<span class="n">store</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">mcorr_movie</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">store</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:,:])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.image.AxesImage at 0x7efe141db850&gt;
+</pre></div>
+</div>
+<img alt="../../_images/20593ec30994dc4c111d4431eb346193f9b87a149806b5550121aaf2e8bc26ae.png" src="../../_images/20593ec30994dc4c111d4431eb346193f9b87a149806b5550121aaf2e8bc26ae.png" />
+</div>
+</div>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="rechunk-outputs-for-fast-frame-access-view-movies">
+<h1>Rechunk outputs for fast frame access (view movies)<a class="headerlink" href="#rechunk-outputs-for-fast-frame-access-view-movies" title="Link to this heading">#</a></h1>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rechunked</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">rechunk</span><span class="p">(</span><span class="n">da</span><span class="o">.</span><span class="n">from_zarr</span><span class="p">(</span><span class="n">store</span><span class="p">),</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">},</span> <span class="n">block_size_limit</span><span class="o">=</span><span class="mf">1e8</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="assembly.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Image Assembly</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="motion_correction.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Registration</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Batch Helpers</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#manage-batch-and-dataframe-filepath-locations">Manage batch and dataframe filepath locations</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#remove-rows-with-no-output-accidental-entries">Remove rows with no output (accidental entries)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selectively-remove-rows-by-index">Selectively remove rows by index</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#add-a-comment">Add a <code class="docutils literal notranslate"><span class="pre">comment</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#change-the-item-name">Change the <code class="docutils literal notranslate"><span class="pre">item_name</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#change-correct-input-movie-path">Change/correct <code class="docutils literal notranslate"><span class="pre">input_movie_path</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#convert-intermediate-mmmap-to-zarr">Convert intermediate <code class="docutils literal notranslate"><span class="pre">.mmmap</span></code> to <code class="docutils literal notranslate"><span class="pre">.zarr</span></code></a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#rechunk-outputs-for-fast-frame-access-view-movies">Rechunk outputs for fast frame access (view movies)</a></li>
+</ul>
+
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Author name not set
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, Elizabeth R. Miller Brain Observatory | The Rockefeller University. All Rights Reserved.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
