@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from numpy.typing import ArrayLike
 
+
 def plot_with_scalebars(image: ArrayLike, pixel_resolution: float):
     """
     Plot a 2D image with scale bars of 5, 10, and 20 microns.
@@ -20,7 +21,7 @@ def plot_with_scalebars(image: ArrayLike, pixel_resolution: float):
     import matplotlib.patches as patches
 
     scale_bar_sizes = [5, 10, 20]
-    
+
     # Calculate the size of scale bars in pixels
     scale_bar_lengths = [int(size / pixel_resolution) for size in scale_bar_sizes]
 
@@ -42,7 +43,9 @@ def plot_with_scalebars(image: ArrayLike, pixel_resolution: float):
     plt.tight_layout()
     plt.show()
 
-def generate_patch_view(image: ArrayLike, pixel_resolution: float, target_patch_size: int=40, overlap_fraction: float=0.5):
+
+def generate_patch_view(image: ArrayLike, pixel_resolution: float, target_patch_size: int = 40,
+                        overlap_fraction: float = 0.5):
     """
     Generate a patch visualization for a 2D image with approximately square patches of a specified size in microns.
     Patches are evenly distributed across the image, using calculated strides and overlaps.
@@ -102,7 +105,6 @@ def generate_patch_view(image: ArrayLike, pixel_resolution: float, target_patch_
             rect_draw(patch_row, patch_col, color='white', alpha=0.2, ax=ax)
 
     ax.set_title(f"Stride: {stride} pixels (~{stride * pixel_resolution:.1f} μm)\n"
-                 f"Overlap: {overlap} pixels (~{overlap * pixel_resolution:.1f} μm)\n"
-                 f"Padding: X={pad_x}, Y={pad_y} pixels")
+                 f"Overlap: {overlap} pixels (~{overlap * pixel_resolution:.1f} μm)\n")
     plt.tight_layout()
-    return fig, ax
+    return fig, ax, stride, overlap
