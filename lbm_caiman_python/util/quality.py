@@ -1,6 +1,16 @@
+import logging
+import os
+import sys
+
+import cv2
 import numpy as np
 from sklearn.linear_model import TheilSenRegressor
+from scipy.stats import pearsonr
+from caiman.motion_correction import high_pass_filter_space, bin_median
+from caiman import load
+import matplotlib.pyplot as plt
 from scipy import signal
+from tqdm import tqdm
 
 
 def mean_psd(y, method="logmexp"):
@@ -224,3 +234,104 @@ def find_peaks(trace):
 
     return peak_indices, prominences, widths
 
+
+def compute_metrics_motion_correction(fname, final_size_x=None, final_size_y=None, swap_dim=False, pyr_scale=.5, levels=3,
+                                      winsize=100, iterations=15, poly_n=5, poly_sigma=1.2 / 5, flags=0,
+                                      play_flow=False, resize_fact_flow=.2, template=None,
+                                      opencv=True, resize_fact_play=3, fr_play=30, max_flow=1,
+                                      gSig_filt=None):
+    logger = logging.getLogger("caiman")
+    if os.environ.get('ENABLE_TQDM') == 'True':
+        disable_tqdm = False
+    else:
+        disable_tqdm = True
+
+    vmin, vmax = -max_flow, max_flow
+    m = load(fname)
+    if final_size_x is None:
+        final_size_x = m.shape[1]
+    if final_size_y is None:
+        final_size_y = m.shape[2]
+    if gSig_filt is not None:
+        m = high_pass_filter_space(m, gSig_filt)
+    mi, ma = m.min(), m.max()
+    m_min = mi + (ma - mi) / 100
+    m_max = mi + (ma - mi) / 4
+
+    max_shft_x = int(np.ceil((np.shape(m)[1] - final_size_x) / 2))
+    max_shft_y = int(np.ceil((np.shape(m)[2] - final_size_y) / 2))
+    max_shft_x_1 = - ((np.shape(m)[1] - max_shft_x) - (final_size_x))
+    max_shft_y_1 = - ((np.shape(m)[2] - max_shft_y) - (final_size_y))
+    if max_shft_x_1 == 0:
+        max_shft_x_1 = None
+
+    if max_shft_y_1 == 0:
+        max_shft_y_1 = None
+    logger.info([max_shft_x, max_shft_x_1, max_shft_y, max_shft_y_1])
+    m = m[:, max_shft_x:max_shft_x_1, max_shft_y:max_shft_y_1]
+
+    if template is None:
+        tmpl = bin_median(m)
+    else:
+        tmpl = template
+
+    m = m.resize(1, 1, resize_fact_flow)
+    norms = []
+    flows = []
+    count = 0
+    sys.stdout.flush()
+    for fr in tqdm(m, desc="Optical flow", disable=disable_tqdm):
+        if disable_tqdm:
+            if count % 100 == 0:
+                logger.debug(count)
+
+        count += 1
+        flow = cv2.calcOpticalFlowFarneback(
+            tmpl, fr, None, pyr_scale, levels, winsize, iterations, poly_n, poly_sigma, flags)
+
+        if play_flow:
+            if opencv:
+                dims = tuple(np.array(flow.shape[:-1]) * resize_fact_play)
+                vid_frame = np.concatenate([
+                    np.repeat(np.clip((cv2.resize(fr, dims)[..., None] - m_min) /
+                                      (m_max - m_min), 0, 1), 3, -1),
+                    np.transpose([cv2.resize(np.clip(flow[:, :, 1] / vmax, 0, 1), dims),
+                                  np.zeros(dims, np.float32),
+                                  cv2.resize(np.clip(flow[:, :, 1] / vmin, 0, 1), dims)],
+                                 (1, 2, 0)),
+                    np.transpose([cv2.resize(np.clip(flow[:, :, 0] / vmax, 0, 1), dims),
+                                  np.zeros(dims, np.float32),
+                                  cv2.resize(np.clip(flow[:, :, 0] / vmin, 0, 1), dims)],
+                                 (1, 2, 0))], 1).astype(np.float32)
+                cv2.putText(vid_frame, 'movie', (10, 20), fontFace=5, fontScale=0.8, color=(
+                    0, 255, 0), thickness=1)
+                cv2.putText(vid_frame, 'y_flow', (dims[0] + 10, 20), fontFace=5, fontScale=0.8, color=(
+                    0, 255, 0), thickness=1)
+                cv2.putText(vid_frame, 'x_flow', (2 * dims[0] + 10, 20), fontFace=5, fontScale=0.8, color=(
+                    0, 255, 0), thickness=1)
+                cv2.imshow('frame', vid_frame)
+                cv2.waitKey(1 / fr_play)  # to pause between frames
+                if cv2.waitKey(1) & 0xFF == ord('q'):
+                    break
+            else:
+                plt.subplot(1, 3, 1)
+                plt.cla()
+                plt.imshow(fr, vmin=m_min, vmax=m_max, cmap='gray')
+                plt.title('movie')
+                plt.subplot(1, 3, 3)
+                plt.cla()
+                plt.imshow(flow[:, :, 1], vmin=vmin, vmax=vmax)
+                plt.title('y_flow')
+                plt.subplot(1, 3, 2)
+                plt.cla()
+                plt.imshow(flow[:, :, 0], vmin=vmin, vmax=vmax)
+                plt.title('x_flow')
+                plt.pause(1 / fr_play)
+
+        n = np.linalg.norm(flow)
+        flows.append(flow)
+        norms.append(n)
+    if play_flow and opencv:
+        cv2.destroyAllWindows()
+
+    return tmpl, flows, norms
