@@ -140,7 +140,7 @@ def generate_patch_view(image: ArrayLike, pixel_resolution: float, target_patch_
     return fig, ax, stride, overlap
 
 
-def _compute_metrics_with_temp_file(raw_fname: Path) -> Path:
+def _compute_metrics_with_temp_file(raw_fname: Path, overwrite=False) -> Path:
     """
     Wrapper for caiman.motion_correction.compute_metrics_motion_correction. Writes raw_file to a temporary memmapped file to
     run compute_metrics_motion_correction, and move the metrics file back to the raw_fname directory.
@@ -151,6 +151,8 @@ def _compute_metrics_with_temp_file(raw_fname: Path) -> Path:
     ----------
     raw_fname : Path
         The path to the raw data file. Must be a TIFF file.
+    overwrite : bool, optional
+        If True, recompute the metrics even if the file already exists. Default is False.
 
     Returns
     -------
@@ -165,8 +167,15 @@ def _compute_metrics_with_temp_file(raw_fname: Path) -> Path:
     - 'norms': A list of magnitudes of optical flow for each frame. Represents the amount of motion in each frame.
     - 'smoothness': A measure of the sharpness of the image.
     """
-    # Load the data
+    final_metrics_path = get_metrics_path(raw_fname)
+
+    if final_metrics_path.exists() and not overwrite:
+        return final_metrics_path
+
     data = tifffile.memmap(raw_fname)
+
+    if final_metrics_path.exists() and overwrite:
+        final_metrics_path.unlink()
 
     with tempfile.NamedTemporaryFile(suffix='.tiff', delete=False) as temp_file:
         temp_path = Path(temp_file.name)
@@ -176,9 +185,6 @@ def _compute_metrics_with_temp_file(raw_fname: Path) -> Path:
         _ = compute_metrics_motion_correction(temp_path, data.shape[1], data.shape[2], swap_dim=False)
 
         temp_metrics_path = get_metrics_path(temp_path)
-        # temp_metrics_path = temp_path.with_stem(temp_path.stem + '_metrics').with_suffix('.npz')
-        final_metrics_path = get_metrics_path(raw_fname)
-        # final_metrics_path = raw_fname.with_stem(raw_fname.stem + '_metrics').with_suffix('.npz')
 
         if temp_metrics_path.exists():
             shutil.move(temp_metrics_path, final_metrics_path)
