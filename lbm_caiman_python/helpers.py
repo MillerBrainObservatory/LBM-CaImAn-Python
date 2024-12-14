@@ -8,7 +8,8 @@ import matplotlib.patches as patches
 import matplotlib.patheffects as path_effects
 import numpy as np
 import pandas as pd
-from typing import Any as ArrayLike
+from typing import Any as ArrayLike, List
+import mesmerize_core as mc
 
 from caiman.motion_correction import compute_metrics_motion_correction
 
@@ -207,7 +208,28 @@ def get_metrics_path(raw_fname: Path) -> Path:
     return raw_fname.with_stem(raw_fname.stem + '_metrics').with_suffix('.npz')
 
 
-def compute_batch_metrics(df: pd.DataFrame, raw_filename=None):
+def get_metrics_paths_from_df(df: pd.DataFrame) -> list[Path]:
+    """
+    Get the paths to the computed metrics files for each row in a DataFrame. Assumes the metrics files are stored in the
+    same directory as the raw data files, with the same name stem and a '_metrics.npz' suffix. Only returns paths for
+    rows where the algorithm is 'mcorr'.
+
+    Parameters
+    ----------
+    df : DataFrame
+        A DataFrame containing information about each batch of image data.
+        Must be compatible with the mesmerize-core DataFrame API to call `get_params_diffs` and `get_output` on each row.
+
+    Returns
+    -------
+    metrics_paths : list of Path
+        List of file paths where metrics are stored for each batch.
+    """
+    return [get_metrics_path(Path(row.caiman.get_input_movie_path())) for i, row in df.iterrows() if
+            row.algo == 'mcorr']
+
+
+def compute_batch_metrics(df: pd.DataFrame = None, raw_filename=None, overwrite: bool = False) -> List:
     """
     Compute and store various statistical metrics for each batch of image data.
 
@@ -215,7 +237,8 @@ def compute_batch_metrics(df: pd.DataFrame, raw_filename=None):
     ----------
     df : DataFrame
         A DataFrame containing information about each batch of image data.
-        Must be compatible with the mesmerize-core DataFrame API to call `get_params_diffs` and `get_output` on each row.
+        Must be compatible with the mesmerize-core DataFrame API to call
+        `get_params_diffs` and `get_output` on each row.
     raw_filename : Path, optional
         The path to the raw data file. Must be a TIFF file. Default is None.
 
@@ -228,68 +251,121 @@ def compute_batch_metrics(df: pd.DataFrame, raw_filename=None):
     subplot_names : list of str
         List of descriptive names for each subplot.
     """
-    raw_filename = Path(raw_filename)
+    if raw_filename is not None:
+        raw_filename = Path(raw_filename)
+    else:
+        try:
+            import mesmerize_core as mc
+            raw_filename = mc.get_parent_raw_data_path() / df.iloc[0].input_movie_path
+        except Exception as e:
+            print('Skipping raw data metrics computation. Could not find raw data file.')
+            raw_filename = None
+
     if raw_filename is not None:
         if not raw_filename.exists():
             raise FileNotFoundError(f"Raw data file {raw_filename} not found.")
-        data = tifffile.memmap(raw_filename)
-        flat_data = data.ravel()
-        raw_metrics_path = _compute_metrics_with_temp_file(raw_filename)
-
-        with np.load(raw_metrics_path) as ld:
-            mean_norm = np.mean(ld['norms'])
-            mean_corr = np.mean(ld['correlations'])
-
-        metrics = {
-            'batch_index': "None (Raw Data)",
-            'min': np.min(flat_data),
-            'max': np.max(flat_data),
-            'mean': np.mean(flat_data),
-            'median': np.median(flat_data),
-            'std': np.std(flat_data),
-            'p1': np.percentile(flat_data, 1),
-            'p99': np.percentile(flat_data, 99),
-            'mean_corr': mean_corr,
-            'mean_norm': mean_norm,
-            'uuid': "None",
-        }
-
-        metrics_list = [metrics]
-        subplot_paths = [raw_metrics_path]
-    else:
-        metrics_list = []
-        subplot_paths = []
-
-    for i, row in df.iterrows():
+        raw_metrics_path = get_metrics_path(raw_filename)
+        if raw_metrics_path.exists() and not overwrite:
+            raw_metrics_path.unlink()
         start = time.time()
+        raw_metrics_path = _compute_metrics_with_temp_file(raw_filename)
+        print(f'Computed metrics for raw data in {time.time() - start:.2f} seconds.')
+        metrics_paths = [raw_metrics_path]
+    else:
+        metrics_paths = []
+    if df is not None:
+        for i, row in df.iterrows():
+            print(f'Computing metrics for batch index {i}...')
+            start = time.time()
 
-        if row.algo != 'mcorr':
-            continue
+            if row.algo != 'mcorr':
+                continue
 
-        data = df.iloc[i].mcorr.get_output()
-        final_size = data.shape[1:]
-        flat_data = data.ravel()
+            data = df.iloc[i].mcorr.get_output()
+            final_size = data.shape[1:]
 
-        mmap_path = Path(df.iloc[i].mcorr.get_output_path())
-        metrics_path = mmap_path.with_name(f"{mmap_path.stem}_metrics.npz")
-        metrics_path.unlink(missing_ok=True)
-        gSig_filt = df.iloc[0].params['main']['gSig_filt']
+            # Pre-fetch metrics path and check if it exists
+            metrics_path = get_metrics_path(df.iloc[i].mcorr.get_output_path())
+            if metrics_path.exists():
+                if overwrite:
+                    print(f"Overwriting metrics file {metrics_path}.")
+                    metrics_path.unlink(missing_ok=True)
+                else:
+                    print(f"Metrics file {metrics_path} already exists. Skipping. To overwrite, set `overwrite=True`.")
+                    continue
 
-        _, correlations, flows, norms, _ = compute_metrics_motion_correction(mmap_path, final_size[0], final_size[1],
-                                                                             swap_dim=False, gSig_filt=gSig_filt)
+            _ = compute_metrics_motion_correction(df.iloc[i].mcorr.get_output_path(), final_size[0], final_size[1],
+                                                  swap_dim=False, gSig_filt=None)
+            print(f'Computed metrics for batch index {i} in {time.time() - start:.2f} seconds')
+            metrics_paths.append(metrics_path)
+            print(f'Metrics computed in {time.time() - start:.2f} seconds')
+    return metrics_paths
+
+
+def create_summary_df(batch_df):
+    # filter any non 'mcorr' items and outputs that are
+    batch_df = batch_df[batch_df.item_name == 'mcorr']
+    # check all df raw_data_paths are the same input file
+    assert batch_df.input_movie_path.nunique() == 1, "All input files must be the same"
+
+    raw_filename = batch_df.iloc[0].input_movie_path
+    raw_filepath = mc.get_parent_raw_data_path() / raw_filename
+    raw_data = tifffile.memmap(raw_filepath)
+    met = {
+        'item_name': 'Raw Data',
+        'batch_index': 'None',
+        'min': np.min(raw_data),
+        'max': np.max(raw_data),
+        'mean': np.mean(raw_data),
+        'std': np.std(raw_data),
+        'p1': np.percentile(raw_data, 1),
+        'p50': np.percentile(raw_data, 50),
+        'p99': np.percentile(raw_data, 99),
+        'uuid': 'None'
+    }
+    metrics_list = [met]
+    for i, row in batch_df.iterrows():
+        mmap_file = row.mcorr.get_output()
         metrics_list.append({
+            'item_name': row.item_name,
             'batch_index': i,
-            'min': np.min(flat_data),
-            'max': np.max(flat_data),
-            'mean': np.mean(flat_data),
-            'median': np.median(flat_data),
-            'std': np.std(flat_data),
-            'p1': np.percentile(flat_data, 1),
-            'p99': np.percentile(flat_data, 99),
-            'mean_corr': np.mean(correlations),
-            'mean_norm': np.mean(norms),
-            'uuid': df.iloc[i].uuid,
+            'min': np.min(mmap_file),
+            'max': np.max(mmap_file),
+            'mean': np.mean(mmap_file),
+            'std': np.std(mmap_file),
+            'p1': np.percentile(mmap_file, 1),
+            'p50': np.percentile(mmap_file, 50),
+            'p99': np.percentile(mmap_file, 99),
+            'uuid': row.uuid,
         })
-        subplot_paths.append(metrics_path)
-        print(f'Metrics computed in {time.time() - start:.2f} seconds')
-    return metrics_list, subplot_paths
+    return pd.DataFrame(metrics_list)
+
+
+def create_metrics_df(metrics_p: list[str]) -> pd.DataFrame:
+    metrics_list = []
+    for i, file in enumerate(metrics_p):
+        with np.load(file) as f:
+            corr = f['correlations']
+            norms = f['norms']
+            smoothness = f['smoothness']
+        metrics_list.append({
+            'correlations': np.mean(corr),
+            'norms': np.mean(norms),
+            'smoothness': float(smoothness),
+        })
+    return pd.DataFrame(metrics_list)
+
+
+def add_param_diffs(summary_df, metrics_df, param_diffs):
+    final_df = pd.concat([summary_df, metrics_df], axis=1)
+
+    for col in param_diffs.columns:
+        final_df[col] = "None"
+    for i, row in final_df.iterrows():
+        if row.batch_index == "None":
+            continue
+        batch_index = int(row.batch_index)
+        param_diff = param_diffs.iloc[batch_index]
+        for col in param_diffs.columns:
+            final_df.at[i, col] = param_diff[col]
+    return final_df
