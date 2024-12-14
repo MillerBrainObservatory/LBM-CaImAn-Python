@@ -3,6 +3,7 @@ import tempfile
 import time
 import tifffile
 from pathlib import Path
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import matplotlib.patheffects as path_effects
@@ -321,13 +322,11 @@ def compute_batch_metrics(df: pd.DataFrame = None, raw_filename=None, overwrite:
     return metrics_paths
 
 
-def create_summary_df(batch_df):
-    # filter any non 'mcorr' items and outputs that are
-    batch_df = batch_df[batch_df.item_name == 'mcorr']
-    # check all df raw_data_paths are the same input file
-    assert batch_df.input_movie_path.nunique() == 1, "All input files must be the same"
+def create_summary_df(df: pd.DataFrame) -> pd.DataFrame:
+    df = df[df.item_name == 'mcorr']
+    assert df.input_movie_path.nunique() == 1, "All input files must be the same"
 
-    raw_filename = batch_df.iloc[0].input_movie_path
+    raw_filename = df.iloc[0].input_movie_path
     raw_filepath = mc.get_parent_raw_data_path() / raw_filename
     raw_data = tifffile.memmap(raw_filepath)
     met = {
@@ -343,7 +342,7 @@ def create_summary_df(batch_df):
         'uuid': 'None'
     }
     metrics_list = [met]
-    for i, row in batch_df.iterrows():
+    for i, row in df.iterrows():
         mmap_file = row.mcorr.get_output()
         metrics_list.append({
             'item_name': row.item_name,
@@ -388,3 +387,95 @@ def add_param_diffs(summary_df, metrics_df, param_diffs):
         for col in param_diffs.columns:
             final_df.at[i, col] = param_diff[col]
     return final_df
+
+
+def plot_optical_flows(metrics_files, max_columns=4, results=None):
+    """
+    Plots the optical flow images from a list of metrics files.
+
+    Parameters
+    ----------
+    metrics_files : list of str
+        List of paths to the metrics files (.npz) containing 'norms', 'flows', and 'smoothness'.
+    max_columns : int, optional
+        Maximum number of columns to display in the plot. Default is 4.
+    results : DataFrame, optional
+        DataFrame containing 'item_name', 'batch_index', 'correlations', 'norms', and 'smoothness' corresponding to each metrics file.
+    """
+    num_graphs = len(metrics_files)
+    num_rows = int(np.ceil(num_graphs / max_columns))
+
+    fig, axes = plt.subplots(num_rows, max_columns, figsize=(20, 5 * num_rows))
+    axes = axes.flatten()
+
+    flow_images = []
+
+    # Identify the best results if the results DataFrame is provided
+    if results is not None:
+        highest_corr_batch = results.loc[results['correlations'].idxmax()]['batch_index']
+        highest_crisp_batch = results.loc[results['smoothness'].idxmax()]['batch_index']
+        lowest_norm_batch = results.loc[results['norms'].idxmin()]['batch_index']
+
+    for cnt, (metrics_path, ax) in enumerate(zip(metrics_files, axes)):
+        with np.load(metrics_path) as ld:
+            mean_norm = np.mean(ld['norms'])
+            std_norm = np.std(ld['norms'])
+            smoothness = ld['smoothness']
+
+            flows = ld['flows']
+            flow_img = np.mean(np.sqrt(flows[:, :, :, 0] ** 2 + flows[:, :, :, 1] ** 2), axis=0)
+            flow_images.append(flow_img)
+
+            ax.imshow(flow_img, vmin=0, vmax=0.3, cmap='viridis')
+
+            if results is not None:
+                item_name = results.iloc[cnt]['item_name']
+                batch_idx = results.iloc[cnt]['batch_index']
+            else:
+                item_name = 'N/A'
+                batch_idx = 'N/A'
+
+            title_parts = []
+
+            # Part 1: Item and Batch Index
+            item_title = f'Item: {item_name} | Batch Index: {batch_idx}'
+            if results is not None and batch_idx == highest_corr_batch:
+                item_title = f'Item: **{item_name} | Batch Index: {batch_idx}** (Highest Correlation)'
+            title_parts.append(item_title)
+
+            # Part 2: ROF (mean ± std)
+            norm_title = f'ROF (mean ± std): {mean_norm:.2f} ± {std_norm:.2f}'
+            if results is not None and batch_idx == lowest_norm_batch:
+                norm_title = f'ROF: **{mean_norm:.2f} ± {std_norm:.2f}** (Lowest Norm)'
+            title_parts.append(norm_title)
+
+            # Part 3: Crispness
+            crisp_title = f'Crispness: {smoothness:.2f}'
+            if results is not None and batch_idx == highest_crisp_batch:
+                crisp_title = f'Crispness: **{smoothness:.2f}** (Highest Crispness)'
+            title_parts.append(crisp_title)
+
+            title = '\n'.join(title_parts)
+
+            ax.set_title(
+                title,
+                fontsize=10,
+                fontweight='bold',
+                color='black',
+                loc='center'
+            )
+
+            ax.axis('off')
+
+    for i in range(len(metrics_files), len(axes)):
+        axes[i].axis('off')
+
+    cbar_ax = fig.add_axes([0.92, 0.2, 0.02, 0.6])
+    norm = mpl.colors.Normalize(vmin=0, vmax=0.3)
+    sm = mpl.cm.ScalarMappable(cmap='viridis', norm=norm)
+    sm.set_array([])
+    cbar = fig.colorbar(sm, cax=cbar_ax)
+
+    cbar.set_label('Flow Magnitude', fontsize=12)
+    plt.tight_layout(rect=[0, 0, 0.9, 1])
+    plt.show()
