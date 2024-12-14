@@ -235,28 +235,28 @@ def get_metrics_paths_from_df(df: pd.DataFrame) -> list[Path]:
             row.algo == 'mcorr']
 
 
-def compute_batch_metrics(df: pd.DataFrame = None, raw_filename=None, overwrite: bool = False) -> List:
+def compute_batch_metrics(df: pd.DataFrame = None, raw_filename=None, overwrite: bool = False) -> List[Path]:
     """
     Compute and store various statistical metrics for each batch of image data.
 
     Parameters
     ----------
-    df : DataFrame
+    df : DataFrame, optional
         A DataFrame containing information about each batch of image data.
         Must be compatible with the mesmerize-core DataFrame API to call
         `get_params_diffs` and `get_output` on each row.
     raw_filename : Path, optional
         The path to the raw data file. Must be a TIFF file. Default is None.
+    overwrite : bool, optional
+        If True, recompute and overwrite existing metric files. Default is False.
 
     Returns
     -------
-    metrics_list : list of dict
-        List of dictionaries, where each dictionary contains statistical metrics for a batch.
-    subplot_paths : list of Path
+    metrics_paths : list of Path
         List of file paths where metrics are stored for each batch.
-    subplot_names : list of str
-        List of descriptive names for each subplot.
     """
+    metrics_paths = []
+
     if raw_filename is not None:
         raw_filename = Path(raw_filename)
     else:
@@ -270,41 +270,54 @@ def compute_batch_metrics(df: pd.DataFrame = None, raw_filename=None, overwrite:
     if raw_filename is not None:
         if not raw_filename.exists():
             raise FileNotFoundError(f"Raw data file {raw_filename} not found.")
+
         raw_metrics_path = get_metrics_path(raw_filename)
         if raw_metrics_path.exists() and not overwrite:
-            raw_metrics_path.unlink()
-        start = time.time()
-        raw_metrics_path = _compute_metrics_with_temp_file(raw_filename)
-        print(f'Computed metrics for raw data in {time.time() - start:.2f} seconds.')
-        metrics_paths = [raw_metrics_path]
-    else:
-        metrics_paths = []
+            print(f"Raw metrics file {raw_metrics_path} already exists. Skipping. To overwrite, set `overwrite=True`.")
+        else:
+            if raw_metrics_path.exists():
+                print(f"Overwriting raw metrics file {raw_metrics_path}.")
+                raw_metrics_path.unlink(missing_ok=True)
+
+            start = time.time()
+            raw_metrics_path = _compute_metrics_with_temp_file(raw_filename, overwrite=overwrite)
+            print(f'Computed metrics for raw data in {time.time() - start:.2f} seconds.')
+
+        metrics_paths.append(raw_metrics_path)
+
     if df is not None:
         for i, row in df.iterrows():
-            print(f'Computing metrics for batch index {i}...')
-            start = time.time()
+            print(f'Processing batch index {i}...')
 
             if row.algo != 'mcorr':
+                print(f"Skipping batch index {i} as algo is not 'mcorr'.")
                 continue
 
-            data = df.iloc[i].mcorr.get_output()
+            data = row.mcorr.get_output()
             final_size = data.shape[1:]
 
-            # Pre-fetch metrics path and check if it exists
-            metrics_path = get_metrics_path(df.iloc[i].mcorr.get_output_path())
-            if metrics_path.exists():
-                if overwrite:
-                    print(f"Overwriting metrics file {metrics_path}.")
-                    metrics_path.unlink(missing_ok=True)
-                else:
-                    print(f"Metrics file {metrics_path} already exists. Skipping. To overwrite, set `overwrite=True`.")
-                    continue
+            # Pre-fetch metrics path
+            metrics_path = get_metrics_path(row.mcorr.get_output_path())
 
-            _ = compute_metrics_motion_correction(df.iloc[i].mcorr.get_output_path(), final_size[0], final_size[1],
-                                                  swap_dim=False, gSig_filt=None)
-            print(f'Computed metrics for batch index {i} in {time.time() - start:.2f} seconds')
-            metrics_paths.append(metrics_path)
-            print(f'Metrics computed in {time.time() - start:.2f} seconds')
+            # Check if metrics already exist and skip if not overwriting
+            if metrics_path.exists() and not overwrite:
+                print(f"Metrics file {metrics_path} already exists. Skipping. To overwrite, set `overwrite=True`.")
+                metrics_paths.append(metrics_path)
+                continue
+
+            if metrics_path.exists() and overwrite:
+                print(f"Overwriting metrics file {metrics_path}.")
+                metrics_path.unlink(missing_ok=True)
+
+            try:
+                start = time.time()
+                _ = compute_metrics_motion_correction(row.mcorr.get_output_path(), final_size[0], final_size[1],
+                                                      swap_dim=False, gSig_filt=None)
+                print(f'Computed metrics for batch index {i} in {time.time() - start:.2f} seconds.')
+                metrics_paths.append(metrics_path)
+            except Exception as e:
+                print(f"Failed to compute metrics for batch index {i}. Error: {e}")
+
     return metrics_paths
 
 
