@@ -161,6 +161,7 @@ def compute_metrics(fname, uuid, final_size_x, final_size_y, swap_dim=False, pyr
     """
     Compute metrics for a given movie file.
     """
+    print('Computing metrics for', fname)
 
     if not uuid:
         raise ValueError("UUID must be provided.")
@@ -215,9 +216,17 @@ def compute_metrics(fname, uuid, final_size_x, final_size_y, swap_dim=False, pyr
         n = np.linalg.norm(flow)
         flows.append(flow)
         norms.append(n)
-    np.savez(os.path.splitext(fname)[0] + '_metrics', flows=flows, norms=norms, correlations=correlations,
-             smoothness=smoothness,
-             tmpl=tmpl, smoothness_corr=smoothness_corr, img_corr=img_corr)
+    np.savez(
+        os.path.splitext(fname)[0] + '_metrics',
+        uuid=uuid,
+        flows=flows,
+        norms=norms,
+        correlations=correlations,
+        smoothness=smoothness,
+        tmpl=tmpl,
+        smoothness_corr=smoothness_corr,
+        img_corr=img_corr
+    )
     return tmpl, correlations, flows, norms, smoothness
 
 
@@ -406,6 +415,7 @@ def compute_batch_metrics(df: pd.DataFrame, raw_filename=None, overwrite: bool =
 
 
 def create_summary_df(df: pd.DataFrame) -> pd.DataFrame:
+    total_tqdm = len(df[df.item_name == 'mcorr'])
     df = df[df.item_name == 'mcorr']
     assert df.input_movie_path.nunique() == 1, "All input files must be the same"
 
@@ -422,10 +432,10 @@ def create_summary_df(df: pd.DataFrame) -> pd.DataFrame:
         'p1': np.percentile(raw_data, 1),
         'p50': np.percentile(raw_data, 50),
         'p99': np.percentile(raw_data, 99),
-        'uuid': 'None'
+        'uuid': None
     }
     metrics_list = [met]
-    for i, row in df.iterrows():
+    for i, row in tqdm(df.iterrows(), total=total_tqdm):
         mmap_file = row.mcorr.get_output()
         metrics_list.append({
             'item_name': row.item_name,
