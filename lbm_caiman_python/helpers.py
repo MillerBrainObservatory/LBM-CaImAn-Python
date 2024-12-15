@@ -1,6 +1,12 @@
+import logging
+import os
 import shutil
+import sys
 import tempfile
 import time
+
+import cv2
+import scipy
 import tifffile
 from pathlib import Path
 import matplotlib as mpl
@@ -12,7 +18,8 @@ import pandas as pd
 from typing import Any as ArrayLike, List
 import mesmerize_core as mc
 
-from caiman.motion_correction import compute_metrics_motion_correction
+import caiman as cm
+from tqdm import tqdm
 
 
 def plot_with_scalebars(image: ArrayLike, pixel_resolution: float):
@@ -141,6 +148,79 @@ def generate_patch_view(image: ArrayLike, pixel_resolution: float, target_patch_
     return fig, ax, stride, overlap
 
 
+def compute_flow_single_frame(frame, templ, pyr_scale=.5, levels=3, winsize=100, iterations=15, poly_n=5,
+                              poly_sigma=1.2 / 5, flags=0):
+    flow = cv2.calcOpticalFlowFarneback(
+        templ, frame, None, pyr_scale, levels, winsize, iterations, poly_n, poly_sigma, flags)
+    return flow
+
+
+def compute_metrics(fname, uuid, final_size_x, final_size_y, swap_dim=False, pyr_scale=.5, levels=3,
+                    winsize=100, iterations=15, poly_n=5, poly_sigma=1.2 / 5, flags=0,
+                    resize_fact_flow=.2, template=None, gSig_filt=None):
+    """
+    Compute metrics for a given movie file.
+    """
+
+    if not uuid:
+        raise ValueError("UUID must be provided.")
+
+    m = cm.load(fname)
+    if gSig_filt is not None:
+        m = cm.motion_correction.high_pass_filter_space(m, gSig_filt)
+
+    max_shft_x = int(np.ceil((np.shape(m)[1] - final_size_x) / 2))
+    max_shft_y = int(np.ceil((np.shape(m)[2] - final_size_y) / 2))
+    max_shft_x_1 = - ((np.shape(m)[1] - max_shft_x) - (final_size_x))
+    max_shft_y_1 = - ((np.shape(m)[2] - max_shft_y) - (final_size_y))
+    if max_shft_x_1 == 0:
+        max_shft_x_1 = None
+
+    if max_shft_y_1 == 0:
+        max_shft_y_1 = None
+    m = m[:, max_shft_x:max_shft_x_1, max_shft_y:max_shft_y_1]
+    if np.sum(np.isnan(m)) > 0:
+        raise Exception('Movie contains NaN')
+
+    img_corr = m.local_correlations(eight_neighbours=True, swap_dim=swap_dim)
+    if template is None:
+        tmpl = cm.motion_correction.bin_median(m)
+    else:
+        tmpl = template
+
+    smoothness = np.sqrt(
+        np.sum(np.sum(np.array(np.gradient(np.mean(m, 0))) ** 2, 0)))
+    smoothness_corr = np.sqrt(
+        np.sum(np.sum(np.array(np.gradient(img_corr)) ** 2, 0)))
+
+    correlations = []
+    count = 0
+    sys.stdout.flush()
+    for fr in tqdm(m, desc="Correlations"):
+        count += 1
+        correlations.append(scipy.stats.pearsonr(
+            fr.flatten(), tmpl.flatten())[0])
+
+
+    m = m.resize(1, 1, resize_fact_flow)
+    norms = []
+    flows = []
+    count = 0
+    sys.stdout.flush()
+    for fr in tqdm(m, desc="Optical flow"):
+        count += 1
+        flow = cv2.calcOpticalFlowFarneback(
+            tmpl, fr, None, pyr_scale, levels, winsize, iterations, poly_n, poly_sigma, flags)
+
+        n = np.linalg.norm(flow)
+        flows.append(flow)
+        norms.append(n)
+    np.savez(os.path.splitext(fname)[0] + '_metrics', flows=flows, norms=norms, correlations=correlations,
+             smoothness=smoothness,
+             tmpl=tmpl, smoothness_corr=smoothness_corr, img_corr=img_corr)
+    return tmpl, correlations, flows, norms, smoothness
+
+
 def _compute_metrics_with_temp_file(raw_fname: Path, overwrite=False) -> Path:
     """
     Wrapper for caiman.motion_correction.compute_metrics_motion_correction. Writes raw_file to a temporary memmapped file to
@@ -168,6 +248,10 @@ def _compute_metrics_with_temp_file(raw_fname: Path, overwrite=False) -> Path:
     - 'norms': A list of magnitudes of optical flow for each frame. Represents the amount of motion in each frame.
     - 'smoothness': A measure of the sharpness of the image.
     """
+    # make a new uuid with raw_{uuid}
+    import uuid
+    raw_uuid = f'raw_{uuid.uuid4()}'
+
     final_metrics_path = get_metrics_path(raw_fname)
 
     if final_metrics_path.exists() and not overwrite:
@@ -183,7 +267,7 @@ def _compute_metrics_with_temp_file(raw_fname: Path, overwrite=False) -> Path:
 
     try:
         tifffile.imwrite(temp_path, data)
-        _ = compute_metrics_motion_correction(temp_path, data.shape[1], data.shape[2], swap_dim=False)
+        _ = compute_metrics(temp_path, raw_uuid, data.shape[1], data.shape[2], swap_dim=False)
 
         temp_metrics_path = get_metrics_path(temp_path)
 
@@ -236,7 +320,7 @@ def get_metrics_paths_from_df(df: pd.DataFrame) -> list[Path]:
             row.algo == 'mcorr']
 
 
-def compute_batch_metrics(df: pd.DataFrame = None, raw_filename=None, overwrite: bool = False) -> List[Path]:
+def compute_batch_metrics(df: pd.DataFrame, raw_filename=None, overwrite: bool = False) -> List[Path]:
     """
     Compute and store various statistical metrics for each batch of image data.
 
@@ -286,38 +370,37 @@ def compute_batch_metrics(df: pd.DataFrame = None, raw_filename=None, overwrite:
 
         metrics_paths.append(raw_metrics_path)
 
-    if df is not None:
-        for i, row in df.iterrows():
-            print(f'Processing batch index {i}...')
+    for i, row in df.iterrows():
+        print(f'Processing batch index {i}...')
 
-            if row.algo != 'mcorr':
-                print(f"Skipping batch index {i} as algo is not 'mcorr'.")
-                continue
+        if row.algo != 'mcorr':
+            print(f"Skipping batch index {i} as algo is not 'mcorr'.")
+            continue
 
-            data = row.mcorr.get_output()
-            final_size = data.shape[1:]
+        data = row.mcorr.get_output()
+        final_size = data.shape[1:]
 
-            # Pre-fetch metrics path
-            metrics_path = get_metrics_path(row.mcorr.get_output_path())
+        # Pre-fetch metrics path
+        metrics_path = get_metrics_path(row.mcorr.get_output_path())
 
-            # Check if metrics already exist and skip if not overwriting
-            if metrics_path.exists() and not overwrite:
-                print(f"Metrics file {metrics_path} already exists. Skipping. To overwrite, set `overwrite=True`.")
-                metrics_paths.append(metrics_path)
-                continue
+        # Check if metrics already exist and skip if not overwriting
+        if metrics_path.exists() and not overwrite:
+            print(f"Metrics file {metrics_path} already exists. Skipping. To overwrite, set `overwrite=True`.")
+            metrics_paths.append(metrics_path)
+            continue
 
-            if metrics_path.exists() and overwrite:
-                print(f"Overwriting metrics file {metrics_path}.")
-                metrics_path.unlink(missing_ok=True)
+        if metrics_path.exists() and overwrite:
+            print(f"Overwriting metrics file {metrics_path}.")
+            metrics_path.unlink(missing_ok=True)
 
-            try:
-                start = time.time()
-                _ = compute_metrics_motion_correction(row.mcorr.get_output_path(), final_size[0], final_size[1],
-                                                      swap_dim=False, gSig_filt=None)
-                print(f'Computed metrics for batch index {i} in {time.time() - start:.2f} seconds.')
-                metrics_paths.append(metrics_path)
-            except Exception as e:
-                print(f"Failed to compute metrics for batch index {i}. Error: {e}")
+        try:
+            start = time.time()
+            _ = compute_metrics(row.mcorr.get_output_path(), row.uuid, final_size[0], final_size[1])
+
+            print(f'Computed metrics for batch index {i} in {time.time() - start:.2f} seconds.')
+            metrics_paths.append(metrics_path)
+        except Exception as e:
+            print(f"Failed to compute metrics for batch index {i}. Error: {e}")
 
     return metrics_paths
 
@@ -366,10 +449,14 @@ def create_metrics_df(metrics_p: list[str]) -> pd.DataFrame:
             corr = f['correlations']
             norms = f['norms']
             smoothness = f['smoothness']
+            smoothness_corr = f['smoothness_corr']
+            uuid = f['uuid']
         metrics_list.append({
             'correlations': np.mean(corr),
             'norms': np.mean(norms),
             'smoothness': float(smoothness),
+            'smoothness_corr': float(smoothness_corr),
+            'uuid': uuid,
         })
     return pd.DataFrame(metrics_list)
 
@@ -410,7 +497,6 @@ def plot_optical_flows(metrics_files, max_columns=4, results=None):
 
     flow_images = []
 
-    # Identify the best results if the results DataFrame is provided
     if results is not None:
         highest_corr_batch = results.loc[results['correlations'].idxmax()]['batch_index']
         highest_crisp_batch = results.loc[results['smoothness'].idxmax()]['batch_index']
@@ -478,4 +564,61 @@ def plot_optical_flows(metrics_files, max_columns=4, results=None):
 
     cbar.set_label('Flow Magnitude', fontsize=12)
     plt.tight_layout(rect=[0, 0, 0.9, 1])
+    plt.show()
+
+
+def plot_residual_flows(metrics_files, results):
+    """
+    Plots the residual optical flows (ROF).
+
+    Plots only the raw data and up to 3 batch items, including the lowest batch.
+
+    Parameters
+    ----------
+    metrics_files : list of str
+        List of paths to the metrics files (.npz) containing 'flows'.
+    results : DataFrame
+        DataFrame containing 'item_name', 'batch_index', and 'flows' corresponding to each metrics file.
+    """
+    fig, ax = plt.subplots(figsize=(20, 10))
+
+    if len(metrics_files) != len(results):
+        raise ValueError("Number of metrics files does not match number of rows in results DataFrame")
+
+    lowest_flow_batch = None
+    if 'norms' in results.columns:
+        lowest_flow_batch = results.loc[results['flows'].idxmin()]['batch_index']
+
+    colors = plt.cm.viridis(np.linspace(0, 1, min(len(metrics_files), 4)))
+    batch_count = 0
+
+    for cnt, metrics_path in enumerate(metrics_files):
+        with np.load(metrics_path) as metric:
+            flows = metric['flows']
+
+            residual_flows = []
+            for i in range(1, len(flows)):
+                residual_flow = flows[i] - flows[i - 1]
+                rof = np.linalg.norm(residual_flow, axis=2).mean()
+                residual_flows.append(rof)
+
+            item_name = results.iloc[cnt]['item_name']
+            batch_idx = results.iloc[cnt]['batch_index']
+
+            if 'Raw Data' in item_name:
+                ax.plot(residual_flows, linestyle='dotted', label='Raw Data', color='red', linewidth=3.5)
+
+            elif results is not None and batch_idx == lowest_flow_batch:
+                ax.plot(residual_flows, color='blue', linewidth=2.5, label=f'Batch {batch_idx} (Lowest ROF)')
+
+            elif batch_count < 2:
+                ax.plot(residual_flows, label=f'{item_name} | Batch {batch_idx}', color=colors[batch_count],
+                        linewidth=1.5)
+                batch_count += 1
+
+    ax.set_xlabel('Frame Index', fontsize=12)
+    ax.set_ylabel('Residual Optical Flow (ROF)', fontsize=12)
+    ax.set_title('Residual Optical Flows (ROF) Across Batches', fontsize=16, fontweight='bold')
+    ax.legend(loc='upper right', fontsize=10)
+    plt.tight_layout()
     plt.show()
