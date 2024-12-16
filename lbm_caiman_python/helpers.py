@@ -449,7 +449,7 @@ def create_summary_df(df: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(metrics_list)
 
 
-def create_metrics_df(metrics_p: list[str]) -> pd.DataFrame:
+def create_metrics_df(metrics_p: list[str | Path]) -> pd.DataFrame:
     metrics_list = []
     for i, file in enumerate(metrics_p):
         with np.load(file) as f:
