@@ -1,4 +1,3 @@
-import logging
 import os
 import shutil
 import sys
@@ -201,7 +200,6 @@ def compute_metrics(fname, uuid, final_size_x, final_size_y, swap_dim=False, pyr
         count += 1
         correlations.append(scipy.stats.pearsonr(
             fr.flatten(), tmpl.flatten())[0])
-
 
     m = m.resize(1, 1, resize_fact_flow)
     norms = []
@@ -458,31 +456,48 @@ def create_metrics_df(metrics_p: list[str]) -> pd.DataFrame:
         with np.load(file) as f:
             corr = f['correlations']
             norms = f['norms']
-            smoothness = f['smoothness']
-            smoothness_corr = f['smoothness_corr']
+            crispness = f['smoothness_corr']
             uuid = f['uuid']
         metrics_list.append({
-            'correlations': np.mean(corr),
-            'norms': np.mean(norms),
-            'smoothness': float(smoothness),
-            'smoothness_corr': float(smoothness_corr),
+            'mean_corr': np.mean(corr),
+            'mean_norm': np.mean(norms),
+            'crispness': float(crispness),
             'uuid': uuid,
         })
     return pd.DataFrame(metrics_list)
 
 
 def add_param_diffs(summary_df, metrics_df, param_diffs):
-    final_df = pd.concat([summary_df, metrics_df], axis=1)
+    summary_df['uuid'] = summary_df['uuid'].combine_first(metrics_df['uuid'])
+    summary_df['uuid'] = summary_df['uuid'].apply(
+        lambda x: ''.join(map(str, x)) if isinstance(x, np.ndarray) and x.ndim > 0 else x)
+    summary_df['uuid'] = summary_df['uuid'].apply(
+        lambda x: x.item() if isinstance(x, np.ndarray) and x.ndim == 0 else x)
+    metrics_df['uuid'] = metrics_df['uuid'].apply(
+        lambda x: ''.join(map(str, x)) if isinstance(x, np.ndarray) and x.ndim > 0 else x)
+    metrics_df['uuid'] = metrics_df['uuid'].apply(
+        lambda x: x.item() if isinstance(x, np.ndarray) and x.ndim == 0 else x)
+
+    summary_df['uuid'] = summary_df['uuid'].astype(str)
+    metrics_df['uuid'] = metrics_df['uuid'].astype(str)
+
+    final_df = pd.merge(summary_df, metrics_df, on='uuid', suffixes=('_summary', '_metrics'), how='outer')
 
     for col in param_diffs.columns:
-        final_df[col] = "None"
+        if col not in final_df.columns:
+            final_df[col] = None
+
     for i, row in final_df.iterrows():
-        if row.batch_index == "None":
+        if pd.isnull(row['batch_index']) or row['batch_index'] == 'None':
             continue
-        batch_index = int(row.batch_index)
-        param_diff = param_diffs.iloc[batch_index]
-        for col in param_diffs.columns:
-            final_df.at[i, col] = param_diff[col]
+        batch_index = int(row['batch_index'])
+
+        if batch_index < len(param_diffs):
+            param_diff = param_diffs.iloc[batch_index]
+
+            for col in param_diffs.columns:
+                final_df.at[i, col] = param_diff[col]
+
     return final_df
 
 
@@ -508,9 +523,13 @@ def plot_optical_flows(metrics_files, max_columns=4, results=None):
     flow_images = []
 
     if results is not None:
-        highest_corr_batch = results.loc[results['correlations'].idxmax()]['batch_index']
-        highest_crisp_batch = results.loc[results['smoothness'].idxmax()]['batch_index']
-        lowest_norm_batch = results.loc[results['norms'].idxmin()]['batch_index']
+        highest_corr_batch = results.loc[results['mean_corr'].idxmax()]['batch_index']
+        highest_crisp_batch = results.loc[results['crispness'].idxmax()]['batch_index']
+        lowest_norm_batch = results.loc[results['mean_norm'].idxmin()]['batch_index']
+    else:
+        highest_corr_batch = None
+        highest_crisp_batch = None
+        lowest_norm_batch = None
 
     for cnt, (metrics_path, ax) in enumerate(zip(metrics_files, axes)):
         with np.load(metrics_path) as ld:
@@ -533,19 +552,16 @@ def plot_optical_flows(metrics_files, max_columns=4, results=None):
 
             title_parts = []
 
-            # Part 1: Item and Batch Index
             item_title = f'Item: {item_name} | Batch Index: {batch_idx}'
             if results is not None and batch_idx == highest_corr_batch:
                 item_title = f'Item: **{item_name} | Batch Index: {batch_idx}** (Highest Correlation)'
             title_parts.append(item_title)
 
-            # Part 2: ROF (mean ± std)
             norm_title = f'ROF (mean ± std): {mean_norm:.2f} ± {std_norm:.2f}'
             if results is not None and batch_idx == lowest_norm_batch:
                 norm_title = f'ROF: **{mean_norm:.2f} ± {std_norm:.2f}** (Lowest Norm)'
             title_parts.append(norm_title)
 
-            # Part 3: Crispness
             crisp_title = f'Crispness: {smoothness:.2f}'
             if results is not None and batch_idx == highest_crisp_batch:
                 crisp_title = f'Crispness: **{smoothness:.2f}** (Highest Crispness)'
@@ -566,69 +582,115 @@ def plot_optical_flows(metrics_files, max_columns=4, results=None):
     for i in range(len(metrics_files), len(axes)):
         axes[i].axis('off')
 
-    cbar_ax = fig.add_axes([0.92, 0.2, 0.02, 0.6])
+    cbar_ax = fig.add_axes((0.92, 0.2, 0.02, 0.6))
     norm = mpl.colors.Normalize(vmin=0, vmax=0.3)
     sm = mpl.cm.ScalarMappable(cmap='viridis', norm=norm)
     sm.set_array([])
     cbar = fig.colorbar(sm, cax=cbar_ax)
 
     cbar.set_label('Flow Magnitude', fontsize=12)
-    plt.tight_layout(rect=[0, 0, 0.9, 1])
+    plt.tight_layout(rect=(0, 0, 0.9, 1))
     plt.show()
 
 
 def plot_residual_flows(metrics_files, results):
-    """
-    Plots the residual optical flows (ROF).
-
-    Plots only the raw data and up to 3 batch items, including the lowest batch.
-
-    Parameters
-    ----------
-    metrics_files : list of str
-        List of paths to the metrics files (.npz) containing 'flows'.
-    results : DataFrame
-        DataFrame containing 'item_name', 'batch_index', and 'flows' corresponding to each metrics file.
-    """
     fig, ax = plt.subplots(figsize=(20, 10))
 
     if len(metrics_files) != len(results):
         raise ValueError("Number of metrics files does not match number of rows in results DataFrame")
 
-    lowest_flow_batch = None
-    if 'norms' in results.columns:
-        lowest_flow_batch = results.loc[results['flows'].idxmin()]['batch_index']
+    results_sorted = results.sort_values(by='mean_norm')
+    top_uuids = results_sorted['uuid'].values[:3]
 
-    colors = plt.cm.viridis(np.linspace(0, 1, min(len(metrics_files), 4)))
-    batch_count = 0
+    raw_uuid = results.loc[results['item_name'].str.contains('Raw Data', case=False, na=False), 'uuid'].values[0]
 
-    for cnt, metrics_path in enumerate(metrics_files):
+    colors = plt.cm.viridis(np.linspace(0, 1, 4))
+    plotted_uuids = set()
+
+    for metrics_path in metrics_files:
         with np.load(metrics_path) as metric:
             flows = metric['flows']
 
-            residual_flows = []
-            for i in range(1, len(flows)):
-                residual_flow = flows[i] - flows[i - 1]
-                rof = np.linalg.norm(residual_flow, axis=2).mean()
-                residual_flows.append(rof)
+            if isinstance(metric['uuid'], np.ndarray):
+                if metric['uuid'].ndim == 0:
+                    file_uuid = metric['uuid'].item()
+                else:
+                    file_uuid = ''.join(map(str, metric['uuid']))
+            else:
+                file_uuid = str(metric['uuid'])
 
-            item_name = results.iloc[cnt]['item_name']
-            batch_idx = results.iloc[cnt]['batch_index']
+            if file_uuid not in top_uuids and file_uuid != raw_uuid:
+                continue
 
-            if 'Raw Data' in item_name:
+            residual_flows = [np.linalg.norm(flows[i] - flows[i - 1], axis=2).mean() for i in range(1, len(flows))]
+
+            batch_idx = results.loc[results['uuid'] == file_uuid, 'batch_index'].values[0]
+            if file_uuid == raw_uuid and file_uuid not in plotted_uuids:
                 ax.plot(residual_flows, linestyle='dotted', label='Raw Data', color='red', linewidth=3.5)
+            elif file_uuid == top_uuids[0] and file_uuid not in plotted_uuids:
+                ax.plot(residual_flows, color='blue', linewidth=2.5, label=f'Lowest ROF | Batch Row Index: {batch_idx}')
+            elif file_uuid in top_uuids and file_uuid not in plotted_uuids:
+                color_idx = list(top_uuids).index(file_uuid) if file_uuid in top_uuids else len(plotted_uuids) - 1
+                ax.plot(residual_flows, label=f'Batch Row Index: {batch_idx}', color=colors[color_idx], linewidth=1.5)
 
-            elif results is not None and batch_idx == lowest_flow_batch:
-                ax.plot(residual_flows, color='blue', linewidth=2.5, label=f'Batch {batch_idx} (Lowest ROF)')
-
-            elif batch_count < 2:
-                ax.plot(residual_flows, label=f'{item_name} | Batch {batch_idx}', color=colors[batch_count],
-                        linewidth=1.5)
-                batch_count += 1
+            plotted_uuids.add(file_uuid)
 
     ax.set_xlabel('Frame Index', fontsize=12)
     ax.set_ylabel('Residual Optical Flow (ROF)', fontsize=12)
     ax.set_title('Residual Optical Flows (ROF) Across Batches', fontsize=16, fontweight='bold')
+    ax.legend(loc='upper right', fontsize=10, title='Batch Index', title_fontsize=12)
+    plt.tight_layout()
+    plt.show()
+
+
+def plot_correlations(metrics_files, results):
+    fig, ax = plt.subplots(figsize=(20, 10))
+
+    if len(metrics_files) != len(results):
+        raise ValueError("Number of metrics files does not match number of rows in results DataFrame")
+
+    results_sorted = results.sort_values(by='mean_corr')
+    top_uuids = results_sorted['uuid'].values[:3]
+
+    raw_uuid = results.loc[results['item_name'].str.contains('Raw Data', case=False, na=False), 'uuid'].values[0]
+
+    colors = plt.cm.viridis(np.linspace(0, 1, 4))
+    plotted_uuids = set()
+
+    for metrics_path in metrics_files:
+        with np.load(metrics_path) as metric:
+            correlations = metric['correlations']
+
+            # Extract and flatten the file's UUID properly
+            if isinstance(metric['uuid'], np.ndarray):
+                if metric['uuid'].ndim == 0:
+                    file_uuid = metric['uuid'].item()
+                else:
+                    file_uuid = ''.join(map(str, metric['uuid']))
+            else:
+                file_uuid = str(metric['uuid'])
+
+            if file_uuid not in top_uuids and file_uuid != raw_uuid:
+                continue
+
+            batch_idx = results.loc[results['uuid'] == file_uuid, 'batch_index'].values[0]
+            if file_uuid == raw_uuid and file_uuid not in plotted_uuids:
+                ax.plot(correlations, linestyle='dotted', label='Raw Data', color='red', linewidth=3.5)
+            elif file_uuid == top_uuids[0] and file_uuid not in plotted_uuids:
+                ax.plot(correlations,
+                        color='blue',
+                        linewidth=2.5,
+                        label='Lowest Correlations | Batch Row Index {batch_idx}'
+                )
+            elif file_uuid in top_uuids and file_uuid not in plotted_uuids:
+                color_idx = list(top_uuids).index(file_uuid) if file_uuid in top_uuids else len(plotted_uuids) - 1
+                ax.plot(correlations, label=f'Batch Row Index {batch_idx}', color=colors[color_idx], linewidth=1.5)
+
+            plotted_uuids.add(file_uuid)
+
+    ax.set_xlabel('Frame Index', fontsize=12)
+    ax.set_ylabel('Correlation', fontsize=12)
+    ax.set_title('Correlations Across Batches', fontsize=16, fontweight='bold')
     ax.legend(loc='upper right', fontsize=10)
     plt.tight_layout()
     plt.show()
