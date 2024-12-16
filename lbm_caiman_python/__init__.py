@@ -23,6 +23,7 @@ from .helpers import (
     create_summary_df,
     plot_optical_flows,
     plot_residual_flows,
+    plot_correlations,
     add_param_diffs
 )
 from ._store_model import TimeStore
@@ -51,5 +52,6 @@ __all__ = [
     "add_param_diffs",
     "plot_optical_flows",
     "plot_residual_flows",
+    "plot_correlations",
     "TimeStore"
 ]
