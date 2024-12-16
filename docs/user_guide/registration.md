@@ -189,3 +189,17 @@ viz.show()
 :align: center
 :::
 
+## **Summary and Metrics**
+
+The registration process generates several key metrics that help assess the quality and accuracy of the motion-correction. These metrics provide insight into how well frames align with the template and the overall stability of the video.
+
+## **Summary and Metrics**
+
+The registration process generates several key metrics that help assess the quality and accuracy of the motion-correction. These metrics provide insight into how well frames align with the template and the overall stability of the video.
+
+| **Metric**       | **What It Measures**                                         | **What It Means**                                                     | **How It Helps You**                                                                                                                           |
+|------------------|------------------------------------------------------------|-------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
+| **correlations** | How similar each frame is to the template frame.             | Higher values mean better alignment, while lower values suggest misalignment or noise.                       | If correlations are low, it may indicate poor alignment, noise, or significant differences between the frame and the template.                   |
+| **smoothness**   | How "smooth" the pixel brightness is across the entire frame. | Higher smoothness means smoother, more stable frames, while lower values indicate sharp edges, noise, or misalignment. | Helps identify noisy or unstable frames. High smoothness suggests the frames are well-aligned and free of sudden changes in pixel brightness.    |
+| **flows**        | The movement of pixels from frame to frame relative to the template. | Large pixel movements mean the frame is shifting a lot, while smaller movements indicate better stability.    | Useful for visualizing how much each pixel moves between frames. Large movements suggest frame misalignment.                                   |
+| **norms**        | The total amount of pixel movement in each frame relative to the template. | High values mean the frame has shifted a lot relative to the template, while low values suggest stability.    | Tracks how much a frame shifts overall. If norms are high, it could mean misalignment or frame drift.                                          |
