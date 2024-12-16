@@ -346,6 +346,8 @@ def compute_batch_metrics(df: pd.DataFrame, raw_filename=None, overwrite: bool =
     -------
     metrics_paths : list of Path
         List of file paths where metrics are stored for each batch.
+
+    TODO: This can be made to run in parallel.
     """
     metrics_paths = []
 
@@ -353,8 +355,7 @@ def compute_batch_metrics(df: pd.DataFrame, raw_filename=None, overwrite: bool =
         raw_filename = Path(raw_filename)
     else:
         try:
-            import mesmerize_core as mc
-            raw_filename = mc.get_parent_raw_data_path() / df.iloc[0].input_movie_path
+            raw_filename = df.iloc[0].caiman.get_input_movie_path()
         except Exception as e:
             print('Skipping raw data metrics computation. Could not find raw data file.')
             raw_filename = None
