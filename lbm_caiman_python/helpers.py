@@ -482,7 +482,7 @@ def create_metrics_df(metrics_p: list[str | Path]) -> pd.DataFrame:
     return pd.DataFrame(metrics_list)
 
 
-def add_param_diffs(input_df, param_diffs):
+def concat_param_diffs(input_df, param_diffs):
     """
     Add parameter differences to the input DataFrame.
 
@@ -511,6 +511,11 @@ def add_param_diffs(input_df, param_diffs):
 
             for col in param_diffs.columns:
                 input_df.at[i, col] = param_diff[col]
+
+    input_df = input_df[
+        # better col order
+        ['mean_corr', 'mean_norm', 'crispness'] + list(param_diffs.columns) + ['batch_index', 'uuid', 'metric_path']
+    ]
 
     return input_df
 
@@ -777,7 +782,7 @@ if __name__ == "__main__":
     df = mc.load_batch(batch_path)
     metrics_files = compute_batch_metrics(df, overwrite=False)
     metrics_df = create_metrics_df(metrics_files)
-    merged = add_param_diffs(metrics_df, df.caiman.get_params_diffs("mcorr", item_name=df.iloc[0]["item_name"]))
+    merged = concat_param_diffs(metrics_df, df.caiman.get_params_diffs("mcorr", item_name=df.iloc[0]["item_name"]))
     summary_df = create_summary_df(df)
     plot_optical_flows(input_df=merged)
     plot_residual_flows(metrics_df, smooth=False)
