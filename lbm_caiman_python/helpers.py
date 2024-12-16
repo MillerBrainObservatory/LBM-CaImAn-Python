@@ -417,8 +417,7 @@ def create_summary_df(df: pd.DataFrame) -> pd.DataFrame:
     df = df[df.item_name == 'mcorr']
     assert df.input_movie_path.nunique() == 1, "All input files must be the same"
 
-    raw_filename = df.iloc[0].input_movie_path
-    raw_filepath = mc.get_parent_raw_data_path() / raw_filename
+    raw_filepath = df.iloc[0].caiman.get_input_movie_path()
     raw_data = tifffile.memmap(raw_filepath)
     met = {
         'item_name': 'Raw Data',
@@ -639,7 +638,12 @@ def plot_residual_flows(metrics_files, results, num_batches=3):
             if file_uuid == raw_uuid and file_uuid not in plotted_uuids:
                 ax.plot(residual_flows, linestyle='dotted', label='Raw Data', color='red', linewidth=3.5)
             elif file_uuid == top_uuids[0] and file_uuid not in plotted_uuids:
-                ax.plot(residual_flows, color='blue', linewidth=2.5, label=f'Lowest mean ROF | Batch Row Index: {batch_idx}')
+                ax.plot(
+                    residual_flows,
+                    color='blue',
+                    linewidth=2.5,
+                    label=f'Lowest mean ROF | Batch Row Index: {batch_idx}'
+                )
             elif file_uuid in top_uuids and file_uuid not in plotted_uuids:
                 color_idx = list(top_uuids).index(file_uuid) if file_uuid in top_uuids else len(plotted_uuids) - 1
                 ax.plot(residual_flows, label=f'Batch Row Index: {batch_idx}', color=colors[color_idx], linewidth=1.5)
@@ -717,3 +721,19 @@ def plot_correlations(metrics_files, results, num_batches=3):
     ax.legend(loc='upper right', fontsize=10)
     plt.tight_layout()
     plt.show()
+
+if __name__ == "__main__":
+    from pathlib import Path
+    import mesmerize_core as mc
+
+    parent_path = Path().home() / "caiman_data"
+    data_path = parent_path / 'out'  # where the output files from the assembly step are located
+    batch_path = data_path / 'batch_v2.pickle'
+    df = mc.load_batch(batch_path)
+    metrics_files = compute_batch_metrics(df, overwrite=False)
+    metrics_df = create_metrics_df(metrics_files)
+    summary_df = create_summary_df(df)
+    final_df = add_param_diffs(summary_df, metrics_df, df.caiman.get_params_diffs("mcorr", item_name=df.iloc[0]["item_name"]))
+    # plot_optical_flows(metrics_files, results=final_df)
+    # plot_residual_flows(metrics_files, final_df)
+    # plot_correlations(metrics_files, final_df)
