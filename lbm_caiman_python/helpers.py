@@ -628,7 +628,7 @@ def plot_residual_flows(metrics_files, results):
             if file_uuid == raw_uuid and file_uuid not in plotted_uuids:
                 ax.plot(residual_flows, linestyle='dotted', label='Raw Data', color='red', linewidth=3.5)
             elif file_uuid == top_uuids[0] and file_uuid not in plotted_uuids:
-                ax.plot(residual_flows, color='blue', linewidth=2.5, label=f'Lowest ROF | Batch Row Index: {batch_idx}')
+                ax.plot(residual_flows, color='blue', linewidth=2.5, label=f'Lowest mean ROF | Batch Row Index: {batch_idx}')
             elif file_uuid in top_uuids and file_uuid not in plotted_uuids:
                 color_idx = list(top_uuids).index(file_uuid) if file_uuid in top_uuids else len(plotted_uuids) - 1
                 ax.plot(residual_flows, label=f'Batch Row Index: {batch_idx}', color=colors[color_idx], linewidth=1.5)
@@ -643,14 +643,26 @@ def plot_residual_flows(metrics_files, results):
     plt.show()
 
 
-def plot_correlations(metrics_files, results):
+def plot_correlations(metrics_files, results, num_batches=3):
+    """
+    Plot the correlations across batches.
+
+    Parameters
+    ----------
+    metrics_files : list of str
+        List of paths to the metrics files (.npz) containing 'correlations'.
+    results : DataFrame
+        DataFrame containing 'uuid' and 'batch_index' columns.
+    num_batches : int, optional
+        Number of batches to plot. Default is 3.
+    """
     fig, ax = plt.subplots(figsize=(20, 10))
 
     if len(metrics_files) != len(results):
         raise ValueError("Number of metrics files does not match number of rows in results DataFrame")
 
     results_sorted = results.sort_values(by='mean_corr')
-    top_uuids = results_sorted['uuid'].values[:3]
+    top_uuids = results_sorted['uuid'].values[:num_batches]
 
     raw_uuid = results.loc[results['item_name'].str.contains('Raw Data', case=False, na=False), 'uuid'].values[0]
 
