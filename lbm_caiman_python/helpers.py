@@ -21,6 +21,11 @@ import caiman as cm
 from tqdm import tqdm
 
 
+def smooth_data(data, window_size=5):
+    """Smooth the data using a moving average."""
+    return np.convolve(data, np.ones(window_size) / window_size, mode='valid')
+
+
 def plot_with_scalebars(image: ArrayLike, pixel_resolution: float):
     """
     Plot a 2D image with scale bars of 5, 10, and 20 microns.
@@ -600,7 +605,7 @@ def plot_optical_flows(input_df: pd.DataFrame, max_columns=4):
     plt.show()
 
 
-def plot_residual_flows(results, num_batches=3):
+def plot_residual_flows(results, num_batches=3, smooth=False, winsize=5):
     """
     Plot the top num_batches residual optical flows across batches.
 
@@ -610,8 +615,12 @@ def plot_residual_flows(results, num_batches=3):
         DataFrame containing 'uuid' and 'batch_index' columns.
     num_batches : int, optional
         Number of "best" batches to plot. Default is 3.
+    smooth : bool, optional
+        Whether to smooth the residual flows using a moving average. Default is False.
+    winsize : int, optional
+        The window size for smoothing the data. Default is 5.
     """
-    # Sort and filter for top batches by mean_norm
+    # Sort and filter for top batches by mean_norm, lower is better
     results_sorted = results.sort_values(by='mean_norm')
     top_uuids = results_sorted['uuid'].values[:num_batches]
     results_filtered = results[results['uuid'].isin(top_uuids)]
@@ -636,12 +645,13 @@ def plot_residual_flows(results, num_batches=3):
 
         residual_flows = [np.linalg.norm(flows[i] - flows[i - 1], axis=2).mean() for i in range(1, len(flows))]
 
+        if smooth:
+            residual_flows = smooth_data(residual_flows, window_size=winsize)
+
         if raw_uuid == best_uuid:
-            # Raw is also the best, so plot as blue dotted
             ax.plot(residual_flows, color='blue', linestyle='dotted', linewidth=2.5,
-                    label=f'Best (Raw) | Batch Row Index: {batch_idx}')
+                    label=f'Best (Raw)')
         else:
-            # Raw is not the best, so plot as red dashed
             ax.plot(residual_flows, color='red', linestyle='dotted', linewidth=2.5,
                     label=f'Raw Data')
 
@@ -651,7 +661,6 @@ def plot_residual_flows(results, num_batches=3):
         file_uuid = row['uuid']
         batch_idx = row['batch_index']
 
-        # Avoid double-plotting the raw file if it was already plotted
         if file_uuid in plotted_uuids:
             continue
 
@@ -661,6 +670,9 @@ def plot_residual_flows(results, num_batches=3):
             flows = metric['flows']
 
         residual_flows = [np.linalg.norm(flows[i] - flows[i - 1], axis=2).mean() for i in range(1, len(flows))]
+
+        if smooth:
+            residual_flows = smooth_data(residual_flows, window_size=winsize)
 
         if file_uuid == best_uuid:
             ax.plot(residual_flows, color='blue', linestyle='solid', linewidth=2.5,
@@ -673,74 +685,84 @@ def plot_residual_flows(results, num_batches=3):
         plotted_uuids.add(file_uuid)
 
     ax.set_xlabel('Frames (downsampled)', fontsize=12, fontweight='bold')
+
+    # Make X tick labels bold
+    ax.set_xticklabels([int(x) for x in ax.get_xticks()], fontweight='bold')
+
+    # Make Y tick labels bold
+    ax.set_yticklabels(np.round(ax.get_yticks(), 2), fontweight='bold')
+
     ax.set_ylabel('Residual Optical Flow (ROF)', fontsize=12, fontweight='bold')
     ax.set_title(f'Batches with Lowest Residual Optical Flow', fontsize=16, fontweight='bold')
-    ax.legend(loc='upper right', fontsize=12, title='Figure Key', title_fontsize=12)
+    ax.legend(loc='best', fontsize=12, title='Figure Key', title_fontsize=12, prop={'weight': 'bold'})
     plt.tight_layout()
     plt.show()
 
 
-def plot_correlations(metrics_files, results, num_batches=3):
-    """
-    Plot the correlations across batches.
+def plot_correlations(results, num_batches=3, smooth=False, winsize=5):
+    results_sorted = results.sort_values(by='mean_corr', ascending=False)
+    top_uuids = results_sorted['uuid'].values[:num_batches]
+    results_filtered = results[results['uuid'].isin(top_uuids)]
 
-    Parameters
-    ----------
-    metrics_files : list of str
-        List of paths to the metrics files (.npz) containing 'correlations'.
-    results : DataFrame
-        DataFrame containing 'uuid' and 'batch_index' columns.
-    num_batches : int, optional
-        Number of batches to plot. Default is 3.
-    """
+    raw_uuid = results.loc[results['uuid'].str.contains('raw', case=False, na=False), 'uuid'].values[0]
+    best_uuid = top_uuids[0]
+
     fig, ax = plt.subplots(figsize=(20, 10))
 
-    if len(metrics_files) != len(results):
-        raise ValueError("Number of metrics files does not match number of rows in results DataFrame")
-
-    results_sorted = results.sort_values(by='mean_corr')
-    top_uuids = results_sorted['uuid'].values[:num_batches]
-
-    raw_uuid = results.loc[results['item_name'].str.contains('Raw Data', case=False, na=False), 'uuid'].values[0]
-
-    colors = plt.cm.viridis(np.linspace(0, 1, 4))
+    colors = plt.cm.Set1(np.linspace(0, 1, num_batches))
     plotted_uuids = set()
 
-    for metrics_path in metrics_files:
-        with np.load(metrics_path) as metric:
+    if raw_uuid in results['uuid'].values:
+        row = results.loc[results['uuid'] == raw_uuid].iloc[0]
+        metric_path = row['metric_path']
+
+        with np.load(metric_path) as metric:
             correlations = metric['correlations']
-            batch_idx = results.loc[results['uuid'] == file_uuid, 'batch_index'].values[0]
 
-            # Extract and flatten the file's UUID properly
-            if isinstance(metric['uuid'], np.ndarray):
-                if metric['uuid'].ndim == 0:
-                    file_uuid = metric['uuid'].item()
-                else:
-                    file_uuid = ''.join(map(str, metric['uuid']))
-            else:
-                file_uuid = str(metric['uuid'])
+        if smooth:
+            correlations = smooth_data(correlations, window_size=winsize)
 
-            if file_uuid not in top_uuids and file_uuid != raw_uuid:
-                continue
+        if raw_uuid == best_uuid:
+            ax.plot(correlations, color='blue', linestyle='dotted', linewidth=2.5,
+                    label=f'Best (Raw)')
+        else:
+            ax.plot(correlations, color='red', linestyle='dotted', linewidth=2.5,
+                    label=f'Raw Data')
 
-            if file_uuid == raw_uuid and file_uuid not in plotted_uuids:
-                ax.plot(correlations, linestyle='dotted', label='Raw Data', color='red', linewidth=3.5)
-            elif file_uuid == top_uuids[0] and file_uuid not in plotted_uuids:
-                ax.plot(correlations,
-                        color='blue',
-                        linewidth=2.5,
-                        label='Lowest Correlations | Batch Row Index {batch_idx}'
-                        )
-            elif file_uuid in top_uuids and file_uuid not in plotted_uuids:
-                color_idx = list(top_uuids).index(file_uuid) if file_uuid in top_uuids else len(plotted_uuids) - 1
-                ax.plot(correlations, label=f'Batch Row Index {batch_idx}', color=colors[color_idx], linewidth=1.5)
+        plotted_uuids.add(raw_uuid)
 
-            plotted_uuids.add(file_uuid)
+    for i, row in results_filtered.iterrows():
+        file_uuid = row['uuid']
+        batch_idx = row['batch_index']
 
-    ax.set_xlabel('Frame Index', fontsize=12)
-    ax.set_ylabel('Correlation', fontsize=12)
-    ax.set_title('Correlations Across Batches', fontsize=16, fontweight='bold')
-    ax.legend(loc='upper right', fontsize=10)
+        if file_uuid in plotted_uuids:
+            continue
+
+        metric_path = row['metric_path']
+
+        with np.load(metric_path) as metric:
+            correlations = metric['correlations']
+
+        if smooth:
+            correlations = smooth_data(correlations, window_size=winsize)
+
+        if file_uuid == best_uuid:
+            ax.plot(correlations, color='blue', linestyle='solid', linewidth=2.5,
+                    label=f'Best Value | Batch Row Index: {batch_idx}')
+        else:
+            color_idx = list(top_uuids).index(file_uuid) if file_uuid in top_uuids else len(plotted_uuids) - 1
+            ax.plot(correlations, color=colors[color_idx], linestyle='solid', linewidth=1.5,
+                    label=f'Batch Row Index: {batch_idx}')
+
+        plotted_uuids.add(file_uuid)
+
+    ax.set_xlabel('Frame Index (Downsampled)', fontsize=12, fontweight='bold')
+
+    ax.set_xticklabels([int(x) for x in ax.get_xticks()], fontweight='bold')
+    ax.set_yticklabels(np.round(ax.get_yticks(), 2), fontweight='bold')
+    ax.set_ylabel('Correlation Coefficient (r)', fontsize=12, fontweight='bold')
+    ax.set_title(f'Batches with Highest Correlation', fontsize=16, fontweight='bold')
+    ax.legend(loc='best', fontsize=12, title='Figure Key', title_fontsize=12, prop={'weight': 'bold'})
     plt.tight_layout()
     plt.show()
 
@@ -753,12 +775,10 @@ if __name__ == "__main__":
     data_path = parent_path / 'out'  # where the output files from the assembly step are located
     batch_path = data_path / 'batch_v2.pickle'
     df = mc.load_batch(batch_path)
-    # grab first 3 rows
-    sub_df = df.iloc[:3]
     metrics_files = compute_batch_metrics(df, overwrite=False)
     metrics_df = create_metrics_df(metrics_files)
     merged = add_param_diffs(metrics_df, df.caiman.get_params_diffs("mcorr", item_name=df.iloc[0]["item_name"]))
-    # summary_df = create_summary_df(df)
-    # plot_optical_flows(input_df=merged)
-    plot_residual_flows(metrics_df)
-    # plot_correlations(metrics_files, final_df)
+    summary_df = create_summary_df(df)
+    plot_optical_flows(input_df=merged)
+    plot_residual_flows(metrics_df, smooth=False)
+    plot_correlations(metrics_df, smooth=False)
