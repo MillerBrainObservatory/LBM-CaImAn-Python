@@ -152,13 +152,6 @@ def generate_patch_view(image: ArrayLike, pixel_resolution: float, target_patch_
     return fig, ax, stride, overlap
 
 
-def compute_flow_single_frame(frame, templ, pyr_scale=.5, levels=3, winsize=100, iterations=15, poly_n=5,
-                              poly_sigma=1.2 / 5, flags=0):
-    flow = cv2.calcOpticalFlowFarneback(
-        templ, frame, None, pyr_scale, levels, winsize, iterations, poly_n, poly_sigma, flags)
-    return flow
-
-
 def _compute_metrics(fname, uuid, batch_id, final_size_x, final_size_y, swap_dim=False, pyr_scale=.5, levels=3,
                      winsize=100, iterations=15, poly_n=5, poly_sigma=1.2 / 5, flags=0,
                      resize_fact_flow=.2, template=None, gSig_filt=None):
@@ -316,18 +309,16 @@ def get_metrics_path(fname: Path) -> Path:
     return fname.with_stem(fname.stem + '_metrics').with_suffix('.npz')
 
 
-def compute_batch_metrics(df: pd.DataFrame, overwrite: bool = False) -> List[Path]:
+def compute_batch_metrics(batch_df: pd.DataFrame, overwrite: bool = False) -> List[Path]:
     """
     Compute and store various statistical metrics for each batch of image data.
 
     Parameters
     ----------
-    df : DataFrame, optional
+    batch_df : DataFrame, optional
         A DataFrame containing information about each batch of image data.
         Must be compatible with the mesmerize-core DataFrame API to call
         `get_params_diffs` and `get_output` on each row.
-    raw_filename : Path, optional
-        The path to the raw data file. Must be a TIFF file. Default is None.
     overwrite : bool, optional
         If True, recompute and overwrite existing metric files. Default is False.
 
@@ -336,12 +327,22 @@ def compute_batch_metrics(df: pd.DataFrame, overwrite: bool = False) -> List[Pat
     metrics_paths : list of Path
         List of file paths where metrics are stored for each batch.
 
+    Examples
+    --------
+    >>> import pandas as pd
+    >>> import lbm_caiman_python as lcp
+    >>> import mesmerize_core as mc
+    >>> batch_df = mc.load_batch('path/to/batch.pickle')
+    >>> metrics_paths = lcp.compute_batch_metrics(batch_df)
+    >>> print(metrics_paths)
+    [Path('path/to/metrics1.npz'), Path('path/to/metrics2.npz'), ...]
+
     TODO: This can be made to run in parallel.
     """
     metrics_paths = []
 
     try:
-        raw_filename = df.iloc[0].caiman.get_input_movie_path()
+        raw_filename = batch_df.iloc[0].caiman.get_input_movie_path()
     except Exception as e:
         print('Skipping raw data metrics computation.'
               'Could not find raw data file.'
@@ -366,7 +367,7 @@ def compute_batch_metrics(df: pd.DataFrame, overwrite: bool = False) -> List[Pat
 
         metrics_paths.append(raw_metrics_path)
 
-    for i, row in df.iterrows():
+    for i, row in batch_df.iterrows():
         print(f'Processing batch index {i}...')
 
         if row.algo != 'mcorr':
@@ -401,24 +402,49 @@ def compute_batch_metrics(df: pd.DataFrame, overwrite: bool = False) -> List[Pat
     return metrics_paths
 
 
-def create_summary_df(df: pd.DataFrame) -> pd.DataFrame:
+def create_summary_df(batch_df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Calculate summary statistics for each batch of image data and output results in a DataFrame.
+
+    Parameters
+    ----------
+    batch_df : DataFrame
+        A DataFrame containing information about each batch of image data.
+        Must be compatible with the mesmerize-core DataFrame API to call
+        `get_output` on each row.
+
+    Returns
+    -------
+    summary_df : DataFrame
+        A DataFrame containing summary statistics for each batch of image data.
+        This includes the minimum, maximum, mean, standard deviation, and percentiles.
+
+    Examples
+    --------
+    >>> import pandas as pd
+    >>> import lbm_caiman_python as lcp
+    >>> import mesmerize_core as mc
+    >>> batch_df = mc.load_batch('path/to/batch.pickle')
+    >>> summary_df = lcp.create_summary_df(batch_df)
+    >>> print(summary_df)
+    """
     # Filter DataFrame to only process 'mcorr' rows
-    df = df[df.item_name == 'mcorr']
-    total_tqdm = len(df) + 1  # +1 for the raw file processing
+    batch_df = batch_df[batch_df.item_name == 'mcorr']
+    total_tqdm = len(batch_df) + 1  # +1 for the raw file processing
 
     with tqdm(total=total_tqdm, position=0, leave=True, desc="Computing Data Summary") as pbar:
 
         # Check for unique input files
-        if df.input_movie_path.nunique() != 1:
+        if batch_df.input_movie_path.nunique() != 1:
             raise ValueError(
                 "\n\n"
                 "The batch rows have different input files. All input files must be the same.\n"
                 "Please check the **input_movie_path** column in the DataFrame.\n\n"
                 "To select a subset of your DataFrame with the same input file, you can use the following code:\n\n"
-                "df = df[df.input_movie_path == df.input_movie_path.iloc[0]]\n"
+                "batch_df = batch_df[batch_df.input_movie_path == batch_df.input_movie_path.iloc[0]]\n"
             )
 
-        raw_filepath = df.iloc[0].caiman.get_input_movie_path()
+        raw_filepath = batch_df.iloc[0].caiman.get_input_movie_path()
         raw_data = tifffile.memmap(raw_filepath)
         met = {
             'item_name': 'Raw Data',
@@ -435,7 +461,7 @@ def create_summary_df(df: pd.DataFrame) -> pd.DataFrame:
         metrics_list = [met]
         pbar.update(1)
 
-        for i, row in df.iterrows():
+        for i, row in batch_df.iterrows():
             mmap_file = row.mcorr.get_output()
             metrics_list.append({
                 'item_name': row.item_name,
@@ -453,18 +479,35 @@ def create_summary_df(df: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(metrics_list)
 
 
-def create_metrics_df(metrics_p: list[str | Path]) -> pd.DataFrame:
+def create_metrics_df(metrics_filepaths: list[str | Path]) -> pd.DataFrame:
     """
     Create a DataFrame from a list of metrics files.
 
     Parameters
     ----------
-    metrics_p : list of str or Path
+    metrics_filepaths : list of str or Path
         List of paths to the metrics files (.npz) containing 'correlations', 'norms',
         'smoothness', 'flows', and the batch item UUID.
+        Typically, use the output of `compute_batch_metrics` to get the list of metrics files.
+
+    Returns
+    -------
+    metrics_df : DataFrame
+        A DataFrame containing the mean correlation, mean norm, crispness, UUID, batch index, and metric path.
+
+    Examples
+    --------
+    >>> import pandas as pd
+    >>> import lbm_caiman_python as lcp
+    >>> import mesmerize_core as mc
+    >>> batch_df = mc.load_batch('path/to/batch.pickle')
+    >>> # overwrite=False will not recompute metrics if they already exist
+    >>> metrics_files = lcp.compute_batch_metrics(batch_df, overwrite=False)
+    >>> metrics_df = lcp.create_metrics_df(metrics_files)
+    >>> print(metrics_df.head())
     """
     metrics_list = []
-    for i, file in enumerate(metrics_p):
+    for i, file in enumerate(metrics_filepaths):
         with np.load(file) as f:
             corr = f['correlations']
             norms = f['norms']
@@ -486,14 +529,29 @@ def concat_param_diffs(input_df, param_diffs):
     """
     Add parameter differences to the input DataFrame.
 
-    Input can be any dataframe as long as there exists a 'batch_index' column.
-
     Parameters
     ----------
     input_df : DataFrame
         The input DataFrame containing a 'batch_index' column.
     param_diffs : DataFrame
         The DataFrame containing the parameter differences for each batch.
+
+    Returns
+    -------
+    input_df : DataFrame
+        The input DataFrame with the parameter differences added.
+
+    Examples
+    --------
+    >>> import pandas as pd
+    >>> import lbm_caiman_python as lcp
+    >>> import mesmerize_core as mc
+    >>> batch_df = mc.load_batch('path/to/batch.pickle')
+    >>> metrics_files = lcp.compute_batch_metrics(batch_df)
+    >>> metrics_df = lcp.create_metrics_df(metrics_files)
+    >>> param_diffs = batch_df.caiman.get_params_diffs("mcorr", item_name=batch_df.iloc[0]["item_name"])
+    >>> final_df = lcp.concat_param_diffs(metrics_df, param_diffs)
+    >>> print(final_df.head())
     """
     # add an empty column for each param diff
     for col in param_diffs.columns:
@@ -522,14 +580,24 @@ def concat_param_diffs(input_df, param_diffs):
 
 def plot_optical_flows(input_df: pd.DataFrame, max_columns=4):
     """
-    Plots the optical flow images from a DataFrame containing metrics information.
+    Plots the dense optical flow images from a DataFrame containing metrics information.
 
     Parameters
     ----------
     input_df : DataFrame
         DataFrame containing 'flows', 'batch_index', 'mean_corr', 'mean_norm', 'crispness', and other related columns.
+        Typically, use the output of `create_metrics_df` to get the input DataFrame.
     max_columns : int, optional
         Maximum number of columns to display in the plot. Default is 4.
+
+    Examples
+    --------
+    >>> import lbm_caiman_python as lcp
+    >>> import mesmerize_core as mc
+    >>> batch_df = mc.load_batch('path/to/batch.pickle')
+    >>> metrics_files = lcp.compute_batch_metrics(batch_df)
+    >>> metrics_df = lcp.create_metrics_df(metrics_files)
+    >>> lcp.plot_optical_flows(metrics_df, max_columns=2)
     """
     num_graphs = len(input_df)
     num_rows = int(np.ceil(num_graphs / max_columns))
@@ -610,9 +678,9 @@ def plot_optical_flows(input_df: pd.DataFrame, max_columns=4):
     plt.show()
 
 
-def plot_residual_flows(results, num_batches=3, smooth=False, winsize=5):
+def plot_residual_flows(results, num_batches=3, smooth=True, winsize=5):
     """
-    Plot the top num_batches residual optical flows across batches.
+    Plot the top `num_batches` residual optical flows across batches.
 
     Parameters
     ----------
@@ -621,9 +689,18 @@ def plot_residual_flows(results, num_batches=3, smooth=False, winsize=5):
     num_batches : int, optional
         Number of "best" batches to plot. Default is 3.
     smooth : bool, optional
-        Whether to smooth the residual flows using a moving average. Default is False.
+        Whether to smooth the residual flows using a moving average. Default is True.
     winsize : int, optional
         The window size for smoothing the data. Default is 5.
+
+    Examples
+    --------
+    >>> import lbm_caiman_python as lcp
+    >>> import mesmerize_core as mc
+    >>> batch_df = mc.load_batch('path/to/batch.pickle')
+    >>> metrics_files = lcp.compute_batch_metrics(batch_df)
+    >>> metrics_df = lcp.create_metrics_df(metrics_files)
+    >>> lcp.plot_residual_flows(metrics_df, num_batches=6, smooth=True, winsize=8)
     """
     # Sort and filter for top batches by mean_norm, lower is better
     results_sorted = results.sort_values(by='mean_norm')
@@ -704,7 +781,21 @@ def plot_residual_flows(results, num_batches=3, smooth=False, winsize=5):
     plt.show()
 
 
-def plot_correlations(results, num_batches=3, smooth=False, winsize=5):
+def plot_correlations(results, num_batches=3, smooth=True, winsize=5):
+    """
+    Plot the top `num_batches` batches with the highest correlation coefficients.
+
+    Parameters
+    ----------
+    results : DataFrame
+        DataFrame containing 'uuid' and 'batch_index' columns.
+    num_batches : int, optional
+        Number of "best" batches to plot. Default is 3.
+    smooth : bool, optional
+        Whether to smooth the correlation data using a moving average. Default is True.
+    winsize : int, optional
+        The window size for smoothing the data. Default is 5.
+    """
     results_sorted = results.sort_values(by='mean_corr', ascending=False)
     top_uuids = results_sorted['uuid'].values[:num_batches]
     results_filtered = results[results['uuid'].isin(top_uuids)]
@@ -771,19 +862,3 @@ def plot_correlations(results, num_batches=3, smooth=False, winsize=5):
     plt.tight_layout()
     plt.show()
 
-
-if __name__ == "__main__":
-    from pathlib import Path
-    import mesmerize_core as mc
-
-    parent_path = Path().home() / "caiman_data"
-    data_path = parent_path / 'out'  # where the output files from the assembly step are located
-    batch_path = data_path / 'batch_v2.pickle'
-    df = mc.load_batch(batch_path)
-    metrics_files = compute_batch_metrics(df, overwrite=False)
-    metrics_df = create_metrics_df(metrics_files)
-    merged = concat_param_diffs(metrics_df, df.caiman.get_params_diffs("mcorr", item_name=df.iloc[0]["item_name"]))
-    summary_df = create_summary_df(df)
-    plot_optical_flows(input_df=merged)
-    plot_residual_flows(metrics_df, smooth=False)
-    plot_correlations(metrics_df, smooth=False)
