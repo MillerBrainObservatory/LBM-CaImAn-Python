@@ -416,7 +416,18 @@ def compute_batch_metrics(df: pd.DataFrame, raw_filename=None, overwrite: bool =
 def create_summary_df(df: pd.DataFrame) -> pd.DataFrame:
     total_tqdm = len(df[df.item_name == 'mcorr'])
     df = df[df.item_name == 'mcorr']
-    assert df.input_movie_path.nunique() == 1, "All input files must be the same"
+
+    # if batch rows have different input files, we should not comapre them.
+    if df.input_movie_path.nunique() != 1:
+        raise ValueError(
+            "\n\n"
+            "The batch rows have different input files. All input files must be the same.\n"
+            "Please check the **input_movie_path** column in the DataFrame.\n\n"
+            "To select a subset of your DataFrame with the same input file, you can use the following code:\n\n"
+            "```python\n"
+            "df = df[df.input_movie_path == df.input_movie_path.iloc[0]]\n"
+            "```\n"
+        )
 
     raw_filepath = df.iloc[0].caiman.get_input_movie_path()
     raw_data = tifffile.memmap(raw_filepath)
@@ -451,6 +462,15 @@ def create_summary_df(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def create_metrics_df(metrics_p: list[str | Path]) -> pd.DataFrame:
+    """
+    Create a DataFrame from a list of metrics files.
+
+    Parameters
+    ----------
+    metrics_p : list of str or Path
+        List of paths to the metrics files (.npz) containing 'correlations', 'norms',
+        'smoothness', 'flows', and the batch item UUID.
+    """
     metrics_list = []
     for i, file in enumerate(metrics_p):
         with np.load(file) as f:
@@ -468,7 +488,12 @@ def create_metrics_df(metrics_p: list[str | Path]) -> pd.DataFrame:
 
 
 def add_param_diffs(summary_df, metrics_df, param_diffs):
+    """
+
+    """
     summary_df['uuid'] = summary_df['uuid'].combine_first(metrics_df['uuid'])
+
+    # this would be more readable with an anonymous function
     summary_df['uuid'] = summary_df['uuid'].apply(
         lambda x: ''.join(map(str, x)) if isinstance(x, np.ndarray) and x.ndim > 0 else x)
     summary_df['uuid'] = summary_df['uuid'].apply(
@@ -481,13 +506,13 @@ def add_param_diffs(summary_df, metrics_df, param_diffs):
     summary_df['uuid'] = summary_df['uuid'].astype(str)
     metrics_df['uuid'] = metrics_df['uuid'].astype(str)
 
-    final_df = pd.merge(summary_df, metrics_df, on='uuid', suffixes=('_summary', '_metrics'), how='outer')
+    _merged = pd.merge(summary_df, metrics_df, on='uuid', suffixes=('_summary', '_metrics'), how='outer')
 
     for col in param_diffs.columns:
-        if col not in final_df.columns:
-            final_df[col] = None
+        if col not in _merged.columns:
+            _merged[col] = None
 
-    for i, row in final_df.iterrows():
+    for i, row in _merged.iterrows():
         if pd.isnull(row['batch_index']) or row['batch_index'] == 'None':
             continue
         batch_index = int(row['batch_index'])
@@ -496,9 +521,9 @@ def add_param_diffs(summary_df, metrics_df, param_diffs):
             param_diff = param_diffs.iloc[batch_index]
 
             for col in param_diffs.columns:
-                final_df.at[i, col] = param_diff[col]
+                _merged.at[i, col] = param_diff[col]
 
-    return final_df
+    return _merged
 
 
 def plot_optical_flows(metrics_files, max_columns=4, results=None):
