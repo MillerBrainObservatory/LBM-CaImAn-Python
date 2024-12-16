@@ -154,9 +154,9 @@ def compute_flow_single_frame(frame, templ, pyr_scale=.5, levels=3, winsize=100,
     return flow
 
 
-def compute_metrics(fname, uuid, final_size_x, final_size_y, swap_dim=False, pyr_scale=.5, levels=3,
-                    winsize=100, iterations=15, poly_n=5, poly_sigma=1.2 / 5, flags=0,
-                    resize_fact_flow=.2, template=None, gSig_filt=None):
+def _compute_metrics(fname, uuid, batch_id, final_size_x, final_size_y, swap_dim=False, pyr_scale=.5, levels=3,
+                     winsize=100, iterations=15, poly_n=5, poly_sigma=1.2 / 5, flags=0,
+                     resize_fact_flow=.2, template=None, gSig_filt=None):
     """
     Compute metrics for a given movie file.
     """
@@ -214,9 +214,14 @@ def compute_metrics(fname, uuid, final_size_x, final_size_y, swap_dim=False, pyr
         n = np.linalg.norm(flow)
         flows.append(flow)
         norms.append(n)
+
+    # cast to numpy-loadable primatives, handle variable cases of None
+    uuid = str(uuid) if uuid not in [None, 'None', 'nan'] else 'None'
+    batch_id = int(batch_id) if batch_id not in [None, 'None', 'nan'] else -1
     np.savez(
         os.path.splitext(fname)[0] + '_metrics',
         uuid=uuid,
+        batch_id=batch_id,
         flows=flows,
         norms=norms,
         correlations=correlations,
@@ -225,7 +230,6 @@ def compute_metrics(fname, uuid, final_size_x, final_size_y, swap_dim=False, pyr
         smoothness_corr=smoothness_corr,
         img_corr=img_corr
     )
-    return tmpl, correlations, flows, norms, smoothness
 
 
 def _compute_metrics_with_temp_file(raw_fname: Path, overwrite=False) -> Path:
@@ -274,7 +278,7 @@ def _compute_metrics_with_temp_file(raw_fname: Path, overwrite=False) -> Path:
 
     try:
         tifffile.imwrite(temp_path, data)
-        _ = compute_metrics(temp_path, raw_uuid, data.shape[1], data.shape[2], swap_dim=False)
+        _ = _compute_metrics(temp_path, raw_uuid, None, data.shape[1], data.shape[2], swap_dim=False)
 
         temp_metrics_path = get_metrics_path(temp_path)
 
@@ -327,7 +331,7 @@ def get_metrics_paths_from_df(df: pd.DataFrame) -> list[Path]:
             row.algo == 'mcorr']
 
 
-def compute_batch_metrics(df: pd.DataFrame, raw_filename=None, overwrite: bool = False) -> List[Path]:
+def compute_batch_metrics(df: pd.DataFrame, overwrite: bool = False) -> List[Path]:
     """
     Compute and store various statistical metrics for each batch of image data.
 
@@ -351,14 +355,11 @@ def compute_batch_metrics(df: pd.DataFrame, raw_filename=None, overwrite: bool =
     """
     metrics_paths = []
 
-    if raw_filename is not None:
-        raw_filename = Path(raw_filename)
-    else:
-        try:
-            raw_filename = df.iloc[0].caiman.get_input_movie_path()
-        except Exception as e:
-            print('Skipping raw data metrics computation. Could not find raw data file.')
-            raw_filename = None
+    try:
+        raw_filename = df.iloc[0].caiman.get_input_movie_path()
+    except Exception as e:
+        print('Skipping raw data metrics computation. Could not find raw data file.')
+        raw_filename = None
 
     if raw_filename is not None:
         if not raw_filename.exists():
@@ -403,7 +404,7 @@ def compute_batch_metrics(df: pd.DataFrame, raw_filename=None, overwrite: bool =
 
         try:
             start = time.time()
-            _ = compute_metrics(row.mcorr.get_output_path(), row.uuid, final_size[0], final_size[1])
+            _ = _compute_metrics(row.mcorr.get_output_path(), row.uuid, i, final_size[0], final_size[1])
 
             print(f'Computed metrics for batch index {i} in {time.time() - start:.2f} seconds.')
             metrics_paths.append(metrics_path)
@@ -414,50 +415,54 @@ def compute_batch_metrics(df: pd.DataFrame, raw_filename=None, overwrite: bool =
 
 
 def create_summary_df(df: pd.DataFrame) -> pd.DataFrame:
-    total_tqdm = len(df[df.item_name == 'mcorr'])
+    # Filter DataFrame to only process 'mcorr' rows
     df = df[df.item_name == 'mcorr']
+    total_tqdm = len(df) + 1  # +1 for the raw file processing
 
-    # if batch rows have different input files, we should not comapre them.
-    if df.input_movie_path.nunique() != 1:
-        raise ValueError(
-            "\n\n"
-            "The batch rows have different input files. All input files must be the same.\n"
-            "Please check the **input_movie_path** column in the DataFrame.\n\n"
-            "To select a subset of your DataFrame with the same input file, you can use the following code:\n\n"
-            "```python\n"
-            "df = df[df.input_movie_path == df.input_movie_path.iloc[0]]\n"
-            "```\n"
-        )
+    with tqdm(total=total_tqdm, position=0, leave=True, desc="Computing Data Summary") as pbar:
 
-    raw_filepath = df.iloc[0].caiman.get_input_movie_path()
-    raw_data = tifffile.memmap(raw_filepath)
-    met = {
-        'item_name': 'Raw Data',
-        'batch_index': 'None',
-        'min': np.min(raw_data),
-        'max': np.max(raw_data),
-        'mean': np.mean(raw_data),
-        'std': np.std(raw_data),
-        'p1': np.percentile(raw_data, 1),
-        'p50': np.percentile(raw_data, 50),
-        'p99': np.percentile(raw_data, 99),
-        'uuid': None
-    }
-    metrics_list = [met]
-    for i, row in tqdm(df.iterrows(), total=total_tqdm):
-        mmap_file = row.mcorr.get_output()
-        metrics_list.append({
-            'item_name': row.item_name,
-            'batch_index': i,
-            'min': np.min(mmap_file),
-            'max': np.max(mmap_file),
-            'mean': np.mean(mmap_file),
-            'std': np.std(mmap_file),
-            'p1': np.percentile(mmap_file, 1),
-            'p50': np.percentile(mmap_file, 50),
-            'p99': np.percentile(mmap_file, 99),
-            'uuid': row.uuid,
-        })
+        # Check for unique input files
+        if df.input_movie_path.nunique() != 1:
+            raise ValueError(
+                "\n\n"
+                "The batch rows have different input files. All input files must be the same.\n"
+                "Please check the **input_movie_path** column in the DataFrame.\n\n"
+                "To select a subset of your DataFrame with the same input file, you can use the following code:\n\n"
+                "df = df[df.input_movie_path == df.input_movie_path.iloc[0]]\n"
+            )
+
+        raw_filepath = df.iloc[0].caiman.get_input_movie_path()
+        raw_data = tifffile.memmap(raw_filepath)
+        met = {
+            'item_name': 'Raw Data',
+            'batch_index': 'None',
+            'min': np.min(raw_data),
+            'max': np.max(raw_data),
+            'mean': np.mean(raw_data),
+            'std': np.std(raw_data),
+            'p1': np.percentile(raw_data, 1),
+            'p50': np.percentile(raw_data, 50),
+            'p99': np.percentile(raw_data, 99),
+            'uuid': None
+        }
+        metrics_list = [met]
+        pbar.update(1)
+
+        for i, row in df.iterrows():
+            mmap_file = row.mcorr.get_output()
+            metrics_list.append({
+                'item_name': row.item_name,
+                'batch_index': i,
+                'min': np.min(mmap_file),
+                'max': np.max(mmap_file),
+                'mean': np.mean(mmap_file),
+                'std': np.std(mmap_file),
+                'p1': np.percentile(mmap_file, 1),
+                'p50': np.percentile(mmap_file, 50),
+                'p99': np.percentile(mmap_file, 99),
+                'uuid': row.uuid,
+            })
+            pbar.update(1)
     return pd.DataFrame(metrics_list)
 
 
@@ -473,47 +478,42 @@ def create_metrics_df(metrics_p: list[str | Path]) -> pd.DataFrame:
     """
     metrics_list = []
     for i, file in enumerate(metrics_p):
-        with np.load(file) as f:
+        with np.load(file, allow_pickle=True) as f:
             corr = f['correlations']
             norms = f['norms']
             crispness = f['smoothness_corr']
             uuid = f['uuid']
+            batch_index = f['batch_id']
         metrics_list.append({
             'mean_corr': np.mean(corr),
             'mean_norm': np.mean(norms),
             'crispness': float(crispness),
-            'uuid': uuid,
+            'uuid': str(uuid),
+            'batch_index': str(batch_index)
         })
     return pd.DataFrame(metrics_list)
 
 
-def add_param_diffs(summary_df, metrics_df, param_diffs):
+def add_param_diffs(input_df, param_diffs):
     """
+    Add parameter differences to the input DataFrame.
 
+    Input can be any dataframe as long as there exists a 'batch_index' column.
+
+    Parameters
+    ----------
+    input_df : DataFrame
+        The input DataFrame containing a 'batch_index' column.
+    param_diffs : DataFrame
+        The DataFrame containing the parameter differences for each batch.
     """
-    summary_df['uuid'] = summary_df['uuid'].combine_first(metrics_df['uuid'])
-
-    # this would be more readable with an anonymous function
-    summary_df['uuid'] = summary_df['uuid'].apply(
-        lambda x: ''.join(map(str, x)) if isinstance(x, np.ndarray) and x.ndim > 0 else x)
-    summary_df['uuid'] = summary_df['uuid'].apply(
-        lambda x: x.item() if isinstance(x, np.ndarray) and x.ndim == 0 else x)
-    metrics_df['uuid'] = metrics_df['uuid'].apply(
-        lambda x: ''.join(map(str, x)) if isinstance(x, np.ndarray) and x.ndim > 0 else x)
-    metrics_df['uuid'] = metrics_df['uuid'].apply(
-        lambda x: x.item() if isinstance(x, np.ndarray) and x.ndim == 0 else x)
-
-    summary_df['uuid'] = summary_df['uuid'].astype(str)
-    metrics_df['uuid'] = metrics_df['uuid'].astype(str)
-
-    _merged = pd.merge(summary_df, metrics_df, on='uuid', suffixes=('_summary', '_metrics'), how='outer')
-
     for col in param_diffs.columns:
-        if col not in _merged.columns:
-            _merged[col] = None
+        if col not in input_df.columns:
+            input_df[col] = None
 
-    for i, row in _merged.iterrows():
-        if pd.isnull(row['batch_index']) or row['batch_index'] == 'None':
+    for i, row in input_df.iterrows():
+        # raw data will not have an index in the dataframe
+        if pd.isnull(row['batch_index']) or row['batch_index'] in ['None', 'nan', None]:
             continue
         batch_index = int(row['batch_index'])
 
@@ -521,12 +521,12 @@ def add_param_diffs(summary_df, metrics_df, param_diffs):
             param_diff = param_diffs.iloc[batch_index]
 
             for col in param_diffs.columns:
-                _merged.at[i, col] = param_diff[col]
+                input_df.at[i, col] = param_diff[col]
 
-    return _merged
+    return input_df
 
 
-def plot_optical_flows(metrics_files, max_columns=4, results=None):
+def plot_optical_flows(metrics_files: str | Path, results, max_columns=4):
     """
     Plots the optical flow images from a list of metrics files.
 
@@ -534,10 +534,10 @@ def plot_optical_flows(metrics_files, max_columns=4, results=None):
     ----------
     metrics_files : list of str
         List of paths to the metrics files (.npz) containing 'norms', 'flows', and 'smoothness'.
+    results : DataFrame
+        DataFrame containing 'item_name', 'batch_index', 'correlations', 'norms', and 'smoothness' corresponding to each metrics file.
     max_columns : int, optional
         Maximum number of columns to display in the plot. Default is 4.
-    results : DataFrame, optional
-        DataFrame containing 'item_name', 'batch_index', 'correlations', 'norms', and 'smoothness' corresponding to each metrics file.
     """
     num_graphs = len(metrics_files)
     num_rows = int(np.ceil(num_graphs / max_columns))
@@ -547,62 +547,57 @@ def plot_optical_flows(metrics_files, max_columns=4, results=None):
 
     flow_images = []
 
-    if results is not None:
-        highest_corr_batch = results.loc[results['mean_corr'].idxmax()]['batch_index']
-        highest_crisp_batch = results.loc[results['crispness'].idxmax()]['batch_index']
-        lowest_norm_batch = results.loc[results['mean_norm'].idxmin()]['batch_index']
-    else:
-        highest_corr_batch = None
-        highest_crisp_batch = None
-        lowest_norm_batch = None
+    # batch indices with the highest correlation, crispness, and lowest norm
+    highest_corr_batch = results.loc[results['mean_corr'].idxmax()]['batch_index']
+    highest_crisp_batch = results.loc[results['crispness'].idxmax()]['batch_index']
+    lowest_norm_batch = results.loc[results['mean_norm'].idxmin()]['batch_index']
 
     for cnt, (metrics_path, ax) in enumerate(zip(metrics_files, axes)):
-        with np.load(metrics_path) as ld:
+        # batch_idx = results.iloc[cnt]['batch_index']
+        with np.load(metrics_path, allow_pickle=True) as ld:
+            batch_idx = ld['batch_id']
             mean_norm = np.mean(ld['norms'])
             std_norm = np.std(ld['norms'])
             smoothness = ld['smoothness']
-
             flows = ld['flows']
-            flow_img = np.mean(np.sqrt(flows[:, :, :, 0] ** 2 + flows[:, :, :, 1] ** 2), axis=0)
-            flow_images.append(flow_img)
 
-            ax.imshow(flow_img, vmin=0, vmax=0.3, cmap='viridis')
+        flow_img = np.mean(np.sqrt(flows[:, :, :, 0] ** 2 + flows[:, :, :, 1] ** 2), axis=0)
+        flow_images.append(flow_img)
 
-            if results is not None:
-                item_name = results.iloc[cnt]['item_name']
-                batch_idx = results.iloc[cnt]['batch_index']
-            else:
-                item_name = 'N/A'
-                batch_idx = 'N/A'
+        ax.imshow(flow_img, vmin=0, vmax=0.3, cmap='viridis')
 
-            title_parts = []
+        title_parts = []
 
-            item_title = f'Item: {item_name} | Batch Index: {batch_idx}'
-            if results is not None and batch_idx == highest_corr_batch:
-                item_title = f'Item: **{item_name} | Batch Index: {batch_idx}** (Highest Correlation)'
-            title_parts.append(item_title)
+        if batch_idx in ['None', 'nan', None]:
+            item_title = "Raw Data"
+        else:
+            item_title = f'Batch Index: {batch_idx}'
 
-            norm_title = f'ROF (mean ± std): {mean_norm:.2f} ± {std_norm:.2f}'
-            if results is not None and batch_idx == lowest_norm_batch:
-                norm_title = f'ROF: **{mean_norm:.2f} ± {std_norm:.2f}** (Lowest Norm)'
-            title_parts.append(norm_title)
+        if batch_idx == highest_corr_batch:
+            item_title = f'Batch Index: {batch_idx}** (Highest Correlation)'
+        title_parts.append(item_title)
 
-            crisp_title = f'Crispness: {smoothness:.2f}'
-            if results is not None and batch_idx == highest_crisp_batch:
-                crisp_title = f'Crispness: **{smoothness:.2f}** (Highest Crispness)'
-            title_parts.append(crisp_title)
+        norm_title = f'ROF (mean ± std): {mean_norm:.2f} ± {std_norm:.2f}'
+        if batch_idx == lowest_norm_batch:
+            norm_title = f'ROF: **{mean_norm:.2f} ± {std_norm:.2f}** (Lowest Norm)'
+        title_parts.append(norm_title)
 
-            title = '\n'.join(title_parts)
+        crisp_title = f'Crispness: {smoothness:.2f}'
+        if batch_idx == highest_crisp_batch:
+            crisp_title = f'Crispness: **{smoothness:.2f}** (Highest Crispness)'
+        title_parts.append(crisp_title)
 
-            ax.set_title(
-                title,
-                fontsize=10,
-                fontweight='bold',
-                color='black',
-                loc='center'
-            )
+        title = '\n'.join(title_parts)
 
-            ax.axis('off')
+        ax.set_title(
+            title,
+            fontsize=14,
+            fontweight='bold',
+            color='black',
+            loc='center'
+        )
+
+        ax.axis('off')
 
     for i in range(len(metrics_files), len(axes)):
         axes[i].axis('off')
@@ -613,7 +608,7 @@ def plot_optical_flows(metrics_files, max_columns=4, results=None):
     sm.set_array([])
     cbar = fig.colorbar(sm, cax=cbar_ax)
 
-    cbar.set_label('Flow Magnitude', fontsize=12)
+    cbar.set_label('Flow Magnitude', fontsize=14, fontweight='bold')
     plt.tight_layout(rect=(0, 0, 0.9, 1))
     plt.show()
 
@@ -646,9 +641,11 @@ def plot_residual_flows(metrics_files, results, num_batches=3):
     for metrics_path in metrics_files:
         with np.load(metrics_path) as metric:
             flows = metric['flows']
+            batch_idx = results.loc[results['uuid'] == file_uuid, 'batch_index'].values[0]
 
+            # handle possible uuid types (int, str, np.ndarray)
             if isinstance(metric['uuid'], np.ndarray):
-                if metric['uuid'].ndim == 0:
+                if metric['uuid'].ndim == 0:  # scalar
                     file_uuid = metric['uuid'].item()
                 else:
                     file_uuid = ''.join(map(str, metric['uuid']))
@@ -660,7 +657,6 @@ def plot_residual_flows(metrics_files, results, num_batches=3):
 
             residual_flows = [np.linalg.norm(flows[i] - flows[i - 1], axis=2).mean() for i in range(1, len(flows))]
 
-            batch_idx = results.loc[results['uuid'] == file_uuid, 'batch_index'].values[0]
             if file_uuid == raw_uuid and file_uuid not in plotted_uuids:
                 ax.plot(residual_flows, linestyle='dotted', label='Raw Data', color='red', linewidth=3.5)
             elif file_uuid == top_uuids[0] and file_uuid not in plotted_uuids:
@@ -713,6 +709,7 @@ def plot_correlations(metrics_files, results, num_batches=3):
     for metrics_path in metrics_files:
         with np.load(metrics_path) as metric:
             correlations = metric['correlations']
+            batch_idx = results.loc[results['uuid'] == file_uuid, 'batch_index'].values[0]
 
             # Extract and flatten the file's UUID properly
             if isinstance(metric['uuid'], np.ndarray):
@@ -726,7 +723,6 @@ def plot_correlations(metrics_files, results, num_batches=3):
             if file_uuid not in top_uuids and file_uuid != raw_uuid:
                 continue
 
-            batch_idx = results.loc[results['uuid'] == file_uuid, 'batch_index'].values[0]
             if file_uuid == raw_uuid and file_uuid not in plotted_uuids:
                 ax.plot(correlations, linestyle='dotted', label='Raw Data', color='red', linewidth=3.5)
             elif file_uuid == top_uuids[0] and file_uuid not in plotted_uuids:
@@ -756,10 +752,12 @@ if __name__ == "__main__":
     data_path = parent_path / 'out'  # where the output files from the assembly step are located
     batch_path = data_path / 'batch_v2.pickle'
     df = mc.load_batch(batch_path)
-    metrics_files = compute_batch_metrics(df, overwrite=False)
+    # grab first 3 rows
+    sub_df = df.iloc[:3]
+    metrics_files = compute_batch_metrics(df, overwrite=True)
     metrics_df = create_metrics_df(metrics_files)
-    summary_df = create_summary_df(df)
-    final_df = add_param_diffs(summary_df, metrics_df, df.caiman.get_params_diffs("mcorr", item_name=df.iloc[0]["item_name"]))
-    # plot_optical_flows(metrics_files, results=final_df)
+    merged = add_param_diffs(metrics_df, df.caiman.get_params_diffs("mcorr", item_name=df.iloc[0]["item_name"]))
+    # summary_df = create_summary_df(df)
+    plot_optical_flows(metrics_files, results=merged)
     # plot_residual_flows(metrics_files, final_df)
     # plot_correlations(metrics_files, final_df)
