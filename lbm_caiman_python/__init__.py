@@ -24,7 +24,7 @@ from .helpers import (
     plot_optical_flows,
     plot_residual_flows,
     plot_correlations,
-    add_param_diffs
+    concat_param_diffs
 )
 from ._store_model import TimeStore
 
@@ -49,7 +49,7 @@ __all__ = [
     "compute_batch_metrics",
     "create_metrics_df",
     "create_summary_df",
-    "add_param_diffs",
+    "concat_param_diffs",
     "plot_optical_flows",
     "plot_residual_flows",
     "plot_correlations",
