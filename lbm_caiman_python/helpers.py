@@ -593,14 +593,25 @@ def plot_optical_flows(metrics_files, max_columns=4, results=None):
     plt.show()
 
 
-def plot_residual_flows(metrics_files, results):
+def plot_residual_flows(metrics_files, results, num_batches=3):
+    """
+    Plot the residual optical flows across batches.
+
+    Parameters
+    ----------
+    metrics_files : list of str
+        List of paths to the metrics files (.npz) containing 'flows'.
+    results : DataFrame
+        DataFrame containing 'uuid' and 'batch_index' columns
+    """
+
     fig, ax = plt.subplots(figsize=(20, 10))
 
     if len(metrics_files) != len(results):
         raise ValueError("Number of metrics files does not match number of rows in results DataFrame")
 
     results_sorted = results.sort_values(by='mean_norm')
-    top_uuids = results_sorted['uuid'].values[:3]
+    top_uuids = results_sorted['uuid'].values[:num_batches]
 
     raw_uuid = results.loc[results['item_name'].str.contains('Raw Data', case=False, na=False), 'uuid'].values[0]
 
