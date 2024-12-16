@@ -21,12 +21,12 @@ release = __version__
 
 # Copy example notebooks for rendering in the docs
 source_dir = Path(__file__).resolve().parent.parent / "demos" / "notebooks"
-dest_dir = Path(__file__).resolve().parent / "examples" / "render"
+dest_dir = Path(__file__).resolve().parent / "examples" / "notebooks"
 
 if source_dir.exists():
     if dest_dir.exists():
-        shutil.rmtree(dest_dir)  # Remove existing directory
-    dest_dir.mkdir(parents=True, exist_ok=True)  # Create fresh directory
+        shutil.rmtree(dest_dir)
+    dest_dir.mkdir(parents=True, exist_ok=True)
     
     for item in source_dir.iterdir():
         if item.is_dir():
@@ -103,7 +103,6 @@ intersphinx_mapping = {
     "suite2p": ("https://suite2p.readthedocs.io/en/latest/", None),
 }
 
-templates_path = ["_templates"]
 intersphinx_disabled_reftypes = ["*"]
 
 html_theme_options = {
