@@ -1,8 +1,10 @@
 # LBM-CaImAn-Python
 
 [**Installation**](https://github.com/MillerBrainObservatory/LBM-CaImAn-Python#installation) | [**Notebooks**](https://github.com/MillerBrainObservatory/LBM-CaImAn-Python/tree/master/demos/notebooks)
+
+[![Documentation](https://img.shields.io/badge/Documentation-black?style=for-the-badge&logo=readthedocs&logoColor=white)](https://millerbrainobservatory.github.io/LBM-CaImAn-Python/)
  
-Python implementation of the Light Beads Microscopy (LBM) computational pipeline.
+Python implementation of the Light Beads Microscopy (LBM) computational pipeline. The documentation has examples of the rendered notebooks.
 
 For the `MATLAB` implementation, see [here](https://github.com/MillerBrainObservatory/LBM-CaImAn-MATLAB/)
 
@@ -11,15 +13,15 @@ For the `MATLAB` implementation, see [here](https://github.com/MillerBrainObserv
 1. Image Assembly
     - Extract raw `tiffs` to planar timeseries
 2. Motion Correction
-    - Template creation
-    - Piecewise-rigid or non-rigid registration
+    - Rigid/Non-rigid registration
 3. Segmentation
     - Iterative CNMF segmentation
     - Deconvolution
-    - Refinement
+    - Refine neuron selection
 4. Collation
-    - Lateral offset correction (between z-planes)
     - Collate images and metadata into a single volume
+    - Lateral offset correction (between z-planes. WIP)
+    
 
 ## Requirements
 
@@ -30,9 +32,9 @@ For the `MATLAB` implementation, see [here](https://github.com/MillerBrainObserv
 - scipy
 - fastplotlib
 
-:exclamation: **Note:** This package makes heavy use of Fastplotlib for visualizations.
+:exclamation: **Note:** This package makes heavy use of fastplotlib for visualizations.
 
-Fastplotlib runs on [Jupyter Lab](https://jupyterlab.readthedocs.io/en/stable/getting_started/installation.html),
+fastplotlib runs on [Jupyter Lab](https://jupyterlab.readthedocs.io/en/stable/getting_started/installation.html),
 but is not guarenteed to work with Jupyter Notebook or Visual Studio Code notebook environments. 
 
 ## Installation
