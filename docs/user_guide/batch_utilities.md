@@ -1,5 +1,5 @@
 (batch)=
-# Batch
+# Batch-Utilities
 
 Before continuing, users should review the [mesmerize-core user guide](https://mesmerize-core.readthedocs.io/en/latest/user_guide.html).
 
