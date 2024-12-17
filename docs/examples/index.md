@@ -1,7 +1,7 @@
 (user_guide)=
 # Tutorial
 
-Below are [example notebooks](https://github.com/MillerBrainObservatory/LBM-CaImAn-Python/tree/master/demos/notebooks) that walk users through the full processing pipeline.
+Below are [example notebooks](https://github.com/MillerBrainObservatory/LBM-CaImAn-Python/tree/master/demos/notebooks) that will walk you through the full processing pipeline.
 
 To download these notebooks:
 
