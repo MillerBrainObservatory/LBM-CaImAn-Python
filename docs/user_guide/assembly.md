@@ -47,7 +47,7 @@ scan[:].shape
 
 ```
 
-Depending on your scanimage configuration, contiguous ROIs can be joined together via the `join_contiguous` parameter to {ref}`read_scan`
+Depending on your scanimage configuration, contiguous ROIs can be joined together via the `join_contiguous` parameter to [read_scan](#read_scan).
 
 ```{code-block} Python
 scan = lcp.read_scan('path/to/data/*.tiff', join_contiguous=True)
@@ -82,7 +82,7 @@ This only occurs once, and is cached by your operating system. So the next time 
 
 ## Save your data
 
-The scan object returned by `read_scan` can be fed into {ref}`save_as` to save as a `.tiff` or `.zarr`.
+The scan object returned by `read_scan` can be fed into [`save_as`](#save_as) to save as a `.tiff` or `.zarr`.
 
 ```{code-block} python
 

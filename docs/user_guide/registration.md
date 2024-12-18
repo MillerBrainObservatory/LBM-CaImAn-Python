@@ -43,7 +43,7 @@ df.caiman.add_item(
 (registration_parameters)=
 ## Registration Parameters
 
-Parameters for motion correction are fed into `CaImAn`, someone confusingly, via the {external:func}`CNMFSetParams` function which holds and organizes parameters for registration, segmentation, deconvolution, and pre-processing steps.
+Parameters for motion correction are fed into `CaImAn` in an object which holds and organizes parameters for registration, segmentation, deconvolution, and pre-processing steps.
 
 As such, you can put any parameter found in that structure into the parameters dictionary. Only the parameters that apply to registration will be used.
 
