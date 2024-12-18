@@ -168,3 +168,4 @@ src/scanreader
 # pixi environments
 .pixi
 *.egg-info
+docs/examples/

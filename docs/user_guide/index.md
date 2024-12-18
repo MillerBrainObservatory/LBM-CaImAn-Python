@@ -2,16 +2,16 @@
 # User Guide
 
 This section covers each step in the pipeline, parameters and metadata in more detail.
+
 ```{toctree}
 ---
 maxdepth: 2
-caption: Usage
 numbered: 3
 ---
 
-assembly
-batch
-registration
-segmentation
-collation
+Image Assembly <assembly>
+Batch Utils <batch_utilities>
+Registration <registration>
+Segmentation <segmentation>
+Z-Plane Collation <collation>
 ```

@@ -2,7 +2,13 @@
 
 For the `MATLAB` implementation of this pipeline, see [here](https://github.com/MillerBrainObservatory/LBM-CaImAn-MATLAB/).
 
-For current installation instructions, see the project [README](https://github.com/MillerBrainObservatory/LBM-CaImAn-Python/blob/master/README.md)
+For current installation instructions and requirements, see the project [README](https://github.com/MillerBrainObservatory/LBM-CaImAn-Python/blob/master/README.md).
+
+## How to
+
+The recommended way to use this pipeline is by using the [example notebooks](https://github.com/MillerBrainObservatory/LBM-CaImAn-Python/tree/master/demos/notebooks) 
+while having the user guide accessible as well. The notebooks act as a walkthrough tutorial that you can change to fit your dataset as you go. Fully rendered versions of the notebooks
+are available in the [tutorial section of this documentation](https://millerbrainobservatory.github.io/LBM-CaImAn-Python/examples/index.html).
 
 ## Documentation Contents
 
@@ -26,18 +32,22 @@ There are 4 steps in this pipeline:
 
 1. Assembly
     - De-interleave planes
-    - Scan-Phase Correction
+    - (optional) Scan-Phase Correction
 2. Motion Correction
-    - Template creation
-    - Rigid registration
-    - Piecewise-rigid registration
+    - Rigid/non-rigid Registration (single z-plane)
+    - Evaluation metrics
+    - (optional) Parameter grid-search
+    - Register remaining z-planes
 3. Segmentation
-    - Iterative CNMF segmentation
-    - Deconvolution
-    - Neuron Selection Refinement (COMING SOON)
+    - CNMF (single z-plane)
+    - (optional) Deconvolution / spike-extraction
+    - Refine neuron selection
+    - Segment / deconvolve remianing z-planes
 4. Collation
     - Collate images and metadata into a single volume
     - Lateral offset correction (between z-planes, COMING SOON)
+
+----------------
 
 ## Comparison with [LBM-CaImAn-MATLAB](https://github.com/MillerBrainObservatory/LBM-CaImAn-MATLAB/)
 
