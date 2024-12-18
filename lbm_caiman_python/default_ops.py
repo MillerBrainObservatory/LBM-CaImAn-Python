@@ -165,12 +165,16 @@ def suite2p_ops():
 
 
 def default_ops():
+    default_gsig = 7
+    default_gsiz = (4*default_gsig+1, 4*default_gsig+1)
+
     return {
         "main": {
             "pw_rigid": True,
             "max_shifts": [6, 6],
             "strides": [50, 50],
             "overlaps": [24, 24],
+            "gSig_filt": [0, 0],
             "max_deviation_rigid": 3,
             "border_nan": "copy",
             'fr': 10,
@@ -180,8 +184,8 @@ def default_ops():
             'nb': 1,
             'rf': 13,
             'K': 20,
-            'gSig': (3, 3),
-            # 'gSiz': gSiz,
+            'gSig': (default_gsig, default_gsig),
+            'gSiz': default_gsiz,
             'stride': [50, 50],
             'method_init': 'greedy_roi',
             'rolling_sum': True,
