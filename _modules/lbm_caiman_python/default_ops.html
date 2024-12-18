@@ -1,0 +1,625 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>lbm_caiman_python.default_ops &#8212; LBM-CaImAn-Python</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=475cc00c" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../_static/documentation_options.js?v=e4c16dfd"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/lbm_caiman_python/default_ops';</script>
+    <link rel="icon" href="../../_static/icon_caiman_python.svg"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/lcp_logo.svg" class="logo__image only-light" alt="LBM-CaImAn-Python - Home"/>
+    <img src="../../_static/lcp_logo.svg" class="logo__image only-dark pst-js-only" alt="LBM-CaImAn-Python - Home"/>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://millerbrainobservatory.github.io/" title="MBO User Hub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../.././_static/icon_mbo_home.png" class="icon-link-image" alt="MBO User Hub"/></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/MillerBrainObservatory/" title="MBO Github" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">MBO Github</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://mbo.rockefeller.edu/contact/" title="Connect with MBO" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-regular fa-address-card fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Connect with MBO</span></a>
+        </li>
+</ul></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../user_guide/index.html">User Guide</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/assembly.html">1. Image Assembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/batch_utilities.html">2. Batch Utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/registration.html">3. Registration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/segmentation.html">4. Segmentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/collation.html">5. Z-Plane Collation</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../examples/index.html">Tutorial</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../examples/notebooks/assembly.html">1. Image Assembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../examples/notebooks/batch_helpers.html">2. Batch Helpers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../examples/notebooks/motion_correction.html">3. Registration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../examples/notebooks/segmentation.html">4. Segmentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../examples/notebooks/collation.html">5. Collate Planes</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../glossary.html">Glossary</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/MillerBrainObservatory/LBM-CaImAn-Python/issues/new?title=Issue%20on%20page%20%2F_modules/lbm_caiman_python/default_ops.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button"
+   title="Open an issue"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+
+</a>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1></h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for lbm_caiman_python.default_ops</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+
+
+<span class="k">def</span> <span class="nf">suite2p_ops</span><span class="p">():</span>
+    <span class="c1"># TODO: move this our of caiman repo</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="c1"># file input/output settings</span>
+        <span class="s2">&quot;look_one_level_down&quot;</span><span class="p">:</span>
+            <span class="kc">False</span><span class="p">,</span>  <span class="c1"># whether to look in all subfolders when searching for tiffs</span>
+        <span class="s2">&quot;fast_disk&quot;</span><span class="p">:</span> <span class="p">[],</span>  <span class="c1"># used to store temporary binary file, defaults to save_path0</span>
+        <span class="s2">&quot;delete_bin&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>  <span class="c1"># whether to delete binary file after processing</span>
+        <span class="s2">&quot;mesoscan&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>  <span class="c1"># for reading in scanimage mesoscope files</span>
+        <span class="s2">&quot;bruker&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>  <span class="c1"># whether or not single page BRUKER tiffs!</span>
+        <span class="s2">&quot;bruker_bidirectional&quot;</span><span class="p">:</span>
+            <span class="kc">False</span><span class="p">,</span>  <span class="c1"># bidirectional multiplane in bruker: 0, 1, 2, 2, 1, 0 (True) vs 0, 1, 2, 0, 1, 2 (False)</span>
+        <span class="s2">&quot;h5py&quot;</span><span class="p">:</span> <span class="p">[],</span>  <span class="c1"># take h5py as input (deactivates data_path)</span>
+        <span class="s2">&quot;h5py_key&quot;</span><span class="p">:</span> <span class="s2">&quot;data&quot;</span><span class="p">,</span>  <span class="c1"># key in h5py where data array is stored</span>
+        <span class="s2">&quot;nwb_file&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>  <span class="c1"># take nwb file as input (deactivates data_path)</span>
+        <span class="s2">&quot;nwb_driver&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>  <span class="c1"># driver for nwb file (nothing if file is local)</span>
+        <span class="s2">&quot;nwb_series&quot;</span><span class="p">:</span>
+            <span class="s2">&quot;&quot;</span><span class="p">,</span>  <span class="c1"># TwoPhotonSeries name, defaults to first TwoPhotonSeries in nwb file</span>
+        <span class="s2">&quot;save_path0&quot;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>  <span class="c1"># pathname where you&#39;d like to store results, defaults to first item in data_path</span>
+        <span class="s2">&quot;save_folder&quot;</span><span class="p">:</span> <span class="p">[],</span>  <span class="c1"># directory you&quot;d like suite2p results to be saved to</span>
+        <span class="s2">&quot;subfolders&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">],</span>  <span class="c1"># subfolders you&quot;d like to search through when look_one_level_down is set to True</span>
+        <span class="s2">&quot;move_bin&quot;</span><span class="p">:</span>
+            <span class="kc">False</span><span class="p">,</span>  <span class="c1"># if 1, and fast_disk is different than save_disk, binary file is moved to save_disk</span>
+
+        <span class="c1"># main settings</span>
+        <span class="s2">&quot;nplanes&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>  <span class="c1"># each tiff has these many planes in sequence</span>
+        <span class="s2">&quot;nchannels&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>  <span class="c1"># each tiff has these many channels per plane</span>
+        <span class="s2">&quot;functional_chan&quot;</span><span class="p">:</span>
+            <span class="mi">1</span><span class="p">,</span>  <span class="c1"># this channel is used to extract functional ROIs (1-based)</span>
+        <span class="s2">&quot;tau&quot;</span><span class="p">:</span> <span class="mf">1.</span><span class="p">,</span>  <span class="c1"># this is the main parameter for deconvolution</span>
+        <span class="s2">&quot;fs&quot;</span><span class="p">:</span>
+            <span class="mf">10.</span><span class="p">,</span>  <span class="c1"># sampling rate (PER PLANE e.g. for 12 plane recordings it will be around 2.5)</span>
+        <span class="s2">&quot;force_sktiff&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>  <span class="c1"># whether or not to use scikit-image for tiff reading</span>
+        <span class="s2">&quot;frames_include&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="s2">&quot;multiplane_parallel&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>  <span class="c1"># whether or not to run on server</span>
+        <span class="s2">&quot;ignore_flyback&quot;</span><span class="p">:</span> <span class="p">[],</span>
+
+        <span class="c1"># output settings</span>
+        <span class="s2">&quot;preclassify&quot;</span><span class="p">:</span>
+            <span class="mf">0.0</span><span class="p">,</span>  <span class="c1"># apply classifier before signal extraction with probability 0.3</span>
+        <span class="s2">&quot;save_mat&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>  <span class="c1"># whether to save output as matlab files</span>
+        <span class="s2">&quot;save_NWB&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>  <span class="c1"># whether to save output as NWB file</span>
+        <span class="s2">&quot;combined&quot;</span><span class="p">:</span>
+            <span class="kc">True</span><span class="p">,</span>  <span class="c1"># combine multiple planes into a single result /single canvas for GUI</span>
+        <span class="s2">&quot;aspect&quot;</span><span class="p">:</span>
+            <span class="mf">1.0</span><span class="p">,</span>  <span class="c1"># um/pixels in X / um/pixels in Y (for correct aspect ratio in GUI)</span>
+
+        <span class="c1"># bidirectional phase offset</span>
+        <span class="s2">&quot;do_bidiphase&quot;</span><span class="p">:</span>
+            <span class="kc">False</span><span class="p">,</span>  <span class="c1"># whether or not to compute bidirectional phase offset (applies to 2P recordings only)</span>
+        <span class="s2">&quot;bidiphase&quot;</span><span class="p">:</span>
+            <span class="mi">0</span><span class="p">,</span>  <span class="c1"># Bidirectional Phase offset from line scanning (set by user). Applied to all frames in recording.</span>
+        <span class="s2">&quot;bidi_corrected&quot;</span><span class="p">:</span>
+            <span class="kc">False</span><span class="p">,</span>  <span class="c1"># Whether to do bidirectional correction during registration</span>
+
+        <span class="c1"># registration settings</span>
+        <span class="s2">&quot;do_registration&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>  <span class="c1"># whether to register data (2 forces re-registration)</span>
+        <span class="s2">&quot;two_step_registration&quot;</span><span class="p">:</span>
+            <span class="kc">False</span><span class="p">,</span>
+        <span class="c1"># whether or not to run registration twice (useful for low SNR data). Set keep_movie_raw to True if setting this parameter to True.</span>
+        <span class="s2">&quot;keep_movie_raw&quot;</span><span class="p">:</span>
+            <span class="kc">False</span><span class="p">,</span>  <span class="c1"># whether to keep binary file of non-registered frames.</span>
+        <span class="s2">&quot;nimg_init&quot;</span><span class="p">:</span> <span class="mi">300</span><span class="p">,</span>  <span class="c1"># subsampled frames for finding reference image</span>
+        <span class="s2">&quot;batch_size&quot;</span><span class="p">:</span> <span class="mi">500</span><span class="p">,</span>  <span class="c1"># number of frames per batch</span>
+        <span class="s2">&quot;maxregshift&quot;</span><span class="p">:</span>
+            <span class="mf">0.1</span><span class="p">,</span>  <span class="c1"># max allowed registration shift, as a fraction of frame max(width and height)</span>
+        <span class="s2">&quot;align_by_chan&quot;</span><span class="p">:</span>
+            <span class="mi">1</span><span class="p">,</span>  <span class="c1"># when multi-channel, you can align by non-functional channel (1-based)</span>
+        <span class="s2">&quot;reg_tif&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>  <span class="c1"># whether to save registered tiffs</span>
+        <span class="s2">&quot;reg_tif_chan2&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>  <span class="c1"># whether to save channel 2 registered tiffs</span>
+        <span class="s2">&quot;subpixel&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>  <span class="c1"># precision of subpixel registration (1/subpixel steps)</span>
+        <span class="s2">&quot;smooth_sigma_time&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>  <span class="c1"># gaussian smoothing in time</span>
+        <span class="s2">&quot;smooth_sigma&quot;</span><span class="p">:</span>
+            <span class="mf">1.15</span><span class="p">,</span>  <span class="c1"># ~1 good for 2P recordings, recommend 3-5 for 1P recordings</span>
+        <span class="s2">&quot;th_badframes&quot;</span><span class="p">:</span>
+            <span class="mf">1.0</span><span class="p">,</span>
+        <span class="c1"># this parameter determines which frames to exclude when determining cropping - set it smaller to exclude more frames</span>
+        <span class="s2">&quot;norm_frames&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>  <span class="c1"># normalize frames when detecting shifts</span>
+        <span class="s2">&quot;force_refImg&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>  <span class="c1"># if True, use refImg stored in ops if available</span>
+        <span class="s2">&quot;pad_fft&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>  <span class="c1"># if True, pads image during FFT part of registration</span>
+
+        <span class="c1"># non rigid registration settings</span>
+        <span class="s2">&quot;nonrigid&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>  <span class="c1"># whether to use nonrigid registration</span>
+        <span class="s2">&quot;block_size&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">128</span><span class="p">,</span>
+                       <span class="mi">128</span><span class="p">],</span>  <span class="c1"># block size to register (** keep this a multiple of 2 **)</span>
+        <span class="s2">&quot;snr_thresh&quot;</span><span class="p">:</span>
+            <span class="mf">1.2</span><span class="p">,</span>
+        <span class="c1"># if any nonrigid block is below this threshold, it gets smoothed until above this threshold. 1.0 results in no smoothing</span>
+        <span class="s2">&quot;maxregshiftNR&quot;</span><span class="p">:</span>
+            <span class="mi">5</span><span class="p">,</span>  <span class="c1"># maximum pixel shift allowed for nonrigid, relative to rigid</span>
+
+        <span class="c1"># 1P settings</span>
+        <span class="s2">&quot;1Preg&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>  <span class="c1"># whether to perform high-pass filtering and tapering</span>
+        <span class="s2">&quot;spatial_hp_reg&quot;</span><span class="p">:</span>
+            <span class="mi">42</span><span class="p">,</span>  <span class="c1"># window for spatial high-pass filtering before registration</span>
+        <span class="s2">&quot;pre_smooth&quot;</span><span class="p">:</span>
+            <span class="mi">0</span><span class="p">,</span>  <span class="c1"># whether to smooth before high-pass filtering before registration</span>
+        <span class="s2">&quot;spatial_taper&quot;</span><span class="p">:</span>
+            <span class="mi">40</span><span class="p">,</span>
+        <span class="c1"># how much to ignore on edges (important for vignetted windows, for FFT padding do not set BELOW 3*ops[&quot;smooth_sigma&quot;])</span>
+
+        <span class="c1"># cell detection settings with suite2p</span>
+        <span class="s2">&quot;roidetect&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>  <span class="c1"># whether or not to run ROI extraction</span>
+        <span class="s2">&quot;spikedetect&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>  <span class="c1"># whether or not to run spike deconvolution</span>
+        <span class="s2">&quot;sparse_mode&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>  <span class="c1"># whether or not to run sparse_mode</span>
+        <span class="s2">&quot;spatial_scale&quot;</span><span class="p">:</span>
+            <span class="mi">0</span><span class="p">,</span>  <span class="c1"># 0: multi-scale; 1: 6 pixels, 2: 12 pixels, 3: 24 pixels, 4: 48 pixels</span>
+        <span class="s2">&quot;connected&quot;</span><span class="p">:</span>
+            <span class="kc">True</span><span class="p">,</span>  <span class="c1"># whether or not to keep ROIs fully connected (set to 0 for dendrites)</span>
+        <span class="s2">&quot;nbinned&quot;</span><span class="p">:</span> <span class="mi">5000</span><span class="p">,</span>  <span class="c1"># max number of binned frames for cell detection</span>
+        <span class="s2">&quot;max_iterations&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>  <span class="c1"># maximum number of iterations to do cell detection</span>
+        <span class="s2">&quot;threshold_scaling&quot;</span><span class="p">:</span>
+            <span class="mf">1.0</span><span class="p">,</span>  <span class="c1"># adjust the automatically determined threshold by this scalar multiplier</span>
+        <span class="s2">&quot;max_overlap&quot;</span><span class="p">:</span>
+            <span class="mf">0.75</span><span class="p">,</span>  <span class="c1"># cells with more overlap than this get removed during triage, before refinement</span>
+        <span class="s2">&quot;high_pass&quot;</span><span class="p">:</span>
+            <span class="mi">100</span><span class="p">,</span>  <span class="c1"># running mean subtraction across bins with a window of size &quot;high_pass&quot; (use low values for 1P)</span>
+        <span class="s2">&quot;spatial_hp_detect&quot;</span><span class="p">:</span>
+            <span class="mi">25</span><span class="p">,</span>  <span class="c1"># window for spatial high-pass filtering for neuropil subtraction before detection</span>
+        <span class="s2">&quot;denoise&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>  <span class="c1"># denoise binned movie for cell detection in sparse_mode</span>
+
+        <span class="c1"># cell detection settings with cellpose (used if anatomical_only &gt; 0)</span>
+        <span class="s2">&quot;anatomical_only&quot;</span><span class="p">:</span>
+            <span class="mi">0</span><span class="p">,</span>  <span class="c1"># run cellpose to get masks on 1: max_proj / mean_img; 2: mean_img; 3: mean_img enhanced, 4: max_proj</span>
+        <span class="s2">&quot;diameter&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>  <span class="c1"># use diameter for cellpose, if 0 estimate diameter</span>
+        <span class="s2">&quot;cellprob_threshold&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>  <span class="c1"># cellprob_threshold for cellpose</span>
+        <span class="s2">&quot;flow_threshold&quot;</span><span class="p">:</span> <span class="mf">1.5</span><span class="p">,</span>  <span class="c1"># flow_threshold for cellpose</span>
+        <span class="s2">&quot;spatial_hp_cp&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>  <span class="c1"># high-pass image spatially by a multiple of the diameter</span>
+        <span class="s2">&quot;pretrained_model&quot;</span><span class="p">:</span>
+            <span class="s2">&quot;cyto&quot;</span><span class="p">,</span>  <span class="c1"># path to pretrained model or model type string in Cellpose (can be user model)</span>
+
+        <span class="c1"># classification parameters</span>
+        <span class="s2">&quot;soma_crop&quot;</span><span class="p">:</span>
+            <span class="kc">True</span><span class="p">,</span>  <span class="c1"># crop dendrites for cell classification stats like compactness</span>
+        <span class="c1"># ROI extraction parameters</span>
+        <span class="s2">&quot;neuropil_extract&quot;</span><span class="p">:</span>
+            <span class="kc">True</span><span class="p">,</span>  <span class="c1"># whether or not to extract neuropil; if False, Fneu is set to zero</span>
+        <span class="s2">&quot;inner_neuropil_radius&quot;</span><span class="p">:</span>
+            <span class="mi">2</span><span class="p">,</span>  <span class="c1"># number of pixels to keep between ROI and neuropil donut</span>
+        <span class="s2">&quot;min_neuropil_pixels&quot;</span><span class="p">:</span> <span class="mi">350</span><span class="p">,</span>  <span class="c1"># minimum number of pixels in the neuropil</span>
+        <span class="s2">&quot;lam_percentile&quot;</span><span class="p">:</span>
+            <span class="mf">50.</span><span class="p">,</span>  <span class="c1"># percentile of lambda within area to ignore when excluding cell pixels for neuropil extraction</span>
+        <span class="s2">&quot;allow_overlap&quot;</span><span class="p">:</span>
+            <span class="kc">False</span><span class="p">,</span>  <span class="c1"># pixels that are overlapping are thrown out (False) or added to both ROIs (True)</span>
+        <span class="s2">&quot;use_builtin_classifier&quot;</span><span class="p">:</span>
+            <span class="kc">False</span><span class="p">,</span>  <span class="c1"># whether or not to use built-in classifier for cell detection (overrides</span>
+        <span class="c1"># classifier specified in classifier_path if set to True)</span>
+        <span class="s2">&quot;classifier_path&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>  <span class="c1"># path to classifier</span>
+
+        <span class="c1"># channel 2 detection settings (stat[n][&quot;chan2&quot;], stat[n][&quot;not_chan2&quot;])</span>
+        <span class="s2">&quot;chan2_thres&quot;</span><span class="p">:</span> <span class="mf">0.65</span><span class="p">,</span>  <span class="c1"># minimum for detection of brightness on channel 2</span>
+
+        <span class="c1"># deconvolution settings</span>
+        <span class="s2">&quot;baseline&quot;</span><span class="p">:</span> <span class="s2">&quot;maximin&quot;</span><span class="p">,</span>  <span class="c1"># baselining mode (can also choose &quot;prctile&quot;)</span>
+        <span class="s2">&quot;win_baseline&quot;</span><span class="p">:</span> <span class="mf">60.</span><span class="p">,</span>  <span class="c1"># window for maximin</span>
+        <span class="s2">&quot;sig_baseline&quot;</span><span class="p">:</span> <span class="mf">10.</span><span class="p">,</span>  <span class="c1"># smoothing constant for gaussian filter</span>
+        <span class="s2">&quot;prctile_baseline&quot;</span><span class="p">:</span> <span class="mf">8.</span><span class="p">,</span>  <span class="c1"># optional (whether to use a percentile baseline)</span>
+        <span class="s2">&quot;neucoeff&quot;</span><span class="p">:</span> <span class="mf">0.7</span><span class="p">,</span>  <span class="c1"># neuropil coefficient</span>
+    <span class="p">}</span>
+
+
+<div class="viewcode-block" id="default_ops">
+<a class="viewcode-back" href="../../api/index.html#lbm_caiman_python.default_ops">[docs]</a>
+<span class="k">def</span> <span class="nf">default_ops</span><span class="p">():</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;main&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;pw_rigid&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">&quot;max_shifts&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span>
+            <span class="s2">&quot;strides&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">],</span>
+            <span class="s2">&quot;overlaps&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">24</span><span class="p">,</span> <span class="mi">24</span><span class="p">],</span>
+            <span class="s2">&quot;max_deviation_rigid&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+            <span class="s2">&quot;border_nan&quot;</span><span class="p">:</span> <span class="s2">&quot;copy&quot;</span><span class="p">,</span>
+            <span class="s1">&#39;fr&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+            <span class="s1">&#39;dxy&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">),</span>
+            <span class="s1">&#39;decay_time&#39;</span><span class="p">:</span> <span class="mf">0.4</span><span class="p">,</span>
+            <span class="s1">&#39;p&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="s1">&#39;nb&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s1">&#39;rf&#39;</span><span class="p">:</span> <span class="mi">13</span><span class="p">,</span>
+            <span class="s1">&#39;K&#39;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+            <span class="s1">&#39;gSig&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+            <span class="c1"># &#39;gSiz&#39;: gSiz,</span>
+            <span class="s1">&#39;stride&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">],</span>
+            <span class="s1">&#39;method_init&#39;</span><span class="p">:</span> <span class="s1">&#39;greedy_roi&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;rolling_sum&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s1">&#39;use_cnn&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="s1">&#39;ssub&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s1">&#39;tsub&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s1">&#39;merge_thr&#39;</span><span class="p">:</span> <span class="mf">0.7</span><span class="p">,</span>
+            <span class="s1">&#39;bas_nonneg&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s1">&#39;min_SNR&#39;</span><span class="p">:</span> <span class="mf">1.4</span><span class="p">,</span>
+            <span class="s1">&#39;rval_thr&#39;</span><span class="p">:</span> <span class="mf">0.8</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">}</span></div>
+
+
+
+<span class="k">def</span> <span class="nf">mcorr_ops</span><span class="p">():</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;main&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="c1"># More influential parameters</span>
+            <span class="s2">&quot;pw_rigid&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">&quot;min_mov&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">&quot;max_shifts&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span>
+            <span class="s2">&quot;strides&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">96</span><span class="p">,</span> <span class="mi">96</span><span class="p">],</span>
+            <span class="s2">&quot;overlaps&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">],</span>
+            <span class="s2">&quot;gsig_Filt&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">&quot;max_deviation_rigid&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+            <span class="s2">&quot;border_nan&quot;</span><span class="p">:</span> <span class="s2">&quot;copy&quot;</span><span class="p">,</span>
+            <span class="c1"># Less influential parameters</span>
+            <span class="s2">&quot;splits_els&quot;</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span>
+            <span class="s2">&quot;upsample_factor_grid&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+            <span class="s2">&quot;use_cuda&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="s2">&quot;num_frames_split&quot;</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span>
+            <span class="s2">&quot;niter_rig&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">&quot;is3D&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="s2">&quot;indices&quot;</span><span class="p">:</span> <span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">),</span> <span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">)),</span>
+            <span class="s2">&quot;splits_rig&quot;</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span>
+            <span class="s2">&quot;num_splits_to_process_rig&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">}</span>
+</pre></div>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Author name not set
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, Elizabeth R. Miller Brain Observatory | The Rockefeller University. All Rights Reserved.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
