@@ -26,7 +26,7 @@ from .helpers import (
     plot_correlations,
     concat_param_diffs
 )
-from ._store_model import TimeStore
+# from ._store_model import TimeStore
 
 __version__ = _version.get_versions()['version']
 
@@ -52,6 +52,6 @@ __all__ = [
     "concat_param_diffs",
     "plot_optical_flows",
     "plot_residual_flows",
-    "plot_correlations",
-    "TimeStore"
+    "plot_correlations"
+    # "TimeStore"
 ]
