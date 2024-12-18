@@ -8,10 +8,6 @@ import lbm_caiman_python as lcp
 import mesmerize_core as mc
 
 current_file = Path(__file__).parent
-with open(f"{current_file}/VERSION", "r") as VERSION:
-    version = VERSION.read().strip()
-
-# logging.getLogger("tensorflow").setLevel(logging.ERROR)
 
 print = partial(print, flush=True)
 
@@ -165,7 +161,7 @@ def main():
     parser = argparse.ArgumentParser(description="LBM-Caiman pipeline parameters")
     args, ops = parse_args(add_args(parser))
     if args.version:
-        print("lbm_caiman_python v{}".format(version))
+        print("lbm_caiman_python v{}".format(lcp.__version__))
         return
     if args.debug:
         logger = logging.getLogger(__name__)
