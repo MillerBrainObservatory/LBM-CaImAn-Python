@@ -55,6 +55,14 @@ Slurm utilities are available in the [utilities repository](https://github.com/M
 - `multifile_batch.sbatch` - Submit a job to the HPC
 - `tunnel.sbatch` - Create a tunnel to the HPC
 
+### `multi_file_batch.sbatch`
+
+Requirements:
+
+- a user folder in the MBO accounts scratch/
+- ssh keys for local->hpc and hpc->local transfers
+- (windows only) `rsync` [download](https://www.itefix.net/cwrsync) 
+
 After submitting a job via `multifile_batch.sbatch`, you can monitor the job with `squeue -u $USER` and cancel it with `scancel $JOB_ID`.
 
 The resulting batch files will be synced back to your local machine.
