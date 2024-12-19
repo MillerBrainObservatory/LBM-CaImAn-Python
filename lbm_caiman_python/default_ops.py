@@ -1,14 +1,3 @@
-import numpy as np
-
-
-def save_ops_to_npy(ops, filename):
-    np.save(filename, ops)
-
-
-def load_ops_from_npy(filename):
-    return np.load(filename, allow_pickle=True).item()
-
-
 def default_ops():
     """
     Default parameters for both registration and CNMF.
@@ -65,13 +54,5 @@ def default_ops():
             'bas_nonneg': True,
             'min_SNR': 1.4,
             'rval_thr': 0.8,
-        },
-    }
-
-
-def mcorr_ops():
-    return {
-        "main": {
-            # More influential parameters
         },
     }
