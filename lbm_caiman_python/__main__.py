@@ -161,7 +161,7 @@ def main():
         print("lbm_caiman_python v{}".format(lcp.__version__))
         return
 
-    # Setup logging
+    # Setup logging/backend
     if args.debug:
         logger = logging.getLogger(__name__)
         logger.setLevel(level=logging.DEBUG)
@@ -170,27 +170,33 @@ def main():
     else:
         backend = None
 
+    if args.data_path is None:
+        parser.print_help()
     if not args.batch_path:
         parser.print_help()
         return
-    if args.data_path is None:
-        raise ValueError("No data_path provided.")
 
     batch_path = Path(args.batch_path).expanduser()
     print(f"Batch path provided: {batch_path}")
     if batch_path.is_file():
-        print("Found existing batch.")
+        # make sure its a pickle file
+        if batch_path.suffix != ".pickle":
+            print(f"Wrong suffix: {batch_path.suffix}. Casting to .pickle: {batch_path.with_suffix('.pickle')}")
+            batch_path = batch_path.with_suffix(".pickle")
+        print(f"Found existing batch {batch_path}")
         df = mc.load_batch(batch_path)
     elif batch_path.is_dir():
-        raise ValueError(
-            f"Given batch path {batch_path} is a directory. Please use a fully qualified path, including "
-            f"the filename and file extension, i.e. /path/to/batch.pickle."
-        )
-    elif args.create:
+        batch_path = batch_path / "batch.pickle"
+        print(f"Found existing batch {batch_path}")
+        df = mc.load_batch(batch_path)
+    elif batch_path.parent.is_dir():
+        print(f"Batch path {batch_path} is not a directory, but its parent is."
+              f"Creating batch at {batch_path / 'batch.pickle'}")
+        batch_path = batch_path / "batch.pickle"
         df = mc.create_batch(batch_path)
-        print(f'Batch created at {batch_path}')
+        print(f"Batch created at {batch_path}")
     else:
-        print('No batch found. Use --create to create a new batch.')
+        print(f'{batch_path} is not a file, directory and does not have a valid parent directory. Exiting.')
         return
 
     # Handle removal of batch rows
@@ -232,21 +238,13 @@ def main():
 
     # Handle running algorithms
     if args.run:
-        # Load or initialize ops
         ops = load_ops(args)
-
-        metadata = None
-        files = []
         if not isinstance(args.data_path, (Path, str)):
             raise ValueError("Data path must be a string or Path object.")
 
         data_path = Path(args.data_path).expanduser().resolve()
         if data_path.is_file():
             files = [data_path]
-            # input_movie_path = data_path
-            # metadata = lcp.get_metadata(input_movie_path)
-            # parent = data_path.parent
-            # mc.set_parent_raw_data_path(parent)
         elif data_path.is_dir():
             files = list(data_path.glob("*.tif*"))
             if not files:
