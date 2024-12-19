@@ -48,6 +48,27 @@ There are 4 steps in this pipeline:
     - Lateral offset correction (between z-planes, COMING SOON)
 
 ----------------
+## HPC
+
+Slurm utilities are available in the [utilities repository](https://github.com/MillerBrainObservatory/utilities/tree/master/slurm).
+
+- `multifile_batch.sbatch` - Submit a job to the HPC
+- `tunnel.sbatch` - Create a tunnel to the HPC
+
+After submitting a job via `multifile_batch.sbatch`, you can monitor the job with `squeue -u $USER` and cancel it with `scancel $JOB_ID`.
+
+The resulting batch files will be synced back to your local machine.
+
+### Transfering POSIX->Windows
+
+If you see 
+```{code-block} bash
+NotImplementedError: cannot instantiate 'PosixPath' on your system
+```
+
+You can use [lbm_caiman_python.load_batch_cross_platform](#load_batch_cross_platform).
+
+----------------
 
 ## Comparison with [LBM-CaImAn-MATLAB](https://github.com/MillerBrainObservatory/LBM-CaImAn-MATLAB/)
 
