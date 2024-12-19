@@ -11,6 +11,7 @@ current_file = Path(__file__).parent
 
 print = partial(print, flush=True)
 
+
 def print_params(params, indent=5):
     for k, v in params.items():
         # if value is a dictionary, recursively call the function
@@ -31,80 +32,156 @@ def parse_data_path(value):
 
 def add_args(parser: argparse.ArgumentParser):
     """
-    Adds ops arguments to parser.
+    Add command-line arguments to the parser, dynamically adding arguments
+    for each key in the `ops` dictionary.
+
+    Parameters
+    ----------
+    parser : argparse.ArgumentParser
+        The argument parser to which arguments are added.
+
+    Returns
+    -------
+    argparse.ArgumentParser
+        The parser with added arguments.
     """
+    default_ops = lcp.default_ops()["main"]
+    for param, default_value in default_ops.items():
+        param_type = type(default_value)
+        if param_type == bool:
+            parser.add_argument(f'--{param}', type=int, choices=[0, 1], help=f'Set {param} (default: {default_value})')
+        elif param_type in [int, float, str]:
+            parser.add_argument(f'--{param}', type=param_type, help=f'Set {param} (default: {default_value})')
+        else:
+            parser.add_argument(f'--{param}', help=f'Set {param} (default: {default_value})')
 
-    parser.add_argument("batch_path", type=str, nargs='?', default=None, help="Path to batch file") 
-    parser.add_argument(
-        "--run",
-        type=str,
-        nargs="+",
-        help="algorithm to run, options mcorr, cnmf or cnmfe",
-    )
-    parser.add_argument(
-        "--rm",
-        type=int,
-        nargs="+",
-        help="algorithm to run, options mcorr, cnmf or cnmfe",
-    )
-    parser.add_argument(
-        "-c",
-        "--clean",
-        help="Clean unsuccessful batch items and associated data.",
-        action="store_true",  # if present, sets args.clean to True
-    )
-    parser.add_argument(
-        "--create",
-        help="Create a new batch if one is not found at the given batch path.",
-        action="store_true",  # if present, sets args.clean to True
-    )
-    parser.add_argument(
-        "--remove-data",
-        "--remove_data",
-        dest="remove_data",
-        help="If removing a batch item, also delete child results.",
-        action="store_true",  # set to True if present
-    )
-    parser.add_argument(
-        "--f",
-        "--force",
-        "-f",
-        dest="force",
-        help="Force deletion of the batch item without prompt.",
-        action="store_true",  # set to True if present
-    )
+    parser.add_argument('--ops', type=str, help='Path to the ops .npy file.')
+    parser.add_argument('--save_params', type=str, help='Path to save the ops parameters.')
+    parser.add_argument('--version', action='store_true', help='Show version information.')
+    parser.add_argument('--debug', action='store_true', help='Enable debug mode.')
+    parser.add_argument('--batch_path', type=str, help='Path to the batch file.')
+    parser.add_argument('--create', action='store_true', help='Create a new batch.')
+    parser.add_argument('--rm', type=int, nargs='+', help='Indices of batch rows to remove.')
+    parser.add_argument('--force', action='store_true', help='Force removal without safety checks.')
+    parser.add_argument('--remove_data', action='store_true', help='Remove associated data.')
+    parser.add_argument('--clean', action='store_true', help='Clean unsuccessful batch items.')
+    parser.add_argument('--show_params', type=int, help='Index of batch row to show parameters.')
+    parser.add_argument('--run', type=str, nargs='+', help='Algorithms to run (e.g., mcorr, cnmf).')
+    parser.add_argument('--data_path', type=str, help='Path to the input data.')
 
-    parser.add_argument("-d", "--debug", action="store_false", help="Run with verbose debug logging.")
-    parser.add_argument(
-        "--name", type=str, help="Name of the batch, qualified as path/to/name.pickle."
-    )
-    parser.add_argument("--show_params", help="View parameters for the given index.")
-    parser.add_argument("--save_params", help="Store this parameter set to file.")
-    parser.add_argument(
-        "--version", action="store_true", help="current pipeline version."
-    )
-    parser.add_argument("--ops", default=[], type=str, help="Path to a parameters file.")
-    parser.add_argument("--data_path", "--data-path", dest="data_path", type=parse_data_path, default=None,
-                        help="Path to data file or index of data in batch.")
-
-    # uncollapse dict['main'], used by mescore for parameters
-    ops0 = lcp.default_ops()
-    main_params = ops0.pop("main", {})
-    ops0.update(main_params)
-
-    # Add arguments for each key in the flattened dictionary
-    for k, default_val in ops0.items():
-        v = dict(default=default_val, help=f"{k} : {default_val}")
-        if isinstance(v["default"], (np.ndarray, list)) and v["default"]:
-            v["nargs"] = "+"
-            v["type"] = type(v["default"][0])
-        parser.add_argument(f"--{k}", **v)
     return parser
+
+
+def load_ops(args):
+    """
+    Load or create the 'ops' dictionary from a file or default parameters.
+
+    Parameters
+    ----------
+    args : argparse.Namespace
+        Command-line arguments containing the 'ops' path and 'save_params' option.
+
+    Returns
+    -------
+    dict
+        The loaded or default 'ops' dictionary.
+    """
+    if args.ops:
+        ops_path = Path(args.ops)
+        if ops_path.is_dir():
+            raise ValueError(
+                f"Given ops path {ops_path} is a directory. Please use a fully qualified path, "
+                f"including the filename and file extension, i.e. /path/to/ops.npy."
+            )
+        elif not ops_path.is_file():
+            raise FileNotFoundError(f"Given ops path {ops_path} is not a file.")
+        ops = np.load(ops_path, allow_pickle=True).item()
+    else:
+        ops = lcp.default_ops()
+
+    if args.save_params:
+        save_path = Path(args.save_params)
+        if save_path.is_dir():
+            savename = save_path / "ops.npy"
+        else:
+            savename = save_path.with_suffix(".npy")
+        print(f"Saving parameters to {savename}")
+        np.save(str(savename.resolve()), ops)
+
+    return ops
+
+
+def get_matching_main_params(args):
+    """
+    Match arguments supplied through the CLI with parameters found in the defaults.
+
+    Parameters
+    ----------
+    args : argparse.Namespace
+        Command-line arguments containing potential parameter overrides.
+
+    Returns
+    -------
+    dict
+        A dictionary of parameters matching the default 'main' keys.
+    """
+    return {
+        k: getattr(args, k)
+        for k in lcp.default_ops()["main"].keys()
+        if hasattr(args, k) and getattr(args, k) is not None
+    }
+
+
+def update_ops_with_matching_params(ops, matching_params):
+    """
+    Update the current 'ops' dictionary with the matching parameters.
+
+    Parameters
+    ----------
+    ops : dict
+        The original 'ops' dictionary.
+    matching_params : dict
+        The parameters to overwrite in the 'ops' dictionary.
+
+    Returns
+    -------
+    dict
+        The updated 'ops' dictionary.
+    """
+    ops["main"].update(matching_params)
+    return ops
+
+
+def save_ops(ops: dict, savename):
+    """
+    Save the 'ops' dictionary to a .npy file.
+
+    Parameters
+    ----------
+    ops : dict
+        The 'ops' dictionary to save.
+    savename : str or Path
+        The file path where to save the 'ops' dictionary.
+    """
+    np.save(str(Path(savename).resolve()), ops)
+    print(f"Parameters saved to {savename}")
 
 
 def parse_args(parser: argparse.ArgumentParser):
     """
-    Parses arguments and returns ops with parameters filled in.
+    Parse arguments and apply overrides to the ops dictionary.
+
+    Parameters
+    ----------
+    parser : argparse.ArgumentParser
+        The argument parser.
+
+    Returns
+    -------
+    args : argparse.Namespace
+        Parsed arguments.
+    ops : dict
+        The updated 'ops' dictionary with CLI overrides applied.
     """
     args = parser.parse_args()
     dargs = vars(args)
@@ -118,40 +195,34 @@ def parse_args(parser: argparse.ArgumentParser):
 
     for k in ops0:
         default_key = ops0[k]
-        args_key = dargs[k]
-        if isinstance(default_key, bool):
-            args_key = bool(int(args_key))  # bool("0") is true, must convert to int
+        args_key = dargs.get(k)
+        if args_key is not None:  # CLI argument exists
+            if isinstance(default_key, bool):
+                args_key = bool(int(args_key))  # bool("0") is True, so we convert it properly
+            else:
+                args_key = type(default_key)(args_key)  # Ensure type match
             if default_key != args_key:
                 ops[k] = args_key
                 print(set_param_msg.format(k, ops[k]))
-        elif not (
-                default_key == type(default_key)(args_key)
-        ):  # type conversion, ensure type match
-            ops[k] = type(default_key)(args_key)
-            print(set_param_msg.format(k, ops[k]))
+
     return args, ops
 
 
-def get_matching_main_params(args):
-    """
-    Match arguments supplied through the cli with parameters found in the defaults.
-    """
-    matching_params = {
-        k: getattr(args, k)
-        for k in lcp.default_ops()["main"].keys()
-        if hasattr(args, k)
-    }
-    return matching_params
-
-
 def main():
-    df = None
+    """
+    The main function that orchestrates the CLI operations.
+    """
     print("Beginning processing run ...")
     parser = argparse.ArgumentParser(description="LBM-Caiman pipeline parameters")
-    args, ops = parse_args(add_args(parser))
+    parser = add_args(parser)
+    args = parse_args(parser)
+
+    # Handle version
     if args.version:
         print("lbm_caiman_python v{}".format(lcp.__version__))
         return
+
+    # Setup logging
     if args.debug:
         logger = logging.getLogger(__name__)
         logger.setLevel(level=logging.DEBUG)
@@ -159,72 +230,98 @@ def main():
         backend = "local"
     else:
         backend = None
-    if len(vars(args)) == 0 or not args.batch_path:
+
+    # Ensure batch_path is provided
+    if not args.batch_path:
         parser.print_help()
         return
-    print("Batch path provided, retrieving batch:")
-    args.batch_path = Path(args.batch_path).expanduser()
-    print(args.batch_path)
-    if Path(args.batch_path).is_file():
+
+    # Load or create batch
+    df = None
+    batch_path = Path(args.batch_path).expanduser()
+    print(f"Batch path provided: {batch_path}")
+
+    if batch_path.is_file():
         print("Found existing batch.")
-        df = mc.load_batch(args.batch_path)
-    elif Path(args.batch_path).is_dir():
-        print(
-            f"Given batch path {args.batch_path} is a directory. Please use a fully qualified path, including "
+        df = mc.load_batch(batch_path)
+    elif batch_path.is_dir():
+        raise ValueError(
+            f"Given batch path {batch_path} is a directory. Please use a fully qualified path, including "
             f"the filename and file extension, i.e. /path/to/batch.pickle."
         )
-        # see if any existing pickle files
     elif args.create:
-        df = mc.create_batch(args.batch_path)
-        print(f'Batch created at {args.batch_path}')
+        df = mc.create_batch(batch_path)
+        print(f'Batch created at {batch_path}')
     else:
         print('No batch found. Use --create to create a new batch.')
         return
-    # start parsing main arguments (run, rm)
+
+    # Handle removal of batch rows
     if args.rm:
         print(
             "--rm provided as an argument. Checking the index(s) to delete are valid for this dataframe."
         )
-        if args.force:  # stored false, access directly
+        safe = not args.force
+        if args.force:
             print(
-                "--force provided as an argument."
-                "Performing unsafe deletion."
-                "(This action may delete an mcorr item with an associated cnmf processing run)"
+                "--force provided as an argument. Performing unsafe deletion."
+                " (This action may delete an mcorr item with an associated cnmf processing run)"
             )
-            safe = False
         else:
             print("--force not provided as an argument. Performing safe deletion.")
-            safe = True
+
         for arg in args.rm:
-            if arg > len(df.index):
+            if arg >= len(df.index) or arg < -len(df.index):
                 raise ValueError(
-                    f"Attempting to delete row {args.rm}. Dataframe size: {df.index}"
+                    f"Attempting to delete row {arg}. DataFrame size: {len(df.index)}"
                 )
+
         try:
             df = lcp.batch.delete_batch_rows(
                 df, args.rm, remove_data=args.remove_data, safe_removal=safe
             )
-            df.caiman.reload_from_disk()
+            df = df.caiman.reload_from_disk()
         except Exception as e:
             print(
-                f"Cannot remove row, this likely occured because there was a downstream item ran on this batch "
-                f"item. Try with --force."
+                f"Cannot remove row, this likely occurred because there was a downstream item run on this batch "
+                f"item. Try with --force. Error: {e}"
             )
-    elif args.clean:
+        return  # Exit after removal
+
+    # Handle cleaning of batch
+    if args.clean:
         print("Cleaning unsuccessful batch items and associated data.")
         print(f"Previous DF size: {len(df.index)}")
         df = lcp.batch.clean_batch(df)
         print(f"Cleaned DF size: {len(df.index)}")
-    elif args.show_params:
-        from caiman.source_extraction.cnmf.params import CNMFParams
-        # params = CNMFParams()
-        params = df.iloc[int(args.show_params)]["params"]
-        print_params(params)
-    elif args.run:
-        input_movie_path = None  # for setting raw_data_path
+        return  # Exit after cleaning
 
-        # args.data_path can be an int or str/path
-        # if int, use it as an index to the dataframe
+    # Handle showing parameters
+    if args.show_params is not None:
+        try:
+            params = df.iloc[args.show_params]["params"]
+            print_params(params)
+        except IndexError:
+            print(f"Index {args.show_params} is out of bounds for the DataFrame.")
+        return
+
+    # Handle running algorithms
+    if args.run:
+        # Load or initialize ops
+        ops = load_ops(args)
+
+        # Get matching parameters from CLI args and update ops
+        matching_params = get_matching_main_params(args)
+        ops = update_ops_with_matching_params(ops, matching_params)
+
+        # Save ops if requested
+        if args.save_params:
+            save_ops(ops, args.save_params)
+
+        # Determine input movie path and metadata
+        input_movie_path = None
+        metadata = None
+
         if args.data_path is None:
             print(
                 "No argument given for --data_path. Using the last row of the dataframe."
@@ -232,15 +329,22 @@ def main():
             if len(df.index) > 0:
                 args.data_path = -1
             else:
-                raise ValueError('Attemtping to run a batch item without giving a datapath and with an empty '
-                                 'dataframe. Supply a data path with --data_path followed by the path to your input '
-                                 'data.')
+                raise ValueError(
+                    'Attempting to run a batch item without providing a data path and with an empty '
+                    'dataframe. Supply a data path with --data_path followed by the path to your input '
+                    'data.'
+                )
+
         if isinstance(args.data_path, int):
+            if not (-len(df.index) <= args.data_path < len(df.index)):
+                raise ValueError(
+                    f"data_path index {args.data_path} is out of bounds for the DataFrame with size {len(df.index)}."
+                )
             row = df.iloc[args.data_path]
             in_algo = row["algo"]
             assert (
                     in_algo == "mcorr"
-            ), f"Input algoritm must be mcorr, algo at idx {args.data_path}: {in_algo}"
+            ), f"Input algorithm must be mcorr, algo at idx {args.data_path}: {in_algo}"
             if (
                     isinstance(row["outputs"], dict)
                     and row["outputs"].get("success") is False
@@ -248,100 +352,74 @@ def main():
                 raise ValueError(
                     f"Given data_path index {args.data_path} references an unsuccessful batch item."
                 )
-            input_movie_path = row
-            filename = Path(df.iloc[0].caiman.get_input_movie())
-            metadata = lcp.get_metadata(filename)
-            parent = filename.parent
+            input_movie_path = row["input_movie_path"]  # Adjust based on actual DataFrame structure
+            metadata = row.get("metadata")  # Adjust based on actual DataFrame structure
+            if metadata is None:
+                filename = Path(row["input_movie_path"])
+                metadata = lcp.get_metadata(filename)
+            parent = Path(input_movie_path).parent
             mc.set_parent_raw_data_path(parent)
         elif isinstance(args.data_path, (Path, str)):
-            if Path(args.data_path).is_file():
-                input_movie_path = Path(args.data_path)
-                parent = input_movie_path.parent
+            data_path = Path(args.data_path)
+            if data_path.is_file():
+                input_movie_path = data_path
                 metadata = lcp.get_metadata(input_movie_path)
+                parent = data_path.parent
                 mc.set_parent_raw_data_path(parent)
-            elif Path(args.data_path).is_dir():
-                # regex all .p files to get pickled files
-                files = [x for x in Path(args.data_path).glob("*.tif*")]
-                if len(files) == 0:
-                    raise ValueError(f"No datafiles found data_path: {args.data_path}")
-                if len(files) >= 1:
-                    # found a pickle file in the data_path
-                    input_movie_path = files[0]
-                    metadata = lcp.get_metadata(input_movie_path)
-                    parent = Path(input_movie_path).parent
-                    mc.set_parent_raw_data_path(parent)
-                else:
-                    raise NotADirectoryError(
-                        f"{args.data_path} is not a valid directory."
-                    )
+            elif data_path.is_dir():
+                files = list(data_path.glob("*.tif*"))
+                if not files:
+                    raise ValueError(f"No .tif files found in data_path: {data_path}")
+                input_movie_path = files[0]
+                metadata = lcp.get_metadata(input_movie_path)
+                parent = input_movie_path.parent
+                mc.set_parent_raw_data_path(parent)
             else:
                 raise NotADirectoryError(
                     f"{args.data_path} is not a valid file or directory."
                 )
         else:
             raise ValueError(f"{args.data_path} is not a valid data_path.")
-        # handle parameters
-        if args.ops:
-            ops_path = Path(args.ops)
-            if ops_path.is_dir():
-                raise ValueError(f"Given ops path {ops_path} is a directory. Please use a fully qualified path, "
-                                 f"including the filename and file extension, i.e. /path/to/ops.npy.")
-            elif not ops_path.is_file():
-                raise FileNotFoundError(f"Given ops path {ops_path} is not a file.")
-            ops = np.load(ops_path, allow_pickle=True).item()
-        else:
-            ops = lcp.default_ops()
-        if args.save_params:
-            if Path(args.save_params).is_dir():
-                savename = Path(args.save_params) / "ops.npy"
-            else:
-                savename = Path(args.save_params).with_suffix(".npy")
-            print(f"Saving parameters to {savename}")
-            np.save(ops, str(savename.resolve()))
-        for algo in args.run:
-            # RUN MCORR
-            if algo == "mcorr":
-                params = {"main": get_matching_main_params(args)}
-                if metadata:
-                    fr = metadata["frame_rate"]
-                    dxy = metadata["pixel_resolution"]
-                    params["main"]["fr"] = fr
-                    params["main"]["dxy"] = dxy
-                else:
-                    metadata = lcp.get_metadata(input_movie_path)
-                    if metadata is None:
-                        print(
-                            ## TODO: update this to be more descriptive
-                            "No metadata found for the input data. Please provide metadata."
-                        )
-                    else:
-                        fr = metadata["frame_rate"]
-                        dxy = metadata["pixel_resolution"]
-                        params["main"]["fr"] = fr
-                        params["main"]["dxy"] = dxy
 
+        if metadata:
+            ops["main"]["fr"] = metadata.get("frame_rate", ops["main"].get("fr"))
+            ops["main"]["dxy"] = metadata.get("pixel_resolution", ops["main"].get("dxy"))
+        else:
+            print(
+                "No metadata found for the input data. Please provide metadata."
+            )
+
+        for algo in args.run:
+            if algo == "mcorr":
                 df.caiman.add_item(
                     algo=algo,
                     input_movie_path=input_movie_path,
-                    params=params,
+                    params=ops,
                     item_name="lbm-batch-item",
                 )
                 print(f"Running {algo} -----------")
                 df.iloc[-1].caiman.run(backend=backend)
                 df = df.caiman.reload_from_disk()
                 print(f"Processing time: {df.iloc[-1].algo_duration}")
-            if algo in ["cnmf", "cnmfe"]:
+            elif algo in ["cnmf", "cnmfe"]:
+                cnmf_params = {"main": get_matching_main_params(args)}
                 df.caiman.add_item(
                     algo=algo,
                     input_movie_path=input_movie_path,
-                    params={"main": get_matching_main_params(args)},
-                    item_name="item_name",
+                    params=cnmf_params,
+                    item_name="lbm-batch-item",
                 )
                 print(f"Running {algo} -----------")
-                df.iloc[-1].caiman.run()
-    else:  # if only batch_path was provided
-        print(df)
+                df.iloc[-1].caiman.run(backend=backend)
+                df = df.caiman.reload_from_disk()
+                print(f"Processing time: {df.iloc[-1].algo_duration}")
+            else:
+                print(f"Algorithm '{algo}' is not recognized and will be skipped.")
 
+        return  # Exit after running algorithms
+
+    # If only batch_path was provided without any operations
+    print(df)
     print("Processing complete -----------")
 
 
