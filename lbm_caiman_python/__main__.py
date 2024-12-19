@@ -54,6 +54,8 @@ def add_args(parser: argparse.ArgumentParser):
             parser.add_argument(f'--{param}', type=int, choices=[0, 1], help=f'Set {param} (default: {default_value})')
         elif param_type in [int, float, str]:
             parser.add_argument(f'--{param}', type=param_type, help=f'Set {param} (default: {default_value})')
+        elif param_type in [tuple, list] and len(default_value) == 2:
+            parser.add_argument(f'--{param}', type=float, nargs='+', help=f'Set {param} (default: {default_value})')
         else:
             parser.add_argument(f'--{param}', help=f'Set {param} (default: {default_value})')
 
@@ -71,7 +73,6 @@ def add_args(parser: argparse.ArgumentParser):
     parser.add_argument('--run', type=str, nargs='+', help='Algorithms to run (e.g., mcorr, cnmf).')
 
     return parser
-
 
 def load_ops(args):
     """
