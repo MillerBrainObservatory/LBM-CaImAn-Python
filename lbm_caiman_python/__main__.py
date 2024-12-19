@@ -23,7 +23,9 @@ def print_params(params, indent=5):
 
 
 def parse_data_path(value):
-    # try to convert to integer if possible, otherwise treat as a file path
+    """
+    Cast the value to an integer if possible, otherwise treat as a file path.
+    """
     try:
         return int(value)
     except ValueError:
@@ -56,18 +58,17 @@ def add_args(parser: argparse.ArgumentParser):
             parser.add_argument(f'--{param}', help=f'Set {param} (default: {default_value})')
 
     parser.add_argument('--ops', type=str, help='Path to the ops .npy file.')
-    parser.add_argument('--save_params', type=str, help='Path to save the ops parameters.')
+    parser.add_argument('--save', type=str, help='Path to save the ops parameters.')
     parser.add_argument('--version', action='store_true', help='Show version information.')
     parser.add_argument('--debug', action='store_true', help='Enable debug mode.')
     parser.add_argument('--batch_path', type=str, help='Path to the batch file.')
+    parser.add_argument('--data_path', type=str, help='Path to the input data.')
     parser.add_argument('--create', action='store_true', help='Create a new batch.')
     parser.add_argument('--rm', type=int, nargs='+', help='Indices of batch rows to remove.')
     parser.add_argument('--force', action='store_true', help='Force removal without safety checks.')
     parser.add_argument('--remove_data', action='store_true', help='Remove associated data.')
     parser.add_argument('--clean', action='store_true', help='Clean unsuccessful batch items.')
-    parser.add_argument('--show_params', type=int, help='Index of batch row to show parameters.')
     parser.add_argument('--run', type=str, nargs='+', help='Algorithms to run (e.g., mcorr, cnmf).')
-    parser.add_argument('--data_path', type=str, help='Path to the input data.')
 
     return parser
 
@@ -79,7 +80,7 @@ def load_ops(args):
     Parameters
     ----------
     args : argparse.Namespace
-        Command-line arguments containing the 'ops' path and 'save_params' option.
+        Command-line arguments containing the 'ops' path and 'save' option.
 
     Returns
     -------
@@ -99,8 +100,8 @@ def load_ops(args):
     else:
         ops = lcp.default_ops()
 
-    if args.save_params:
-        save_path = Path(args.save_params)
+    if args.save:
+        save_path = Path(args.save)
         if save_path.is_dir():
             savename = save_path / "ops.npy"
         else:
@@ -152,22 +153,7 @@ def update_ops_with_matching_params(ops, matching_params):
     return ops
 
 
-def save_ops(ops: dict, savename):
-    """
-    Save the 'ops' dictionary to a .npy file.
-
-    Parameters
-    ----------
-    ops : dict
-        The 'ops' dictionary to save.
-    savename : str or Path
-        The file path where to save the 'ops' dictionary.
-    """
-    np.save(str(Path(savename).resolve()), ops)
-    print(f"Parameters saved to {savename}")
-
-
-def parse_args(parser: argparse.ArgumentParser):
+def parse_args2(parser: argparse.ArgumentParser):
     """
     Parse arguments and apply overrides to the ops dictionary.
 
@@ -215,7 +201,7 @@ def main():
     print("Beginning processing run ...")
     parser = argparse.ArgumentParser(description="LBM-Caiman pipeline parameters")
     parser = add_args(parser)
-    args = parse_args(parser)
+    args = parser.parse_args()
 
     # Handle version
     if args.version:
@@ -237,10 +223,8 @@ def main():
         return
 
     # Load or create batch
-    df = None
     batch_path = Path(args.batch_path).expanduser()
     print(f"Batch path provided: {batch_path}")
-
     if batch_path.is_file():
         print("Found existing batch.")
         df = mc.load_batch(batch_path)
@@ -277,33 +261,22 @@ def main():
                 )
 
         try:
-            df = lcp.batch.delete_batch_rows(
-                df, args.rm, remove_data=args.remove_data, safe_removal=safe
-            )
+            df = lcp.batch.delete_batch_rows(df, args.rm, remove_data=args.remove_data, safe_removal=safe)
             df = df.caiman.reload_from_disk()
         except Exception as e:
             print(
                 f"Cannot remove row, this likely occurred because there was a downstream item run on this batch "
                 f"item. Try with --force. Error: {e}"
             )
-        return  # Exit after removal
+        return
 
     # Handle cleaning of batch
     if args.clean:
         print("Cleaning unsuccessful batch items and associated data.")
-        print(f"Previous DF size: {len(df.index)}")
+        print(f"Previous batch size: {len(df.index)}")
         df = lcp.batch.clean_batch(df)
-        print(f"Cleaned DF size: {len(df.index)}")
+        print(f"Cleaned batch size: {len(df.index)}")
         return  # Exit after cleaning
-
-    # Handle showing parameters
-    if args.show_params is not None:
-        try:
-            params = df.iloc[args.show_params]["params"]
-            print_params(params)
-        except IndexError:
-            print(f"Index {args.show_params} is out of bounds for the DataFrame.")
-        return
 
     # Handle running algorithms
     if args.run:
@@ -313,14 +286,6 @@ def main():
         # Get matching parameters from CLI args and update ops
         matching_params = get_matching_main_params(args)
         ops = update_ops_with_matching_params(ops, matching_params)
-
-        # Save ops if requested
-        if args.save_params:
-            save_ops(ops, args.save_params)
-
-        # Determine input movie path and metadata
-        input_movie_path = None
-        metadata = None
 
         if args.data_path is None:
             print(
@@ -360,7 +325,7 @@ def main():
             parent = Path(input_movie_path).parent
             mc.set_parent_raw_data_path(parent)
         elif isinstance(args.data_path, (Path, str)):
-            data_path = Path(args.data_path)
+            data_path = Path(args.data_path).expanduser().resolve()
             if data_path.is_file():
                 input_movie_path = data_path
                 metadata = lcp.get_metadata(input_movie_path)
@@ -375,19 +340,17 @@ def main():
                 parent = input_movie_path.parent
                 mc.set_parent_raw_data_path(parent)
             else:
-                raise NotADirectoryError(
-                    f"{args.data_path} is not a valid file or directory."
-                )
+                raise NotADirectoryError(f"{args.data_path} is not a valid file or directory.")
         else:
             raise ValueError(f"{args.data_path} is not a valid data_path.")
 
         if metadata:
+            # update frame rate and pixel resolution from metadata
+            print(f"Updating frame rate and pixel resolution from metadata.")
             ops["main"]["fr"] = metadata.get("frame_rate", ops["main"].get("fr"))
             ops["main"]["dxy"] = metadata.get("pixel_resolution", ops["main"].get("dxy"))
         else:
-            print(
-                "No metadata found for the input data. Please provide metadata."
-            )
+            print("No metadata found for the input data. Please provide metadata.")
 
         for algo in args.run:
             if algo == "mcorr":
@@ -416,9 +379,8 @@ def main():
             else:
                 print(f"Algorithm '{algo}' is not recognized and will be skipped.")
 
-        return  # Exit after running algorithms
+        return
 
-    # If only batch_path was provided without any operations
     print(df)
     print("Processing complete -----------")
 
