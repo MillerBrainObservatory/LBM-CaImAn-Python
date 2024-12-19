@@ -170,12 +170,12 @@ def main():
     else:
         backend = None
 
-    # Ensure batch_path is provided
     if not args.batch_path:
         parser.print_help()
         return
+    if args.data_path is None:
+        raise ValueError("No data_path provided.")
 
-    # Load or create batch
     batch_path = Path(args.batch_path).expanduser()
     print(f"Batch path provided: {batch_path}")
     if batch_path.is_file():
@@ -236,88 +236,75 @@ def main():
         ops = load_ops(args)
 
         metadata = None
-        if args.data_path is None:
-            print("No argument given for --data_path. Using the last row of the dataframe.")
-            if len(df.index) > 0:
-                args.data_path = -1
-                input_movie_path = df.iloc[args.data_path].caiman.get_input_movie_path()
-            else:
-                raise ValueError(
-                    'Attempting to run a batch item without providing a data path and with an empty '
-                    'dataframe. Supply a data path with --data_path followed by the path to your input '
-                    'data.'
-                )
-        elif isinstance(args.data_path, int):
-            if not (-len(df.index) <= args.data_path < len(df.index)):
-                raise ValueError(
-                    f"data_path index {args.data_path} is out of bounds for the DataFrame with size {len(df.index)}."
-                )
-            row = df.iloc[args.data_path]
-            if (
-                    isinstance(row["outputs"], dict)
-                    and row["outputs"].get("success") is False
-            ):
-                raise ValueError(
-                    f"Given data_path index {args.data_path} references an unsuccessful batch item."
-                )
-            input_movie_path = row.caiman.get_input_movie_path()
-            metadata = lcp.get_metadata(input_movie_path)
-            parent = Path(input_movie_path).parent
-            mc.set_parent_raw_data_path(parent)
-        elif isinstance(args.data_path, (Path, str)):
-            data_path = Path(args.data_path).expanduser().resolve()
-            if data_path.is_file():
-                input_movie_path = data_path
-                metadata = lcp.get_metadata(input_movie_path)
-                parent = data_path.parent
-                mc.set_parent_raw_data_path(parent)
-            elif data_path.is_dir():
-                files = list(data_path.glob("*.tif*"))
-                if not files:
-                    raise ValueError(f"No .tif files found in data_path: {data_path}")
-                input_movie_path = files[0]
-                metadata = lcp.get_metadata(input_movie_path)
-                parent = input_movie_path.parent
-                mc.set_parent_raw_data_path(parent)
-            else:
-                raise NotADirectoryError(f"{args.data_path} is not a valid file or directory.")
-        else:
-            raise ValueError(f"{args.data_path} is not a valid data_path.")
+        files = []
+        if not isinstance(args.data_path, (Path, str)):
+            raise ValueError("Data path must be a string or Path object.")
 
-        if metadata:
-            # update frame rate and pixel resolution from metadata
-            print(f"Updating frame rate and pixel resolution from metadata.")
-            ops["main"]["fr"] = metadata.get("frame_rate", ops["main"].get("fr"))
-            ops["main"]["dxy"] = metadata.get("pixel_resolution", ops["main"].get("dxy"))
+        data_path = Path(args.data_path).expanduser().resolve()
+        if data_path.is_file():
+            files = [data_path]
+            # input_movie_path = data_path
+            # metadata = lcp.get_metadata(input_movie_path)
+            # parent = data_path.parent
+            # mc.set_parent_raw_data_path(parent)
+        elif data_path.is_dir():
+            files = list(data_path.glob("*.tif*"))
+            if not files:
+                raise ValueError(f"No .tif files found in data_path: {data_path}")
         else:
-            print("No metadata found for the input data. Please provide metadata.")
+            raise NotADirectoryError(f"{args.data_path} is not a valid file or directory.")
 
         for algo in args.run:
+            if algo not in ["mcorr", "cnmf", "cnmfe"]:
+                print(f"Algorithm '{algo}' is not recognized and will be skipped."
+                      f"Avaliable algorithms are: 'mcorr', 'cnmf', 'cnmfe'.")
             if algo == "mcorr":
-                df.caiman.add_item(
-                    algo=algo,
-                    input_movie_path=input_movie_path,
-                    params=ops,
-                    item_name="lbm-batch-item",
-                )
-                print(f"Running {algo} -----------")
-                df.iloc[-1].caiman.run(backend=backend)
-                df = df.caiman.reload_from_disk()
-                print(f"Processing time: {df.iloc[-1].algo_duration}")
-            elif algo in ["cnmf", "cnmfe"]:
-                df.caiman.add_item(
-                    algo=algo,
-                    input_movie_path=input_movie_path,
-                    params=ops,
-                    item_name="lbm-batch-item",
-                )
-                print(f"Running {algo} -----------")
-                df.iloc[-1].caiman.run(backend=backend)
-                df = df.caiman.reload_from_disk()
-                print(f"Processing time: {df.iloc[-1].algo_duration}")
-            else:
-                print(f"Algorithm '{algo}' is not recognized and will be skipped.")
+                for input_movie_path in files:
+                    input_movie_path = Path(input_movie_path)
+                    # TODO: update_ops() to handle metadata
+                    metadata = lcp.get_metadata(input_movie_path)
+                    ops["main"]["fr"] = metadata.get("frame_rate", ops["main"].get("fr"))
+                    ops["main"]["dxy"] = metadata.get("pixel_resolution", ops["main"].get("dxy"))
+                    mc.set_parent_raw_data_path(input_movie_path.parent)
+                    df.caiman.add_item(
+                        algo=algo,
+                        input_movie_path=input_movie_path,
+                        params=ops,
+                        item_name="lbm-batch-item",
+                    )
+                    print(f"Running {algo} -----------")
+                    df.iloc[-1].caiman.run(backend=backend)
+                    df = df.caiman.reload_from_disk()
+                    print(f"Processing time: {df.iloc[-1].algo_duration}")
+            if algo in ['cnmf', 'cnmfe']:
+                for input_movie_path in files:
+                    input_movie_path = Path(input_movie_path)
+                    mcorr_item = df[df.input_movie_path == input_movie_path.name]
 
+                    # Check if exactly one row matches
+                    if len(mcorr_item) == 0:
+                        raise ValueError(f"No row found with input_movie_path == {input_movie_path.name}")
+                    elif len(mcorr_item) > 1:
+                        raise ValueError(
+                            f"Multiple rows found with input_movie_path == {input_movie_path.name}. Expected only one "
+                            f"match.")
+                    mc.set_parent_raw_data_path(input_movie_path.parent)
+                    if mcorr_item.empty:
+                        print(f"No matching mcorr item found for {input_movie_path}."
+                              f"Current batch items: {df.input_movie_path}."
+                              f"Proceeding to run on the input movie.")
+                        df.caiman.add_item(
+                            algo=algo,
+                            input_movie_path=input_movie_path,
+                            params=ops,
+                            item_name="lbm-batch-item",
+                        )
+                    df.caiman.add_item(
+                        algo=algo,
+                        input_movie_path=mcorr_item.iloc[0],
+                        params=ops,
+                        item_name="lbm-batch-item",
+                    )
         return
 
     print(df)
