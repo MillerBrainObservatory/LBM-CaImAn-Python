@@ -71,7 +71,7 @@ def add_args(parser: argparse.ArgumentParser):
     parser.add_argument('--version', action='store_true', help='Show version information.')
     parser.add_argument('--debug', action='store_true', help='Enable debug mode.')
     parser.add_argument('--batch_path', type=str, help='Path to the batch file.')
-    parser.add_argument('--data_path', type=str, help='Path to the input data.')
+    parser.add_argument('--data_path', type=parse_data_path, help='Path to the input data.')
     parser.add_argument('--create', action='store_false', help='Create a new batch.')
     parser.add_argument('--rm', type=int, nargs='+', help='Indices of batch rows to remove.')
     parser.add_argument('--force', action='store_true', help='Force removal without safety checks.')
@@ -235,27 +235,24 @@ def main():
         # Load or initialize ops
         ops = load_ops(args)
 
+        metadata = None
         if args.data_path is None:
             print("No argument given for --data_path. Using the last row of the dataframe.")
             if len(df.index) > 0:
                 args.data_path = -1
+                input_movie_path = df.iloc[args.data_path].caiman.get_input_movie_path()
             else:
                 raise ValueError(
                     'Attempting to run a batch item without providing a data path and with an empty '
                     'dataframe. Supply a data path with --data_path followed by the path to your input '
                     'data.'
                 )
-
-        if isinstance(args.data_path, int):
+        elif isinstance(args.data_path, int):
             if not (-len(df.index) <= args.data_path < len(df.index)):
                 raise ValueError(
                     f"data_path index {args.data_path} is out of bounds for the DataFrame with size {len(df.index)}."
                 )
             row = df.iloc[args.data_path]
-            in_algo = row["algo"]
-            assert (
-                    in_algo == "mcorr"
-            ), f"Input algorithm must be mcorr, algo at idx {args.data_path}: {in_algo}"
             if (
                     isinstance(row["outputs"], dict)
                     and row["outputs"].get("success") is False
@@ -263,11 +260,8 @@ def main():
                 raise ValueError(
                     f"Given data_path index {args.data_path} references an unsuccessful batch item."
                 )
-            input_movie_path = row["input_movie_path"]  # Adjust based on actual DataFrame structure
-            metadata = row.get("metadata")  # Adjust based on actual DataFrame structure
-            if metadata is None:
-                filename = Path(row["input_movie_path"])
-                metadata = lcp.get_metadata(filename)
+            input_movie_path = row.caiman.get_input_movie_path()
+            metadata = lcp.get_metadata(input_movie_path)
             parent = Path(input_movie_path).parent
             mc.set_parent_raw_data_path(parent)
         elif isinstance(args.data_path, (Path, str)):
