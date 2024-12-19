@@ -299,12 +299,20 @@ def main():
                             params=ops,
                             item_name="lbm-batch-item",
                         )
+                        print(f"Running {algo} -----------")
+                        df.iloc[-1].caiman.run(backend=backend)
+                        df = df.caiman.reload_from_disk()
+                        print(f"Processing time: {df.iloc[-1].algo_duration}")
                     df.caiman.add_item(
                         algo=algo,
                         input_movie_path=mcorr_item.iloc[0],
                         params=ops,
                         item_name="lbm-batch-item",
                     )
+                    print(f"Running {algo} -----------")
+                    df.iloc[-1].caiman.run(backend=backend)
+                    df = df.caiman.reload_from_disk()
+                    print(f"Processing time: {df.iloc[-1].algo_duration}")
         return
 
     print(df)
