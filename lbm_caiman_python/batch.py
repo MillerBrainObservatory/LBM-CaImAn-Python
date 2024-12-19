@@ -31,6 +31,44 @@ DATAFRAME_COLUMNS = [
 
 
 def clean_batch(df):
+    """
+        Clean a batch of DataFrame entries by removing unsuccessful rows from storage.
+
+        This function iterates over the rows of the given DataFrame, identifies
+        rows where the 'outputs' column is either `None` or a dictionary containing
+        a 'success' key with a `False` value. For each such row, the corresponding
+        item is removed using the `df.caiman.remove_item()` method, and the removal
+        is saved to disk.
+
+        Parameters
+        ----------
+        df : pandas.DataFrame
+            The DataFrame to be cleaned. It must have a 'uuid' column for identification
+            and an 'outputs' column containing a dictionary with a 'success' key.
+
+        Returns
+        -------
+        pandas.DataFrame
+            The DataFrame reloaded from disk after unsuccessful items have been removed.
+
+        Notes
+        -----
+        - If 'outputs' is None or does not contain 'success' as a key with a value of
+          `False`, the row will be removed.
+
+        Examples
+        --------
+        >>> import pandas as pd
+        >>> df = pd.DataFrame({
+        ...     'uuid': ['123', '456', '789'],
+        ...     'outputs': [{'success': True}, {'success': False}, None]
+        ... })
+        >>> cleaned_df = clean_batch(df)
+        Removing unsuccessful batch row 1.
+        Row 1 deleted.
+        Removing unsuccessful batch row 2.
+        Row 2 deleted.
+        """
     for index, row in df.iterrows():
         # Check if 'outputs' is a dictionary and has 'success' key with value False
         if isinstance(row["outputs"], dict) and row["outputs"].get("success") is False or row["outputs"] is None:

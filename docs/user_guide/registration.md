@@ -40,9 +40,10 @@ df.caiman.add_item(
 
 ```
 
+(registration_parameters)=
 ## Registration Parameters
 
-Parameters for motion correction are fed into `CaImAn`, someone confusingly, via the {external:func}`CNMFSetParams` function which holds and organizes parameters for registration, segmentation, deconvolution, and pre-processing steps. 
+Parameters for motion correction are fed into `CaImAn` in an object which holds and organizes parameters for registration, segmentation, deconvolution, and pre-processing steps.
 
 As such, you can put any parameter found in that structure into the parameters dictionary. Only the parameters that apply to registration will be used.
 
@@ -70,7 +71,7 @@ As such, you can put any parameter found in that structure into the parameters d
 The most important/influencial parameters in this set are:
 
 1. {code}`gSig_filt`
-: Though the description labels this parameter as applying to 1-photon calcium imaging, it is a valuable tool to handle noisy recordings in 2-photon experiments as well (TODO: link fpl example).
+: Apply a gaussian filter, helps to make neuronal features stand out especially in noisy recordings.
 
 2. {code}`max_shift`
 : Determines the maximum number of pixels that your movie will be translated in X/Y.
@@ -83,7 +84,7 @@ The most important/influencial parameters in this set are:
 
 :::{admonition} A note on `max_shift`
 :class: dropdown
- 
+
 For timeseries where the FOV is sparsely labeled or a frame is corrupted, the registration process of two neighboring patches can produce very different shifts, which can lead to corrupted registered frames.
 We limit the largest allowed shift with the {code}`max_shift` parameter.
 
@@ -110,7 +111,6 @@ Comparing the above image with `gSig_filt = (2, 2)`:
 :::
 
 ... we can see much more clearly the neurons that will be used for alignment.
-
 
 ````{admonition} How To: Create the above visualization
 :class: dropdown

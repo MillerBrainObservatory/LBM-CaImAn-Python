@@ -354,6 +354,7 @@ def main():
     parser = argparse.ArgumentParser(description="CLI for processing ScanImage tiff files.")
     parser.add_argument("path",
                         type=str,
+                        nargs='?',  # Change this to make 'path' optional
                         default=None,
                         help="Path to the file or directory to process.")
     parser.add_argument("--frames",
@@ -395,8 +396,10 @@ def main():
                                                                            "scan when saving.")
     # Commands
     args = parser.parse_args()
-    if not args.path:
-        logger.warning("No path provided. Exiting.")
+
+    # If no arguments are provided, print help and exit
+    if len(vars(args)) == 0 or not args.path:
+        parser.print_help()
         return
 
     if args.debug:
@@ -434,7 +437,6 @@ def main():
         join_contiguous = False
 
     if args.save:
-
         savepath = Path(args.save).expanduser()
         logger.info(f"Saving data to {savepath}.")
 
@@ -480,3 +482,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+

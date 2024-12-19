@@ -20,20 +20,30 @@ copyright = "2024, Elizabeth R. Miller Brain Observatory | The Rockefeller Unive
 release = __version__
 
 # Copy example notebooks for rendering in the docs
+print(f'Copying sphinx source files ...')
 source_dir = Path(__file__).resolve().parent.parent / "demos" / "notebooks"
-dest_dir = Path(__file__).resolve().parent / "examples" / "render"
+dest_dir = Path(__file__).resolve().parent / "examples" / "notebooks"
+
+def copy_with_overwrite(src: Path, dst: Path):
+    print(f'source: {src} being copied to destination: {dst}')
+    if src.is_dir():
+        if dst.exists():
+            shutil.rmtree(dst)
+        shutil.copytree(src, dst)
+    else:
+        if dst.exists():
+            dst.unlink()
+        shutil.copy2(src, dst)
 
 if source_dir.exists():
     if dest_dir.exists():
-        shutil.rmtree(dest_dir)  # Remove existing directory
-    dest_dir.mkdir(parents=True, exist_ok=True)  # Create fresh directory
-    
-    for item in source_dir.iterdir():
-        if item.is_dir():
-            shutil.copytree(item, dest_dir / item.name)
-        else:
-            shutil.copy2(item, dest_dir / item.name)
+        shutil.rmtree(dest_dir)
+    dest_dir.mkdir(parents=True, exist_ok=True)
 
+    for item in source_dir.rglob("*"):
+        relative_path = item.relative_to(source_dir)
+        destination_path = dest_dir / relative_path
+        copy_with_overwrite(item, destination_path)
 
 exclude_patterns = ["Thumbs.db", ".DS_Store"]
 
@@ -45,7 +55,6 @@ myst_enable_extensions = [
 
 extensions = [
     "sphinx.ext.autodoc",
-    # "sphinxcontrib.images",
     "sphinxcontrib.video",
     "myst_nb",
     "sphinx_copybutton",
@@ -80,7 +89,7 @@ templates_path = ["_templates"]
 # A shorter title for the navigation bar.  Default is the same as html_title.
 html_title = "LBM-CaImAn-Python"
 
-html_logo = "./_static/lcp_logo.svg"
+html_logo = "_static/lcp_logo.svg"
 html_favicon = "_static/icon_caiman_python.svg"
 html_theme = "sphinx_book_theme"
 
@@ -103,7 +112,6 @@ intersphinx_mapping = {
     "suite2p": ("https://suite2p.readthedocs.io/en/latest/", None),
 }
 
-templates_path = ["_templates"]
 intersphinx_disabled_reftypes = ["*"]
 
 html_theme_options = {

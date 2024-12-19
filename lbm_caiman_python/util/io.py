@@ -20,6 +20,25 @@ def make_json_serializable(obj):
 
 
 def get_metadata(file: os.PathLike | str):
+    """
+    Extract metadata from a TIFF file. This can be a raw ScanImage TIFF or one
+    processed via [lbm_caiman_python.save_as()](#save_as).
+
+    Parameters
+    ----------
+    file: os.PathLike
+        Path to the TIFF file.
+
+    Returns
+    -------
+    dict
+        Metadata extracted from the TIFF file.
+
+    Raises
+    ------
+    ValueError
+        If no metadata is found in the TIFF file. This can occur when the file is not a ScanImage TIFF.
+    """
     if not file:
         return None
 
