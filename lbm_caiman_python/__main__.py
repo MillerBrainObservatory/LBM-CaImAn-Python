@@ -190,7 +190,7 @@ def main():
         print(f"Found existing batch {batch_path}")
         df = mc.load_batch(batch_path)
     elif batch_path.parent.is_dir():
-        print(f"Batch path {batch_path} is not a directory, but its parent is."
+        print(f"Batch path {batch_path} is not a directory, but its parent is.\n"
               f"Creating batch at {batch_path / 'batch.pickle'}")
         batch_path = batch_path / "batch.pickle"
         df = mc.create_batch(batch_path)
