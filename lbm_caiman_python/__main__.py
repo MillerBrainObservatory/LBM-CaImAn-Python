@@ -71,7 +71,7 @@ def add_args(parser: argparse.ArgumentParser):
     parser.add_argument('--debug', action='store_true', help='Enable debug mode.')
     parser.add_argument('--batch_path', type=str, help='Path to the batch file.')
     parser.add_argument('--data_path', type=str, help='Path to the input data.')
-    parser.add_argument('--create', action='store_true', help='Create a new batch.')
+    parser.add_argument('--create', action='store_false', help='Create a new batch.')
     parser.add_argument('--rm', type=int, nargs='+', help='Indices of batch rows to remove.')
     parser.add_argument('--force', action='store_true', help='Force removal without safety checks.')
     parser.add_argument('--remove_data', action='store_true', help='Remove associated data.')
