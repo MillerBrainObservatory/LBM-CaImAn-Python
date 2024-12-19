@@ -8,10 +8,6 @@ import lbm_caiman_python as lcp
 import mesmerize_core as mc
 
 current_file = Path(__file__).parent
-with open(f"{current_file}/VERSION", "r") as VERSION:
-    version = VERSION.read().strip()
-
-# logging.getLogger("tensorflow").setLevel(logging.ERROR)
 
 print = partial(print, flush=True)
 
@@ -38,7 +34,7 @@ def add_args(parser: argparse.ArgumentParser):
     Adds ops arguments to parser.
     """
 
-    parser.add_argument("batch_path", type=str, help="Path to batch file")  # Define as positional argument
+    parser.add_argument("batch_path", type=str, nargs='?', default=None, help="Path to batch file") 
     parser.add_argument(
         "--run",
         type=str,
@@ -152,11 +148,10 @@ def main():
     df = None
     parent = None
     print("Beginning processing run ...")
-    args, ops = parse_args(
-        add_args(argparse.ArgumentParser(description="LBM-Caiman pipeline parameters"))
-    )
+    parser = argparse.ArgumentParser(description="LBM-Caiman pipeline parameters")
+    args, ops = parse_args(add_args(parser))
     if args.version:
-        print("lbm_caiman_python v{}".format(version))
+        print("lbm_caiman_python v{}".format(lcp.__version__))
         return
     if args.debug:
         logger = logging.getLogger(__name__)
@@ -165,8 +160,8 @@ def main():
         backend = "local"
     else:
         backend = None
-    if not args.batch_path:
-        print("No batch path provided. Provide a path to save results in a dataframe.")
+    if len(vars(args)) == 0 or not args.batch_path:
+        parser.print_help()
         return
     print("Batch path provided, retrieving batch:")
     args.batch_path = Path(args.batch_path).expanduser()
