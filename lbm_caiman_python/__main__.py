@@ -57,8 +57,9 @@ def add_args(parser: argparse.ArgumentParser):
         elif param_type in [int, float, str]:
             parser.add_argument(f'--{param}', type=param_type, help=f'Set {param} (default: {default_value})')
         elif param_type in [tuple, list] and len(default_value) == 2:
+            inner_type = type(default_value[0])
             # Handle list/tuple arguments with 2 items
-            parser.add_argument(f'--{param}', nargs='+',
+            parser.add_argument(f'--{param}', nargs='+', type=inner_type,
                                 help=f'Set {param} (default: {default_value}). Provide one or two values.')
         else:
             parser.add_argument(f'--{param}', help=f'Set {param} (default: {default_value})')
@@ -80,9 +81,11 @@ def add_args(parser: argparse.ArgumentParser):
 
     return parser
 
+
 def load_ops(args):
     """
     Load or create the 'ops' dictionary from a file or default parameters.
+    Handles matching CLI arguments to the 'ops' dictionary.
 
     Parameters
     ----------
@@ -116,89 +119,32 @@ def load_ops(args):
         print(f"Saving parameters to {savename}")
         np.save(str(savename.resolve()), ops)
 
-    return ops
+    # Get matching parameters from CLI args and update ops
+    defaults = lcp.default_ops()["main"]
 
-
-def get_matching_main_params(args):
-    """
-    Match arguments supplied through the CLI with parameters found in the defaults.
-
-    Parameters
-    ----------
-    args : argparse.Namespace
-        Command-line arguments containing potential parameter overrides.
-
-    Returns
-    -------
-    dict
-        A dictionary of parameters matching the default 'main' keys.
-    """
-    return {
+    matching_params = {
         k: getattr(args, k)
-        for k in lcp.default_ops()["main"].keys()
+        for k in defaults.keys()
         if hasattr(args, k) and getattr(args, k) is not None
     }
-
-
-def update_ops_with_matching_params(ops, matching_params):
-    """
-    Update the current 'ops' dictionary with the matching parameters.
-
-    Parameters
-    ----------
-    ops : dict
-        The original 'ops' dictionary.
-    matching_params : dict
-        The parameters to overwrite in the 'ops' dictionary.
-
-    Returns
-    -------
-    dict
-        The updated 'ops' dictionary.
-    """
     ops["main"].update(matching_params)
+
+    for param in ops["main"]:
+        # If defaults contain a list of length 2, handle cli with single entries
+        if hasattr(defaults[param], "__len__") and len(defaults[param]) == 2:
+            arg_value = getattr(args, param, None)  # value from cli
+            if arg_value is not None:
+                # if scalar
+                if not isinstance(arg_value, (list, tuple)):
+                    arg_value = [arg_value]
+                if len(arg_value) == 1:
+                    ops["main"][param] = [arg_value[0], arg_value[0]]
+                elif len(arg_value) == 2:
+                    ops["main"][param] = list(arg_value)
+                else:
+                    raise ValueError(
+                        f"Invalid number of values for --{param}. Expected 1 or 2 values, got {len(arg_value)}.")
     return ops
-
-
-def parse_args2(parser: argparse.ArgumentParser):
-    """
-    Parse arguments and apply overrides to the ops dictionary.
-
-    Parameters
-    ----------
-    parser : argparse.ArgumentParser
-        The argument parser.
-
-    Returns
-    -------
-    args : argparse.Namespace
-        Parsed arguments.
-    ops : dict
-        The updated 'ops' dictionary with CLI overrides applied.
-    """
-    args = parser.parse_args()
-    dargs = vars(args)
-    ops0 = lcp.default_ops()
-
-    main_params = ops0.pop("main", {})
-    ops0.update(main_params)
-
-    ops = np.load(args.ops, allow_pickle=True).item() if args.ops else {}
-    set_param_msg = "->> Setting {0} to {1}"
-
-    for k in ops0:
-        default_key = ops0[k]
-        args_key = dargs.get(k)
-        if args_key is not None:  # CLI argument exists
-            if isinstance(default_key, bool):
-                args_key = bool(int(args_key))  # bool("0") is True, so we convert it properly
-            else:
-                args_key = type(default_key)(args_key)  # Ensure type match
-            if default_key != args_key:
-                ops[k] = args_key
-                print(set_param_msg.format(k, ops[k]))
-
-    return args, ops
 
 
 def main():
@@ -289,27 +235,6 @@ def main():
         # Load or initialize ops
         ops = load_ops(args)
 
-        # Get matching parameters from CLI args and update ops
-        defaults = lcp.default_ops()["main"]
-        matching_params = get_matching_main_params(args)
-        ops = update_ops_with_matching_params(ops, matching_params)
-
-        for param in ops["main"]:
-            # If defaults contain a list of length 2, handle cli with single entries
-            if hasattr(defaults[param], "__len__") and len(defaults[param]) == 2:
-                arg_value = getattr(args, param, None)  # value from cli
-                if arg_value is not None:
-                    # if scalar
-                    if not isinstance(arg_value, (list, tuple)):
-                        arg_value = [arg_value]
-                    if len(arg_value) == 1:
-                        ops["main"][param] = [arg_value[0], arg_value[0]]
-                    elif len(arg_value) == 2:
-                        ops["main"][param] = list(arg_value)
-                    else:
-                        raise ValueError(
-                            f"Invalid number of values for --{param}. Expected 1 or 2 values, got {len(arg_value)}.")
-
         if args.data_path is None:
             print("No argument given for --data_path. Using the last row of the dataframe.")
             if len(df.index) > 0:
@@ -386,11 +311,10 @@ def main():
                 df = df.caiman.reload_from_disk()
                 print(f"Processing time: {df.iloc[-1].algo_duration}")
             elif algo in ["cnmf", "cnmfe"]:
-                cnmf_params = {"main": get_matching_main_params(args)}
                 df.caiman.add_item(
                     algo=algo,
                     input_movie_path=input_movie_path,
-                    params=cnmf_params,
+                    params=ops,
                     item_name="lbm-batch-item",
                 )
                 print(f"Running {algo} -----------")
