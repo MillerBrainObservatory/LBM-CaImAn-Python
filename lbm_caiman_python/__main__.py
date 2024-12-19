@@ -48,17 +48,23 @@ def add_args(parser: argparse.ArgumentParser):
         The parser with added arguments.
     """
     default_ops = lcp.default_ops()["main"]
+
     for param, default_value in default_ops.items():
         param_type = type(default_value)
+
         if param_type == bool:
             parser.add_argument(f'--{param}', type=int, choices=[0, 1], help=f'Set {param} (default: {default_value})')
         elif param_type in [int, float, str]:
             parser.add_argument(f'--{param}', type=param_type, help=f'Set {param} (default: {default_value})')
         elif param_type in [tuple, list] and len(default_value) == 2:
-            parser.add_argument(f'--{param}', type=float, nargs='+', help=f'Set {param} (default: {default_value})')
+            # Handle list/tuple arguments with 2 items
+            parser.add_argument(f'--{param}', nargs='+',
+                                help=f'Set {param} (default: {default_value}). Provide one or two values.')
         else:
             parser.add_argument(f'--{param}', help=f'Set {param} (default: {default_value})')
 
+    # Set default values so that args contains the defaults if no CLI input is given
+    parser.set_defaults(**default_ops)
     parser.add_argument('--ops', type=str, help='Path to the ops .npy file.')
     parser.add_argument('--save', type=str, help='Path to save the ops parameters.')
     parser.add_argument('--version', action='store_true', help='Show version information.')
@@ -263,7 +269,6 @@ def main():
 
         try:
             df = lcp.batch.delete_batch_rows(df, args.rm, remove_data=args.remove_data, safe_removal=safe)
-            df = df.caiman.reload_from_disk()
         except Exception as e:
             print(
                 f"Cannot remove row, this likely occurred because there was a downstream item run on this batch "
@@ -285,13 +290,28 @@ def main():
         ops = load_ops(args)
 
         # Get matching parameters from CLI args and update ops
+        defaults = lcp.default_ops()["main"]
         matching_params = get_matching_main_params(args)
         ops = update_ops_with_matching_params(ops, matching_params)
 
+        for param in ops["main"]:
+            # If defaults contain a list of length 2, handle cli with single entries
+            if hasattr(defaults[param], "__len__") and len(defaults[param]) == 2:
+                arg_value = getattr(args, param, None)  # value from cli
+                if arg_value is not None:
+                    # if scalar
+                    if not isinstance(arg_value, (list, tuple)):
+                        arg_value = [arg_value]
+                    if len(arg_value) == 1:
+                        ops["main"][param] = [arg_value[0], arg_value[0]]
+                    elif len(arg_value) == 2:
+                        ops["main"][param] = list(arg_value)
+                    else:
+                        raise ValueError(
+                            f"Invalid number of values for --{param}. Expected 1 or 2 values, got {len(arg_value)}.")
+
         if args.data_path is None:
-            print(
-                "No argument given for --data_path. Using the last row of the dataframe."
-            )
+            print("No argument given for --data_path. Using the last row of the dataframe.")
             if len(df.index) > 0:
                 args.data_path = -1
             else:
