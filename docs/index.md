@@ -52,29 +52,37 @@ There are 4 steps in this pipeline:
 
 Slurm utilities are available in the [utilities repository](https://github.com/MillerBrainObservatory/utilities/tree/master/slurm).
 
+**Installation**
+
+```{code-block} bash
+git clone https://github.com/MillerBrainObservatory/utilities.git
+```
+
+**Files**
+
 - `multifile_batch.sbatch` - Submit a job to the HPC
 - `tunnel.sbatch` - Create a tunnel to the HPC
 
 ### `multi_file_batch.sbatch`
 
-Requirements:
-
 - a user folder in the MBO accounts scratch/
 - ssh keys for local->hpc and hpc->local transfers
 - (windows only) `rsync` [download](https://www.itefix.net/cwrsync) 
-
+- 
 After submitting a job via `multifile_batch.sbatch`, you can monitor the job with `squeue -u $USER` and cancel it with `scancel $JOB_ID`.
 
 The resulting batch files will be synced back to your local machine.
 
 ### Transfering POSIX->Windows
 
-If you see 
+You can move your batch contents anywhere. However, if moving them to a different operating system, you may encounter
+the followng error:
+
 ```{code-block} bash
 NotImplementedError: cannot instantiate 'PosixPath' on your system
 ```
 
-You can use [lbm_caiman_python.load_batch_cross_platform](#load_batch_cross_platform).
+You can use [lbm_caiman_python.load_batch_cross_platform](#load_batch_cross_platform) to load this batch item.
 
 ----------------
 
