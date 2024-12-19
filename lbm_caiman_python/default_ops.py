@@ -22,7 +22,7 @@ def default_ops():
             "strides": [96, 96],
             "overlaps": [32, 32],
             "min_mov": None,
-            "gsig_Filt": [0, 0],
+            "gSig_filt": [0, 0],
             "max_deviation_rigid": 3,
             "border_nan": "copy",
             "splits_els": 14,
