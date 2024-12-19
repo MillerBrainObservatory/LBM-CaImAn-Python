@@ -78,14 +78,14 @@ def add_args(parser: argparse.ArgumentParser):
     parser.add_argument(
         "--name", type=str, help="Name of the batch, qualified as path/to/name.pickle."
     )
-    parser.add_argument("--show_params", help="View parameters for the given index")
-    parser.add_argument("--save_params", help="Store this parameter set to file")
+    parser.add_argument("--show_params", help="View parameters for the given index.")
+    parser.add_argument("--save_params", help="Store this parameter set to file.")
     parser.add_argument(
-        "--version", action="store_true", help="current pipeline version"
+        "--version", action="store_true", help="current pipeline version."
     )
     parser.add_argument("--ops", default=[], type=str, help="Path to a parameters file.")
     parser.add_argument("--data_path", "--data-path", dest="data_path", type=parse_data_path, default=None,
-                        help="Path to data file or index of data in batch")
+                        help="Path to data file or index of data in batch.")
 
     # uncollapse dict['main'], used by mescore for parameters
     ops0 = lcp.default_ops()
@@ -146,7 +146,6 @@ def get_matching_main_params(args):
 
 def main():
     df = None
-    parent = None
     print("Beginning processing run ...")
     parser = argparse.ArgumentParser(description="LBM-Caiman pipeline parameters")
     args, ops = parse_args(add_args(parser))
@@ -281,6 +280,24 @@ def main():
                 )
         else:
             raise ValueError(f"{args.data_path} is not a valid data_path.")
+        # handle parameters
+        if args.ops:
+            ops_path = Path(args.ops)
+            if ops_path.is_dir():
+                raise ValueError(f"Given ops path {ops_path} is a directory. Please use a fully qualified path, "
+                                 f"including the filename and file extension, i.e. /path/to/ops.npy.")
+            elif not ops_path.is_file():
+                raise FileNotFoundError(f"Given ops path {ops_path} is not a file.")
+            ops = np.load(ops_path, allow_pickle=True).item()
+        else:
+            ops = lcp.default_ops()
+        if args.save_params:
+            if Path(args.save_params).is_dir():
+                savename = Path(args.save_params) / "ops.npy"
+            else:
+                savename = Path(args.save_params).with_suffix(".npy")
+            print(f"Saving parameters to {savename}")
+            np.save(ops, str(savename.resolve()))
         for algo in args.run:
             # RUN MCORR
             if algo == "mcorr":
