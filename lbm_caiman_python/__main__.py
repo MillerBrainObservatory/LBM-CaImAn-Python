@@ -178,27 +178,34 @@ def main():
 
     batch_path = Path(args.batch_path).expanduser()
     print(f"Batch path provided: {batch_path}")
+
+    # Handle the case where batch_path is an existing file
     if batch_path.is_file():
-        # make sure its a pickle file
         if batch_path.suffix != ".pickle":
             print(f"Wrong suffix: {batch_path.suffix}. Casting to .pickle: {batch_path.with_suffix('.pickle')}")
             batch_path = batch_path.with_suffix(".pickle")
         print(f"Found existing batch {batch_path}")
         df = mc.load_batch(batch_path)
+
+    # Handle the case where batch_path is an existing directory
     elif batch_path.is_dir():
         batch_path = batch_path / "batch.pickle"
         print(f"Found existing batch {batch_path}")
         df = mc.load_batch(batch_path)
-    elif batch_path.parent.is_dir():
+
+    # Handle the case where the parent directory exists, but batch_path does not
+    elif batch_path.parent.exists() and batch_path.parent.is_dir():
+        if batch_path.suffix != '.pickle':
+            batch_path = batch_path.with_suffix(".pickle")
         print(f"Batch path {batch_path} is not a directory, but its parent is.\n"
-              f"Creating batch at {batch_path / 'batch.pickle'}")
-        batch_path = batch_path / "batch.pickle"
+              f"Creating batch at {batch_path}")
         df = mc.create_batch(batch_path)
         print(f"Batch created at {batch_path}")
+
+    # Handle the case where the batch path does not exist and its parent is invalid
     else:
         print(f'{batch_path} is not a file, directory and does not have a valid parent directory. Exiting.')
         return
-
     # Handle removal of batch rows
     if args.rm:
         print(
