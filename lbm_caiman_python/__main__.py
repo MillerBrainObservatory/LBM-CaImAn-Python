@@ -15,16 +15,6 @@ with open(f"{current_file}/VERSION", "r") as VERSION:
 
 print = partial(print, flush=True)
 
-DEFAULT_BATCH_PATH = Path().home() / "lbm_data" / "batch"
-DEFAULT_DATA_PATH = Path().home() / "lbm_data" / "data"
-if not DEFAULT_BATCH_PATH.is_dir():
-    print(f"Creating default batch path in {DEFAULT_BATCH_PATH}.")
-    DEFAULT_BATCH_PATH.mkdir(exist_ok=True, parents=True)
-if not DEFAULT_DATA_PATH.is_dir():
-    print(f"Creating default data path in {DEFAULT_DATA_PATH}.")
-    DEFAULT_DATA_PATH.mkdir(exist_ok=True, parents=True)
-
-
 def print_params(params, indent=5):
     for k, v in params.items():
         # if value is a dictionary, recursively call the function
@@ -97,7 +87,7 @@ def add_args(parser: argparse.ArgumentParser):
     parser.add_argument(
         "--version", action="store_true", help="current pipeline version"
     )
-    parser.add_argument("--ops", default=[], type=str, help="options")
+    parser.add_argument("--ops", default=[], type=str, help="Path to a parameters file.")
     parser.add_argument("--data_path", "--data-path", dest="data_path", type=parse_data_path, default=None,
                         help="Path to data file or index of data in batch")
 
