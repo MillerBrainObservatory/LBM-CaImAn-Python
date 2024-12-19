@@ -1,10 +1,9 @@
-#  HACK to prevent loading caiman and all of its dependencies when trying to load a batch
 import re as regex
 from pathlib import Path
 from typing import Union
 import mesmerize_core as mc
-
-import pandas as pd
+from contextlib import contextmanager
+import pathlib
 
 COMPUTE_BACKEND_SUBPROCESS = "subprocess"  #: subprocess backend
 COMPUTE_BACKEND_SLURM = "slurm"  #: SLURM backend
@@ -28,6 +27,51 @@ DATAFRAME_COLUMNS = [
     "comments",
     "uuid",
 ]
+
+
+@contextmanager
+def _set_posix_windows():
+    posix_backup = pathlib.PosixPath
+    try:
+        pathlib.PosixPath = pathlib.WindowsPath
+        yield
+    finally:
+        pathlib.PosixPath = posix_backup
+
+
+@contextmanager
+def _set_windows_posix():
+    """
+    Set the Path class to WindowsPath on a POSIX system.
+    """
+    windows_backup = pathlib.WindowsPath
+    try:
+        pathlib.WindowsPath = pathlib.PosixPath
+        yield
+    finally:
+        pathlib.WindowsPath = windows_backup
+
+
+def load_transfered_batch(batch_path: str | Path):
+    """
+    Load a batch after transfering it from a Windows to a POSIX system or vice versa.
+
+    Parameters
+    ----------
+    batch_path : str, Path
+        The path to the batch file.
+
+    Returns
+    -------
+    pandas.DataFrame
+        The loaded batch.
+    """
+    try:
+        with _set_posix_windows():
+            return mc.load_batch(batch_path)
+    except (IsADirectoryError, FileNotFoundError):
+        with _set_windows_posix():
+            return mc.load_batch(batch_path)
 
 
 def clean_batch(df):
