@@ -48,6 +48,79 @@ There are 4 steps in this pipeline:
     - Lateral offset correction (between z-planes, COMING SOON)
 
 ----------------
+## HPC
+
+Slurm utilities are available in the [utilities repository](https://github.com/MillerBrainObservatory/utilities/tree/master/slurm).
+
+**Installation**
+
+```{code-block} bash
+git clone https://github.com/MillerBrainObservatory/utilities.git
+```
+
+**Transfering data to the HPC**
+
+```{code-block} bash
+rsync -avPh /path/to/local/data username@dtn02-hpc.rockefeller.edu:/lustre/fs4/mbo/scratch/<username>/data/ 
+```
+
+**Transfering data to the your local machine**
+
+```{code-block} bash
+# you will need the ssh config for rbo in your .ssh/config file
+rsync -avPh -e "ssh" ./path/to/data rbo:/path/to/destination
+
+```
+
+**Files**
+
+- `multifile_batch.sbatch` - Submit a job to the HPC
+- `tunnel.sbatch` - Create a tunnel to the HPC
+
+### `multi_file_batch.sbatch`
+
+- a user folder in the MBO accounts scratch/
+- ssh keys for local->hpc and hpc->local transfers
+- (windows only) `rsync` [download](https://www.itefix.net/cwrsync) or [with git bash and this utility](https://scicomp.aalto.fi/scicomp/rsynconwindows/).
+
+Login to the hpc on the rocky-9 login node:
+
+```{code-block} bash
+ssh username@login-05-hpc.rockefeller.edu
+```
+
+Create a backup of your .bashrc file:
+
+```{code-block} bash
+cp ~/.bashrc ~/.bashrc.bak
+```
+
+Move the bashrc file in the utilities folder you cloned to replace the one you just backed up:
+
+```{code-block} bash
+cp utilities/.bashrc ~/.bashrc
+```
+
+This file exports some environment variables that are necessary for the pipeline to run.
+
+You will need your files in the `mbo_data`.
+
+After submitting a job via `multifile_batch.sbatch`, you can monitor the job with `squeue -u $USER` and cancel it with `scancel $JOB_ID`.
+
+The resulting batch files will be synced back to your local machine.
+
+### Transfering POSIX->Windows
+
+You can move your batch contents anywhere. However, if moving them to a different operating system, you may encounter
+the followng error:
+
+```{code-block} bash
+NotImplementedError: cannot instantiate 'PosixPath' on your system
+```
+
+You can use [lbm_caiman_python.load_batch_cross_platform](#load_batch_cross_platform) to load this batch item.
+
+----------------
 
 ## Comparison with [LBM-CaImAn-MATLAB](https://github.com/MillerBrainObservatory/LBM-CaImAn-MATLAB/)
 
