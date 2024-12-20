@@ -12,6 +12,7 @@ def parse_args():
 
     parser.add_argument(
         '--data_path',
+        '--data-path',
         type=str,
         required=True,
         help='Local path to the data directory to be synced (e.g., /path/to/data).'
@@ -26,6 +27,7 @@ def parse_args():
 
     parser.add_argument(
         '--remote_path',
+        '--remote-path',
         type=str,
         required=True,
         help='Path on the remote server where data should be stored (e.g., path/to/remote).'
@@ -33,6 +35,7 @@ def parse_args():
 
     parser.add_argument(
         '--dry_run',
+        '--dry-run',
         action='store_true',
         help='If specified, run rsync in dry-run mode to see what would be copied without actually copying.'
     )
