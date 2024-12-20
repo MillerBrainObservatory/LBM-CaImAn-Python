@@ -63,6 +63,7 @@ setuptools.setup(
         "console_scripts": [
             "lcp = lbm_caiman_python.__main__:main",
             "sr = lbm_caiman_python.assembly:main",
+            "transfer = lbm_caiman_python.transfer:main",
         ]
     },
 )
