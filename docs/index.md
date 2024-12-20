@@ -81,7 +81,7 @@ rsync -avPh -e "ssh" ./path/to/data rbo:/path/to/destination
 
 - a user folder in the MBO accounts scratch/
 - ssh keys for local->hpc and hpc->local transfers
-- (windows only) `rsync` [download](https://www.itefix.net/cwrsync) 
+- (windows only) `rsync` [download](https://www.itefix.net/cwrsync) or [with git bash and this utility](https://scicomp.aalto.fi/scicomp/rsynconwindows/).
 
 Login to the hpc on the rocky-9 login node:
 
