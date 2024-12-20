@@ -366,7 +366,8 @@ def main():
     parser.add_argument("--planes",
                         type=str,
                         default=":",  # all planes
-                        help="Planes to read (0 based). Use slice notation like NumPy arrays (e.g., :50 gives planes 0 to 49")
+                        help="Planes to read (0 based). Use slice notation like NumPy arrays (e.g., 1:5 gives planes "
+                             "2 to 6")
     parser.add_argument("--trimx",
                         type=int,
                         nargs=2,
