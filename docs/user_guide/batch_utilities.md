@@ -1,5 +1,5 @@
 (batch)=
-# Batch
+# Batch-Utilities
 
 Before continuing, users should review the [mesmerize-core user guide](https://mesmerize-core.readthedocs.io/en/latest/user_guide.html).
 
@@ -16,6 +16,7 @@ The general workflow is as follows:
 
 `LBM-CaImAn-Python` provides a command-line interface and example notebooks for each of these steps.
 
+(batch_create)=
 ## Create a Batch
 
 ```{tip}
@@ -134,6 +135,4 @@ Full example:
 ```bash
 $ lcp /home/mbo/lbm_data/batch/batch.pickle --create --run mcorr cnmf --strides 32 32 --overlaps 8 8 --K 100 --data_path /home/mbo/lbm_data/demo_data.tif 
 ```
-
-## Mesmerize-Core
 

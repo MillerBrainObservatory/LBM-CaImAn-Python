@@ -1,6 +1,7 @@
+(user_guide)=
 # Tutorial
 
-Below are [example notebooks](https://github.com/MillerBrainObservatory/LBM-CaImAn-Python/tree/master/demos/notebooks) that walk users through the full processing pipeline.
+Below are [example notebooks](https://github.com/MillerBrainObservatory/LBM-CaImAn-Python/tree/master/demos/notebooks) that will walk you through the full processing pipeline.
 
 To download these notebooks:
 
@@ -14,15 +15,14 @@ See the [installation instructions](https://github.com/MillerBrainObservatory/LB
 
 Make sure your environment is activated via `conda activate lbm` or `source LBM-CaImAn-Python/venv/Scripts/activate` before running `jupyter lab`.
 
-## Contents
-
 ```{toctree}
 ---
 maxdepth: 2
+numbered: 3
 ---
-render/assembly.ipynb
-render/batch_helpers.ipynb
-render/motion_correction.ipynb
-render/segmentation.ipynb
-render/collation.ipynb
+notebooks/assembly.ipynb
+notebooks/batch_helpers.ipynb
+notebooks/motion_correction.ipynb
+notebooks/segmentation.ipynb
+notebooks/collation.ipynb
 ```
