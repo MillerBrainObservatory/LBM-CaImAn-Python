@@ -6,13 +6,13 @@ from pathlib import Path
 
 def parse_args():
     """
-    Parses command-line arguments for rsync.
+    Parses command-line arguments for rsync/robocopy CLI.
     """
-    parser = argparse.ArgumentParser(description="CLI to run rsync for copying files to HPC cluster.")
+    parser = argparse.ArgumentParser(
+        description="CLI to sync files to HPC cluster, using rsync or robocopy as a fallback.")
 
     parser.add_argument(
         '--data_path',
-        '--data-path',
         type=str,
         required=True,
         help='Local path to the data directory to be synced (e.g., /path/to/data).'
@@ -27,7 +27,6 @@ def parse_args():
 
     parser.add_argument(
         '--remote_path',
-        '--remote-path',
         type=str,
         required=True,
         help='Path on the remote server where data should be stored (e.g., path/to/remote).'
@@ -35,7 +34,6 @@ def parse_args():
 
     parser.add_argument(
         '--dry_run',
-        '--dry-run',
         action='store_true',
         help='If specified, run rsync in dry-run mode to see what would be copied without actually copying.'
     )
@@ -44,10 +42,47 @@ def parse_args():
         '--exclude',
         type=str,
         nargs='*',
-        help='List of patterns to exclude from the rsync (e.g., --exclude "*.log" "*.tmp").'
+        help='List of patterns to exclude from the rsync/robocopy (e.g., --exclude "*.log" "*.tmp").'
     )
 
     return parser.parse_args()
+
+
+def check_rsync_availability():
+    """
+    Checks if the 'rsync' command is available on the system.
+    """
+    try:
+        subprocess.run(['rsync', '--version'], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        print("✅ rsync is available.")
+        return True
+    except (FileNotFoundError, subprocess.CalledProcessError):
+        print("❌ rsync is not available. Falling back to robocopy (Windows only).")
+        return False
+
+
+def validate_paths(data_path, remote_path):
+    """
+    Validate that the paths exist, are correct, and not misconfigured.
+    """
+    # Check local data_path
+    data_path = Path(data_path).resolve()  # Ensure absolute path
+    if not data_path.exists():
+        print(f"❌ Error: Local data_path '{data_path}' does not exist.", file=sys.stderr)
+        sys.exit(1)
+    if not data_path.is_dir():
+        print(f"❌ Error: Local data_path '{data_path}' is not a directory.", file=sys.stderr)
+        sys.exit(1)
+
+    # Check for invalid characters in remote path
+    if " " in remote_path:
+        print(f"❌ Error: Remote path '{remote_path}' contains spaces, which is not allowed.", file=sys.stderr)
+        sys.exit(1)
+    if remote_path.startswith("/"):
+        print(
+            f"❌ Warning: Remote path '{remote_path}' starts with a '/', it will be relative to /lustre/fs4/mbo/scratch/USER/")
+
+    return data_path
 
 
 def build_rsync_command(data_path, user, remote_path, dry_run=False, exclude_patterns=None):
@@ -55,14 +90,6 @@ def build_rsync_command(data_path, user, remote_path, dry_run=False, exclude_pat
     Constructs the rsync command.
     """
     data_path = Path(data_path).resolve()  # Ensure absolute path
-    if not data_path.exists():
-        print(f"Error: data_path '{data_path}' does not exist.", file=sys.stderr)
-        sys.exit(1)
-
-    if not data_path.is_dir():
-        print(f"Error: data_path '{data_path}' is not a directory.", file=sys.stderr)
-        sys.exit(1)
-
     remote_full_path = f"{user}@dtn02-hpc.rockefeller.edu:/lustre/fs4/mbo/scratch/{user}/{remote_path}"
 
     rsync_command = [
@@ -82,27 +109,64 @@ def build_rsync_command(data_path, user, remote_path, dry_run=False, exclude_pat
     return rsync_command
 
 
+def build_robocopy_command(data_path, remote_path):
+    """
+    Constructs the robocopy command.
+    """
+    data_path = Path(data_path).resolve()  # Ensure absolute path
+    remote_path = Path(remote_path).resolve()
+
+    robocopy_command = [
+        'robocopy',
+        str(data_path),
+        str(remote_path),
+        '*.*',
+        '/E',  # Copy all subdirectories, including empty ones
+        '/Z',  # Restartable mode
+        '/R:3',  # Retry 3 times on failed copies
+        '/W:10'  # Wait 10 seconds between retries
+    ]
+
+    return robocopy_command
+
+
 def main():
     """
     Main entry point for the script.
     """
     args = parse_args()
 
-    rsync_command = build_rsync_command(
-        data_path=args.data_path,
-        user=args.user,
-        remote_path=args.remote_path,
-        dry_run=args.dry_run,
-        exclude_patterns=args.exclude
-    )
+    print(f"📂 Validating paths...")
+    validated_data_path = validate_paths(args.data_path, args.remote_path)
 
-    print(f"Running rsync command: {' '.join(rsync_command)}")
+    # Check if rsync is available
+    rsync_available = check_rsync_availability()
 
-    try:
-        subprocess.run(rsync_command, check=True)
-    except subprocess.CalledProcessError as e:
-        print(f"Error: rsync failed with return code {e.returncode}", file=sys.stderr)
-        sys.exit(1)
+    if rsync_available:
+        rsync_command = build_rsync_command(
+            data_path=validated_data_path,
+            user=args.user,
+            remote_path=args.remote_path,
+            dry_run=args.dry_run,
+            exclude_patterns=args.exclude
+        )
+        print(f"🚀 Running rsync command: {' '.join(rsync_command)}")
+        try:
+            subprocess.run(rsync_command, check=True)
+        except subprocess.CalledProcessError as e:
+            print(f"❌ Error: rsync failed with return code {e.returncode}", file=sys.stderr)
+            sys.exit(1)
+    else:
+        robocopy_command = build_robocopy_command(
+            data_path=validated_data_path,
+            remote_path=args.remote_path
+        )
+        print(f"🚀 Running robocopy command: {' '.join(robocopy_command)}")
+        try:
+            subprocess.run(robocopy_command, check=True)
+        except subprocess.CalledProcessError as e:
+            print(f"❌ Error: robocopy failed with return code {e.returncode}", file=sys.stderr)
+            sys.exit(1)
 
 
 if __name__ == "__main__":
