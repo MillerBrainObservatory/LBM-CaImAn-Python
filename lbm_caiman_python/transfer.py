@@ -55,6 +55,7 @@ def transfer_file(connection, local_file, remote_file_path, pbar):
             with connection.sftp() as sftp:
                 # Ensure the directory exists on the remote server
                 remote_dir = '/'.join(remote_file_path.split('/')[:-1])
+                print(f"📁 Ensuring remote directory exists: {remote_dir}")
                 connection.run(f'mkdir -p "{remote_dir}"')
 
                 # Create a new remote file and write it in chunks
@@ -65,9 +66,14 @@ def transfer_file(connection, local_file, remote_file_path, pbar):
                         if not chunk:
                             break
                         remote_file.write(chunk)
-                        transferred += len(chunk)  # Update transferred bytes
+                        transferred += len(chunk)
                         pbar.update(len(chunk))  # Update the shared progress bar
+
+        # Check if the file was fully transferred
+        if transferred < file_size:
+            raise ValueError(f"Transfer incomplete for {local_file}: {transferred}/{file_size} bytes transferred.")
     except Exception as e:
+        # Log only incomplete or failed transfers
         print(f"❌ Error transferring {local_file}: {e}", file=sys.stderr)
 
 
