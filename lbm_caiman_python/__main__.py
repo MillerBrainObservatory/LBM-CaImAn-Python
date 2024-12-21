@@ -110,15 +110,6 @@ def load_ops(args):
     else:
         ops = lcp.default_ops()
 
-    if args.save:
-        save_path = Path(args.save)
-        if save_path.is_dir():
-            savename = save_path / "ops.npy"
-        else:
-            savename = save_path.with_suffix(".npy")
-        print(f"Saving parameters to {savename}")
-        np.save(str(savename.resolve()), ops)
-
     # Get matching parameters from CLI args and update ops
     defaults = lcp.default_ops()["main"]
 
@@ -128,6 +119,15 @@ def load_ops(args):
         if hasattr(args, k) and getattr(args, k) is not None
     }
     ops["main"].update(matching_params)
+
+    if args.save:
+        save_path = Path(args.save)
+        if save_path.is_dir():
+            savename = save_path / "ops.npy"
+        else:
+            savename = save_path.with_suffix(".npy")
+        print(f"Saving parameters to {savename}")
+        np.save(str(savename.resolve()), ops)
 
     for param in ops["main"]:
         # If defaults contain a list of length 2, handle cli with single entries
@@ -197,7 +197,6 @@ def main():
                 batch_path = batch_path.with_suffix(".pickle")
             print(f"Found existing batch {batch_path}")
             df = mc.load_batch(batch_path)
-
     elif batch_path.parent.exists() and batch_path.parent.is_dir():
         # If the file does not exist, but its parent directory does, create it
         if batch_path.suffix != ".pickle":
@@ -205,7 +204,6 @@ def main():
         print(f"Creating batch at {batch_path}")
         df = mc.create_batch(batch_path)
         print(f"Batch created at {batch_path}")
-
     else:
         # If the file does not exist, and the filetype isn't .pickle, don't create anything
         if batch_path.suffix != ".pickle":
@@ -222,7 +220,6 @@ def main():
         df = mc.create_batch(batch_path)
         print(f"Batch created at {batch_path}")
         print(f"{batch_path} is not a valid file/directory and does not have a valid parent directory. Exiting.")
-
     # Handle removal of batch rows
     if args.rm:
         print(
