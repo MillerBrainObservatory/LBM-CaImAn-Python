@@ -1,0 +1,584 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>lbm_caiman_python.util.io &#8212; LBM-CaImAn-Python</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=475cc00c" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../../_static/documentation_options.js?v=e4c16dfd"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script src="../../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/lbm_caiman_python/util/io';</script>
+    <link rel="icon" href="../../../_static/icon_caiman_python.svg"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/lcp_logo.svg" class="logo__image only-light" alt="LBM-CaImAn-Python - Home"/>
+    <img src="../../../_static/lcp_logo.svg" class="logo__image only-dark pst-js-only" alt="LBM-CaImAn-Python - Home"/>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://millerbrainobservatory.github.io/" title="MBO User Hub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../../.././_static/icon_mbo_home.png" class="icon-link-image" alt="MBO User Hub"/></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/MillerBrainObservatory/" title="MBO Github" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">MBO Github</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://mbo.rockefeller.edu/contact/" title="Connect with MBO" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-regular fa-address-card fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Connect with MBO</span></a>
+        </li>
+</ul></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../user_guide/index.html">User Guide</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../user_guide/assembly.html">1. Image Assembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../user_guide/batch_utilities.html">2. Batch Utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../user_guide/registration.html">3. Registration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../user_guide/segmentation.html">4. Segmentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../user_guide/collation.html">5. Z-Plane Collation</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../examples/index.html">Tutorial</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../examples/notebooks/assembly.html">1. Image Assembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../examples/notebooks/batch_helpers.html">2. Batch Helpers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../examples/notebooks/motion_correction.html">3. Registration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../examples/notebooks/segmentation.html">4. Segmentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../examples/notebooks/collation.html">5. Collate Planes</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../glossary.html">Glossary</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/MillerBrainObservatory/LBM-CaImAn-Python/issues/new?title=Issue%20on%20page%20%2F_modules/lbm_caiman_python/util/io.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button"
+   title="Open an issue"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+
+</a>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1></h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for lbm_caiman_python.util.io</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">tifffile</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+
+<span class="k">def</span> <span class="nf">make_json_serializable</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert metadata to JSON serializable format.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">make_json_serializable</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">make_json_serializable</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">obj</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">obj</span>
+
+
+<div class="viewcode-block" id="get_metadata">
+<a class="viewcode-back" href="../../../api/index.html#lbm_caiman_python.get_metadata">[docs]</a>
+<span class="k">def</span> <span class="nf">get_metadata</span><span class="p">(</span><span class="n">file</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span> <span class="o">|</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extract metadata from a TIFF file. This can be a raw ScanImage TIFF or one</span>
+<span class="sd">    processed via [lbm_caiman_python.save_as()](#save_as).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    file: os.PathLike</span>
+<span class="sd">        Path to the TIFF file.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict</span>
+<span class="sd">        Metadata extracted from the TIFF file.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If no metadata is found in the TIFF file. This can occur when the file is not a ScanImage TIFF.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">file</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="n">tiff_file</span> <span class="o">=</span> <span class="n">tifffile</span><span class="o">.</span><span class="n">TiffFile</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span>
+            <span class="nb">hasattr</span><span class="p">(</span><span class="n">tiff_file</span><span class="p">,</span> <span class="s1">&#39;shaped_metadata&#39;</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="n">tiff_file</span><span class="o">.</span><span class="n">shaped_metadata</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tiff_file</span><span class="o">.</span><span class="n">shaped_metadata</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">))</span>
+            <span class="ow">and</span> <span class="n">tiff_file</span><span class="o">.</span><span class="n">shaped_metadata</span>
+            <span class="ow">and</span> <span class="n">tiff_file</span><span class="o">.</span><span class="n">shaped_metadata</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">([],</span> <span class="p">(),</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="p">):</span>
+        <span class="k">if</span> <span class="s1">&#39;image&#39;</span> <span class="ow">in</span> <span class="n">tiff_file</span><span class="o">.</span><span class="n">shaped_metadata</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="n">tiff_file</span><span class="o">.</span><span class="n">shaped_metadata</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;image&#39;</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">tiff_file</span><span class="p">,</span> <span class="s1">&#39;scanimage_metadata&#39;</span><span class="p">):</span>
+        <span class="n">meta</span> <span class="o">=</span> <span class="n">tiff_file</span><span class="o">.</span><span class="n">scanimage_metadata</span>
+        <span class="k">if</span> <span class="n">meta</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">si</span> <span class="o">=</span> <span class="n">meta</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;FrameData&#39;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">si</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No FrameData found in </span><span class="si">{</span><span class="n">file</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">series</span> <span class="o">=</span> <span class="n">tiff_file</span><span class="o">.</span><span class="n">series</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">pages</span> <span class="o">=</span> <span class="n">tiff_file</span><span class="o">.</span><span class="n">pages</span>
+
+        <span class="c1"># Extract ROI and imaging metadata</span>
+        <span class="n">roi_group</span> <span class="o">=</span> <span class="n">meta</span><span class="p">[</span><span class="s2">&quot;RoiGroups&quot;</span><span class="p">][</span><span class="s2">&quot;imagingRoiGroup&quot;</span><span class="p">][</span><span class="s2">&quot;rois&quot;</span><span class="p">]</span>
+
+        <span class="n">num_rois</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">roi_group</span><span class="p">)</span>
+        <span class="n">num_planes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">si</span><span class="p">[</span><span class="s2">&quot;SI.hChannels.channelSave&quot;</span><span class="p">])</span>
+        <span class="n">scanfields</span> <span class="o">=</span> <span class="n">roi_group</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;scanfields&quot;</span><span class="p">]</span>  <span class="c1"># assuming single ROI scanfield configuration</span>
+
+        <span class="c1"># ROI metadata</span>
+        <span class="n">center_xy</span> <span class="o">=</span> <span class="n">scanfields</span><span class="p">[</span><span class="s2">&quot;centerXY&quot;</span><span class="p">]</span>
+        <span class="n">size_xy</span> <span class="o">=</span> <span class="n">scanfields</span><span class="p">[</span><span class="s2">&quot;sizeXY&quot;</span><span class="p">]</span>
+        <span class="n">num_pixel_xy</span> <span class="o">=</span> <span class="n">scanfields</span><span class="p">[</span><span class="s2">&quot;pixelResolutionXY&quot;</span><span class="p">]</span>
+
+        <span class="c1"># TIFF header-derived metadata</span>
+        <span class="n">sample_format</span> <span class="o">=</span> <span class="n">pages</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">objective_resolution</span> <span class="o">=</span> <span class="n">si</span><span class="p">[</span><span class="s2">&quot;SI.objectiveResolution&quot;</span><span class="p">]</span>
+        <span class="n">frame_rate</span> <span class="o">=</span> <span class="n">si</span><span class="p">[</span><span class="s2">&quot;SI.hRoiManager.scanFrameRate&quot;</span><span class="p">]</span>
+
+        <span class="c1"># Field-of-view calculations</span>
+        <span class="c1"># TODO: We may want an FOV measure that takes into account contiguous ROIs</span>
+        <span class="c1"># As of now, this is for a single ROI</span>
+        <span class="n">fov_x</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">objective_resolution</span> <span class="o">*</span> <span class="n">size_xy</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">fov_y</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">objective_resolution</span> <span class="o">*</span> <span class="n">size_xy</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">fov_xy</span> <span class="o">=</span> <span class="p">(</span><span class="n">fov_x</span><span class="p">,</span> <span class="n">fov_y</span><span class="p">)</span>
+
+        <span class="c1"># Pixel resolution calculation</span>
+        <span class="n">pixel_resolution</span> <span class="o">=</span> <span class="p">(</span><span class="n">fov_x</span> <span class="o">/</span> <span class="n">num_pixel_xy</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">fov_y</span> <span class="o">/</span> <span class="n">num_pixel_xy</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="c1"># Assembling metadata</span>
+        <span class="c1"># TODO: Split this into separate primary/secondary metadata</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;image_height&quot;</span><span class="p">:</span> <span class="n">pages</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="s2">&quot;image_width&quot;</span><span class="p">:</span> <span class="n">pages</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+            <span class="s2">&quot;num_pages&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">pages</span><span class="p">),</span>
+            <span class="c1"># &quot;dims&quot;: series.dims,</span>
+            <span class="s2">&quot;ndim&quot;</span><span class="p">:</span> <span class="n">series</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span>
+            <span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="s1">&#39;uint16&#39;</span><span class="p">,</span>
+            <span class="c1"># &quot;is_multifile&quot;: series.is_multifile,</span>
+            <span class="c1"># &quot;nbytes&quot;: series.nbytes,</span>
+            <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="n">series</span><span class="o">.</span><span class="n">size</span><span class="p">,</span>
+            <span class="c1"># &quot;dim_labels&quot;: series.sizes,</span>
+            <span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="n">series</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
+            <span class="s2">&quot;num_planes&quot;</span><span class="p">:</span> <span class="n">num_planes</span><span class="p">,</span>
+            <span class="s2">&quot;num_rois&quot;</span><span class="p">:</span> <span class="n">num_rois</span><span class="p">,</span>
+            <span class="s2">&quot;num_frames&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">pages</span><span class="p">)</span> <span class="o">/</span> <span class="n">num_planes</span><span class="p">,</span>
+            <span class="s2">&quot;frame_rate&quot;</span><span class="p">:</span> <span class="n">frame_rate</span><span class="p">,</span>
+            <span class="s2">&quot;fov&quot;</span><span class="p">:</span> <span class="n">fov_xy</span><span class="p">,</span>  <span class="c1"># in microns</span>
+            <span class="s2">&quot;pixel_resolution&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">pixel_resolution</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+            <span class="s2">&quot;roi_width_px&quot;</span><span class="p">:</span> <span class="n">num_pixel_xy</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="s2">&quot;roi_height_px&quot;</span><span class="p">:</span> <span class="n">num_pixel_xy</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+            <span class="s2">&quot;sample_format&quot;</span><span class="p">:</span> <span class="n">sample_format</span><span class="p">,</span>
+            <span class="s2">&quot;num_lines_between_scanfields&quot;</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">si</span><span class="p">[</span><span class="s2">&quot;SI.hScan2D.flytoTimePerScanfield&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="n">si</span><span class="p">[</span><span class="s2">&quot;SI.hRoiManager.linePeriod&quot;</span><span class="p">]),</span>
+            <span class="s2">&quot;center_xy&quot;</span><span class="p">:</span> <span class="n">center_xy</span><span class="p">,</span>
+            <span class="s2">&quot;line_period&quot;</span><span class="p">:</span> <span class="n">si</span><span class="p">[</span><span class="s2">&quot;SI.hRoiManager.linePeriod&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;size_xy&quot;</span><span class="p">:</span> <span class="n">size_xy</span><span class="p">,</span>
+            <span class="s2">&quot;objective_resolution&quot;</span><span class="p">:</span> <span class="n">objective_resolution</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No metadata found in </span><span class="si">{</span><span class="n">file</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="get_files">
+<a class="viewcode-back" href="../../../api/index.html#lbm_caiman_python.get_files">[docs]</a>
+<span class="k">def</span> <span class="nf">get_files</span><span class="p">(</span>
+        <span class="n">pathnames</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">PathLike</span> <span class="o">|</span> <span class="nb">str</span><span class="p">],</span>
+        <span class="n">ext</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;tif&#39;</span><span class="p">,</span>
+        <span class="n">exclude_pattern</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;_plane_&#39;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">PathLike</span> <span class="o">|</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Expands a list of pathname patterns to form a sorted list of absolute filenames.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    pathnames: os.PathLike</span>
+<span class="sd">        Pathname(s) or pathname pattern(s) to read.</span>
+<span class="sd">    ext: str</span>
+<span class="sd">        Extention, string giving the filetype extention.</span>
+<span class="sd">    exclude_pattern: str | list</span>
+<span class="sd">        A string or list of strings that match to files marked as excluded from processing.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    List[PathLike[AnyStr]]</span>
+<span class="sd">        List of absolute filenames.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s1">&#39;.&#39;</span> <span class="ow">in</span> <span class="n">ext</span> <span class="ow">or</span> <span class="s1">&#39;tiff&#39;</span> <span class="ow">in</span> <span class="n">ext</span><span class="p">:</span>
+        <span class="n">ext</span> <span class="o">=</span> <span class="s1">&#39;tif&#39;</span> <span class="c1">#glob tiff and tif</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pathnames</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+        <span class="n">out_files</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">excl_files</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">fpath</span> <span class="ow">in</span> <span class="n">pathnames</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">exclude_pattern</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">fpath</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">Path</span><span class="p">(</span><span class="n">fpath</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+                    <span class="n">out_files</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">fpath</span><span class="p">])</span>
+                <span class="k">elif</span> <span class="n">Path</span><span class="p">(</span><span class="n">fpath</span><span class="p">)</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+                    <span class="n">fnames</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">Path</span><span class="p">(</span><span class="n">fpath</span><span class="p">)</span><span class="o">.</span><span class="n">expanduser</span><span class="p">()</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;*</span><span class="si">{</span><span class="n">ext</span><span class="si">}</span><span class="s2">*&quot;</span><span class="p">)]</span>
+                    <span class="n">out_files</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">fnames</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">excl_files</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">fpath</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">out_files</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pathnames</span><span class="p">,</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">,</span> <span class="nb">str</span><span class="p">)):</span>
+        <span class="n">pathnames</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">pathnames</span><span class="p">)</span><span class="o">.</span><span class="n">expanduser</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">pathnames</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+            <span class="n">files_with_ext</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">pathnames</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;*</span><span class="si">{</span><span class="n">ext</span><span class="si">}</span><span class="s2">*&quot;</span><span class="p">)]</span>
+            <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">files_with_ext</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">pathnames</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">exclude_pattern</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">pathnames</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">pathnames</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No </span><span class="si">{</span><span class="n">ext</span><span class="si">}</span><span class="s2"> files found in directory: </span><span class="si">{</span><span class="n">pathnames</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Input path should be an iterable list/tuple or PathLike object (string, pathlib.Path), not </span><span class="si">{</span><span class="n">pathnames</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+</pre></div>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Author name not set
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, Elizabeth R. Miller Brain Observatory | The Rockefeller University. All Rights Reserved.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
