@@ -14,7 +14,8 @@ def parse_args():
     parser.add_argument('--remote_host', type=str, required=True,
                         help='Remote server hostname (e.g., dtn02-hpc.rockefeller.edu).')
     parser.add_argument('--remote_path', type=str, required=True,
-                        help='Path on the remote server where data should be stored (e.g., /lustre/fs4/mbo/scratch/foconnell/data/).')
+                        help='Path on the remote server where data should be stored (e.g., '
+                             '/lustre/fs4/mbo/scratch/foconnell/data/).')
     parser.add_argument('--exclude', type=str, nargs='*',
                         help='List of patterns to exclude from the file transfer (e.g., --exclude "*.log" "*.tmp").')
     return parser.parse_args()
@@ -34,7 +35,8 @@ def validate_paths(data_path, remote_path):
         sys.exit(1)
     if ":" in remote_path and not remote_path.startswith("/"):
         print(
-            f"❌ Error: Remote path '{remote_path}' should not contain colons (:) unless specifying a remote server destination.",
+            f"❌ Error: Remote path '{remote_path}' should not contain colons (:) unless specifying a remote server "
+            f"destination.",
             file=sys.stderr)
         sys.exit(1)
 
@@ -48,11 +50,11 @@ def transfer_file(connection, local_file, remote_file_path, pbar):
     """
     try:
         file_size = local_file.stat().st_size
+        transferred = 0  # Track bytes transferred manually
         with open(local_file, 'rb') as file:
             with connection.sftp() as sftp:
                 # Ensure the directory exists on the remote server
                 remote_dir = '/'.join(remote_file_path.split('/')[:-1])
-                print(f"📁 Ensuring remote directory exists: {remote_dir}")
                 connection.run(f'mkdir -p "{remote_dir}"')
 
                 # Create a new remote file and write it in chunks
@@ -63,7 +65,8 @@ def transfer_file(connection, local_file, remote_file_path, pbar):
                         if not chunk:
                             break
                         remote_file.write(chunk)
-                        pbar.update(len(chunk))
+                        transferred += len(chunk)  # Update transferred bytes
+                        pbar.update(len(chunk))  # Update the shared progress bar
     except Exception as e:
         print(f"❌ Error transferring {local_file}: {e}", file=sys.stderr)
 
@@ -77,10 +80,11 @@ def transfer_files(connection, local_path, remote_path, exclude_patterns=None):
 
     all_files = [file for file in local_path.rglob('*') if file.is_file()]
 
-    # Filter out files that match the exclude patterns
     if exclude_patterns:
-        all_files = [file for file in all_files if not any(file.match(pattern) for pattern in exclude_patterns)]
-
+        def should_exclude(file):
+            relative_path = str(file.relative_to(local_path)).replace("\\", "/")  # Normalize paths for matching
+            return any(relative_path.startswith(pattern.rstrip('/')) for pattern in exclude_patterns)
+        all_files = [file for file in all_files if not should_exclude(file)]
     total_files = len(all_files)
     total_size = sum(file.stat().st_size for file in all_files)
 
@@ -90,6 +94,7 @@ def transfer_files(connection, local_path, remote_path, exclude_patterns=None):
 
     print(f"📦 Total files to transfer: {total_files} | Total size: {total_size / 1e9:.2f} GB")
 
+    # Create a single shared progress bar
     with tqdm(total=total_size, unit='B', unit_scale=True, unit_divisor=1024, desc="Transferring files") as pbar:
         for file in all_files:
             relative_path = file.relative_to(local_path)
