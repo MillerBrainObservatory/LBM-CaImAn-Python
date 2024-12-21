@@ -41,10 +41,37 @@ def validate_paths(data_path, remote_path):
     return data_path, remote_path
 
 
+def transfer_file(connection, local_file, remote_file_path, pbar):
+    """
+    Transfer a single file in chunks to the remote server.
+    Uses Fabric's SFTP directly to track upload progress.
+    """
+    try:
+        file_size = local_file.stat().st_size
+        with open(local_file, 'rb') as file:
+            with connection.sftp() as sftp:
+                # Ensure the directory exists on the remote server
+                remote_dir = '/'.join(remote_file_path.split('/')[:-1])
+                print(f"📁 Ensuring remote directory exists: {remote_dir}")
+                connection.run(f'mkdir -p "{remote_dir}"')
+
+                # Create a new remote file and write it in chunks
+                with sftp.open(remote_file_path, 'wb') as remote_file:
+                    chunk_size = 1024 * 1024  # 1 MB chunk size
+                    while True:
+                        chunk = file.read(chunk_size)
+                        if not chunk:
+                            break
+                        remote_file.write(chunk)
+                        pbar.update(len(chunk))
+    except Exception as e:
+        print(f"❌ Error transferring {local_file}: {e}", file=sys.stderr)
+
+
 def transfer_files(connection, local_path, remote_path, exclude_patterns=None):
     """
     Transfer files from the local path to the remote server.
-    Uses Fabric's `put()` to transfer files via SFTP.
+    Uses Fabric's `SFTP` to transfer files via chunked uploads.
     """
     print(f"📂 Starting file transfer from {local_path} to {remote_path} on remote server.")
 
@@ -68,19 +95,9 @@ def transfer_files(connection, local_path, remote_path, exclude_patterns=None):
             relative_path = file.relative_to(local_path)
             remote_file_path = f"{remote_path}/{relative_path}"
 
-            # Ensure remote directory exists
-            remote_dir = '/'.join(remote_file_path.split('/')[:-1])
-            connection.run(f'mkdir -p "{remote_dir}"')
-
             # Upload the file and track the progress
-            try:
-                def progress_callback(current, total):
-                    pbar.update(current - pbar.n)  # Update by the change in bytes
-
-                print(f"🚀 Uploading {file} to {remote_file_path}")
-                connection.put(file, remote=remote_file_path)
-            except Exception as e:
-                print(f"❌ Error transferring {file}: {e}", file=sys.stderr)
+            print(f"🚀 Uploading {file} to {remote_file_path}")
+            transfer_file(connection, file, remote_file_path, pbar)
 
 
 def main():
