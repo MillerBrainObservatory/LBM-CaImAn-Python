@@ -12,7 +12,8 @@ from .batch import (
     delete_batch_rows,
     get_batch_from_path,
     validate_path,
-    clean_batch
+    clean_batch,
+    load_batch,
 )
 from .util.io import get_metadata, get_files
 from .helpers import (
@@ -52,6 +53,6 @@ __all__ = [
     "concat_param_diffs",
     "plot_optical_flows",
     "plot_residual_flows",
-    "plot_correlations"
-    # "TimeStore"
+    "plot_correlations",
+    "load_batch"
 ]
