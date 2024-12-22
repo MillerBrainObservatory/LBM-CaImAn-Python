@@ -256,12 +256,12 @@ def resolve_data_path(data_path, df):
         raise ValueError(f"Invalid data_path: {data_path}")
 
 
-def handle_input_data_path(input_movie_path, ops):
+def handle_input_data_path(input_path, ops):
     """Handles the metadata and raw data path for the input movie path.
 
     Parameters
     ----------
-    input_movie_path : Path or pd.Series
+    input_path : Path or pd.Series
         Input movie path to process.
     ops : dict
         Parameters for the algorithm.
@@ -271,27 +271,31 @@ def handle_input_data_path(input_movie_path, ops):
     ops : dict
         Updated parameters with metadata if applicable.
     """
-    if isinstance(input_movie_path, Path):
-        if input_movie_path.is_file():
-            raw_data_path = input_movie_path.parent
-        elif input_movie_path.is_dir():
-            raw_data_path = input_movie_path
+    input_movie_path = None  # what is fed into df.caiman.add_item()
+    if isinstance(input_path, Path):
+        if input_path.is_file():
+            input_movie_path = input_path
+            raw_data_path = input_path.parent
+        elif input_path.is_dir():
+            input_movie_path = input_path
+            raw_data_path = input_path
         else:
-            raise ValueError(f"Invalid input_movie_path: {input_movie_path}")
+            raise ValueError(f"Invalid input_path: {input_path}")
 
-        metadata = lcp.get_metadata(input_movie_path)
+        metadata = lcp.get_metadata(input_path)
         mc.set_parent_raw_data_path(raw_data_path)
         ops['metadata'] = metadata
 
-    elif isinstance(input_movie_path, pd.Series):
-        output_path = input_movie_path.mcorr.get_output_path()
+    elif isinstance(input_path, pd.Series):
+        input_movie_path = input_path
+        output_path = input_path.mcorr.get_output_path()
         mc.set_parent_raw_data_path(output_path.parent)
     else:
-        raise ValueError(f"Invalid input_movie_path: {input_movie_path}")
-    return ops
+        raise ValueError(f"Invalid input_path: {input_path}")
+    return ops, input_movie_path
 
 
-def run_item(algo, input_movie_path, df, ops, backend):
+def run_item(algo, input_path, df, ops, backend):
     """Runs the specified algorithm on a single input item.
 
     Parameters
@@ -312,7 +316,7 @@ def run_item(algo, input_movie_path, df, ops, backend):
     df : pandas.DataFrame
         Updated dataframe after processing.
     """
-    ops = handle_input_data_path(input_movie_path, ops)
+    ops, input_movie_path = handle_input_data_path(input_path, ops)
     df.caiman.add_item(
         algo=algo,
         input_movie_path=input_movie_path,
@@ -353,21 +357,7 @@ def run_algorithm(algo, files, df, ops, backend):
         return df
 
     for input_movie_path in files:
-        if algo == "mcorr":
-            df = run_item(algo, input_movie_path, df, ops, backend)
-
-        if algo in ["cnmf", "cnmfe"]:
-            input_movie_path = Path(input_movie_path)
-            mcorr_item = df[df.input_movie_path == input_movie_path.name]
-
-            if len(mcorr_item) == 0:
-                print(f"No matching mcorr item found for {input_movie_path}.\n"
-                      f"Current batch items: {df.input_movie_path}.\n"
-                      f"Proceeding to run on the input movie.")
-                df = run_item(algo, input_movie_path, df, ops, backend)
-            else:
-                df = run_item(algo, mcorr_item.iloc[0], df, ops, backend)
-
+        df = run_item(algo, input_movie_path, df, ops, backend)
     return df
 
 
