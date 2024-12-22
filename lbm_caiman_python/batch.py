@@ -52,7 +52,7 @@ def _set_windows_posix():
         pathlib.WindowsPath = windows_backup
 
 
-def load_transfered_batch(batch_path: str | Path):
+def load_batch(batch_path: str | Path):
     """
     Load a batch after transfering it from a Windows to a POSIX system or vice versa.
 
@@ -67,10 +67,10 @@ def load_transfered_batch(batch_path: str | Path):
         The loaded batch.
     """
     try:
-        with _set_posix_windows():
-            return mc.load_batch(batch_path)
-    except (IsADirectoryError, FileNotFoundError):
         with _set_windows_posix():
+            return mc.load_batch(batch_path)
+    except Exception:
+        with _set_posix_windows():
             return mc.load_batch(batch_path)
 
 
