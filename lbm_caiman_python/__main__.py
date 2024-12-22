@@ -288,6 +288,10 @@ def handle_input_data_path(input_path, ops):
 
     elif isinstance(input_path, pd.Series):
         input_movie_path = input_path
+        # make sure its a mcorr algo
+        if input_path.algo != "mcorr":
+            raise ValueError(f"Data-path is an index.\n"
+                             f"Must provide the index of a mcorr item to run cnmf/cnmfe on.")
         output_path = input_path.mcorr.get_output_path()
         mc.set_parent_raw_data_path(output_path.parent)
     else:
@@ -302,7 +306,7 @@ def run_item(algo, input_path, df, ops, backend):
     ----------
     algo : str
         Algorithm to run (e.g., 'mcorr', 'cnmf', 'cnmfe').
-    input_movie_path : Path or pd.Series
+    input_path : Path or pd.Series
         Input movie path or dataframe item to process.
     df : pandas.DataFrame
         Dataframe for managing processing results.
@@ -435,11 +439,11 @@ def main():
         files = resolve_data_path(args.data_path, df)
         for algo in args.run:
             run_algorithm(algo, files, df, ops, backend)
-        return
+            print(f'{df.iloc[-1].algo} duration: {df.iloc[-1].algo_duration}')
 
     print(df)
     print("Processing complete -----------")
-
+    return
 
 if __name__ == "__main__":
     main()
