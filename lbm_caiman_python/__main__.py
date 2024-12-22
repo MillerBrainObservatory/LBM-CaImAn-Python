@@ -4,6 +4,9 @@ import argparse
 import logging
 from pathlib import Path
 from functools import partial
+
+import pandas as pd
+
 import lbm_caiman_python as lcp
 import mesmerize_core as mc
 
@@ -71,7 +74,8 @@ def add_args(parser: argparse.ArgumentParser):
     parser.add_argument('--version', action='store_true', help='Show version information.')
     parser.add_argument('--debug', action='store_true', help='Enable debug mode.')
     parser.add_argument('--batch_path', type=str, help='Path to the batch file.')
-    parser.add_argument('--data_path', type=parse_data_path, help='Path to the input data.')
+    parser.add_argument('--data_path', type=parse_data_path, help='Path to the input data or index '
+                                                                  'of the batch item.')
     parser.add_argument('--create', action='store_false', help='Create a new batch.')
     parser.add_argument('--rm', type=int, nargs='+', help='Indices of batch rows to remove.')
     parser.add_argument('--force', action='store_true', help='Force removal without safety checks.')
@@ -82,7 +86,7 @@ def add_args(parser: argparse.ArgumentParser):
     return parser
 
 
-def load_ops(args):
+def load_ops(args, batch_path=None):
     """
     Load or create the 'ops' dictionary from a file or default parameters.
     Handles matching CLI arguments to the 'ops' dictionary.
@@ -97,6 +101,7 @@ def load_ops(args):
     dict
         The loaded or default 'ops' dictionary.
     """
+    # If a filepath was provided, use that
     if args.ops:
         ops_path = Path(args.ops)
         if ops_path.is_dir():
@@ -108,30 +113,31 @@ def load_ops(args):
             raise FileNotFoundError(f"Given ops path {ops_path} is not a file.")
         ops = np.load(ops_path, allow_pickle=True).item()
     else:
-        ops = lcp.default_ops()
+        if batch_path is not None:
+            opsfile = Path(batch_path).parent / "ops.npy"
+            if opsfile.is_file():
+                ops = np.load(opsfile, allow_pickle=True).item()
+                print(f"Loading parameters from {opsfile}")
+            else:
+                print(f"Using default parameters.")
+                ops = lcp.default_ops()
+        else:
+            print(f"Using default parameters.")
+            ops = lcp.default_ops()
 
     # Get matching parameters from CLI args and update ops
-    defaults = lcp.default_ops()["main"]
+    main_ops = ops["main"]
 
     matching_params = {
         k: getattr(args, k)
-        for k in defaults.keys()
+        for k in main_ops.keys()
         if hasattr(args, k) and getattr(args, k) is not None
     }
     ops["main"].update(matching_params)
 
-    if args.save:
-        save_path = Path(args.save)
-        if save_path.is_dir():
-            savename = save_path / "ops.npy"
-        else:
-            savename = save_path.with_suffix(".npy")
-        print(f"Saving parameters to {savename}")
-        np.save(str(savename.resolve()), ops)
-
     for param in ops["main"]:
         # If defaults contain a list of length 2, handle cli with single entries
-        if hasattr(defaults[param], "__len__") and len(defaults[param]) == 2:
+        if hasattr(main_ops[param], "__len__") and len(main_ops[param]) == 2:
             arg_value = getattr(args, param, None)  # value from cli
             if arg_value is not None:
                 # if scalar
@@ -145,6 +151,224 @@ def load_ops(args):
                     raise ValueError(
                         f"Invalid number of values for --{param}. Expected 1 or 2 values, got {len(arg_value)}.")
     return ops
+
+
+def create_load_batch(batch_path):
+    """
+    Handles the creation or loading of a batch file based on the provided path.
+
+    Parameters
+    ----------
+    batch_path : str or Path
+        Path to the batch file or directory where the batch should be created/loaded.
+
+    Returns
+    -------
+    df : object
+        The loaded or newly created batch as returned by `mc.load_batch` or `mc.create_batch`.
+    batch_path : Path
+        The full path to the batch file as a Path object.
+
+    Raises
+    ------
+    ValueError
+        If the provided path has an invalid suffix or does not meet requirements for file creation.
+    """
+    batch_path = Path(batch_path).expanduser()
+    print(f"Batch path provided: {batch_path}")
+
+    if batch_path.exists():
+        if batch_path.is_dir():
+            # If given path is an existing directory, create/load batch.pickle inside it
+            batch_path = batch_path / "batch.pickle"
+            if batch_path.exists():
+                print(f"Found existing batch {batch_path}")
+                df = mc.load_batch(batch_path)
+            else:
+                print(f"Creating batch at {batch_path}")
+                df = mc.create_batch(batch_path)
+                print(f"Batch created at {batch_path}")
+        else:
+            # If given path is an existing file
+            if batch_path.suffix != ".pickle":
+                print(f"Wrong suffix: {batch_path.suffix}. Changing to .pickle: {batch_path.with_suffix('.pickle')}")
+                batch_path = batch_path.with_suffix(".pickle")
+            print(f"Found existing batch {batch_path}")
+            df = mc.load_batch(batch_path)
+    elif batch_path.parent.exists() and batch_path.parent.is_dir():
+        # If parent directory exists, create batch.pickle
+        batch_path = batch_path / "batch.pickle"
+        print(f"Creating batch at {batch_path}")
+        df = mc.create_batch(batch_path)
+        print(f"Batch created at {batch_path}")
+    else:
+        # If the file does not exist, and the filetype isn't .pickle, don't create anything
+        if batch_path.suffix != ".pickle":
+            raise ValueError(
+                f"Invalid batch path suffix: {batch_path.suffix}. Expected .pickle."
+            )
+
+        if not batch_path.parent.exists():
+            # Create all necessary parent directories
+            batch_path.parent.mkdir(parents=True, exist_ok=True)
+
+        print(f"Creating batch at {batch_path}")
+        df = mc.create_batch(batch_path)
+        print(f"Batch created at {batch_path}")
+
+    return df, batch_path
+
+
+def resolve_data_path(data_path, df):
+    """Resolves the data_path input to a list of file paths or a dataframe item.
+
+    Parameters
+    ----------
+    data_path : str, Path, or int
+        Path to a directory, file, or an integer index for a dataframe row.
+    df : pandas.DataFrame
+        Dataframe containing paths or other relevant data when data_path is an int.
+
+    Returns
+    -------
+    files : list
+        List of resolved file paths or dataframe items.
+
+    Raises
+    ------
+    ValueError
+        If data_path is invalid or no files are found.
+    """
+    if isinstance(data_path, (Path, str)):
+        data_path = Path(data_path).expanduser().resolve()
+        if data_path.is_file():
+            return [data_path]
+        elif data_path.is_dir():
+            files = list(data_path.glob("*.tif*"))
+            if not files:
+                raise ValueError(f"No .tif files found in data_path: {data_path}")
+            return files
+        else:
+            raise NotADirectoryError(f"{data_path} is not a valid file or directory.")
+    elif isinstance(data_path, int):
+        return [df.iloc[data_path]]
+    else:
+        raise ValueError(f"Invalid data_path: {data_path}")
+
+
+def handle_input_data_path(input_movie_path, ops):
+    """Handles the metadata and raw data path for the input movie path.
+
+    Parameters
+    ----------
+    input_movie_path : Path or pd.Series
+        Input movie path to process.
+    ops : dict
+        Parameters for the algorithm.
+
+    Returns
+    -------
+    ops : dict
+        Updated parameters with metadata if applicable.
+    """
+    if isinstance(input_movie_path, Path):
+        if input_movie_path.is_file():
+            raw_data_path = input_movie_path.parent
+        elif input_movie_path.is_dir():
+            raw_data_path = input_movie_path
+        else:
+            raise ValueError(f"Invalid input_movie_path: {input_movie_path}")
+
+        metadata = lcp.get_metadata(input_movie_path)
+        mc.set_parent_raw_data_path(raw_data_path)
+        ops['metadata'] = metadata
+
+    elif isinstance(input_movie_path, pd.Series):
+        output_path = input_movie_path.mcorr.get_output_path()
+        mc.set_parent_raw_data_path(output_path.parent)
+    else:
+        raise ValueError(f"Invalid input_movie_path: {input_movie_path}")
+    return ops
+
+
+def run_item(algo, input_movie_path, df, ops, backend):
+    """Runs the specified algorithm on a single input item.
+
+    Parameters
+    ----------
+    algo : str
+        Algorithm to run (e.g., 'mcorr', 'cnmf', 'cnmfe').
+    input_movie_path : Path or pd.Series
+        Input movie path or dataframe item to process.
+    df : pandas.DataFrame
+        Dataframe for managing processing results.
+    ops : dict
+        Parameters for the algorithm.
+    backend : str
+        Backend to use for processing.
+
+    Returns
+    -------
+    df : pandas.DataFrame
+        Updated dataframe after processing.
+    """
+    ops = handle_input_data_path(input_movie_path, ops)
+    df.caiman.add_item(
+        algo=algo,
+        input_movie_path=input_movie_path,
+        params=ops,
+        item_name=f"{algo}-lbm",
+    )
+    print(f"Running {algo} -----------")
+    df.iloc[-1].caiman.run(backend=backend)
+    df = df.caiman.reload_from_disk()
+    print(f"Processing time: {df.iloc[-1].algo_duration}")
+    return df
+
+
+def run_algorithm(algo, files, df, ops, backend):
+    """Runs the specified algorithm on the input files.
+
+    Parameters
+    ----------
+    algo : str
+        Algorithm to run (e.g., 'mcorr', 'cnmf', 'cnmfe').
+    files : list
+        List of input file paths or dataframe items.
+    df : pandas.DataFrame
+        Dataframe for managing processing results.
+    ops : dict
+        Parameters for the algorithm.
+    backend : str
+        Backend to use for processing.
+
+    Returns
+    -------
+    df : pandas.DataFrame
+        Updated dataframe after processing.
+    """
+    if algo not in ["mcorr", "cnmf", "cnmfe"]:
+        print(f"Algorithm '{algo}' is not recognized and will be skipped.\n"
+              f"Available algorithms are: 'mcorr', 'cnmf', 'cnmfe'.")
+        return df
+
+    for input_movie_path in files:
+        if algo == "mcorr":
+            df = run_item(algo, input_movie_path, df, ops, backend)
+
+        if algo in ["cnmf", "cnmfe"]:
+            input_movie_path = Path(input_movie_path)
+            mcorr_item = df[df.input_movie_path == input_movie_path.name]
+
+            if len(mcorr_item) == 0:
+                print(f"No matching mcorr item found for {input_movie_path}.\n"
+                      f"Current batch items: {df.input_movie_path}.\n"
+                      f"Proceeding to run on the input movie.")
+                df = run_item(algo, input_movie_path, df, ops, backend)
+            else:
+                df = run_item(algo, mcorr_item.iloc[0], df, ops, backend)
+
+    return df
 
 
 def main():
@@ -172,59 +396,18 @@ def main():
 
     if args.data_path is None:
         parser.print_help()
+
     if not args.batch_path:
         parser.print_help()
         return
 
-    batch_path = Path(args.batch_path).expanduser()
-    print(f"Batch path provided: {batch_path}")
+    df, batch_path = create_load_batch(args.batch_path)
+    ops = load_ops(args, batch_path)
+    ops['package'] = {'version': lcp.__version__}
 
-    if batch_path.exists():
-        if batch_path.is_dir():
-            # If given path is an existing directory, create/load batch.pickle inside it
-            batch_path = batch_path / "batch.pickle"
-            if batch_path.exists():
-                print(f"Found existing batch {batch_path}")
-                df = mc.load_batch(batch_path)
-            else:
-                print(f"Creating batch at {batch_path}")
-                df = mc.create_batch(batch_path)
-                print(f"Batch created at {batch_path}")
-        else:
-            # If given path is an existing file
-            if batch_path.suffix != ".pickle":
-                print(f"Wrong suffix: {batch_path.suffix}. Changing to .pickle: {batch_path.with_suffix('.pickle')}")
-                batch_path = batch_path.with_suffix(".pickle")
-            print(f"Found existing batch {batch_path}")
-            df = mc.load_batch(batch_path)
-    elif batch_path.parent.exists() and batch_path.parent.is_dir():
-        # If the file does not exist, but its parent directory does, create it
-        if batch_path.suffix != ".pickle":
-            batch_path = batch_path.with_suffix(".pickle")
-        print(f"Creating batch at {batch_path}")
-        df = mc.create_batch(batch_path)
-        print(f"Batch created at {batch_path}")
-    else:
-        # If the file does not exist, and the filetype isn't .pickle, don't create anything
-        if batch_path.suffix != ".pickle":
-            raise ValueError(
-                f"Attempted to create a Invalid batch path suffix: {batch_path.suffix}.\n"
-                f" Expected .pickle."
-            )
-
-        if not batch_path.parent.exists():
-            # Create all necessary parent directories
-            batch_path.parent.mkdir(parents=True, exist_ok=True)
-
-        print(f"Creating batch at {batch_path}")
-        df = mc.create_batch(batch_path)
-        print(f"Batch created at {batch_path}")
-        print(f"{batch_path} is not a valid file/directory and does not have a valid parent directory. Exiting.")
     # Handle removal of batch rows
     if args.rm:
-        print(
-            "--rm provided as an argument. Checking the index(s) to delete are valid for this dataframe."
-        )
+        print("--rm provided as an argument. Checking the index(s) to delete are valid for this dataframe.")
         safe = not args.force
         if args.force:
             print(
@@ -259,79 +442,9 @@ def main():
 
     # Handle running algorithms
     if args.run:
-        ops = load_ops(args)
-        if not isinstance(args.data_path, (Path, str)):
-            raise ValueError("Data path must be a string or Path object.")
-
-        data_path = Path(args.data_path).expanduser().resolve()
-        if data_path.is_file():
-            files = [data_path]
-        elif data_path.is_dir():
-            files = list(data_path.glob("*.tif*"))
-            if not files:
-                raise ValueError(f"No .tif files found in data_path: {data_path}")
-        else:
-            raise NotADirectoryError(f"{args.data_path} is not a valid file or directory.")
-
+        files = resolve_data_path(args.data_path, df)
         for algo in args.run:
-            if algo not in ["mcorr", "cnmf", "cnmfe"]:
-                print(f"Algorithm '{algo}' is not recognized and will be skipped."
-                      f"Avaliable algorithms are: 'mcorr', 'cnmf', 'cnmfe'.")
-            if algo == "mcorr":
-                for input_movie_path in files:
-                    input_movie_path = Path(input_movie_path)
-                    # TODO: update_ops() to handle metadata
-                    metadata = lcp.get_metadata(input_movie_path)
-                    ops["main"]["fr"] = metadata.get("frame_rate", ops["main"].get("fr"))
-                    ops["main"]["dxy"] = metadata.get("pixel_resolution", ops["main"].get("dxy"))
-                    mc.set_parent_raw_data_path(input_movie_path.parent)
-                    df.caiman.add_item(
-                        algo=algo,
-                        input_movie_path=input_movie_path,
-                        params=ops,
-                        item_name="lbm-batch-item",
-                    )
-                    print(f"Running {algo} -----------")
-                    df.iloc[-1].caiman.run(backend=backend)
-                    df = df.caiman.reload_from_disk()
-                    print(f"Processing time: {df.iloc[-1].algo_duration}")
-            if algo in ['cnmf', 'cnmfe']:
-                for input_movie_path in files:
-                    input_movie_path = Path(input_movie_path)
-                    mcorr_item = df[df.input_movie_path == input_movie_path.name]
-
-                    # Check if exactly one row matches
-                    if len(mcorr_item) == 0:
-                        raise ValueError(f"No row found with input_movie_path == {input_movie_path.name}")
-                    elif len(mcorr_item) > 1:
-                        raise ValueError(
-                            f"Multiple rows found with input_movie_path == {input_movie_path.name}. Expected only one "
-                            f"match.")
-                    mc.set_parent_raw_data_path(input_movie_path.parent)
-                    if mcorr_item.empty:
-                        print(f"No matching mcorr item found for {input_movie_path}."
-                              f"Current batch items: {df.input_movie_path}."
-                              f"Proceeding to run on the input movie.")
-                        df.caiman.add_item(
-                            algo=algo,
-                            input_movie_path=input_movie_path,
-                            params=ops,
-                            item_name="lbm-batch-item",
-                        )
-                        print(f"Running {algo} -----------")
-                        df.iloc[-1].caiman.run(backend=backend)
-                        df = df.caiman.reload_from_disk()
-                        print(f"Processing time: {df.iloc[-1].algo_duration}")
-                    df.caiman.add_item(
-                        algo=algo,
-                        input_movie_path=mcorr_item.iloc[0],
-                        params=ops,
-                        item_name="lbm-batch-item",
-                    )
-                    print(f"Running {algo} -----------")
-                    df.iloc[-1].caiman.run(backend=backend)
-                    df = df.caiman.reload_from_disk()
-                    print(f"Processing time: {df.iloc[-1].algo_duration}")
+            run_algorithm(algo, files, df, ops, backend)
         return
 
     print(df)
