@@ -116,7 +116,8 @@ def get_metadata(file: os.PathLike | str):
             "roi_width_px": num_pixel_xy[0],
             "roi_height_px": num_pixel_xy[1],
             "sample_format": sample_format,
-            "num_lines_between_scanfields": round(si["SI.hScan2D.flytoTimePerScanfield"] / si["SI.hRoiManager.linePeriod"]),
+            "num_lines_between_scanfields": round(
+                si["SI.hScan2D.flytoTimePerScanfield"] / si["SI.hRoiManager.linePeriod"]),
             "center_xy": center_xy,
             "line_period": si["SI.hRoiManager.linePeriod"],
             "size_xy": size_xy,
@@ -149,7 +150,7 @@ def get_files(
         List of absolute filenames.
     """
     if '.' in ext or 'tiff' in ext:
-        ext = 'tif' #glob tiff and tif
+        ext = 'tif'  #glob tiff and tif
     if isinstance(pathnames, (list, tuple)):
         out_files = []
         excl_files = []
