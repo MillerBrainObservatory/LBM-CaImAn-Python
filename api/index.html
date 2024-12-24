@@ -1,0 +1,1152 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>API &#8212; LBM-CaImAn-Python</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=475cc00c" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=e4c16dfd"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
+    <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
+    <script defer="defer" src="../_static/tippy/api/index.dc95aa40-8358-4da0-984d-39f7b2bb067e.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/index';</script>
+    <link rel="icon" href="../_static/icon_caiman_python.svg"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Glossary" href="../glossary.html" />
+    <link rel="prev" title="5. Collate Planes" href="../examples/notebooks/collation.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/lcp_logo.svg" class="logo__image only-light" alt="LBM-CaImAn-Python - Home"/>
+    <img src="../_static/lcp_logo.svg" class="logo__image only-dark pst-js-only" alt="LBM-CaImAn-Python - Home"/>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://millerbrainobservatory.github.io/" title="MBO User Hub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src=".././_static/icon_mbo_home.png" class="icon-link-image" alt="MBO User Hub"/></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/MillerBrainObservatory/" title="MBO Github" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">MBO Github</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://mbo.rockefeller.edu/contact/" title="Connect with MBO" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-regular fa-address-card fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Connect with MBO</span></a>
+        </li>
+</ul></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../user_guide/index.html">User Guide</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/assembly.html">1. Image Assembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/batch_utilities.html">2. Batch Utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/registration.html">3. Registration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/segmentation.html">4. Segmentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/collation.html">5. Z-Plane Collation</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../examples/index.html">Tutorial</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../examples/notebooks/assembly.html">1. Image Assembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/notebooks/batch_helpers.html">2. Batch Helpers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/notebooks/motion_correction.html">3. Registration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/notebooks/segmentation.html">4. Segmentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/notebooks/collation.html">5. Collate Planes</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../glossary.html">Glossary</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/MillerBrainObservatory/LBM-CaImAn-Python/blob/master/docs/api/index.md?plain=1" target="_blank"
+   class="btn btn-sm btn-source-file-button dropdown-item"
+   title="Show source"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-code"></i>
+  </span>
+<span class="btn__text-container">Show source</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/MillerBrainObservatory/LBM-CaImAn-Python/edit/master/docs/api/index.md" target="_blank"
+   class="btn btn-sm btn-source-edit-button dropdown-item"
+   title="Suggest edit"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-pencil-alt"></i>
+  </span>
+<span class="btn__text-container">Suggest edit</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/MillerBrainObservatory/LBM-CaImAn-Python/issues/new?title=Issue%20on%20page%20%2Fapi/index.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/api/index.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>API</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lbm_caiman_python.calculate_num_patches"><code class="docutils literal notranslate"><span class="pre">calculate_num_patches()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lbm_caiman_python.clean_batch"><code class="docutils literal notranslate"><span class="pre">clean_batch()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lbm_caiman_python.combine_z_planes"><code class="docutils literal notranslate"><span class="pre">combine_z_planes()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lbm_caiman_python.compute_batch_metrics"><code class="docutils literal notranslate"><span class="pre">compute_batch_metrics()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lbm_caiman_python.concat_param_diffs"><code class="docutils literal notranslate"><span class="pre">concat_param_diffs()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lbm_caiman_python.create_metrics_df"><code class="docutils literal notranslate"><span class="pre">create_metrics_df()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lbm_caiman_python.create_summary_df"><code class="docutils literal notranslate"><span class="pre">create_summary_df()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lbm_caiman_python.default_ops"><code class="docutils literal notranslate"><span class="pre">default_ops()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lbm_caiman_python.delete_batch_rows"><code class="docutils literal notranslate"><span class="pre">delete_batch_rows()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lbm_caiman_python.fix_scan_phase"><code class="docutils literal notranslate"><span class="pre">fix_scan_phase()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lbm_caiman_python.generate_patch_view"><code class="docutils literal notranslate"><span class="pre">generate_patch_view()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lbm_caiman_python.get_batch_from_path"><code class="docutils literal notranslate"><span class="pre">get_batch_from_path()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lbm_caiman_python.get_files"><code class="docutils literal notranslate"><span class="pre">get_files()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lbm_caiman_python.get_metadata"><code class="docutils literal notranslate"><span class="pre">get_metadata()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lbm_caiman_python.load_batch"><code class="docutils literal notranslate"><span class="pre">load_batch()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lbm_caiman_python.plot_correlations"><code class="docutils literal notranslate"><span class="pre">plot_correlations()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lbm_caiman_python.plot_optical_flows"><code class="docutils literal notranslate"><span class="pre">plot_optical_flows()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lbm_caiman_python.plot_residual_flows"><code class="docutils literal notranslate"><span class="pre">plot_residual_flows()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lbm_caiman_python.plot_with_scalebars"><code class="docutils literal notranslate"><span class="pre">plot_with_scalebars()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lbm_caiman_python.read_scan"><code class="docutils literal notranslate"><span class="pre">read_scan()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lbm_caiman_python.return_scan_offset"><code class="docutils literal notranslate"><span class="pre">return_scan_offset()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lbm_caiman_python.save_as"><code class="docutils literal notranslate"><span class="pre">save_as()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lbm_caiman_python.validate_path"><code class="docutils literal notranslate"><span class="pre">validate_path()</span></code></a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="module-lbm_caiman_python">
+<span id="api"></span><h1>API<a class="headerlink" href="#module-lbm_caiman_python" title="Link to this heading">#</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="lbm_caiman_python.calculate_num_patches">
+<span class="sig-prename descclassname"><span class="pre">lbm_caiman_python.</span></span><span class="sig-name descname"><span class="pre">calculate_num_patches</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stride_input</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/lbm_caiman_python/helpers.html#calculate_num_patches"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lbm_caiman_python.calculate_num_patches" title="Link to this definition">#</a></dt>
+<dd><p>Calculate the total number of patches in an image given stride and rf.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>image_size</strong><span class="classifier">tuple</span></dt><dd><p>Size of the image as (rows, cols).</p>
+</dd>
+<dt><strong>rf</strong><span class="classifier">int</span></dt><dd><p>Half-size of the patches in pixels (patch width is rf*2 + 1).</p>
+</dd>
+<dt><strong>stride_input</strong><span class="classifier">int</span></dt><dd><p>Amount of overlap between patches in pixels.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>int</dt><dd><p>Total number of patches.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lbm_caiman_python.clean_batch">
+<span class="sig-prename descclassname"><span class="pre">lbm_caiman_python.</span></span><span class="sig-name descname"><span class="pre">clean_batch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/lbm_caiman_python/batch.html#clean_batch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lbm_caiman_python.clean_batch" title="Link to this definition">#</a></dt>
+<dd><p>Clean a batch of DataFrame entries by removing unsuccessful rows from storage.</p>
+<p>This function iterates over the rows of the given DataFrame, identifies
+rows where the ‘outputs’ column is either <cite>None</cite> or a dictionary containing
+a ‘success’ key with a <cite>False</cite> value. For each such row, the corresponding
+item is removed using the <cite>df.caiman.remove_item()</cite> method, and the removal
+is saved to disk.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>df</strong><span class="classifier">pandas.DataFrame</span></dt><dd><p>The DataFrame to be cleaned. It must have a ‘uuid’ column for identification
+and an ‘outputs’ column containing a dictionary with a ‘success’ key.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>pandas.DataFrame</dt><dd><p>The DataFrame reloaded from disk after unsuccessful items have been removed.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>If ‘outputs’ is None or does not contain ‘success’ as a key with a value of
+<cite>False</cite>, the row will be removed.</p></li>
+</ul>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+<span class="gp">... </span>    <span class="s1">&#39;uuid&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;123&#39;</span><span class="p">,</span> <span class="s1">&#39;456&#39;</span><span class="p">,</span> <span class="s1">&#39;789&#39;</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="s1">&#39;outputs&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="s1">&#39;success&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span> <span class="p">{</span><span class="s1">&#39;success&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span> <span class="kc">None</span><span class="p">]</span>
+<span class="gp">... </span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cleaned_df</span> <span class="o">=</span> <span class="n">clean_batch</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+<span class="go">Removing unsuccessful batch row 1.</span>
+<span class="go">Row 1 deleted.</span>
+<span class="go">Removing unsuccessful batch row 2.</span>
+<span class="go">Row 2 deleted.</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lbm_caiman_python.combine_z_planes">
+<span class="sig-prename descclassname"><span class="pre">lbm_caiman_python.</span></span><span class="sig-name descname"><span class="pre">combine_z_planes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">results</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/lbm_caiman_python/collation.html#combine_z_planes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lbm_caiman_python.combine_z_planes" title="Link to this definition">#</a></dt>
+<dd><p>Combines all z-planes in the results dictionary into a single estimates object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>results (dict): Dictionary with estimates for each z-plane.</strong></dt><dd></dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>estimates.Estimates: Combined estimates for all z-planes.</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lbm_caiman_python.compute_batch_metrics">
+<span class="sig-prename descclassname"><span class="pre">lbm_caiman_python.</span></span><span class="sig-name descname"><span class="pre">compute_batch_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Path</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/lbm_caiman_python/helpers.html#compute_batch_metrics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lbm_caiman_python.compute_batch_metrics" title="Link to this definition">#</a></dt>
+<dd><p>Compute and store various statistical metrics for each batch of image data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>batch_df</strong><span class="classifier">DataFrame, optional</span></dt><dd><p>A DataFrame containing information about each batch of image data.
+Must be compatible with the mesmerize-core DataFrame API to call
+<cite>get_params_diffs</cite> and <cite>get_output</cite> on each row.</p>
+</dd>
+<dt><strong>overwrite</strong><span class="classifier">bool, optional</span></dt><dd><p>If True, recompute and overwrite existing metric files. Default is False.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>metrics_paths</strong><span class="classifier">list of Path</span></dt><dd><p>List of file paths where metrics are stored for each batch.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">lbm_caiman_python</span> <span class="k">as</span> <span class="nn">lcp</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">mesmerize_core</span> <span class="k">as</span> <span class="nn">mc</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">batch_df</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">load_batch</span><span class="p">(</span><span class="s1">&#39;path/to/batch.pickle&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metrics_paths</span> <span class="o">=</span> <span class="n">lcp</span><span class="o">.</span><span class="n">compute_batch_metrics</span><span class="p">(</span><span class="n">batch_df</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">metrics_paths</span><span class="p">)</span>
+<span class="go">[Path(&#39;path/to/metrics1.npz&#39;), Path(&#39;path/to/metrics2.npz&#39;), ...]</span>
+</pre></div>
+</div>
+<p>TODO: This can be made to run in parallel.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lbm_caiman_python.concat_param_diffs">
+<span class="sig-prename descclassname"><span class="pre">lbm_caiman_python.</span></span><span class="sig-name descname"><span class="pre">concat_param_diffs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param_diffs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/lbm_caiman_python/helpers.html#concat_param_diffs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lbm_caiman_python.concat_param_diffs" title="Link to this definition">#</a></dt>
+<dd><p>Add parameter differences to the input DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>input_df</strong><span class="classifier">DataFrame</span></dt><dd><p>The input DataFrame containing a ‘batch_index’ column.</p>
+</dd>
+<dt><strong>param_diffs</strong><span class="classifier">DataFrame</span></dt><dd><p>The DataFrame containing the parameter differences for each batch.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>input_df</strong><span class="classifier">DataFrame</span></dt><dd><p>The input DataFrame with the parameter differences added.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">lbm_caiman_python</span> <span class="k">as</span> <span class="nn">lcp</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">mesmerize_core</span> <span class="k">as</span> <span class="nn">mc</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">batch_df</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">load_batch</span><span class="p">(</span><span class="s1">&#39;path/to/batch.pickle&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metrics_files</span> <span class="o">=</span> <span class="n">lcp</span><span class="o">.</span><span class="n">compute_batch_metrics</span><span class="p">(</span><span class="n">batch_df</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metrics_df</span> <span class="o">=</span> <span class="n">lcp</span><span class="o">.</span><span class="n">create_metrics_df</span><span class="p">(</span><span class="n">metrics_files</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">param_diffs</span> <span class="o">=</span> <span class="n">batch_df</span><span class="o">.</span><span class="n">caiman</span><span class="o">.</span><span class="n">get_params_diffs</span><span class="p">(</span><span class="s2">&quot;mcorr&quot;</span><span class="p">,</span> <span class="n">item_name</span><span class="o">=</span><span class="n">batch_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;item_name&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">final_df</span> <span class="o">=</span> <span class="n">lcp</span><span class="o">.</span><span class="n">concat_param_diffs</span><span class="p">(</span><span class="n">metrics_df</span><span class="p">,</span> <span class="n">param_diffs</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">final_df</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lbm_caiman_python.create_metrics_df">
+<span class="sig-prename descclassname"><span class="pre">lbm_caiman_python.</span></span><span class="sig-name descname"><span class="pre">create_metrics_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metrics_filepaths</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="../_modules/lbm_caiman_python/helpers.html#create_metrics_df"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lbm_caiman_python.create_metrics_df" title="Link to this definition">#</a></dt>
+<dd><p>Create a DataFrame from a list of metrics files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>metrics_filepaths</strong><span class="classifier">list of str or Path</span></dt><dd><p>List of paths to the metrics files (.npz) containing ‘correlations’, ‘norms’,
+‘smoothness’, ‘flows’, and the batch item UUID.
+Typically, use the output of <cite>compute_batch_metrics</cite> to get the list of metrics files.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>metrics_df</strong><span class="classifier">DataFrame</span></dt><dd><p>A DataFrame containing the mean correlation, mean norm, crispness, UUID, batch index, and metric path.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">lbm_caiman_python</span> <span class="k">as</span> <span class="nn">lcp</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">mesmerize_core</span> <span class="k">as</span> <span class="nn">mc</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">batch_df</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">load_batch</span><span class="p">(</span><span class="s1">&#39;path/to/batch.pickle&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># overwrite=False will not recompute metrics if they already exist</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metrics_files</span> <span class="o">=</span> <span class="n">lcp</span><span class="o">.</span><span class="n">compute_batch_metrics</span><span class="p">(</span><span class="n">batch_df</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metrics_df</span> <span class="o">=</span> <span class="n">lcp</span><span class="o">.</span><span class="n">create_metrics_df</span><span class="p">(</span><span class="n">metrics_files</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">metrics_df</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lbm_caiman_python.create_summary_df">
+<span class="sig-prename descclassname"><span class="pre">lbm_caiman_python.</span></span><span class="sig-name descname"><span class="pre">create_summary_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="../_modules/lbm_caiman_python/helpers.html#create_summary_df"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lbm_caiman_python.create_summary_df" title="Link to this definition">#</a></dt>
+<dd><p>Calculate summary statistics for each batch of image data and output results in a DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>batch_df</strong><span class="classifier">DataFrame</span></dt><dd><p>A DataFrame containing information about each batch of image data.
+Must be compatible with the mesmerize-core DataFrame API to call
+<cite>get_output</cite> on each row.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>summary_df</strong><span class="classifier">DataFrame</span></dt><dd><p>A DataFrame containing summary statistics for each batch of image data.
+This includes the minimum, maximum, mean, standard deviation, and percentiles.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">lbm_caiman_python</span> <span class="k">as</span> <span class="nn">lcp</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">mesmerize_core</span> <span class="k">as</span> <span class="nn">mc</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">batch_df</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">load_batch</span><span class="p">(</span><span class="s1">&#39;path/to/batch.pickle&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">summary_df</span> <span class="o">=</span> <span class="n">lcp</span><span class="o">.</span><span class="n">create_summary_df</span><span class="p">(</span><span class="n">batch_df</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">summary_df</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lbm_caiman_python.default_ops">
+<span class="sig-prename descclassname"><span class="pre">lbm_caiman_python.</span></span><span class="sig-name descname"><span class="pre">default_ops</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/lbm_caiman_python/default_ops.html#default_ops"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lbm_caiman_python.default_ops" title="Link to this definition">#</a></dt>
+<dd><p>Default parameters for both registration and CNMF.
+The exception is gSiz being set relative to gSig.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt>dict</dt><dd><p>Dictionary of default parameter values for registration and segmentation.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This will likely change as CaImAn is updated.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lbm_caiman_python.delete_batch_rows">
+<span class="sig-prename descclassname"><span class="pre">lbm_caiman_python.</span></span><span class="sig-name descname"><span class="pre">delete_batch_rows</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rows_delete</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">safe_removal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/lbm_caiman_python/batch.html#delete_batch_rows"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lbm_caiman_python.delete_batch_rows" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lbm_caiman_python.fix_scan_phase">
+<span class="sig-prename descclassname"><span class="pre">lbm_caiman_python.</span></span><span class="sig-name descname"><span class="pre">fix_scan_phase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_in</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/lbm_caiman_python/assembly.html#fix_scan_phase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lbm_caiman_python.fix_scan_phase" title="Link to this definition">#</a></dt>
+<dd><p>Corrects the scan phase of the data based on a given offset along a specified dimension.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lbm_caiman_python.generate_patch_view">
+<span class="sig-prename descclassname"><span class="pre">lbm_caiman_python.</span></span><span class="sig-name descname"><span class="pre">generate_patch_view</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pixel_resolution</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_patch_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">40</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overlap_fraction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/lbm_caiman_python/helpers.html#generate_patch_view"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lbm_caiman_python.generate_patch_view" title="Link to this definition">#</a></dt>
+<dd><p>Generate a patch visualization for a 2D image with approximately square patches of a specified size in microns.
+Patches are evenly distributed across the image, using calculated strides and overlaps.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>image</strong><span class="classifier">ndarray</span></dt><dd><p>A 2D NumPy array representing the input image to be divided into patches.</p>
+</dd>
+<dt><strong>pixel_resolution</strong><span class="classifier">float</span></dt><dd><p>The pixel resolution of the image in microns per pixel.</p>
+</dd>
+<dt><strong>target_patch_size</strong><span class="classifier">float, optional</span></dt><dd><p>The desired size of the patches in microns. Default is 40 microns.</p>
+</dd>
+<dt><strong>overlap_fraction</strong><span class="classifier">float, optional</span></dt><dd><p>The fraction of the patch size to use as overlap between patches. Default is 0.5 (50%).</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>fig</strong><span class="classifier">matplotlib.figure.Figure</span></dt><dd><p>A matplotlib figure containing the patch visualization.</p>
+</dd>
+<dt><strong>ax</strong><span class="classifier">matplotlib.axes.Axes</span></dt><dd><p>A matplotlib axes object showing the patch layout on the image.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="mi">144</span><span class="p">,</span> <span class="mi">600</span><span class="p">))</span>  <span class="c1"># Example 2D image</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pixel_resolution</span> <span class="o">=</span> <span class="mf">0.5</span>  <span class="c1"># Microns per pixel</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">generate_patch_view</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">pixel_resolution</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lbm_caiman_python.get_batch_from_path">
+<span class="sig-prename descclassname"><span class="pre">lbm_caiman_python.</span></span><span class="sig-name descname"><span class="pre">get_batch_from_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/lbm_caiman_python/batch.html#get_batch_from_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lbm_caiman_python.get_batch_from_path" title="Link to this definition">#</a></dt>
+<dd><p>Load or create a batch at the given batch_path.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lbm_caiman_python.get_files">
+<span class="sig-prename descclassname"><span class="pre">lbm_caiman_python.</span></span><span class="sig-name descname"><span class="pre">get_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pathnames</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PathLike</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">PathLike</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ext</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'tif'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'_plane_'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">PathLike</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">PathLike</span></span></span><a class="reference internal" href="../_modules/lbm_caiman_python/util/io.html#get_files"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lbm_caiman_python.get_files" title="Link to this definition">#</a></dt>
+<dd><p>Expands a list of pathname patterns to form a sorted list of absolute filenames.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>pathnames: os.PathLike</strong></dt><dd><p>Pathname(s) or pathname pattern(s) to read.</p>
+</dd>
+<dt><strong>ext: str</strong></dt><dd><p>Extention, string giving the filetype extention.</p>
+</dd>
+<dt><strong>exclude_pattern: str | list</strong></dt><dd><p>A string or list of strings that match to files marked as excluded from processing.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>List[PathLike[AnyStr]]</dt><dd><p>List of absolute filenames.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lbm_caiman_python.get_metadata">
+<span class="sig-prename descclassname"><span class="pre">lbm_caiman_python.</span></span><span class="sig-name descname"><span class="pre">get_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PathLike</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/lbm_caiman_python/util/io.html#get_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lbm_caiman_python.get_metadata" title="Link to this definition">#</a></dt>
+<dd><p>Extract metadata from a TIFF file. This can be a raw ScanImage TIFF or one
+processed via [lbm_caiman_python.save_as()](#save_as).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>file: os.PathLike</strong></dt><dd><p>Path to the TIFF file.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>dict</dt><dd><p>Metadata extracted from the TIFF file.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt>ValueError</dt><dd><p>If no metadata is found in the TIFF file. This can occur when the file is not a ScanImage TIFF.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lbm_caiman_python.load_batch">
+<span class="sig-prename descclassname"><span class="pre">lbm_caiman_python.</span></span><span class="sig-name descname"><span class="pre">load_batch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/lbm_caiman_python/batch.html#load_batch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lbm_caiman_python.load_batch" title="Link to this definition">#</a></dt>
+<dd><p>Load a batch after transfering it from a Windows to a POSIX system or vice versa.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>batch_path</strong><span class="classifier">str, Path</span></dt><dd><p>The path to the batch file.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>pandas.DataFrame</dt><dd><p>The loaded batch.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lbm_caiman_python.plot_correlations">
+<span class="sig-prename descclassname"><span class="pre">lbm_caiman_python.</span></span><span class="sig-name descname"><span class="pre">plot_correlations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">results</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_batches</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smooth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">winsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/lbm_caiman_python/helpers.html#plot_correlations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lbm_caiman_python.plot_correlations" title="Link to this definition">#</a></dt>
+<dd><p>Plot the top <cite>num_batches</cite> batches with the highest correlation coefficients.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>results</strong><span class="classifier">DataFrame</span></dt><dd><p>DataFrame containing ‘uuid’ and ‘batch_index’ columns.</p>
+</dd>
+<dt><strong>num_batches</strong><span class="classifier">int, optional</span></dt><dd><p>Number of “best” batches to plot. Default is 3.</p>
+</dd>
+<dt><strong>smooth</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether to smooth the correlation data using a moving average. Default is True.</p>
+</dd>
+<dt><strong>winsize</strong><span class="classifier">int, optional</span></dt><dd><p>The window size for smoothing the data. Default is 5.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lbm_caiman_python.plot_optical_flows">
+<span class="sig-prename descclassname"><span class="pre">lbm_caiman_python.</span></span><span class="sig-name descname"><span class="pre">plot_optical_flows</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/lbm_caiman_python/helpers.html#plot_optical_flows"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lbm_caiman_python.plot_optical_flows" title="Link to this definition">#</a></dt>
+<dd><p>Plots the dense optical flow images from a DataFrame containing metrics information.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>input_df</strong><span class="classifier">DataFrame</span></dt><dd><p>DataFrame containing ‘flows’, ‘batch_index’, ‘mean_corr’, ‘mean_norm’, ‘crispness’, and other related columns.
+Typically, use the output of <cite>create_metrics_df</cite> to get the input DataFrame.</p>
+</dd>
+<dt><strong>max_columns</strong><span class="classifier">int, optional</span></dt><dd><p>Maximum number of columns to display in the plot. Default is 4.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">lbm_caiman_python</span> <span class="k">as</span> <span class="nn">lcp</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">mesmerize_core</span> <span class="k">as</span> <span class="nn">mc</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">batch_df</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">load_batch</span><span class="p">(</span><span class="s1">&#39;path/to/batch.pickle&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metrics_files</span> <span class="o">=</span> <span class="n">lcp</span><span class="o">.</span><span class="n">compute_batch_metrics</span><span class="p">(</span><span class="n">batch_df</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metrics_df</span> <span class="o">=</span> <span class="n">lcp</span><span class="o">.</span><span class="n">create_metrics_df</span><span class="p">(</span><span class="n">metrics_files</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lcp</span><span class="o">.</span><span class="n">plot_optical_flows</span><span class="p">(</span><span class="n">metrics_df</span><span class="p">,</span> <span class="n">max_columns</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lbm_caiman_python.plot_residual_flows">
+<span class="sig-prename descclassname"><span class="pre">lbm_caiman_python.</span></span><span class="sig-name descname"><span class="pre">plot_residual_flows</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">results</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_batches</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smooth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">winsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/lbm_caiman_python/helpers.html#plot_residual_flows"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lbm_caiman_python.plot_residual_flows" title="Link to this definition">#</a></dt>
+<dd><p>Plot the top <cite>num_batches</cite> residual optical flows across batches.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>results</strong><span class="classifier">DataFrame</span></dt><dd><p>DataFrame containing ‘uuid’ and ‘batch_index’ columns.</p>
+</dd>
+<dt><strong>num_batches</strong><span class="classifier">int, optional</span></dt><dd><p>Number of “best” batches to plot. Default is 3.</p>
+</dd>
+<dt><strong>smooth</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether to smooth the residual flows using a moving average. Default is True.</p>
+</dd>
+<dt><strong>winsize</strong><span class="classifier">int, optional</span></dt><dd><p>The window size for smoothing the data. Default is 5.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">lbm_caiman_python</span> <span class="k">as</span> <span class="nn">lcp</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">mesmerize_core</span> <span class="k">as</span> <span class="nn">mc</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">batch_df</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">load_batch</span><span class="p">(</span><span class="s1">&#39;path/to/batch.pickle&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metrics_files</span> <span class="o">=</span> <span class="n">lcp</span><span class="o">.</span><span class="n">compute_batch_metrics</span><span class="p">(</span><span class="n">batch_df</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metrics_df</span> <span class="o">=</span> <span class="n">lcp</span><span class="o">.</span><span class="n">create_metrics_df</span><span class="p">(</span><span class="n">metrics_files</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lcp</span><span class="o">.</span><span class="n">plot_residual_flows</span><span class="p">(</span><span class="n">metrics_df</span><span class="p">,</span> <span class="n">num_batches</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">winsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lbm_caiman_python.plot_with_scalebars">
+<span class="sig-prename descclassname"><span class="pre">lbm_caiman_python.</span></span><span class="sig-name descname"><span class="pre">plot_with_scalebars</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pixel_resolution</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/lbm_caiman_python/helpers.html#plot_with_scalebars"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lbm_caiman_python.plot_with_scalebars" title="Link to this definition">#</a></dt>
+<dd><p>Plot a 2D image with scale bars of 5, 10, and 20 microns.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>image</strong><span class="classifier">ndarray</span></dt><dd><p>A 2D NumPy array representing the image to be plotted.</p>
+</dd>
+<dt><strong>pixel_resolution</strong><span class="classifier">float</span></dt><dd><p>The resolution of the image in microns per pixel.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>None</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lbm_caiman_python.read_scan">
+<span class="sig-prename descclassname"><span class="pre">lbm_caiman_python.</span></span><span class="sig-name descname"><span class="pre">read_scan</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pathnames</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype=&lt;class</span> <span class="pre">'numpy.int16'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">join_contiguous=False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/scanreader/core.html#read_scan"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lbm_caiman_python.read_scan" title="Link to this definition">#</a></dt>
+<dd><p>Reads a ScanImage scan.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pathnames</strong> – String or list of strings. Pathname(s) or pathname pattern(s) to read.</p></li>
+<li><p><strong>dtype</strong> – Data-type. Data type of the output array.</p></li>
+<li><p><strong>join_contiguous</strong> – Boolean. For multiROI scans (2016b and beyond) it will join
+contiguous scanfields in the same depth. No effect in non-multiROI scans. See
+help of ScanMultiROI._join_contiguous_fields for details.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A Scan object (subclass of BaseScan) with metadata and data. See Readme for details.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lbm_caiman_python.return_scan_offset">
+<span class="sig-prename descclassname"><span class="pre">lbm_caiman_python.</span></span><span class="sig-name descname"><span class="pre">return_scan_offset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image_in</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nvals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">8</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/lbm_caiman_python/assembly.html#return_scan_offset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lbm_caiman_python.return_scan_offset" title="Link to this definition">#</a></dt>
+<dd><p>Compute the scan offset correction between interleaved lines or columns in an image.</p>
+<p>This function calculates the scan offset correction by analyzing the cross-correlation
+between interleaved lines or columns of the input image. The cross-correlation peak
+determines the amount of offset between the lines or columns, which is then used to
+correct for any misalignment in the imaging process.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>image_in</strong><span class="classifier">ndarray | ndarray-like</span></dt><dd><p>Input image or volume. It can be 2D, 3D, or 4D.</p>
+</dd>
+<dt><strong>.. note::</strong></dt><dd><p>Dimensions: [height, width], [time, height, width], or [time, plane, height, width].
+The input array must be castable to numpy. e.g. np.shape, np.ravel.</p>
+</dd>
+<dt><strong>nvals</strong><span class="classifier">int</span></dt><dd><p>Number of pixel-wise shifts to include in the search for best correlation.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>int</dt><dd><p>The computed correction value, based on the peak of the cross-correlation.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function assumes that the input image contains interleaved lines or columns that
+need to be analyzed for misalignment. The cross-correlation method is sensitive to
+the similarity in pattern between the interleaved lines or columns. Hence, a strong
+and clear peak in the cross-correlation result indicates a good alignment, and the
+corresponding lag value indicates the amount of misalignment.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">img</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span> <span class="p">[</span><span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">],</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">12</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">return_scan_offset</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lbm_caiman_python.save_as">
+<span class="sig-prename descclassname"><span class="pre">lbm_caiman_python.</span></span><span class="sig-name descname"><span class="pre">save_as</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scan</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">savedir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PathLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">planes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frames</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ext</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.tiff'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/lbm_caiman_python/assembly.html#save_as"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lbm_caiman_python.save_as" title="Link to this definition">#</a></dt>
+<dd><p>Save scan data to the specified directory in the desired format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>scan</strong><span class="classifier">scanreader.ScanMultiROI</span></dt><dd><p>An object representing scan data. Must have attributes such as <cite>num_channels</cite>,
+<cite>num_frames</cite>, <cite>fields</cite>, and <cite>rois</cite>, and support indexing for retrieving frame data.</p>
+</dd>
+<dt><strong>savedir</strong><span class="classifier">os.PathLike</span></dt><dd><p>Path to the directory where the data will be saved.</p>
+</dd>
+<dt><strong>planes</strong><span class="classifier">int, list, or tuple, optional</span></dt><dd><p>Plane indices to save. If <cite>None</cite>, all planes are saved. Default is <cite>None</cite>.</p>
+</dd>
+<dt><strong>frames</strong><span class="classifier">list or tuple, optional</span></dt><dd><p>Frame indices to save. If <cite>None</cite>, all frames are saved. Default is <cite>None</cite>.</p>
+</dd>
+<dt><strong>metadata</strong><span class="classifier">dict, optional</span></dt><dd><p>Additional metadata to update the scan object’s metadata. Default is <cite>None</cite>.</p>
+</dd>
+<dt><strong>overwrite</strong><span class="classifier">bool, optional</span></dt><dd><p>Whether to overwrite existing files. Default is <cite>True</cite>.</p>
+</dd>
+<dt><strong>ext</strong><span class="classifier">str, optional</span></dt><dd><p>File extension for the saved data. Supported options are <cite>‘.tiff’</cite> and <cite>‘.zarr’</cite>.
+Default is <cite>‘.tiff’</cite>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>ValueError</dt><dd><p>If an unsupported file extension is provided.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function creates the specified directory if it does not already exist.
+Data is saved per channel, organized by planes.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lbm_caiman_python.validate_path">
+<span class="sig-prename descclassname"><span class="pre">lbm_caiman_python.</span></span><span class="sig-name descname"><span class="pre">validate_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/lbm_caiman_python/batch.html#validate_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lbm_caiman_python.validate_path" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../examples/notebooks/collation.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title"><span class="section-number">5. </span>Collate Planes</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../glossary.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Glossary</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lbm_caiman_python.calculate_num_patches"><code class="docutils literal notranslate"><span class="pre">calculate_num_patches()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lbm_caiman_python.clean_batch"><code class="docutils literal notranslate"><span class="pre">clean_batch()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lbm_caiman_python.combine_z_planes"><code class="docutils literal notranslate"><span class="pre">combine_z_planes()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lbm_caiman_python.compute_batch_metrics"><code class="docutils literal notranslate"><span class="pre">compute_batch_metrics()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lbm_caiman_python.concat_param_diffs"><code class="docutils literal notranslate"><span class="pre">concat_param_diffs()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lbm_caiman_python.create_metrics_df"><code class="docutils literal notranslate"><span class="pre">create_metrics_df()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lbm_caiman_python.create_summary_df"><code class="docutils literal notranslate"><span class="pre">create_summary_df()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lbm_caiman_python.default_ops"><code class="docutils literal notranslate"><span class="pre">default_ops()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lbm_caiman_python.delete_batch_rows"><code class="docutils literal notranslate"><span class="pre">delete_batch_rows()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lbm_caiman_python.fix_scan_phase"><code class="docutils literal notranslate"><span class="pre">fix_scan_phase()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lbm_caiman_python.generate_patch_view"><code class="docutils literal notranslate"><span class="pre">generate_patch_view()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lbm_caiman_python.get_batch_from_path"><code class="docutils literal notranslate"><span class="pre">get_batch_from_path()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lbm_caiman_python.get_files"><code class="docutils literal notranslate"><span class="pre">get_files()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lbm_caiman_python.get_metadata"><code class="docutils literal notranslate"><span class="pre">get_metadata()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lbm_caiman_python.load_batch"><code class="docutils literal notranslate"><span class="pre">load_batch()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lbm_caiman_python.plot_correlations"><code class="docutils literal notranslate"><span class="pre">plot_correlations()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lbm_caiman_python.plot_optical_flows"><code class="docutils literal notranslate"><span class="pre">plot_optical_flows()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lbm_caiman_python.plot_residual_flows"><code class="docutils literal notranslate"><span class="pre">plot_residual_flows()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lbm_caiman_python.plot_with_scalebars"><code class="docutils literal notranslate"><span class="pre">plot_with_scalebars()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lbm_caiman_python.read_scan"><code class="docutils literal notranslate"><span class="pre">read_scan()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lbm_caiman_python.return_scan_offset"><code class="docutils literal notranslate"><span class="pre">return_scan_offset()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lbm_caiman_python.save_as"><code class="docutils literal notranslate"><span class="pre">save_as()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lbm_caiman_python.validate_path"><code class="docutils literal notranslate"><span class="pre">validate_path()</span></code></a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Author name not set
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, Elizabeth R. Miller Brain Observatory | The Rockefeller University. All Rights Reserved.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
