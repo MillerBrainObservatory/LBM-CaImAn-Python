@@ -21,6 +21,71 @@ import caiman as cm
 from tqdm import tqdm
 
 
+def calculate_num_patches(image_size, rf, stride_input):
+    """
+    Calculate the total number of patches in an image given stride and rf.
+
+    Parameters
+    ----------
+    image_size : tuple
+        Size of the image as (rows, cols).
+    rf : int
+        Half-size of the patches in pixels (patch width is rf*2 + 1).
+    stride_input : int
+        Amount of overlap between patches in pixels.
+
+    Returns
+    -------
+    int
+        Total number of patches.
+    """
+    rows, cols = image_size
+
+    # Calculate the effective stride
+    stride = 2 * rf - stride_input + 1
+
+    if stride <= 0:
+        raise ValueError("Invalid combination of rf and stride_input. Ensure stride is positive.")
+
+    # Calculate the number of patches along rows and columns
+    patches_rows = (rows - 2 * rf) // stride + 1
+    patches_cols = (cols - 2 * rf) // stride + 1
+
+    # Total number of patches
+    total_patches = patches_rows * patches_cols
+
+    return total_patches
+
+
+def calculate_neurons_per_patch(rf, pixel_resolution, neuron_density):
+    """
+    Calculate the expected number of neurons in a 2D patch.
+
+    Parameters
+    ----------
+    rf : int
+        The receptive field size in pixels.
+    pixel_resolution : tuple
+        The resolution of the image in microns per pixel.
+    neuron_density : float
+        The density of neurons in the image in neurons per square micron.
+    """
+    row_size, col_size = pixel_resolution
+    surface_density = neuron_density  # Already in neurons per square micron for a 2D slice
+
+    # Patch size in pixels
+    patch_rows = 2 * rf + 1
+    patch_cols = 2 * rf + 1
+
+    # Patch area in microns^2
+    patch_area = (patch_rows * row_size) * (patch_cols * col_size)
+
+    # Expected neurons per patch
+    expected_neurons = patch_area * surface_density
+
+    return expected_neurons
+
+
 def smooth_data(data, window_size=5):
     """Smooth the data using a moving average."""
     return np.convolve(data, np.ones(window_size) / window_size, mode='valid')
@@ -150,6 +215,36 @@ def generate_patch_view(image: ArrayLike, pixel_resolution: float, target_patch_
                  f"Overlap: {overlap} pixels (~{overlap * pixel_resolution:.1f} μm)\n")
     plt.tight_layout()
     return fig, ax, stride, overlap
+
+
+def calculate_patches(image_size, rf, stride_input):
+    """
+    Calculate the total number of patches in an image given stride and rf.
+
+    Args:
+        image_size (tuple): Size of the image as (rows, cols).
+        rf (int): Half-size of the patches in pixels (patch width is rf*2 + 1).
+        stride_input (int): Amount of overlap between patches in pixels.
+
+    Returns:
+        int: Total number of patches.
+    """
+    rows, cols = image_size
+
+    # Calculate the effective stride
+    stride = 2 * rf - stride_input + 1
+
+    if stride <= 0:
+        raise ValueError("Invalid combination of rf and stride_input. Ensure stride is positive.")
+
+    # Calculate the number of patches along rows and columns
+    patches_rows = (rows - 2 * rf) // stride + 1
+    patches_cols = (cols - 2 * rf) // stride + 1
+
+    # Total number of patches
+    total_patches = patches_rows * patches_cols
+
+    return total_patches
 
 
 def _compute_metrics(fname, uuid, batch_id, final_size_x, final_size_y, swap_dim=False, pyr_scale=.5, levels=3,
@@ -573,7 +668,7 @@ def concat_param_diffs(input_df, param_diffs):
     input_df = input_df[
         # better col order
         ['mean_corr', 'mean_norm', 'crispness'] + list(param_diffs.columns) + ['batch_index', 'uuid', 'metric_path']
-    ]
+        ]
 
     return input_df
 
@@ -861,4 +956,3 @@ def plot_correlations(results, num_batches=3, smooth=True, winsize=5):
     ax.legend(loc='best', fontsize=12, title='Figure Key', title_fontsize=12, prop={'weight': 'bold'})
     plt.tight_layout()
     plt.show()
-

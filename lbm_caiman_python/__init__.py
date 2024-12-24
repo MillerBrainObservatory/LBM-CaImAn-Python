@@ -25,7 +25,8 @@ from .helpers import (
     plot_optical_flows,
     plot_residual_flows,
     plot_correlations,
-    concat_param_diffs
+    concat_param_diffs,
+    calculate_num_patches
 )
 # from ._store_model import TimeStore
 
@@ -54,5 +55,6 @@ __all__ = [
     "plot_optical_flows",
     "plot_residual_flows",
     "plot_correlations",
-    "load_batch"
+    "load_batch",
+    "calculate_num_patches",
 ]
