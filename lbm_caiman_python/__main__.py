@@ -1,4 +1,6 @@
 # Heavily adapted from suite2p
+import pickle
+
 import numpy as np
 import argparse
 import logging
@@ -13,6 +15,29 @@ import mesmerize_core as mc
 current_file = Path(__file__).parent
 
 print = partial(print, flush=True)
+
+
+def find_files_with_extension(base_dir, extension, max_depth):
+    """
+    Recursively searches for files with a specific extension up to a given depth and stores their paths in a pickle file.
+
+    Parameters
+    ----------
+    base_dir : str or Path
+        The base directory to start searching.
+    extension : str
+        The file extension to look for (e.g., '.txt').
+    max_depth : int
+        The maximum depth of subdirectories to search.
+
+    Returns
+    -------
+    list
+        A list of full file paths matching the given extension.
+    """
+    base_path = Path(base_dir)
+    matching_files = [str(file) for file in base_path.rglob(f'*{extension}') if len(file.relative_to(base_path).parts) <= max_depth + 1]
+    return matching_files
 
 
 def print_params(params, indent=5):
@@ -79,6 +104,7 @@ def add_args(parser: argparse.ArgumentParser):
     parser.add_argument('--create', action='store_false', help='Create a new batch.')
     parser.add_argument('--rm', type=int, nargs='+', help='Indices of batch rows to remove.')
     parser.add_argument('--force', action='store_true', help='Force removal without safety checks.')
+    parser.add_argument('--summary', action='store_true', help='Get a summary of pickle files.')
     parser.add_argument('--remove_data', action='store_true', help='Remove associated data.')
     parser.add_argument('--clean', action='store_true', help='Clean unsuccessful batch items.')
     parser.add_argument('--run', type=str, nargs='+', help='Algorithms to run (e.g., mcorr, cnmf).')
@@ -95,6 +121,8 @@ def load_ops(args, batch_path=None):
     ----------
     args : argparse.Namespace
         Command-line arguments containing the 'ops' path and 'save' option.
+    batch_path : str or Path
+        Path to the batch file.
 
     Returns
     -------
@@ -241,6 +269,7 @@ def resolve_data_path(data_path, df):
         elif data_path.is_dir():
             files = list(data_path.glob("*.tif*"))
             if not files:
+                print([x for x in files])
                 raise ValueError(f"No .tif files found in data_path: {data_path}")
             return files
         else:
