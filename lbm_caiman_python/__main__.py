@@ -177,6 +177,7 @@ def create_load_batch(batch_path):
     batch_path = Path(batch_path).expanduser()
     print(f"Batch path provided: {batch_path}")
 
+
     if batch_path.exists():
         if batch_path.is_dir():
             # If given path is an existing directory, create/load batch.pickle inside it
@@ -195,6 +196,12 @@ def create_load_batch(batch_path):
                 batch_path = batch_path.with_suffix(".pickle")
             print(f"Found existing batch {batch_path}")
             df = mc.load_batch(batch_path)
+
+    elif batch_path.suffix == '.pickle':
+        # non-existent fully qualified filename
+        batch_path.parent.mkdir(parents=True, exist_ok=True)
+        df = mc.create_batch(batch_path)
+        print(f"Created batch at {batch_path}")
     elif batch_path.parent.exists() and batch_path.parent.is_dir():
         # If parent directory exists, create batch.pickle
         batch_path = batch_path / "batch.pickle"
@@ -202,19 +209,7 @@ def create_load_batch(batch_path):
         df = mc.create_batch(batch_path)
         print(f"Batch created at {batch_path}")
     else:
-        # If the file does not exist, and the filetype isn't .pickle, don't create anything
-        if batch_path.suffix != ".pickle":
-            raise ValueError(
-                f"Invalid batch path suffix: {batch_path.suffix}. Expected .pickle."
-            )
-
-        if not batch_path.parent.exists():
-            # Create all necessary parent directories
-            batch_path.parent.mkdir(parents=True, exist_ok=True)
-
-        print(f"Creating batch at {batch_path}")
-        df = mc.create_batch(batch_path)
-        print(f"Batch created at {batch_path}")
+        raise ValueError(f"Batch path {batch_path} cannot be created.")
 
     return df, batch_path
 
