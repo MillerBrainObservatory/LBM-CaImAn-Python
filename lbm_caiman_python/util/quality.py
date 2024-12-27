@@ -5,7 +5,6 @@ import sys
 import cv2
 import numpy as np
 from sklearn.linear_model import TheilSenRegressor
-from scipy.stats import pearsonr
 from caiman.motion_correction import high_pass_filter_space, bin_median
 from caiman import load
 import matplotlib.pyplot as plt
@@ -49,26 +48,27 @@ def mean_psd(y, method="logmexp"):
 def get_noise_fft(
     Y, noise_range=[0.25, 0.5], noise_method="logmexp", max_num_samples_fft=3072
 ):
-    """Estimate the noise level for each pixel by averaging the power spectral density.
+    """
+    Compute the noise level in the Fourier domain for a given signal.
 
-    Args:
-        Y: np.ndarray
-            Input movie data with time in the last axis
+    Parameters
+    ----------
+    Y : ndarray
+        Input data array. The last dimension is treated as time.
+    noise_range : list of float, optional
+        Frequency range to estimate noise, by default [0.25, 0.5].
+    noise_method : str, optional
+        Method to compute the mean noise power spectral density (PSD), by default "logmexp".
+    max_num_samples_fft : int, optional
+        Maximum number of samples to use for FFT computation, by default 3072.
 
-        noise_range: np.ndarray [2 x 1] between 0 and 0.5
-            Range of frequencies compared to Nyquist rate over which the power spectrum is averaged
-            default: [0.25,0.5]
-
-        noise method: string
-            method of averaging the noise.
-            Choices:
-                'mean': Mean
-                'median': Median
-                'logmexp': Exponential of the mean of the logarithm of PSD (default)
-
-    Returns:
-        sn: np.ndarray
-            Noise level for each pixel
+    Returns
+    -------
+    tuple
+        - sn : float or ndarray
+            Estimated noise level.
+        - psdx : ndarray
+            Power spectral density of the input data.
     """
     T = Y.shape[-1]
     # Y=np.array(Y,dtype=np.float64)
@@ -109,80 +109,6 @@ def get_noise_fft(
         sn = mean_psd(psdx[ind[: psdx.shape[0]]], method=noise_method)
 
     return sn, psdx
-
-
-def compute_quantal_size(scan):
-    """
-    Estimate the unit change in calcium response corresponding to a unit change in
-    pixel intensity (dubbed quantal size, lower is better).
-
-    Assumes images are stationary from one timestep to the next. Uses it to calculate a
-    measure of noise per bright intensity (which increases linearly given that imaging
-    noise is poisson), fits a line to it and uses the slope as the estimate.
-
-    :param np.array scan: 3-dimensional scan (image_height, image_width, num_frames).
-
-    :returns: int minimum pixel value in the scan (that appears a min number of times)
-    :returns: int maximum pixel value in the scan (that appears a min number of times)
-    :returns: np.array pixel intensities used for the estimation.
-    :returns: np.array noise variances used for the estimation.
-    :returns: float the estimated quantal size
-    :returns: float the estimated zero value
-    """
-    # Set some params
-    num_frames = scan.shape[2]
-    min_count = num_frames * 0.1  # pixel values with fewer appearances will be ignored
-    max_acceptable_intensity = 3000  # pixel values higher than this will be ignored
-
-    # Make sure field is at least 32 bytes (int16 overflows if summed to itself)
-    scan = scan.astype(np.float32, copy=False)
-
-    # Create pixel values at each position in field
-    eps = 1e-4  # needed for np.round to not be biased towards even numbers (0.5 -> 1, 1.5 -> 2, 2.5 -> 3, etc.)
-    pixels = np.round((scan[:, :, :-1] + scan[:, :, 1:]) / 2 + eps)
-    pixels = pixels.astype(np.int16 if np.max(abs(pixels)) < 2**15 else np.int32)
-
-    # Compute a good range of pixel values (common, not too bright values)
-    unique_pixels, counts = np.unique(pixels, return_counts=True)
-    min_intensity = min(unique_pixels[counts > min_count])
-    max_intensity = max(unique_pixels[counts > min_count])
-    max_acceptable_intensity = min(max_intensity, max_acceptable_intensity)
-    pixels_mask = np.logical_and(
-        pixels >= min_intensity, pixels <= max_acceptable_intensity
-    )
-
-    # Select pixels in good range
-    pixels = pixels[pixels_mask]
-    unique_pixels, counts = np.unique(pixels, return_counts=True)
-
-    # Compute noise variance
-    variances = ((scan[:, :, :-1] - scan[:, :, 1:]) ** 2 / 2)[pixels_mask]
-    pixels -= min_intensity
-    variance_sum = np.zeros(len(unique_pixels))  # sum of variances per pixel value
-    for i in range(0, len(pixels), int(1e8)):  # chunk it for memory efficiency
-        variance_sum += np.bincount(
-            pixels[i : i + int(1e8)],
-            weights=variances[i : i + int(1e8)],
-            minlength=np.ptp(unique_pixels) + 1,
-        )[unique_pixels - min_intensity]
-    unique_variances = variance_sum / counts  # average variance per intensity
-
-    # Compute quantal size (by fitting a linear regressor to predict the variance from intensity)
-    X = unique_pixels.reshape(-1, 1)
-    y = unique_variances
-    model = TheilSenRegressor()  # robust regression
-    model.fit(X, y)
-    quantal_size = model.coef_[0]
-    zero_level = -model.intercept_ / model.coef_[0]
-
-    return (
-        min_intensity,
-        max_intensity,
-        unique_pixels,
-        unique_variances,
-        quantal_size,
-        zero_level,
-    )
 
 
 def find_peaks(trace):
@@ -240,6 +166,60 @@ def compute_metrics_motion_correction(fname, final_size_x=None, final_size_y=Non
                                       play_flow=False, resize_fact_flow=.2, template=None,
                                       opencv=True, resize_fact_play=3, fr_play=30, max_flow=1,
                                       gSig_filt=None):
+    """
+    Compute evaluation metrics for motion correction results using optical flow.
+
+    Parameters
+    ----------
+    fname : str
+        Path to the file containing the registration result.
+    final_size_x : int, optional
+        Final size of the x-dimension after cropping, by default None.
+    final_size_y : int, optional
+        Final size of the y-dimension after cropping, by default None.
+    swap_dim : bool, optional
+        Whether to swap dimensions, by default False.
+    pyr_scale : float, optional
+        Scale between pyramid levels in optical flow calculation, by default 0.5.
+    levels : int, optional
+        Number of pyramid levels in optical flow calculation, by default 3.
+    winsize : int, optional
+        Size of the window used in optical flow calculation, by default 100.
+    iterations : int, optional
+        Number of iterations at each pyramid level, by default 15.
+    poly_n : int, optional
+        Size of the pixel neighborhood used for polynomial expansion, by default 5.
+    poly_sigma : float, optional
+        Standard deviation of the Gaussian used for polynomial expansion, by default 1.2/5.
+    flags : int, optional
+        Flags for the optical flow calculation, by default 0.
+    play_flow : bool, optional
+        Whether to play back the flow visualization, by default False.
+    resize_fact_flow : float, optional
+        Resize factor for the input during flow calculation, by default 0.2.
+    template : ndarray, optional
+        Template image for motion correction comparison, by default None.
+    opencv : bool, optional
+        Whether to use OpenCV for flow visualization, by default True.
+    resize_fact_play : int, optional
+        Resize factor for playback visualization, by default 3.
+    fr_play : int, optional
+        Frame rate for playback visualization, by default 30.
+    max_flow : float, optional
+        Maximum flow magnitude for visualization, by default 1.
+    gSig_filt : float, optional
+        Spatial filter size for high-pass filtering, by default None.
+
+    Returns
+    -------
+    tuple
+        - tmpl : ndarray
+            Template used for motion correction.
+        - flows : list of ndarray
+            Optical flow results for each frame.
+        - norms : list of float
+            Norm of the optical flow for each frame.
+    """
     logger = logging.getLogger("caiman")
     if os.environ.get('ENABLE_TQDM') == 'True':
         disable_tqdm = False
@@ -335,3 +315,25 @@ def compute_metrics_motion_correction(fname, final_size_x=None, final_size_y=Non
         cv2.destroyAllWindows()
 
     return tmpl, flows, norms
+
+def reshape_spatial(model):
+    """
+    Reshapes spatial footprints to overlay.
+
+    Parameters
+    ----------
+    model : object
+        A CNMF model object with `dims` and `estimates` attributes.
+
+    Returns
+    -------
+    np.ndarray
+        A 3D array representing the spatial footprints with the last channel containing the thresholded values.
+    """
+    A = model.estimates.A.T
+    c = np.zeros((model.dims[1], model.dims[0], 4))
+    for a in tqdm.tqdm(A, total=A.shape[0]):
+        ar = a.toarray().reshape(model.dims[1], model.dims[0])
+        rows, cols = np.where(ar > 0.1)
+        c[rows, cols, -1] = ar[rows, cols]
+    return c
