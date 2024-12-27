@@ -177,3 +177,26 @@ def get_files(
     else:
         raise ValueError(
             f"Input path should be an iterable list/tuple or PathLike object (string, pathlib.Path), not {pathnames}")
+
+
+def find_files_with_extension(base_dir, extension, max_depth):
+    """
+    Recursively searches for files with a specific extension up to a given depth and stores their paths in a pickle file.
+
+    Parameters
+    ----------
+    base_dir : str or Path
+        The base directory to start searching.
+    extension : str
+        The file extension to look for (e.g., '.txt').
+    max_depth : int
+        The maximum depth of subdirectories to search.
+
+    Returns
+    -------
+    list
+        A list of full file paths matching the given extension.
+    """
+    base_path = Path(base_dir)
+    matching_files = [str(file) for file in base_path.rglob(f'*{extension}') if len(file.relative_to(base_path).parts) <= max_depth + 1]
+    return matching_files
