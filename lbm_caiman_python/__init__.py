@@ -15,7 +15,9 @@ from .batch import (
     clean_batch,
     load_batch,
 )
-from .util.io import get_metadata, get_files
+from .util.io import get_metadata, get_files, find_files_with_extension
+from util.vector import vectorize, unvectorize
+from util.quality import get_noise_fft, compute_metrics_motion_correction, reshape_spatial
 from .helpers import (
     generate_patch_view,
     plot_with_scalebars,
@@ -57,4 +59,5 @@ __all__ = [
     "plot_correlations",
     "load_batch",
     "calculate_num_patches",
+    "find_files_with_extension",
 ]
