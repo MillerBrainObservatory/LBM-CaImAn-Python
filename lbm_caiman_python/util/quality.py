@@ -4,7 +4,6 @@ import sys
 
 import cv2
 import numpy as np
-from sklearn.linear_model import TheilSenRegressor
 from caiman.motion_correction import high_pass_filter_space, bin_median
 from caiman import load
 import matplotlib.pyplot as plt
@@ -332,7 +331,7 @@ def reshape_spatial(model):
     """
     A = model.estimates.A.T
     c = np.zeros((model.dims[1], model.dims[0], 4))
-    for a in tqdm.tqdm(A, total=A.shape[0]):
+    for a in tqdm(A, total=A.shape[0]):
         ar = a.toarray().reshape(model.dims[1], model.dims[0])
         rows, cols = np.where(ar > 0.1)
         c[rows, cols, -1] = ar[rows, cols]

@@ -60,4 +60,7 @@ __all__ = [
     "load_batch",
     "calculate_num_patches",
     "find_files_with_extension",
+    "get_noise_fft",
+    "compute_metrics_motion_correction",
+    "reshape_spatial"
 ]

@@ -6,6 +6,7 @@ import argparse
 import logging
 from pathlib import Path
 from functools import partial
+import matplotlib.pyplot as plt
 
 import pandas as pd
 
@@ -15,29 +16,6 @@ import mesmerize_core as mc
 current_file = Path(__file__).parent
 
 print = partial(print, flush=True)
-
-
-def find_files_with_extension(base_dir, extension, max_depth):
-    """
-    Recursively searches for files with a specific extension up to a given depth and stores their paths in a pickle file.
-
-    Parameters
-    ----------
-    base_dir : str or Path
-        The base directory to start searching.
-    extension : str
-        The file extension to look for (e.g., '.txt').
-    max_depth : int
-        The maximum depth of subdirectories to search.
-
-    Returns
-    -------
-    list
-        A list of full file paths matching the given extension.
-    """
-    base_path = Path(base_dir)
-    matching_files = [str(file) for file in base_path.rglob(f'*{extension}') if len(file.relative_to(base_path).parts) <= max_depth + 1]
-    return matching_files
 
 
 def print_params(params, indent=5):
@@ -422,6 +400,25 @@ def main():
     df, batch_path = create_load_batch(args.batch_path)
     ops = load_ops(args, batch_path)
     ops['package'] = {'version': lcp.__version__}
+
+    if args.summary:
+        files = lcp.find_files_with_extension(args.data_path, '.pickle', 3)
+        plots = {}
+        for file in files:
+            df = mc.load_batch(file)
+            for index, row in df.iterrows():
+                if isinstance(row["outputs"], dict) and row["outputs"].get("success") is False or row["outputs"] is None:
+                    continue
+                if row['algo'] == 'cnmf':
+                    model = row.cnmf.get_output()
+                    corr = row.caiman.get_corr_image()
+                    c = lcp.reshape_spatial(model)
+                    plots[f'{file}-{index}'] = (corr, c)
+
+        for filename, (corr, c) in plots.items():
+            plt.imshow(c[..., -1])
+            plt.show()
+
 
     # Handle removal of batch rows
     if args.rm:
