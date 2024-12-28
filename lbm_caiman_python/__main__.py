@@ -402,23 +402,30 @@ def main():
     ops['package'] = {'version': lcp.__version__}
 
     if args.summary:
-        files = lcp.find_files_with_extension(args.data_path, '.pickle', 3)
-        plots = {}
-        for file in files:
-            df = mc.load_batch(file)
-            for index, row in df.iterrows():
-                if isinstance(row["outputs"], dict) and row["outputs"].get("success") is False or row["outputs"] is None:
-                    continue
-                if row['algo'] == 'cnmf':
-                    model = row.cnmf.get_output()
-                    corr = row.caiman.get_corr_image()
-                    c = lcp.reshape_spatial(model)
-                    plots[f'{file}-{index}'] = (corr, c)
+        plots = lcp.get_all_cnmf_summary_contours(args.data_path)
 
-        for filename, (corr, c) in plots.items():
-            plt.imshow(c[..., -1])
+        for filename, (contours, corr) in plots.items():
+            # Skip if centers are empty or invalid
+            _, centers = contours
+            if not centers or len(centers) == 0:
+                continue
+
+            # Create a new figure and axis
+            fig, ax = plt.subplots(figsize=(8, 8))
+
+            # Plot the correlation image
+            ax.imshow(corr.T, cmap='gray')
+
+            # Overlay the centers of mass
+            for center in centers:
+                ax.scatter(center[0], center[1], color='blue', s=5, alpha=0.5)
+
+            # Configure plot aesthetics
+            ax.set_title(f"Centers for {filename}")
+            ax.axis('off')  # Removes axis ticks and labels
+
+            # Show the plot
             plt.show()
-
 
     # Handle removal of batch rows
     if args.rm:

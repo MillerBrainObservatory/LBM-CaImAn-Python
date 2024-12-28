@@ -16,8 +16,9 @@ from .batch import (
     load_batch,
 )
 from .util.io import get_metadata, get_files, find_files_with_extension
-from util.vector import vectorize, unvectorize
-from util.quality import get_noise_fft, compute_metrics_motion_correction, reshape_spatial
+from .util.vector import vectorize, unvectorize
+from .util.quality import get_noise_fft, reshape_spatial
+from .summary import get_all_cnmf_summary, get_all_cnmf_summary_contours
 from .helpers import (
     generate_patch_view,
     plot_with_scalebars,
@@ -30,7 +31,6 @@ from .helpers import (
     concat_param_diffs,
     calculate_num_patches
 )
-# from ._store_model import TimeStore
 
 __version__ = _version.get_versions()['version']
 
@@ -61,6 +61,7 @@ __all__ = [
     "calculate_num_patches",
     "find_files_with_extension",
     "get_noise_fft",
-    "compute_metrics_motion_correction",
-    "reshape_spatial"
+    "reshape_spatial",
+    "get_all_cnmf_summary",
+    "get_all_cnmf_summary_contours"
 ]
