@@ -394,7 +394,7 @@ def main():
         parser.print_help()
 
     if args.summary:
-        plots = lcp.get_all_cnmf_summary_contours(args.data_path)
+        plots = lcp.get_all_cnmf_summary(args.data_path)
 
         for filename, (contours, corr) in plots.items():
             # Skip if centers are empty or invalid

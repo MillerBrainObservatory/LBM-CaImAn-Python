@@ -18,7 +18,7 @@ from .batch import (
 from .util.io import get_metadata, get_files, find_files_with_extension
 from .util.vector import vectorize, unvectorize
 from .util.quality import get_noise_fft, reshape_spatial
-from .summary import get_all_cnmf_summary, get_all_cnmf_summary_contours
+from .summary import get_all_cnmf_summary
 from .helpers import (
     generate_patch_view,
     plot_with_scalebars,
@@ -63,5 +63,4 @@ __all__ = [
     "get_noise_fft",
     "reshape_spatial",
     "get_all_cnmf_summary",
-    "get_all_cnmf_summary_contours"
 ]
