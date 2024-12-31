@@ -77,12 +77,11 @@ def add_args(parser: argparse.ArgumentParser):
     parser.add_argument('--version', action='store_true', help='Show version information.')
     parser.add_argument('--debug', action='store_true', help='Enable debug mode.')
     parser.add_argument('--batch_path', type=str, help='Path to the batch file.')
-    parser.add_argument('--data_path', type=parse_data_path, help='Path to the input data or index '
-                                                                  'of the batch item.')
+    parser.add_argument('--data_path', type=parse_data_path, help='Path to the input data or index of the batch item.')
+    parser.add_argument('--summary', type=str, help='Get a summary of pickle files.')
     parser.add_argument('--create', action='store_false', help='Create a new batch.')
     parser.add_argument('--rm', type=int, nargs='+', help='Indices of batch rows to remove.')
     parser.add_argument('--force', action='store_true', help='Force removal without safety checks.')
-    parser.add_argument('--summary', action='store_true', help='Get a summary of pickle files.')
     parser.add_argument('--remove_data', action='store_true', help='Remove associated data.')
     parser.add_argument('--clean', action='store_true', help='Clean unsuccessful batch items.')
     parser.add_argument('--run', type=str, nargs='+', help='Algorithms to run (e.g., mcorr, cnmf).')
@@ -394,7 +393,7 @@ def main():
         parser.print_help()
 
     if args.summary:
-        plots = lcp.get_all_cnmf_summary(args.data_path)
+        plots = lcp.get_all_cnmf_summary(args.summary)
 
         for filename, (contours, corr) in plots.items():
             # Skip if centers are empty or invalid

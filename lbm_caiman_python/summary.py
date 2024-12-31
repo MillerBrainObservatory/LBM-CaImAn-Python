@@ -1,14 +1,22 @@
-import mesmerize_core as mc
+import sys
 
 from .util.io import find_files_with_extension
 from .util.quality import reshape_spatial
+from .batch import load_batch
 
 
 def get_all_cnmf_summary(data_path, background_image="max_proj"):
     files = find_files_with_extension(data_path, '.pickle', 3)
+    if not files:
+        raise ValueError(f"No .pickle files found in {data_path} or its subdirectories.")
     plots = {}
     for file in files:
-        df = mc.load_batch(file)
+        try:
+            df = load_batch(file)
+        except Exception as e:
+            print(f"Error loading {file}: {e}", file=sys.stderr)
+            continue
+        print(f"Loaded {file}")
         for index, row in df.iterrows():
             if isinstance(row["outputs"], dict) and row["outputs"].get("success") is False or row["outputs"] is None:
                 continue

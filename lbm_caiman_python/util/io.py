@@ -197,6 +197,15 @@ def find_files_with_extension(base_dir, extension, max_depth):
     list
         A list of full file paths matching the given extension.
     """
-    base_path = Path(base_dir)
-    matching_files = [str(file) for file in base_path.rglob(f'*{extension}*') if len(file.relative_to(base_path).parts) <= max_depth + 1]
+    base_path = Path(base_dir).expanduser().resolve()
+    if not base_path.exists():
+        raise FileNotFoundError(f"Directory '{base_path}' does not exist.")
+    if not base_path.is_dir():
+        raise NotADirectoryError(f"'{base_path}' is not a directory.")
+
+    matching_files = [
+        str(file)
+        for file in base_path.rglob(f'*{extension}')
+        if len(file.relative_to(base_path).parts) <= max_depth + 1
+    ]
     return matching_files
