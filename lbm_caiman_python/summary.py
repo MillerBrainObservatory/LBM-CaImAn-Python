@@ -37,5 +37,6 @@ def get_all_cnmf_summary(data_path, background_image="max_proj"):
                     raise ValueError(f"Background image type: {background_image} not recognized.\nMust be one of:\n"
                                      f"max_proj, min_proj, mean_proj, std_proj, pnr, or corr.")
 
+                print(f"Loading contours for {file}-{index}")
                 plots[f'{file}-{index}'] = (row.cnmf.get_contours('good'), bg)
     return plots
