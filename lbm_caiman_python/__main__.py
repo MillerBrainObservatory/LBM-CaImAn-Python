@@ -393,14 +393,6 @@ def main():
     if args.data_path is None:
         parser.print_help()
 
-    if not args.batch_path:
-        parser.print_help()
-        return
-
-    df, batch_path = create_load_batch(args.batch_path)
-    ops = load_ops(args, batch_path)
-    ops['package'] = {'version': lcp.__version__}
-
     if args.summary:
         plots = lcp.get_all_cnmf_summary_contours(args.data_path)
 
@@ -426,6 +418,15 @@ def main():
 
             # Show the plot
             plt.show()
+
+    if not args.batch_path:
+        parser.print_help()
+        return
+
+    df, batch_path = create_load_batch(args.batch_path)
+    ops = load_ops(args, batch_path)
+    ops['package'] = {'version': lcp.__version__}
+
 
     # Handle removal of batch rows
     if args.rm:
