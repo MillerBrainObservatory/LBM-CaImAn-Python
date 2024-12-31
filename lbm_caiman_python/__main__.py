@@ -418,6 +418,7 @@ def main():
 
             # Show the plot
             plt.show()
+        return
 
     if not args.batch_path:
         parser.print_help()
