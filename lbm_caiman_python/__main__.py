@@ -386,9 +386,6 @@ def main():
     else:
         backend = None
 
-    if args.data_path is None:
-        parser.print_help()
-
     if args.summary:
         files = lcp.get_files_ext(args.summary, '.pickle', 3)
         if not files:
@@ -407,6 +404,9 @@ def main():
         if args.run or args.rm or args.clean:
             print("Cannot run algorithms or modify batch when --summary is provided.")
         return
+
+    if args.data_path is None:
+        parser.print_help()
 
     if not args.batch_path:
         parser.print_help()
