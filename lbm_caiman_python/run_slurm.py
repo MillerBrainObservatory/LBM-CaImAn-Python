@@ -5,6 +5,7 @@ import shutil
 import tempfile
 import time
 from itertools import product
+from pathlib import Path
 
 
 def create_temp_dir():
@@ -31,19 +32,24 @@ def transfer_results(tmpdir, job_id, dest_path):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Run CNMF grid search using SLURM.")
-    parser.add_argument("--mem", type=str, required=True, help="Memory allocation (e.g., 128G).")
-    parser.add_argument("--ntasks", type=int, required=True, help="Number of tasks.")
-    parser.add_argument("--partition", type=str, required=True, help="SLURM partition name.")
-    parser.add_argument("--cpus_per_task", type=int, required=True, help="CPUs per task.")
-    parser.add_argument("--time", type=str, required=True, help="Time limit (e.g., 15:00:00).")
-    parser.add_argument("--gSig", nargs="+", type=int, required=True, help="List of gSig variants.")
-    parser.add_argument("--K", nargs="+", type=int, required=True, help="List of K variants.")
-    parser.add_argument("--copydir", type=str, required=True, help="Path to the data directory to copy.")
-    parser.add_argument("--outdir", type=str, required=True, help="Output directory.")
+    parser = argparse.ArgumentParser(description="Run a SLURM batch job for CNMF parameter grid search.")
+
+    # Required arguments
+    parser.add_argument("--copydir", required=True, help="Directory containing the data to process.")
+    parser.add_argument("--outdir", required=True, help="Output directory for results.")
+
+    # Optional SLURM configuration arguments
+    parser.add_argument("--mem", type=int, default=32, help="Memory per node in GB (default: 32).")
+    parser.add_argument("--ntasks", type=int, default=1, help="Number of tasks (default: 1).")
+    parser.add_argument("--partition", default="hpc_a10_a", help="SLURM partition (default: hpc_a10_a).")
+    parser.add_argument("--cpus_per_task", type=int, default=4, help="CPUs per task (default: 4).")
+    parser.add_argument("--time", default="15:00:00", help="Time limit for the job (default: 15:00:00).")
+
+    # Parameter grid arguments
+    parser.add_argument("--gSig", type=int, nargs="+", default=[4, 10], help="List of gSig values (default: 4 10).")
+    parser.add_argument("--K", type=int, nargs="+", default=[15, 30], help="List of K values (default: 15 30).")
 
     args = parser.parse_args()
-
     start_time = time.time()
 
     # Temporary directory
@@ -56,7 +62,7 @@ def main():
 
         print("Running mcorr...")
         mcorr_command = (
-            f"srun --mem={args.mem} --ntasks={args.ntasks} --partition={args.partition} --cpus-per-task={args.cpus_per_task}"
+            f"srun --mem={args.mem}G --ntasks={args.ntasks} --partition={args.partition} --cpus-per-task={args.cpus_per_task}"
             f" lcp --batch_path {tmpdir} --run mcorr --data_path {tmpdir}"
         )
         run_command(mcorr_command)
@@ -64,7 +70,7 @@ def main():
         print("Running cnmf with parameter grid...")
         for gSig, K in product(args.gSig, args.K):
             cnmf_command = (
-                f"srun --mem={args.mem} --ntasks={args.ntasks} --partition={args.partition} --cpus-per-task={args.cpus_per_task}"
+                f"srun --mem={args.mem}G --ntasks={args.ntasks} --partition={args.partition} --cpus-per-task={args.cpus_per_task}"
                 f" lcp --batch_path {tmpdir} --run cnmf --gSig {gSig} --K {K} --data_path 0"
             )
             run_command(cnmf_command)
