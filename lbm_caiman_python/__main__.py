@@ -243,7 +243,6 @@ def resolve_data_path(data_path, df):
         elif data_path.is_dir():
             files = list(data_path.glob("*.tif*"))
             if not files:
-                print([x for x in files])
                 raise ValueError(f"No .tif files found in data_path: {data_path}")
             return files
         else:
@@ -456,6 +455,7 @@ def main():
         files = resolve_data_path(args.data_path, df)
         for algo in args.run:
             run_algorithm(algo, files, df, ops, backend)
+            df = df.caiman.reload_from_disk()
             print(f'{df.iloc[-1].algo} duration: {df.iloc[-1].algo_duration}')
 
     print(df)
