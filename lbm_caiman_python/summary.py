@@ -44,14 +44,14 @@ def get_cnmf_items(files):
 
 def _num_traces_from_rows(rows):
     df = pd.DataFrame(rows)
-    df["num_traces"] = [row.cnmf.get_temporal().shape[0] for row in rows]
+    df["Total Traces"] = [row.cnmf.get_temporal().shape[0] for row in rows]
     return df
 
 
 def _accepted_rejected_from_rows(rows):
     df = pd.DataFrame(rows)
-    df["num_good"] = [len(row.cnmf.get_output().estimates.idx_components) for row in rows]
-    df["num_bad"] = [len(row.cnmf.get_output().estimates.idx_components_bad) for row in rows]
+    df["Accepted"] = [len(row.cnmf.get_output().estimates.idx_components) for row in rows]
+    df["Rejected"] = [len(row.cnmf.get_output().estimates.idx_components_bad) for row in rows]
     return df
 
 
@@ -81,7 +81,8 @@ def _contours_from_df(df, background_image="max_proj"):
         if isinstance(row["outputs"], dict) and not row["outputs"].get("success") or row["outputs"] is None:
             continue
         if row["algo"] == "cnmf":
-            bg = get_background_image(row, background_image)
+            # bg = get_background_image(row, background_image)
+            reshaped = reshape_spatial(row.cnmf.get_output())
             plots[f"{row.uuid}"] = (row.cnmf.get_contours("good"), bg)
     return plots
 
@@ -120,8 +121,8 @@ def summarize_cnmf(rows):
     df_temporal = _num_traces_from_rows(rows)
     df_comp = _accepted_rejected_from_rows(rows)
     merged_df = pd.merge(
-        df_temporal[["batch_path", "algo_duration", "num_traces"]],
-        df_comp[["batch_path", "num_good", "num_bad"]],
+        df_temporal[["batch_path", "algo_duration", "Total Traces"]],
+        df_comp[["batch_path", "Accepted", "Rejected"]],
         on="batch_path"
     )
     return merged_df
