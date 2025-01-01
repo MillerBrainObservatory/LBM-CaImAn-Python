@@ -390,11 +390,19 @@ def main():
         parser.print_help()
 
     if args.summary:
+        files = lcp.get_files_ext(args.summary, '.pickle', 3)
+        if not files:
+            raise ValueError(f"No .pickle files found in {args.summary} or its subdirectories.")
+        print([f"file-path: {x}\n" for x in files])
+        cnmf_rows = lcp.get_cnmf_items(files)
+        merged_df = lcp.summarize_cnmf(cnmf_rows)
+
+        # uuid takes too much space
+        print(merged_df.iloc[:, 1:])
+
         if args.summary_plots:
-            merged_df = lcp.summarize_cnmf(args.summary, plot=True)
-        else:
-            merged_df = lcp._contours_from_pkl(args.summary)
-        print(merged_df)
+            print("Generating summary plots.")
+            lcp.plot_summary(merged_df, savepath=args.summary)
 
         if args.run or args.rm or args.clean:
             print("Cannot run algorithms or modify batch when --summary is provided.")

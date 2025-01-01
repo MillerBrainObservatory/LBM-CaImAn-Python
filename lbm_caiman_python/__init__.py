@@ -18,7 +18,7 @@ from .batch import (
 from .util.io import get_metadata, get_files, get_files_ext
 from .util.vector import vectorize, unvectorize
 from .util.quality import get_noise_fft, reshape_spatial
-from .summary import _contours_from_pkl, get_num_temporal_from_rows, summarize_cnmf
+from .summary import get_cnmf_items, summarize_cnmf, plot_summary
 from .helpers import (
     generate_patch_view,
     plot_with_scalebars,
@@ -59,10 +59,12 @@ __all__ = [
     "plot_correlations",
     "load_batch",
     "calculate_num_patches",
-    "get_files_ext",
     "get_noise_fft",
     "reshape_spatial",
     "vectorize",
     "unvectorize",
     "get_files_ext",
+    "get_cnmf_items",
+    "summarize_cnmf",
+    "plot_summary",
 ]
