@@ -367,7 +367,7 @@ def main():
     """
     The main function that orchestrates the CLI operations.
     """
-    print("Beginning processing run ...")
+    print("LBM-Caiman pipeline -----------")
     parser = argparse.ArgumentParser(description="LBM-Caiman pipeline parameters")
     parser = add_args(parser)
     args = parser.parse_args()
@@ -387,15 +387,19 @@ def main():
         backend = None
 
     if args.summary:
+        print(f"Getting summary of pickle files in {args.summary}")
         files = lcp.get_files_ext(args.summary, '.pickle', 3)
         if not files:
             raise ValueError(f"No .pickle files found in {args.summary} or its subdirectories.")
-        print([f"file-path: {x}\n" for x in files])
         cnmf_rows = lcp.get_cnmf_items(files)
         merged_df = lcp.summarize_cnmf(cnmf_rows)
 
-        # uuid takes too much space
-        print(merged_df.iloc[:, 1:])
+        print(merged_df[['algo_duration', 'Total Traces', 'Accepted', 'Rejected']])
+
+        # save df to disk
+        merged_df.to_csv(args.summary + '/summary.csv')
+        print(f"Summary saved to {args.summary}/summary.csv")
+        print('See this summary for batch_paths.')
 
         if args.summary_plots:
             print("Generating summary plots.")
@@ -457,6 +461,12 @@ def main():
         for algo in args.run:
             run_algorithm(algo, files, df, ops, backend)
             df = df.caiman.reload_from_disk()
+            row = df.iloc[-1]
+            if isinstance(row["outputs"], dict) and row["outputs"].get("success") is False or row["outputs"] is None:
+                print(f"{algo} failed.")
+                traceback = row["outputs"].get("traceback")
+                if traceback:
+                    print(f"Traceback: {traceback}")
             print(f'{df.iloc[-1].algo} duration: {df.iloc[-1].algo_duration}')
 
     print(df)
