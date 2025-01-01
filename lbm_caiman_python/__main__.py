@@ -1,12 +1,8 @@
-# Heavily adapted from suite2p
-import pickle
-
 import numpy as np
 import argparse
 import logging
 from pathlib import Path
 from functools import partial
-import matplotlib.pyplot as plt
 
 import pandas as pd
 
@@ -79,6 +75,8 @@ def add_args(parser: argparse.ArgumentParser):
     parser.add_argument('--batch_path', type=str, help='Path to the batch file.')
     parser.add_argument('--data_path', type=parse_data_path, help='Path to the input data or index of the batch item.')
     parser.add_argument('--summary', type=str, help='Get a summary of pickle files.')
+    parser.add_argument('--summary_plots', action='store_true', help='Get plots for the summary. Only works with '
+                                                                     '--summary.')
     parser.add_argument('--create', action='store_false', help='Create a new batch.')
     parser.add_argument('--rm', type=int, nargs='+', help='Indices of batch rows to remove.')
     parser.add_argument('--force', action='store_true', help='Force removal without safety checks.')
@@ -181,7 +179,6 @@ def create_load_batch(batch_path):
     """
     batch_path = Path(batch_path).expanduser()
     print(f"Batch path provided: {batch_path}")
-
 
     if batch_path.exists():
         if batch_path.is_dir():
@@ -393,30 +390,14 @@ def main():
         parser.print_help()
 
     if args.summary:
-        plots = lcp.get_all_cnmf_summary(args.summary)
+        if args.summary_plots:
+            merged_df = lcp.summarize_cnmf(args.summary, plot=True)
+        else:
+            merged_df = lcp._contours_from_pkl(args.summary)
+        print(merged_df)
 
-        for filename, (contours, corr) in plots.items():
-            # Skip if centers are empty or invalid
-            _, centers = contours
-            if not centers or len(centers) == 0:
-                continue
-
-            # Create a new figure and axis
-            fig, ax = plt.subplots(figsize=(8, 8))
-
-            # Plot the correlation image
-            ax.imshow(corr.T, cmap='gray')
-
-            # Overlay the centers of mass
-            for center in centers:
-                ax.scatter(center[0], center[1], color='blue', s=5, alpha=0.5)
-
-            # Configure plot aesthetics
-            ax.set_title(f"Centers for {filename}")
-            ax.axis('off')  # Removes axis ticks and labels
-
-            # Show the plot
-            plt.show()
+        if args.run or args.rm or args.clean:
+            print("Cannot run algorithms or modify batch when --summary is provided.")
         return
 
     if not args.batch_path:
@@ -426,7 +407,6 @@ def main():
     df, batch_path = create_load_batch(args.batch_path)
     ops = load_ops(args, batch_path)
     ops['package'] = {'version': lcp.__version__}
-
 
     # Handle removal of batch rows
     if args.rm:
@@ -473,6 +453,7 @@ def main():
     print(df)
     print("Processing complete -----------")
     return
+
 
 if __name__ == "__main__":
     main()

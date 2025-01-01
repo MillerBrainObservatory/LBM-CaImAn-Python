@@ -3,6 +3,7 @@ import shutil
 import sys
 import tempfile
 import time
+import random
 
 import cv2
 import scipy
@@ -955,4 +956,90 @@ def plot_correlations(results, num_batches=3, smooth=True, winsize=5):
     ax.set_title(f'Batches with Highest Correlation', fontsize=16, fontweight='bold')
     ax.legend(loc='best', fontsize=12, title='Figure Key', title_fontsize=12, prop={'weight': 'bold'})
     plt.tight_layout()
+    plt.show()
+
+
+def display_components(estimates, dims, num_random=5):
+    """
+    Display side-by-side plots of accepted and rejected components,
+    and a separate figure with randomly selected components.
+
+    Parameters
+    ----------
+    estimates : object
+        Object containing spatial (A) and temporal (C) components and indices for accepted and rejected components.
+    dims : tuple
+        Dimensions of the field of view (FOV).
+    num_random : int, optional
+        Number of random components to display. Default is 5.
+    """
+    # Ensure idx_components and idx_components_bad exist
+    if not hasattr(estimates, 'idx_components') or not hasattr(estimates, 'idx_components_bad'):
+        raise ValueError("Estimates object must have 'idx_components' and 'idx_components_bad' attributes.")
+
+    # Extract indices for accepted and rejected components
+    idx_accepted = estimates.idx_components
+    idx_rejected = estimates.idx_components_bad
+
+    # Spatial components
+    A = estimates.A
+
+    # Temporal components
+    C = estimates.C
+
+    # Plot accepted components
+    plt.figure(figsize=(12, 6))
+    for i, idx in enumerate(idx_accepted[:min(5, len(idx_accepted))]):
+        plt.subplot(2, 5, i + 1)
+        component_image = np.reshape(A[:, idx].toarray(), dims, order='F')
+        plt.imshow(component_image, cmap='gray')
+        plt.title(f"Accepted {i+1}")
+        plt.axis('off')
+
+    for i, idx in enumerate(idx_accepted[:min(5, len(idx_accepted))]):
+        plt.subplot(2, 5, i + 6)
+        plt.plot(C[idx])
+        plt.title(f"Trace {i+1}")
+
+    plt.suptitle("Accepted Components")
+    plt.tight_layout()
+
+    # Plot rejected components
+    plt.figure(figsize=(12, 6))
+    for i, idx in enumerate(idx_rejected[:min(5, len(idx_rejected))]):
+        plt.subplot(2, 5, i + 1)
+        component_image = np.reshape(A[:, idx].toarray(), dims, order='F')
+        plt.imshow(component_image, cmap='gray')
+        plt.title(f"Rejected {i+1}")
+        plt.axis('off')
+
+    for i, idx in enumerate(idx_rejected[:min(5, len(idx_rejected))]):
+        plt.subplot(2, 5, i + 6)
+        plt.plot(C[idx])
+        plt.title(f"Trace {i+1}")
+
+    plt.suptitle("Rejected Components")
+    plt.tight_layout()
+
+    # Randomly selected components
+    all_indices = list(range(A.shape[1]))
+    random_indices = random.sample(all_indices, min(num_random, len(all_indices)))
+
+    plt.figure(figsize=(12, 6))
+    for i, idx in enumerate(random_indices):
+        plt.subplot(2, num_random, i + 1)
+        component_image = np.reshape(A[:, idx].toarray(), dims, order='F')
+        plt.imshow(component_image, cmap='gray')
+        plt.title(f"Random {i+1}")
+        plt.axis('off')
+
+    for i, idx in enumerate(random_indices):
+        plt.subplot(2, num_random, i + num_random + 1)
+        plt.plot(C[idx])
+        plt.title(f"Trace {i+1}")
+
+    plt.suptitle("Random Components")
+    plt.tight_layout()
+
+    # Show all plots
     plt.show()
