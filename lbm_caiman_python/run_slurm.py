@@ -54,10 +54,15 @@ def main():
 
     # Temporary directory
     tmpdir = create_temp_dir()
+    copydir = Path(args.copydir).expanduser().resolve()
+    dir_contents = os.listdir(copydir)
+
+    print(f"Copying data from: {copydir}")
+    print(f"Contents of copydir: {dir_contents}")
 
     try:
         print("Staging raw data...")
-        rsync_command = f"rsync -av --include '*/' --include 'plane_*' --exclude '*' {args.copydir} {tmpdir}"
+        rsync_command = f"rsync -av --include '*/' --include 'plane_*' --exclude '*' {copydir} {tmpdir}"
         run_command(rsync_command)
 
         print("Running mcorr...")
