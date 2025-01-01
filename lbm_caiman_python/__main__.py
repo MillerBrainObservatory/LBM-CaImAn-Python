@@ -243,7 +243,8 @@ def resolve_data_path(data_path, df):
         elif data_path.is_dir():
             files = list(data_path.glob("*.tif*"))
             if not files:
-                raise ValueError(f"No .tif files found in data_path: {data_path}")
+                print('Contents:\n ', list(data_path.iterdir()))
+                raise ValueError(f"No .tif/.tiff files found in data_path: {data_path}")
             return files
         else:
             raise NotADirectoryError(f"{data_path} is not a valid file or directory.")
