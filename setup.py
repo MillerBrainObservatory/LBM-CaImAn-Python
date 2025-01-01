@@ -65,6 +65,7 @@ setuptools.setup(
             "lcp = lbm_caiman_python.__main__:main",
             "sr = lbm_caiman_python.assembly:main",
             "transfer = lbm_caiman_python.transfer:main",
+            "run_slurm = lbm_caiman_python.run_slurm:main",
         ]
     },
 )
