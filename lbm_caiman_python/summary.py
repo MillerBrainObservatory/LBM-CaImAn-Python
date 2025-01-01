@@ -42,53 +42,20 @@ def get_cnmf_items(files):
     return cnmf_rows
 
 
-def _num_traces_from_rows(rows):
-    df = pd.DataFrame(rows)
-    df["Total Traces"] = [row.cnmf.get_temporal().shape[0] for row in rows]
-    return df
-
-
-def _accepted_rejected_from_rows(rows):
-    df = pd.DataFrame(rows)
-    df["Accepted"] = [len(row.cnmf.get_output().estimates.idx_components) for row in rows]
-    df["Rejected"] = [len(row.cnmf.get_output().estimates.idx_components_bad) for row in rows]
-    return df
-
-
-def get_background_image(row, background_image):
-    if background_image == "corr":
-        return row.caiman.get_corr_image()
-    if background_image == "pnr":
-        return row.caiman.get_pnr_image()
-    if background_image == "max_proj":
-        return row.caiman.get_projection("max")
-    if background_image == "mean_proj":
-        return row.caiman.get_projection("mean")
-    if background_image == "std_proj":
-        return row.caiman.get_projection("std")
-    if background_image == "reshaped":
-        return reshape_spatial(row.cnmf.get_output())
-    raise ValueError(
-        f"Background image type: {background_image} not recognized. Must be one of: max_proj, min_proj, mean_proj, "
-        f"std_proj, pnr, or corr."
-    )
-
-
-def _contours_from_df(df, background_image="max_proj"):
+def _contours_from_df(df):
     plots = {}
     for _, row in tqdm(df.iterrows(), total=len(df), desc="Processing loading contours. This processes ~200 neurons / "
                                                           "second."):
         if isinstance(row["outputs"], dict) and not row["outputs"].get("success") or row["outputs"] is None:
             continue
         if row["algo"] == "cnmf":
-            # bg = get_background_image(row, background_image)
             reshaped = reshape_spatial(row.cnmf.get_output())
-            plots[f"{row.uuid}"] = (row.cnmf.get_contours("good"), bg)
+            plots[f"{row.uuid}"] = (row.cnmf.get_contours("good"), reshaped)
     return plots
 
 
 def plot_summary(df, savepath=None):
-    plots = _contours_from_df(df, background_image="reshaped")
+    plots = _contours_from_df(df)
     for uuid, (contours, corr) in plots.items():
         _, centers = contours
         if not centers:
@@ -104,25 +71,56 @@ def plot_summary(df, savepath=None):
         if savepath:
             print(f"Saving to {savepath / uuid}.png")
             save_name = savepath / f"{uuid}.png"
-            plt.savefig(save_name , dpi=300, bbox_inches="tight")
+            plt.savefig(save_name, dpi=300, bbox_inches="tight")
 
 
 def summarize_cnmf(rows):
     """
     Summarize CNMF results from a list of rows.
     Returns a DataFrame with the following columns:
-    - uuid (str): UUID of the row.
+    - batch_path (str): Path of the batch.
     - algo_duration (float): Duration of the algorithm in seconds.
-    - num_traces (int): Number of traces detected.
-    - num_good (int): Number of accepted traces.
-    - num_bad (int): Number of rejected traces.
-
+    - Total Traces (int): Number of traces detected.
+    - Accepted (int): Number of accepted traces.
+    - Rejected (int): Number of rejected traces.
+    - K, gSig, gSiz, gSig_filt: Parameters used in the CNMF algorithm.
     """
     df_temporal = _num_traces_from_rows(rows)
     df_comp = _accepted_rejected_from_rows(rows)
+    df_params = _params_from_rows(rows)
+
+    # Merge DataFrames step by step
     merged_df = pd.merge(
         df_temporal[["batch_path", "algo_duration", "Total Traces"]],
         df_comp[["batch_path", "Accepted", "Rejected"]],
         on="batch_path"
     )
+
+    merged_df = pd.merge(
+        merged_df,
+        df_params[["batch_path", "K", "gSig", "gSiz", "gSig_filt"]],
+        on="batch_path"
+    )
+
     return merged_df
+
+
+def _num_traces_from_rows(rows):
+    df = pd.DataFrame(rows)
+    df["Total Traces"] = [row.cnmf.get_temporal().shape[0] for row in rows]
+    return df
+
+
+def _accepted_rejected_from_rows(rows):
+    df = pd.DataFrame(rows)
+    df["Accepted"] = [len(row.cnmf.get_output().estimates.idx_components) for row in rows]
+    df["Rejected"] = [len(row.cnmf.get_output().estimates.idx_components_bad) for row in rows]
+    return df
+
+
+def _params_from_rows(rows):
+    df = pd.DataFrame(rows)
+    params_to_query = ["K", "gSig", "gSiz", "gSig_filt"]
+    for param in params_to_query:
+        df[param] = [row.params["main"][param] for row in rows]
+    return df
