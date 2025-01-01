@@ -20,7 +20,7 @@ def run_command(command, capture_output=False):
 
 def transfer_results(tmpdir, job_id, dest_path):
     os.makedirs(dest_path, exist_ok=True)
-    for file in [f"test_{job_id}.out", f"test_{job_id}.err"]:
+    for file in [f"{job_id}.out", f"{job_id}.err"]:
         shutil.copy(os.path.join(tmpdir, file), tmpdir)
 
     rsync_command = (
