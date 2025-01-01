@@ -29,6 +29,7 @@ def get_cnmf_items(files):
     for file in files:
         try:
             df = load_batch(file)
+            df['batch_path'] = file
         except Exception as e:
             print(f"Error loading {file}: {e}", file=sys.stderr)
             continue
@@ -118,5 +119,9 @@ def summarize_cnmf(rows):
     """
     df_temporal = _num_traces_from_rows(rows)
     df_comp = _accepted_rejected_from_rows(rows)
-    merged_df = pd.merge(df_temporal[["uuid", "algo_duration", "num_traces"]], df_comp[["uuid", "num_good", "num_bad"]], on="uuid")
+    merged_df = pd.merge(
+        df_temporal[["batch_path", "algo_duration", "num_traces"]],
+        df_comp[["batch_path", "num_good", "num_bad"]],
+        on="batch_path"
+    )
     return merged_df
