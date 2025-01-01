@@ -394,7 +394,9 @@ def main():
         cnmf_rows = lcp.get_cnmf_items(files)
         merged_df = lcp.summarize_cnmf(cnmf_rows)
 
-        print(merged_df[['algo_duration', 'Total Traces', 'Accepted', 'Rejected']])
+        # no max columns
+        pd.set_option('display.max_columns', None)
+        print(merged_df)
 
         # save df to disk
         merged_df.to_csv(args.summary + '/summary.csv')
