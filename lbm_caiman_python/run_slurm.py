@@ -57,7 +57,7 @@ def main():
 
     try:
         print("Staging raw data...")
-        rsync_command = f"rsync -av --include '*/' --include 'plane_*' --exclude '*' {args.copydir}/ {tmpdir}/"
+        rsync_command = f"rsync -av --include '*/' --include 'plane_*' --exclude '*' {args.copydir} {tmpdir}"
         run_command(rsync_command)
 
         print("Running mcorr...")
