@@ -16,7 +16,15 @@ def get_pickle_files(data_path):
     return files
 
 
-def load_cnmf_rows(files):
+def get_cnmf_items(files):
+    """
+    Load all cnmf items from a list of .pickle files.
+
+    Parameters
+    ----------
+    files : list
+        List of .pickle files to load.
+    """
     cnmf_rows = []
     for file in files:
         try:
@@ -33,25 +41,17 @@ def load_cnmf_rows(files):
     return cnmf_rows
 
 
-def get_num_temporal_from_rows(rows):
+def _num_traces_from_rows(rows):
     df = pd.DataFrame(rows)
     df["num_traces"] = [row.cnmf.get_temporal().shape[0] for row in rows]
     return df
 
 
-def get_good_bad_components_from_rows(rows):
+def _accepted_rejected_from_rows(rows):
     df = pd.DataFrame(rows)
     df["num_good"] = [len(row.cnmf.get_output().estimates.idx_components) for row in rows]
     df["num_bad"] = [len(row.cnmf.get_output().estimates.idx_components_bad) for row in rows]
     return df
-
-
-def merge_summaries(df_temporal, df_comp):
-    return pd.merge(
-        df_temporal[["uuid", "algo_duration", "num_traces"]],
-        df_comp[["uuid", "num_good", "num_bad"]],
-        on="uuid"
-    )
 
 
 def get_background_image(row, background_image):
@@ -85,8 +85,9 @@ def _contours_from_df(df, background_image="max_proj"):
     return plots
 
 
-def plot_summary(plots):
-    for filename, (contours, corr) in plots.items():
+def plot_summary(df, savepath=None):
+    plots = _contours_from_df(df, background_image="reshaped")
+    for uuid, (contours, corr) in plots.items():
         _, centers = contours
         if not centers:
             continue
@@ -94,20 +95,28 @@ def plot_summary(plots):
         ax.imshow(corr.T, cmap="gray")
         for center in centers:
             ax.scatter(center[0], center[1], color="blue", s=5, alpha=0.5)
-        ax.set_title(f"Centers for {filename}")
+        ax.set_title(f"Centers for {uuid}")
         ax.axis("off")
+        plt.tight_layout()
         plt.show()
+        if savepath:
+            print(f"Saving to {savepath / uuid}.png")
+            save_name = savepath / f"{uuid}.png"
+            plt.savefig(save_name , dpi=300, bbox_inches="tight")
 
 
-def summarize_cnmf(data_path, plot=False):
-    files = get_pickle_files(data_path)
-    cnmf_rows = load_cnmf_rows(files)
-    df_temporal = get_num_temporal_from_rows(cnmf_rows)
-    df_comp = get_good_bad_components_from_rows(cnmf_rows)
-    merged_df = merge_summaries(df_temporal, df_comp)
-    if plot:
-        plots = _contours_from_df(merged_df, background_image="reshaped")
-        plot_summary(plots)
-        return merged_df, plots
-    else:
-        return merged_df
+def summarize_cnmf(rows):
+    """
+    Summarize CNMF results from a list of rows.
+    Returns a DataFrame with the following columns:
+    - uuid (str): UUID of the row.
+    - algo_duration (float): Duration of the algorithm in seconds.
+    - num_traces (int): Number of traces detected.
+    - num_good (int): Number of accepted traces.
+    - num_bad (int): Number of rejected traces.
+
+    """
+    df_temporal = _num_traces_from_rows(rows)
+    df_comp = _accepted_rejected_from_rows(rows)
+    merged_df = pd.merge(df_temporal[["uuid", "algo_duration", "num_traces"]], df_comp[["uuid", "num_good", "num_bad"]], on="uuid")
+    return merged_df
