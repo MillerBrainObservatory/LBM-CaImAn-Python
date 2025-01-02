@@ -241,11 +241,7 @@ def resolve_data_path(data_path, df):
         if data_path.is_file():
             return [data_path]
         elif data_path.is_dir():
-            files = list(data_path.glob("*.tif*"))
-            if not files:
-                print('Contents:\n ', list(data_path.iterdir()))
-                raise ValueError(f"No .tif/.tiff files found in data_path: {data_path}")
-            return files
+            return list(data_path.rglob("*.tif*"))
         else:
             raise NotADirectoryError(f"{data_path} is not a valid file or directory.")
     elif isinstance(data_path, int):
@@ -460,6 +456,11 @@ def main():
     # Handle running algorithms
     if args.run:
         files = resolve_data_path(args.data_path, df)
+        if not files:
+            print(f"No files found in {args.data_path}.")
+            print(f"Current directory contents:\n")
+            print("\n".join([str(f) for f in Path(args.data_path).rglob("*")]))
+            return
         for algo in args.run:
             run_algorithm(algo, files, df, ops, backend)
             df = df.caiman.reload_from_disk()

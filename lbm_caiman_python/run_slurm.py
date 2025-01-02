@@ -7,11 +7,6 @@ import time
 from itertools import product
 from pathlib import Path
 
-
-def create_temp_dir():
-    return tempfile.mkdtemp(dir="/tmp", prefix="data_")
-
-
 def run_command(command, capture_output=False):
     result = subprocess.run(command, shell=True, text=True, capture_output=capture_output)
     if result.returncode != 0:
@@ -53,16 +48,14 @@ def main():
     start_time = time.time()
 
     # Temporary directory
-    tmpdir = create_temp_dir()
-    copydir = Path(args.copydir).expanduser().resolve()
-    dir_contents = os.listdir(copydir)
-
-    print(f"Copying data from: {copydir}")
-    print(f"Contents of copydir: {dir_contents}")
+    tmpdir = 'tmp/data_XSDF'
 
     try:
         print("Staging raw data...")
+        copydir = os.path.expanduser(args.copydir)
         rsync_command = f"rsync -av --include '*/' --include 'plane_*' --exclude '*' {copydir} {tmpdir}"
+        dir_contents = os.listdir(copydir)
+
         run_command(rsync_command)
 
         print("Running mcorr...")
