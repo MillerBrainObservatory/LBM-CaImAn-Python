@@ -72,13 +72,12 @@ def main():
     start_time = time.time()
 
     # Temporary directory
-    tmpdir = 'tmp/data_XSDF'
+    tmpdir = tempfile.mkdtemp()
 
     try:
         print("Staging raw data...")
         copydir = os.path.expanduser(args.copydir)
         rsync_command = f"rsync -av --include '*/' --include 'plane_*' --exclude '*' {copydir} {tmpdir}"
-        dir_contents = os.listdir(copydir)
 
         run_command(rsync_command)
 
