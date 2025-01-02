@@ -388,6 +388,10 @@ def main():
         if not files:
             raise ValueError(f"No .pickle files found in {args.summary} or its subdirectories.")
         cnmf_rows = lcp.get_cnmf_items(files)
+        if not cnmf_rows:
+            print("No cnmf items found in the given pickle files.")
+            return
+
         merged_df = lcp.summarize_cnmf(cnmf_rows)
 
         # no max columns
