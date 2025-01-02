@@ -1,4 +1,5 @@
 import argparse
+import glob
 import subprocess
 import os
 import shutil
@@ -29,6 +30,29 @@ def transfer_results(tmpdir, job_id, dest_path):
         f"--exclude 'plane_*' --include '*' {tmpdir}/ rbo@129.85.3.34:{dest_path}"
     )
     run_command(rsync_command)
+
+
+
+def ensure_directory_exists(directory):
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
+
+def validate_tiff_files(directory):
+    tiff_files = glob.glob(os.path.join(directory, '**', '*.tif'), recursive=True)
+    if not tiff_files:
+        raise RuntimeError(f"No TIFF files found in the directory: {directory}")
+    print(f"Found {len(tiff_files)} TIFF file(s) in {directory}.")
+    return tiff_files
+
+def find_tiff_folder(directory):
+    tiff_files = glob.glob(os.path.join(directory, '**', '*.tif'), recursive=True)
+    if not tiff_files:
+        raise RuntimeError(f"No TIFF files found in the directory: {directory}")
+    tiff_dirs = {os.path.dirname(tiff) for tiff in tiff_files}
+    if len(tiff_dirs) > 1:
+        raise RuntimeError(f"Multiple folders containing TIFF files found: {tiff_dirs}")
+    return tiff_dirs.pop()
 
 
 def main():
@@ -68,7 +92,7 @@ def main():
         print("Running mcorr...")
         mcorr_command = (
             f"srun --mem={args.mem}G --ntasks={args.ntasks} --partition={args.partition} --cpus-per-task={args.cpus_per_task}"
-            f" lcp --batch_path {tmpdir} --run mcorr --data_path {tmpdir}"
+            f" lcp --batch_path {tmpdir} --run mcorr --data_path {Path(tmpdir)}/{copydir.name}"
         )
         run_command(mcorr_command)
 
