@@ -109,7 +109,7 @@ def plot_cnmf_components(df, savepath=None):
         plt.show()
         if savepath:
             save_name = Path(savepath) / f"{uuid}_segmentation_plot.png"
-            print(f"Saving to {save_name}!")
+            print(f"Saving to {save_name}.")
             plt.savefig(save_name.expanduser(), dpi=600, bbox_inches="tight")
 
 def summarize_cnmf(rows):
