@@ -1,5 +1,4 @@
 import numpy as np
-from matplotlib import pyplot as plt
 from scipy import signal
 from tqdm import tqdm
 
@@ -155,7 +154,23 @@ def find_peaks(trace):
     return peak_indices, prominences, widths
 
 
-def reshape_spatial(model, title=None):
+def _reshape_spatial(A, model, title):
+    c = np.zeros((model.dims[1], model.dims[0], 4))
+    with tqdm(total=A.shape[0], desc=f"Processing {title}", leave=True) as pbar:
+        for a in A:
+            ar = a.toarray().reshape(model.dims[1], model.dims[0])
+            rows, cols = np.where(ar > 0.1)
+            c[rows, cols, :-1] = np.random.rand(3)
+            c[rows, cols, -1] = ar[rows, cols]
+            pbar.update(1)
+    return c
+
+
+def get_cnmf_plots(model, title=None):
+    if title is None:
+        title = 'spatial footprint'
+    else:
+        title = title
     """
     Reshapes spatial footprints to overlay.
 
@@ -169,20 +184,6 @@ def reshape_spatial(model, title=None):
     np.ndarray
         A 3D array representing the spatial footprints with the last channel containing the thresholded values.
     """
-    A = model.estimates.A.T
-    c = np.zeros((model.dims[1], model.dims[0], 4))
-    if title is None:
-        title = 'spatial footprint'
-    else:
-        title = title
-
-    with tqdm(total=A.shape[0], desc=f"Processing {title}", leave=True) as pbar:
-        for a in A:
-            ar = a.toarray().reshape(model.dims[1], model.dims[0])
-            rows, cols = np.where(ar > 0.1)
-            c[rows, cols, :-1] = np.random.rand(3)
-            c[rows, cols, -1] = ar[rows, cols]
-            pbar.update(1)
-
-    plt.imshow(c)
-    return c
+    comp_good = _reshape_spatial(model.estimates.A.T[model.estimates.idx_components, :], model, title)
+    comp_bad = _reshape_spatial(model.estimates.A.T[model.estimates.idx_components_bad, :], model, title)
+    return comp_good, comp_bad

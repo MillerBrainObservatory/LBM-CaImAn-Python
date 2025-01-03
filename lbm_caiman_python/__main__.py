@@ -387,7 +387,7 @@ def main():
         files = lcp.get_files_ext(args.summary, '.pickle', 3)
         if not files:
             raise ValueError(f"No .pickle files found in {args.summary} or its subdirectories.")
-        cnmf_rows = lcp.get_cnmf_items(files)
+        cnmf_rows = lcp.get_item_by_algo(files, algo="cnmf")
         if not cnmf_rows:
             print("No cnmf items found in the given pickle files.")
             return
@@ -410,7 +410,8 @@ def main():
 
         if args.summary_plots:
             print("Generating summary plots.")
-            lcp.plot_summary(pd.DataFrame(cnmf_rows), savepath=args.summary)
+            # lcp.plot_summary(pd.DataFrame(cnmf_rows), savepath=args.summary)
+            lcp.plot_cnmf_components(pd.DataFrame(cnmf_rows), savepath=args.summary)
 
         if args.run or args.rm or args.clean:
             print("Cannot run algorithms or modify batch when --summary is provided.")

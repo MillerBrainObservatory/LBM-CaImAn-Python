@@ -1,11 +1,14 @@
 import sys
+from pathlib import Path
+
+import numpy as np
 import pandas as pd
 
 from matplotlib import pyplot as plt
 from tqdm import tqdm
 
 from .util.io import get_files_ext
-from .util.quality import reshape_spatial
+from .util.quality import get_cnmf_plots
 from .batch import load_batch
 
 
@@ -16,7 +19,7 @@ def get_pickle_files(data_path):
     return files
 
 
-def get_cnmf_items(files):
+def get_item_by_algo(files, algo="cnmf"):
     """
     Load all cnmf items from a list of .pickle files.
 
@@ -25,7 +28,7 @@ def get_cnmf_items(files):
     files : list
         List of .pickle files to load.
     """
-    cnmf_rows = []
+    temp_row = []
     for file in files:
         try:
             df = load_batch(file)
@@ -35,45 +38,79 @@ def get_cnmf_items(files):
             continue
 
         for _, row in df.iterrows():
-            if isinstance(row["outputs"], dict) and not row["outputs"].get("success") or row["outputs"] is None:
+            if \
+                    (isinstance(row["outputs"], dict)
+                    and not row["outputs"].get("success")
+                    or row["outputs"] is None
+            ):
                 continue
-            if row["algo"] == "cnmf":
-                cnmf_rows.append(row)
-    return cnmf_rows
+            if row["algo"] == algo:
+                temp_row.append(row)
+    return temp_row
 
 
 def _contours_from_df(df):
     plots = {}
-    total_batch_items = len(df.index)
     for _, row in df.iterrows():
         if isinstance(row["outputs"], dict) and not row["outputs"].get("success") or row["outputs"] is None:
             continue
 
         if row["algo"] == "cnmf":
-            reshaped = reshape_spatial(row.cnmf.get_output(), row.batch_path)
-            plots[f"{row.uuid}"] = (row.cnmf.get_contours("good"), reshaped)
+            plots[f"{row.uuid}"] = get_cnmf_plots(row.cnmf.get_output())
     return plots
 
 
 def plot_summary(df, savepath=None):
     plots = _contours_from_df(df)
-    for uuid, (contours, corr) in plots.items():
+    for uuid, (contours, bg) in plots.items():
         _, centers = contours
         if not centers:
             continue
+        print(f"Plotting {uuid}...")
         fig, ax = plt.subplots(figsize=(8, 8))
-        ax.imshow(corr.T, cmap="gray")
+        ax.imshow(bg, cmap='magma')
         for center in centers:
-            ax.scatter(center[0], center[1], color="blue", s=5, alpha=0.5)
+            ax.scatter(center[0], center[1], color="blue", s=2, alpha=0.5)
         ax.set_title(f"Centers for {uuid}")
         ax.axis("off")
         plt.tight_layout()
         plt.show()
         if savepath:
-            print(f"Saving to {savepath / uuid}.png")
-            save_name = savepath / f"{uuid}.png"
-            plt.savefig(save_name, dpi=300, bbox_inches="tight")
+            save_name = Path(savepath) / f"{uuid}_segmentation_plot.png"
+            print(f"Saving to {save_name}!")
+            plt.savefig(save_name.expanduser(), dpi=600, bbox_inches="tight")
 
+
+def plot_cnmf_components(df, savepath=None):
+    """
+    Generate and optionally save segmentation plots for CNMF components.
+
+    Parameters
+    ----------
+    df : pandas.DataFrame
+        DataFrame containing CNMF component information.
+    savepath : str or Path, optional
+        Directory to save the generated plots. If None, plots are displayed but not saved.
+
+    Returns
+    -------
+    None
+    """
+    plots = _contours_from_df(df)
+    for uuid, (good, bad) in plots.items():
+        print(f"Plotting {uuid}...")
+        fig, ax = plt.subplots(1, 2, figsize=(8, 8))
+        ax[0].imshow(good, cmap='magma')
+        ax[0].set_title("Accepted Components")
+        ax[1].imshow(bad, cmap='magma')
+        ax[1].set_title("Rejected Components")
+        ax[0].axis("off")
+        ax[1].axis("off")
+        plt.show()
+        if savepath:
+            save_name = Path(savepath) / f"{uuid}_segmentation_plot.png"
+            print(f"Saving to {save_name}!")
+            plt.savefig(save_name.expanduser(), dpi=600, bbox_inches="tight")
 
 def summarize_cnmf(rows):
     """
@@ -128,3 +165,4 @@ def _params_from_rows(rows):
     for param in params_to_query:
         df[param] = [row.params["main"][param] for row in rows]
     return df
+
