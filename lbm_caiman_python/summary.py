@@ -96,9 +96,12 @@ def summarize_cnmf(rows):
         on="batch_path"
     )
 
+    batch_path_idx = df_params.columns.get_loc('batch_path')
+    df_batch_and_after = df_params.iloc[:, batch_path_idx:]
+
     merged_df = pd.merge(
         merged_df,
-        df_params[["batch_path", "K", "gSig", "gSiz", "gSig_filt"]],
+        df_batch_and_after,
         on="batch_path"
     )
 
@@ -120,7 +123,7 @@ def _accepted_rejected_from_rows(rows):
 
 def _params_from_rows(rows):
     df = pd.DataFrame(rows)
-    params_to_query = ["K", "gSig", "gSiz", "gSig_filt"]
+    params_to_query = ["K", "gSig", "min_SNR", "rval_thr"]
     for param in params_to_query:
         df[param] = [row.params["main"][param] for row in rows]
     return df

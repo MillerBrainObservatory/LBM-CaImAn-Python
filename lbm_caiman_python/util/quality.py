@@ -1,4 +1,5 @@
 import numpy as np
+from matplotlib import pyplot as plt
 from scipy import signal
 from tqdm import tqdm
 
@@ -37,7 +38,7 @@ def mean_psd(y, method="logmexp"):
 
 
 def get_noise_fft(
-    Y, noise_range=[0.25, 0.5], noise_method="logmexp", max_num_samples_fft=3072
+    Y, noise_range=None, noise_method="logmexp", max_num_samples_fft=3072
 ):
     """
     Compute the noise level in the Fourier domain for a given signal.
@@ -61,6 +62,8 @@ def get_noise_fft(
         - psdx : ndarray
             Power spectral density of the input data.
     """
+    if noise_range is None:
+        noise_range = [0.25, 0.5]
     T = Y.shape[-1]
     # Y=np.array(Y,dtype=np.float64)
 
@@ -168,8 +171,13 @@ def reshape_spatial(model):
     """
     A = model.estimates.A.T
     c = np.zeros((model.dims[1], model.dims[0], 4))
-    for a in tqdm(A, total=A.shape[0]):
-        ar = a.toarray().reshape(model.dims[1], model.dims[0])
-        rows, cols = np.where(ar > 0.1)
-        c[rows, cols, -1] = ar[rows, cols]
+
+    with tqdm(total=A.shape[0], desc="Processing neurons", leave=False) as pbar:
+        for a in A:
+            ar = a.toarray().reshape(model.dims[1], model.dims[0])
+            rows, cols = np.where(ar > 0.1)
+            c[rows, cols, -1] = ar[rows, cols]
+            pbar.update(1)
+
+    plt.imshow(c)
     return c

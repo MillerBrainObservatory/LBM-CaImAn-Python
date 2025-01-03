@@ -396,7 +396,12 @@ def main():
 
         # no max columns
         pd.set_option('display.max_columns', None)
-        print(merged_df)
+        formatted_output = "\n".join(
+            merged_df.to_string(index=False).splitlines()
+        )
+
+        # Print nicely formatted output
+        print(formatted_output)
 
         # save df to disk
         merged_df.to_csv(args.summary + '/summary.csv')
@@ -405,7 +410,7 @@ def main():
 
         if args.summary_plots:
             print("Generating summary plots.")
-            lcp.plot_summary(merged_df, savepath=args.summary)
+            lcp.plot_summary(pd.DataFrame(cnmf_rows), savepath=args.summary)
 
         if args.run or args.rm or args.clean:
             print("Cannot run algorithms or modify batch when --summary is provided.")
