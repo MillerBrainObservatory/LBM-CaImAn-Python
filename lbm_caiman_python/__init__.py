@@ -18,7 +18,7 @@ from .batch import (
 from .util.io import get_metadata, get_files, get_files_ext
 from .util.vector import vectorize, unvectorize
 from .util.quality import get_noise_fft, get_cnmf_plots, find_peaks, mean_psd
-from .summary import get_item_by_algo, summarize_cnmf, plot_summary
+from .summary import get_item_by_algo, summarize_cnmf, plot_summary, plot_cnmf_components
 from .helpers import (
     generate_patch_view,
     plot_with_scalebars,
@@ -69,4 +69,5 @@ __all__ = [
     "get_item_by_algo",
     "summarize_cnmf",
     "plot_summary",
+    "plot_cnmf_components",
 ]

@@ -47,7 +47,7 @@ def get_item_by_algo(files, algo="cnmf"):
     return temp_row
 
 
-def _contours_from_df(df, savepath=None):
+def plot_cnmf_components(df, savepath=None):
     for _, row in df.iterrows():
         if isinstance(row["outputs"], dict) and not row["outputs"].get("success") or row["outputs"] is None:
             continue
