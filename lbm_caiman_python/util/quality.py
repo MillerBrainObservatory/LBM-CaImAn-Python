@@ -155,7 +155,7 @@ def find_peaks(trace):
     return peak_indices, prominences, widths
 
 
-def reshape_spatial(model):
+def reshape_spatial(model, title=None):
     """
     Reshapes spatial footprints to overlay.
 
@@ -171,11 +171,16 @@ def reshape_spatial(model):
     """
     A = model.estimates.A.T
     c = np.zeros((model.dims[1], model.dims[0], 4))
+    if title is None:
+        title = 'spatial footprint'
+    else:
+        title = title
 
-    with tqdm(total=A.shape[0], desc="Processing neurons", leave=False) as pbar:
+    with tqdm(total=A.shape[0], desc=f"Processing {title}", leave=True) as pbar:
         for a in A:
             ar = a.toarray().reshape(model.dims[1], model.dims[0])
             rows, cols = np.where(ar > 0.1)
+            c[rows, cols, :-1] = np.random.rand(3)
             c[rows, cols, -1] = ar[rows, cols]
             pbar.update(1)
 

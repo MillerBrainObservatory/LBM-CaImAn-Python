@@ -44,12 +44,13 @@ def get_cnmf_items(files):
 
 def _contours_from_df(df):
     plots = {}
-    for _, row in tqdm(df.iterrows(), total=len(df), desc="Processing loading contours. This processes ~200 neurons / "
-                                                          "second."):
+    total_batch_items = len(df.index)
+    for _, row in df.iterrows():
         if isinstance(row["outputs"], dict) and not row["outputs"].get("success") or row["outputs"] is None:
             continue
+
         if row["algo"] == "cnmf":
-            reshaped = reshape_spatial(row.cnmf.get_output())
+            reshaped = reshape_spatial(row.cnmf.get_output(), row.batch_path)
             plots[f"{row.uuid}"] = (row.cnmf.get_contours("good"), reshaped)
     return plots
 
