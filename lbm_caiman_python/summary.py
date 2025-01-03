@@ -1,11 +1,9 @@
 import sys
 from pathlib import Path
 
-import numpy as np
 import pandas as pd
 
 from matplotlib import pyplot as plt
-from tqdm import tqdm
 
 from .util.io import get_files_ext
 from .util.quality import get_cnmf_plots
@@ -49,15 +47,27 @@ def get_item_by_algo(files, algo="cnmf"):
     return temp_row
 
 
-def _contours_from_df(df):
-    plots = {}
+def _contours_from_df(df, savepath=None):
     for _, row in df.iterrows():
         if isinstance(row["outputs"], dict) and not row["outputs"].get("success") or row["outputs"] is None:
             continue
 
         if row["algo"] == "cnmf":
-            plots[f"{row.uuid}"] = get_cnmf_plots(row.cnmf.get_output())
-    return plots
+            good, bad = get_cnmf_plots(row.cnmf.get_output())
+
+            print(f"Plotting {row.uuid}...")
+            fig, ax = plt.subplots(1, 2, figsize=(8, 8))
+            ax[0].imshow(good, cmap='magma')
+            ax[0].set_title("Accepted Components")
+            ax[1].imshow(bad, cmap='magma')
+            ax[1].set_title("Rejected Components")
+            ax[0].axis("off")
+            ax[1].axis("off")
+            plt.show()
+            if savepath:
+                save_name = Path(savepath) / f"{row.uuid}_segmentation_plot.png"
+                print(f"Saving to {save_name}.")
+                plt.savefig(save_name.expanduser(), dpi=600, bbox_inches="tight")
 
 
 def plot_summary(df, savepath=None):
@@ -80,37 +90,6 @@ def plot_summary(df, savepath=None):
             print(f"Saving to {save_name}!")
             plt.savefig(save_name.expanduser(), dpi=600, bbox_inches="tight")
 
-
-def plot_cnmf_components(df, savepath=None):
-    """
-    Generate and optionally save segmentation plots for CNMF components.
-
-    Parameters
-    ----------
-    df : pandas.DataFrame
-        DataFrame containing CNMF component information.
-    savepath : str or Path, optional
-        Directory to save the generated plots. If None, plots are displayed but not saved.
-
-    Returns
-    -------
-    None
-    """
-    plots = _contours_from_df(df)
-    for uuid, (good, bad) in plots.items():
-        print(f"Plotting {uuid}...")
-        fig, ax = plt.subplots(1, 2, figsize=(8, 8))
-        ax[0].imshow(good, cmap='magma')
-        ax[0].set_title("Accepted Components")
-        ax[1].imshow(bad, cmap='magma')
-        ax[1].set_title("Rejected Components")
-        ax[0].axis("off")
-        ax[1].axis("off")
-        plt.show()
-        if savepath:
-            save_name = Path(savepath) / f"{uuid}_segmentation_plot.png"
-            print(f"Saving to {save_name}.")
-            plt.savefig(save_name.expanduser(), dpi=600, bbox_inches="tight")
 
 def summarize_cnmf(rows):
     """

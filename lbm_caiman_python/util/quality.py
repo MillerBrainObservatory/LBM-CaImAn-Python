@@ -167,10 +167,6 @@ def _reshape_spatial(A, model, title):
 
 
 def get_cnmf_plots(model, title=None):
-    if title is None:
-        title = 'spatial footprint'
-    else:
-        title = title
     """
     Reshapes spatial footprints to overlay.
 
@@ -184,6 +180,10 @@ def get_cnmf_plots(model, title=None):
     np.ndarray
         A 3D array representing the spatial footprints with the last channel containing the thresholded values.
     """
+    if title is None:
+        title = 'spatial footprint'
+    else:
+        title = title
     comp_good = _reshape_spatial(model.estimates.A.T[model.estimates.idx_components, :], model, title)
     comp_bad = _reshape_spatial(model.estimates.A.T[model.estimates.idx_components_bad, :], model, title)
     return comp_good, comp_bad
