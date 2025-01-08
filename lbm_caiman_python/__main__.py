@@ -410,7 +410,6 @@ def main():
 
         if args.summary_plots:
             print("Generating summary plots.")
-            # lcp.plot_summary(pd.DataFrame(cnmf_rows), savepath=args.summary)
             lcp.plot_cnmf_components(pd.DataFrame(cnmf_rows), savepath=args.summary)
 
         if args.run or args.rm or args.clean:
