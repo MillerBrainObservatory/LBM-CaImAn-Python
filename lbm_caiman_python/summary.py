@@ -1,12 +1,14 @@
 import sys
 from pathlib import Path
+from joblib import Parallel, delayed
 
+import numpy as np
 import pandas as pd
 
 from matplotlib import pyplot as plt
+from tqdm import tqdm
 
 from .util.io import get_files_ext
-from .util.quality import get_cnmf_plots
 from .batch import load_batch
 
 
@@ -35,12 +37,13 @@ def get_item_by_algo(files, algo="cnmf"):
             print(f"Error loading {file}: {e}", file=sys.stderr)
             continue
 
+        assert isinstance(df, pd.DataFrame), f"Expected DataFrame, got {type(df)}."
         for _, row in df.iterrows():
             if \
                     (isinstance(row["outputs"], dict)
-                    and not row["outputs"].get("success")
-                    or row["outputs"] is None
-            ):
+                            and not row["outputs"].get("success")
+                            or row["outputs"] is None
+                    ):
                 continue
             if row["algo"] == algo:
                 temp_row.append(row)
@@ -53,16 +56,24 @@ def plot_cnmf_components(df, savepath=None):
             continue
 
         if row["algo"] == "cnmf":
-            good, bad = get_cnmf_plots(row.cnmf.get_output())
+            model = row.cnmf.get_output()
+            red_idx = model.estimates.idx_components_bad
 
-            print(f"Plotting {row.uuid}...")
-            fig, ax = plt.subplots(1, 2, figsize=(8, 8))
-            ax[0].imshow(good, cmap='magma')
-            ax[0].set_title("Accepted Components")
-            ax[1].imshow(bad, cmap='magma')
-            ax[1].set_title("Rejected Components")
-            ax[0].axis("off")
-            ax[1].axis("off")
+            spatial_footprints = model.estimates.A
+
+            dims = (model.dims[1], model.dims[0])
+            centers = _calculate_centers(spatial_footprints, dims)
+
+            colors = ['b'] * len(centers)
+
+            for i in red_idx:
+                colors[i] = 'r'
+
+            max_proj = spatial_footprints.max(axis=1).toarray().reshape(dims)
+            plt.imshow(max_proj, cmap="gray")
+            plt.scatter(centers[:, 0], centers[:, 1], c="r", s=3)
+
+            plt.tight_layout()
             plt.show()
             if savepath:
                 save_name = Path(savepath) / f"{row.uuid}_segmentation_plot.png"
@@ -71,24 +82,30 @@ def plot_cnmf_components(df, savepath=None):
 
 
 def plot_summary(df, savepath=None):
-    plots = _contours_from_df(df)
-    for uuid, (contours, bg) in plots.items():
-        _, centers = contours
-        if not centers:
-            continue
-        print(f"Plotting {uuid}...")
-        fig, ax = plt.subplots(figsize=(8, 8))
-        ax.imshow(bg, cmap='magma')
-        for center in centers:
-            ax.scatter(center[0], center[1], color="blue", s=2, alpha=0.5)
-        ax.set_title(f"Centers for {uuid}")
-        ax.axis("off")
-        plt.tight_layout()
-        plt.show()
-        if savepath:
-            save_name = Path(savepath) / f"{uuid}_segmentation_plot.png"
-            print(f"Saving to {save_name}!")
-            plt.savefig(save_name.expanduser(), dpi=600, bbox_inches="tight")
+    """
+    Plot a summary of the CNMF results.
+    """
+    fig, ax = plt.subplots(1, 2, figsize=(12, 6))
+    df.plot.bar(x="batch_path", y=["Accepted", "Rejected"], ax=ax[0])
+    ax[0].set_title("Accepted vs Rejected Components")
+    ax[0].set_ylabel("Number of Components")
+    ax[0].set_xlabel("Batch Path")
+
+    df.plot.bar(x="batch_path", y="Total Traces", ax=ax[1])
+    ax[1].set_title("Total Traces Detected")
+    ax[1].set_ylabel("Number of Traces")
+
+
+def _calculate_centers(A, dims):
+    def calculate_center_component(i):
+        ixs = np.where(A[:, i].toarray() > 0.07)[0]
+        return np.array(np.unravel_index(ixs, dims)).mean(axis=1)[::-1]
+
+    # Use joblib to parallelize the center calculation for each column in A
+    centers = Parallel(n_jobs=-1)(delayed(calculate_center_component)(i) for i in tqdm(range(A.shape[1]), desc="Calculating neuron center coordinates"))
+
+    return np.array(centers)
+
 
 
 def summarize_cnmf(rows):
@@ -144,4 +161,3 @@ def _params_from_rows(rows):
     for param in params_to_query:
         df[param] = [row.params["main"][param] for row in rows]
     return df
-
