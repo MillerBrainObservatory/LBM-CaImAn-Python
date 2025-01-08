@@ -19,6 +19,7 @@ from .util.transform import calculate_centers
 SUMMARY_PARAMS = (
     "K",
     "gSig",
+    "gSig_filt",
     "min_SNR",
     "rval_thr"
 )
@@ -39,6 +40,7 @@ def get_item_by_algo(files: list, algo="cnmf") -> pd.DataFrame:
     for file in files:
         try:
             df = load_batch(file)
+            df.paths.set_batch_path(file)
             df['batch_path'] = file
         except Exception as e:
             print(f"Error loading {file}: {e}", file=sys.stderr)
@@ -69,7 +71,6 @@ def plot_cnmf_components(df: pd.DataFrame, savepath: str | Path | None = None):
 
             dims = (model.dims[1], model.dims[0])
             centers = calculate_centers(spatial_footprints, dims)
-
             colors = ['b'] * len(centers)
 
             for i in red_idx:
@@ -98,27 +99,8 @@ def summarize_cnmf(df: pd.DataFrame) -> pd.DataFrame:
     - Rejected (int): Number of rejected traces.
     - K, gSig, gSiz, gSig_filt: Parameters used in the CNMF algorithm.
     """
-    df_temporal = _num_traces_from_df(df)
-    df_comp = _accepted_rejected_from_df(df)
-    df_params = _params_from_df(df)
-
-    # Merge DataFrames step by step
-    merged_df = pd.merge(
-        df_temporal[["batch_path", "algo_duration", "Total Traces"]],
-        df_comp[["batch_path", "Accepted", "Rejected"]],
-        on="batch_path"
-    )
-
-    batch_path_idx = df_params.columns.get_loc('batch_path')
-    df_batch_and_after = df_params.iloc[:, batch_path_idx:]
-
-    merged_df = pd.merge(
-        merged_df,
-        df_batch_and_after,
-        on="batch_path"
-    )
-
-    return merged_df
+    # Safely add new columns with traces / params
+    return _params_from_df(_num_traces_from_df(df))
 
 
 def concat_param_diffs(input_df, param_diffs):
@@ -391,30 +373,55 @@ def compute_batch_metrics(batch_df: pd.DataFrame, overwrite: bool = False) -> Li
     return metrics_paths
 
 
+def create_batch_summary(cnmf_df, mcorr_df) -> pd.DataFrame:
+    succ_mcorr = _num_successful_from_df(mcorr_df)
+    succ_cnmf = _num_successful_from_df(cnmf_df)
+    unsucc_mcorr = len(mcorr_df) - succ_mcorr
+    unsucc_cnmf = len(cnmf_df) - succ_cnmf
+
+    return pd.DataFrame([
+        {'algo': 'mcorr', 'Runs': len(mcorr_df), 'Successful': succ_mcorr,
+         'Unsuccessful': unsucc_mcorr},
+        {'algo': 'cnmf', 'Runs': len(cnmf_df), 'Successful': succ_cnmf,
+         'Unsuccessful': unsucc_cnmf}
+    ])
+
+
 def _num_traces_from_df(df: pd.DataFrame) -> pd.DataFrame:
-    for row in df:
-        if row.algo in ("cnmf", "cnmfe"):
-            row["Total Traces"] = row.cnmf.get_temporal().shape[0]
-        else:
-            row["Total Traces"] = None
-    return df
+    # Safely add new columns with default values of None
+    add_cols = ["Total Traces", "Accepted", "Rejected"]
+    for col in add_cols:
+        if col not in df.columns:
+            df[col] = None
 
-
-def _accepted_rejected_from_df(df: pd.DataFrame) -> pd.DataFrame:
-    for row in df:
-        if row.algo in ("cnmf", "cnmfe"):
-            row["Accepted"] = len(row.cnmf.get_output().estimates.idx_components)
-            row["Rejected"] = len(row.cnmf.get_output().estimates.idx_components_bad)
+    for idx, row in df.iterrows():
+        batch_df = load_batch(row["batch_path"])  # Ensure access using correct key
+        item = batch_df[batch_df.uuid == row["uuid"]].iloc[0]
+        if row["algo"] in ("cnmf", "cnmfe"):
+            df.at[idx, "Total Traces"] = item.cnmf.get_temporal().shape[0]
+            df.at[idx, "Accepted"] = len(item.cnmf.get_output().estimates.idx_components)
+            df.at[idx, "Rejected"] = len(item.cnmf.get_output().estimates.idx_components_bad)
         else:
-            row["Accepted"] = None
-            row["Rejected"] = None
+            df.at[idx, "Total Traces"] = None
+            df.at[idx, "Accepted"] = None
+            df.at[idx, "Rejected"] = None
+
     return df
 
 
 def _params_from_df(df: pd.DataFrame, params: tuple | list | None = None):
     if params is None:
         params = SUMMARY_PARAMS
-    for row in df:
+    for col in params:
+        if col not in df.columns:
+            df[col] = None
+    for idx, row in df.iterrows():
+        batch_df = load_batch(row.batch_path)
+        item = batch_df[batch_df.uuid == row.uuid].iloc[0]
         for param in params:
-            row[param] = row.cnmf.get_params().get(param)
+            df.at[idx, param] = item.params['main'].get(param)
     return df
+
+
+def _num_successful_from_df(df: pd.DataFrame) -> int:
+    return len(df[df.outputs.apply(lambda x: x.get("success"))])
