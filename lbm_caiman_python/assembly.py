@@ -8,7 +8,7 @@ import numpy as np
 import zarr
 from scanreader import read_scan
 from scanreader.utils import listify_index
-from lbm_caiman_python.io import get_metadata, make_json_serializable
+from .lcp_io import get_metadata, make_json_serializable
 
 import tifffile
 import logging

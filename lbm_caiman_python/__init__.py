@@ -15,7 +15,7 @@ from .batch import (
     clean_batch,
     load_batch,
 )
-from lbm_caiman_python.io import get_metadata, get_files, get_files_ext
+from .lcp_io import get_metadata, get_files, get_files_ext
 from .util.transform import vectorize, unvectorize, calculate_centers
 from .util.quality import get_noise_fft, find_peaks, mean_psd, imblur, greedyROI, finetune
 from .summary import get_item_by_algo, summarize_cnmf, plot_cnmf_components, concat_param_diffs, create_metrics_df, \
@@ -45,6 +45,7 @@ __all__ = [
     "generate_patch_view",
     "load_batch",
     "calculate_num_patches",
+    "concat_param_diffs",
     "get_noise_fft",
     "mean_psd",
     "find_peaks",

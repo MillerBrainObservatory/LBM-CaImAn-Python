@@ -11,12 +11,9 @@ import tifffile
 from matplotlib import pyplot as plt
 from tqdm import tqdm
 
-import lbm_caiman_python
-import lbm_caiman_python as lcp
-
 from .batch import load_batch
 from .helpers import _compute_metrics_with_temp_file, _compute_metrics
-from lbm_caiman_python.io import get_metrics_path
+from .lcp_io import get_metrics_path
 from .util.transform import calculate_centers
 
 SUMMARY_PARAMS = (

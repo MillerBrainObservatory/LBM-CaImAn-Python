@@ -14,10 +14,17 @@ from typing import Any as ArrayLike
 import caiman as cm
 from tqdm import tqdm
 
-from lbm_caiman_python.io import get_metrics_path
+from .lcp_io import get_metrics_path
 
 
-def calculate_num_patches(image_size, rf, stride_input):
+def _pad_image_for_even_patches(image, stride, overlap):
+    patch_width = stride + overlap
+    padded_x = int(np.ceil(image.shape[0] / patch_width) * patch_width) - image.shape[0]
+    padded_y = int(np.ceil(image.shape[1] / patch_width) * patch_width) - image.shape[1]
+    return np.pad(image, ((0, padded_x), (0, padded_y)), mode='constant'), padded_x, padded_y
+
+
+def calculate_num_patches(image, stride, overlap):
     """
     Calculate the total number of patches in an image given stride and rf.
 
@@ -25,9 +32,9 @@ def calculate_num_patches(image_size, rf, stride_input):
     ----------
     image_size : tuple
         Size of the image as (df, cols).
-    rf : int
+    stride : int
         Half-size of the patches in pixels (patch width is rf*2 + 1).
-    stride_input : int
+    overlap : int
         Amount of overlap between patches in pixels.
 
     Returns
@@ -35,22 +42,14 @@ def calculate_num_patches(image_size, rf, stride_input):
     int
         Total number of patches.
     """
-    rows, cols = image_size
+    from caiman.utils.visualization import get_rectangle_coords
 
-    # Calculate the effective stride
-    stride = 2 * rf - stride_input + 1
+    # pad the image like caiman does
+    padded_image, pad_x, pad_y = _pad_image_for_even_patches(image, stride, overlap)
 
-    if stride <= 0:
-        raise ValueError("Invalid combination of rf and stride_input. Ensure stride is positive.")
-
-    # Calculate the number of patches along df and columns
-    patches_rows = (rows - 2 * rf) // stride + 1
-    patches_cols = (cols - 2 * rf) // stride + 1
-
-    # Total number of patches
-    total_patches = patches_rows * patches_cols
-
-    return total_patches
+    # Get patch coordinates
+    patch_rows, patch_cols = get_rectangle_coords(padded_image.shape, stride, overlap)
+    return len(patch_rows) * len(patch_cols)
 
 
 def calculate_neurons_per_patch(rf, pixel_resolution, neuron_density):

@@ -40,7 +40,7 @@ def default_ops():
             'decay_time': 0.4,
             'p': 2,
             'nb': 1,
-            'rf': 13,
+            'stride': 13,
             'K': 20,
             'gSig': gSig,
             'gSiz': gSiz,
