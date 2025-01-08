@@ -1,15 +1,17 @@
 import numpy as np
+from joblib import Parallel, delayed
 from sklearn.base import BaseEstimator, TransformerMixin
+from tqdm import tqdm
 
 
 def vectorize(movie, pixel_indices: np.ndarray = None, order="C"):
     """
-    Reshape an array: [time, rows, cols] -> [n_pixels, time]
+    Reshape an array: [time, df, cols] -> [n_pixels, time]
 
     Parameters
     ----------
     movie: np.ndarray
-        movie of shape [time, rows, cols]
+        movie of shape [time, df, cols]
 
     pixel_indices: np.ndarray, default None
         pixel indices to include in the vectorized output. 1D array of int that represents indices of a fully
@@ -35,9 +37,9 @@ def vectorize(movie, pixel_indices: np.ndarray = None, order="C"):
 
 def unvectorize(Y, shape: tuple[int, int], pixel_indices: np.ndarray = None, order="C"):
     """
-    Reshape an array: [n_pixels, time] -> [time, rows, cols]
+    Reshape an array: [n_pixels, time] -> [time, df, cols]
     or
-    [n_pixels,] -> [rows, cols]
+    [n_pixels,] -> [df, cols]
 
 
     Parameters
@@ -57,7 +59,7 @@ def unvectorize(Y, shape: tuple[int, int], pixel_indices: np.ndarray = None, ord
     Returns
     -------
     np.ndarray
-        movie of shape [time, rows, cols] or a 2D image of shape [rows, cols]
+        movie of shape [time, df, cols] or a 2D image of shape [df, cols]
 
     """
 
@@ -107,7 +109,7 @@ class Vectorizer(TransformerMixin, BaseEstimator):
 
         Parameters
         ----------
-        movie : array-like, shape [time, rows, cols]
+        movie : array-like, shape [time, df, cols]
             input movie
 
         Returns
@@ -171,7 +173,7 @@ class UnVectorizer(TransformerMixin, BaseEstimator):
         Returns
         -------
         np.ndarray
-            unvectorized movie, shape [time, rows, cols]
+            unvectorized movie, shape [time, df, cols]
 
         """
 
@@ -186,3 +188,15 @@ class UnVectorizer(TransformerMixin, BaseEstimator):
         # Here, our transformer does not do any operation in `fit` and only validate
         # the parameters. Thus, it is stateless.
         return {"stateless": True}
+
+
+def calculate_centers(A, dims):
+    def calculate_center_component(i):
+        ixs = np.where(A[:, i].toarray() > 0.07)[0]
+        return np.array(np.unravel_index(ixs, dims)).mean(axis=1)[::-1]
+
+    # Use joblib to parallelize the center calculation for each column in A
+    centers = Parallel(n_jobs=-1)(delayed(calculate_center_component)(i) for i in
+                                  tqdm(range(A.shape[1]), desc="Calculating neuron center coordinates"))
+
+    return np.array(centers)

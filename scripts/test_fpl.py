@@ -14,6 +14,7 @@ from mesmerize_core.caiman_extensions.cnmf import cnmf_cache
 
 import lbm_caiman_python
 import lbm_caiman_python as lcp
+import lbm_caiman_python.summary
 
 if os.name == "nt":
     # disable the cache on windows, this will be automatic in a future version
@@ -81,6 +82,6 @@ ig = fig[0, 0].add_image(A[:, 0].reshape(dims).toarray(), cmap="viridis")
 isc = fig[0, 0].add_scatter(random_centers, colors="r", sizes=3, alpha=0.7, size_space="world")
 fig.show()
 
-metrics_files = lbm_caiman_python.compute_batch_metrics(df, overwrite=True)
-metrics_df = lcp.create_metrics_df(metrics_files)
-summary_df = lcp.create_summary_df(df)
+metrics_files = lbm_caiman_python.summary.compute_batch_metrics(df, overwrite=True)
+metrics_df = lbm_caiman_python.summary.create_metrics_df(metrics_files)
+summary_df = lbm_caiman_python.summary.create_summary_df(df)

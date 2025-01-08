@@ -8,7 +8,7 @@ import numpy as np
 import zarr
 from scanreader import read_scan
 from scanreader.utils import listify_index
-from lbm_caiman_python.util.io import get_metadata, make_json_serializable
+from lbm_caiman_python.io import get_metadata, make_json_serializable
 
 import tifffile
 import logging
@@ -177,12 +177,12 @@ def fix_scan_phase(
         data_out = np.zeros_like(data_in)
 
         if offset > 0:
-            # Shift even rows left and odd rows right by 'offset'
+            # Shift even df left and odd df right by 'offset'
             data_out[0::2, :sx - offset] = data_in[0::2, offset:]
             data_out[1::2, offset:] = data_in[1::2, :sx - offset]
         elif offset < 0:
             offset = abs(offset)
-            # Shift even rows right and odd rows left by 'offset'
+            # Shift even df right and odd df left by 'offset'
             data_out[0::2, offset:] = data_in[0::2, :sx - offset]
             data_out[1::2, :sx - offset] = data_in[1::2, offset:]
         else:

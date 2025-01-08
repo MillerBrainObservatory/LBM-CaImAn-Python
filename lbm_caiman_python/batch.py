@@ -76,10 +76,10 @@ def load_batch(batch_path: str | Path):
 
 def clean_batch(df):
     """
-        Clean a batch of DataFrame entries by removing unsuccessful rows from storage.
+        Clean a batch of DataFrame entries by removing unsuccessful df from storage.
 
-        This function iterates over the rows of the given DataFrame, identifies
-        rows where the 'outputs' column is either `None` or a dictionary containing
+        This function iterates over the df of the given DataFrame, identifies
+        df where the 'outputs' column is either `None` or a dictionary containing
         a 'success' key with a `False` value. For each such row, the corresponding
         item is removed using the `df.caiman.remove_item()` method, and the removal
         is saved to disk.

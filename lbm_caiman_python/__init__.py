@@ -15,22 +15,16 @@ from .batch import (
     clean_batch,
     load_batch,
 )
-from .util.io import get_metadata, get_files, get_files_ext
-from .util.vector import vectorize, unvectorize
+from lbm_caiman_python.io import get_metadata, get_files, get_files_ext
+from .util.transform import vectorize, unvectorize, calculate_centers
 from .util.quality import get_noise_fft, find_peaks, mean_psd, imblur, greedyROI, finetune
-from .summary import get_item_by_algo, summarize_cnmf, plot_cnmf_components
+from .summary import get_item_by_algo, summarize_cnmf, plot_cnmf_components, concat_param_diffs, create_metrics_df, \
+    create_summary_df, compute_batch_metrics
 from .helpers import (
     generate_patch_view,
-    plot_with_scalebars,
-    compute_batch_metrics,
-    create_metrics_df,
-    create_summary_df,
-    plot_optical_flows,
-    plot_residual_flows,
-    plot_correlations,
-    concat_param_diffs,
     calculate_num_patches
 )
+from .visualize import plot_with_scalebars, plot_optical_flows, plot_residual_flows, plot_correlations
 
 __version__ = _version.get_versions()['version']
 
@@ -49,14 +43,6 @@ __all__ = [
     "get_metadata",
     "save_as",
     "generate_patch_view",
-    "plot_with_scalebars",
-    "compute_batch_metrics",
-    "create_metrics_df",
-    "create_summary_df",
-    "concat_param_diffs",
-    "plot_optical_flows",
-    "plot_residual_flows",
-    "plot_correlations",
     "load_batch",
     "calculate_num_patches",
     "get_noise_fft",
@@ -68,6 +54,7 @@ __all__ = [
     "get_item_by_algo",
     "summarize_cnmf",
     "plot_cnmf_components",
+    "calculate_centers",
     "finetune",
     "greedyROI",
     "imblur",

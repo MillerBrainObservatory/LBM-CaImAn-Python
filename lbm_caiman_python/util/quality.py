@@ -1,7 +1,6 @@
 import scipy
 from scipy import signal
 from sklearn.decomposition import NMF
-from tqdm import tqdm
 import cv2
 import numpy as np
 from scipy.ndimage import correlate
@@ -157,18 +156,6 @@ def find_peaks(trace):
         widths.append(width)
 
     return peak_indices, prominences, widths
-
-
-def _reshape_spatial(A, model, title):
-    c = np.zeros((model.dims[1], model.dims[0], 4))
-    with tqdm(total=A.shape[0], desc=f"Processing {title}", leave=True) as pbar:
-        for a in A:
-            ar = a.toarray().reshape(model.dims[1], model.dims[0])
-            rows, cols = np.where(ar > 0.1)
-            c[rows, cols, :-1] = np.random.rand(3)
-            c[rows, cols, -1] = ar[rows, cols]
-            pbar.update(1)
-    return c
 
 
 def imblur(Y, sig=5, siz=11, nDimBlur=None, kernel=None, opencv=True):

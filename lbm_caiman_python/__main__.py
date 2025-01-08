@@ -78,7 +78,7 @@ def add_args(parser: argparse.ArgumentParser):
     parser.add_argument('--summary_plots', action='store_true', help='Get plots for the summary. Only works with '
                                                                      '--summary.')
     parser.add_argument('--create', action='store_false', help='Create a new batch.')
-    parser.add_argument('--rm', type=int, nargs='+', help='Indices of batch rows to remove.')
+    parser.add_argument('--rm', type=int, nargs='+', help='Indices of batch df to remove.')
     parser.add_argument('--force', action='store_true', help='Force removal without safety checks.')
     parser.add_argument('--remove_data', action='store_true', help='Remove associated data.')
     parser.add_argument('--clean', action='store_true', help='Clean unsuccessful batch items.')
@@ -427,7 +427,7 @@ def main():
     ops = load_ops(args, batch_path)
     ops['package'] = {'version': lcp.__version__}
 
-    # Handle removal of batch rows
+    # Handle removal of batch df
     if args.rm:
         print("--rm provided as an argument. Checking the index(s) to delete are valid for this dataframe.")
         safe = not args.force
