@@ -75,8 +75,8 @@ def add_args(parser: argparse.ArgumentParser):
     parser.add_argument('--batch_path', type=str, help='Path to the batch file.')
     parser.add_argument('--data_path', type=parse_data_path, help='Path to the input data or index of the batch item.')
     parser.add_argument('--summary', type=str, help='Get a summary of pickle files.')
-    parser.add_argument('--summary_plots', action='store_true', help='Get plots for the summary. Only works with '
-                                                                     '--summary.')
+    parser.add_argument('--marker_size', help='Scatterplot marker size for summary plots. Default: 3.')
+    parser.add_argument('--summary_plots', action='store_true', help='Get plots for the summary. Only works with --summary.')
     parser.add_argument('--create', action='store_false', help='Create a new batch.')
     parser.add_argument('--rm', type=int, nargs='+', help='Indices of batch df to remove.')
     parser.add_argument('--force', action='store_true', help='Force removal without safety checks.')
@@ -363,7 +363,9 @@ def main():
     """
     The main function that orchestrates the CLI operations.
     """
-    print("LBM-Caiman pipeline -----------")
+    print("\n")
+    print("-----------LBM-Caiman pipeline -----------")
+    print("\n")
     parser = argparse.ArgumentParser(description="LBM-Caiman pipeline parameters")
     parser = add_args(parser)
     args = parser.parse_args()
@@ -383,7 +385,6 @@ def main():
         backend = None
 
     if args.summary:
-        print(f"Getting summary of pickle files in {args.summary}")
         files = lcp.get_files_ext(args.summary, '.pickle', 3)
         if not files:
             raise ValueError(f"No .pickle files found in {args.summary} or its subdirectories.")
@@ -396,18 +397,22 @@ def main():
         if mcorr_df.empty:
             print("No mcorr items found in the given pickle files.")
 
+        print(f"----Summary of batch files in {args.summary}:")
         run_df = lcp.create_batch_summary(cnmf_df, mcorr_df)
         print(run_df)
+        print("\n")
+        print("---Summary of CNMF items:")
 
         merged_df = lcp.summarize_cnmf(cnmf_df)
+        print_cols = ["algo", "algo_duration", "Accepted", "Rejected", "K", "gSig"]
 
         # no max columns
         pd.set_option('display.max_columns', None)
+        print_df = merged_df[print_cols]
         formatted_output = "\n".join(
-            merged_df.to_string(index=False).splitlines()
+            print_df.to_string(index=False).splitlines()
         )
 
-        # Print nicely formatted output
         print(formatted_output)
 
         # save df to disk
@@ -417,7 +422,7 @@ def main():
 
         if args.summary_plots:
             print("Generating summary plots.")
-            lcp.plot_cnmf_components(merged_df, savepath=args.summary)
+            lcp.plot_cnmf_components(merged_df, savepath=args.summary, marker_size=args.marker_size)
 
         if args.run or args.rm or args.clean:
             print("Cannot run algorithms or modify batch when --summary is provided.")
