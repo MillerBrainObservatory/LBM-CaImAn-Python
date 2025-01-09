@@ -70,15 +70,21 @@ def plot_cnmf_components(df: pd.DataFrame, savepath: str | Path | None = None, m
             spatial_footprints = model.estimates.A
 
             dims = (model.dims[1], model.dims[0])
-            centers = calculate_centers(spatial_footprints, dims)
-            colors = ['b'] * len(centers)
-
-            for i in red_idx:
-                colors[i] = 'r'
 
             max_proj = spatial_footprints.max(axis=1).toarray().reshape(dims)
             plt.imshow(max_proj, cmap="gray")
-            plt.scatter(centers[:, 0], centers[:, 1], c="r", s=marker_size)
+
+            # set to 0 to not draw centers
+            if marker_size == 0:
+                print('Skipping drawing centers')
+            else:
+                print(f'Marker size is set to {marker_size}')
+                centers = calculate_centers(spatial_footprints, dims)
+                colors = ['b'] * len(centers)
+
+                for i in red_idx:
+                    colors[i] = 'r'
+                plt.scatter(centers[:, 0], centers[:, 1], c=colors, s=marker_size, marker='.')
 
             plt.tight_layout()
             plt.show()
@@ -409,6 +415,19 @@ def _num_traces_from_df(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+# def _params_from_df(df: pd.DataFrame, params: tuple | list | None = None):
+#     if params is None:
+#         params = SUMMARY_PARAMS
+#     for col in params:
+#         if col not in df.columns:
+#             df[col] = None
+#     for idx, row in df.iterrows():
+#         batch_df = load_batch(row.batch_path)
+#         item = batch_df[batch_df.uuid == row.uuid].iloc[0]
+#         for param in params:
+#             df.at[idx, param] = item.params['main'].get(param)
+#     return df
+
 def _params_from_df(df: pd.DataFrame, params: tuple | list | None = None):
     if params is None:
         params = SUMMARY_PARAMS
@@ -419,8 +438,14 @@ def _params_from_df(df: pd.DataFrame, params: tuple | list | None = None):
         batch_df = load_batch(row.batch_path)
         item = batch_df[batch_df.uuid == row.uuid].iloc[0]
         for param in params:
-            df.at[idx, param] = item.params['main'].get(param)
+            value = item.params['main'].get(param)
+            # Handle iterable values
+            if isinstance(value, (list, tuple, np.ndarray)):
+                df.at[idx, param] = str(value)  # Store as a string
+            else:
+                df.at[idx, param] = value
     return df
+
 
 
 def _num_successful_from_df(df: pd.DataFrame) -> int:
