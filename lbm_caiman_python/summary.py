@@ -58,7 +58,7 @@ def get_item_by_algo(files: list, algo="cnmf") -> pd.DataFrame:
     return pd.DataFrame(temp_row)
 
 
-def plot_cnmf_components(df: pd.DataFrame, savepath: str | Path | None = None):
+def plot_cnmf_components(df: pd.DataFrame, savepath: str | Path | None = None, marker_size=3):
     for _, row in df.iterrows():
         if isinstance(row["outputs"], dict) and not row["outputs"].get("success") or row["outputs"] is None:
             continue
@@ -78,7 +78,7 @@ def plot_cnmf_components(df: pd.DataFrame, savepath: str | Path | None = None):
 
             max_proj = spatial_footprints.max(axis=1).toarray().reshape(dims)
             plt.imshow(max_proj, cmap="gray")
-            plt.scatter(centers[:, 0], centers[:, 1], c="r", s=3)
+            plt.scatter(centers[:, 0], centers[:, 1], c="r", s=marker_size)
 
             plt.tight_layout()
             plt.show()
