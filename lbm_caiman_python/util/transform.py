@@ -1,3 +1,4 @@
+import warnings
 import numpy as np
 from joblib import Parallel, delayed
 from sklearn.base import BaseEstimator, TransformerMixin
@@ -192,11 +193,16 @@ class UnVectorizer(TransformerMixin, BaseEstimator):
 
 def calculate_centers(A, dims):
     def calculate_center_component(i):
-        ixs = np.where(A[:, i].toarray() > 0.07)[0]
-        return np.array(np.unravel_index(ixs, dims)).mean(axis=1)[::-1]
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", category=RuntimeWarning)
+            ixs = np.where(A[:, i].toarray() > 0.07)[0]
+            if ixs.size == 0:
+                return np.array([np.nan, np.nan])  # Handle empty slice explicitly
+            return np.array(np.unravel_index(ixs, dims)).mean(axis=1)[::-1]
 
-    # Use joblib to parallelize the center calculation for each column in A
-    centers = Parallel(n_jobs=-1)(delayed(calculate_center_component)(i) for i in
-                                  tqdm(range(A.shape[1]), desc="Calculating neuron center coordinates"))
+    print("Computing centers in parallel...")
+    centers = Parallel(n_jobs=-1)(
+        delayed(calculate_center_component)(i) for i in tqdm(range(A.shape[1]), desc="Calculating neuron center coordinates")
+    )
 
     return np.array(centers)
