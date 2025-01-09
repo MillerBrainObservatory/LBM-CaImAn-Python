@@ -34,6 +34,14 @@ def parse_data_path(value):
         return str(Path(value).expanduser().resolve())  # expand ~
 
 
+def parse_int_float(value):
+    """ Cast the value to an integer if possible, otherwise treat as a float. """
+    try:
+        return int(value)
+    except ValueError:
+        return float(value)
+
+
 def add_args(parser: argparse.ArgumentParser):
     """
     Add command-line arguments to the parser, dynamically adding arguments
@@ -75,7 +83,7 @@ def add_args(parser: argparse.ArgumentParser):
     parser.add_argument('--batch_path', type=str, help='Path to the batch file.')
     parser.add_argument('--data_path', type=parse_data_path, help='Path to the input data or index of the batch item.')
     parser.add_argument('--summary', type=str, help='Get a summary of pickle files.')
-    parser.add_argument('--marker_size', help='Scatterplot marker size for summary plots. Default: 3.')
+    parser.add_argument('--marker_size', type=parse_int_float, help='Scatterplot marker size for summary plots. Default: 3.')
     parser.add_argument('--summary_plots', action='store_true', help='Get plots for the summary. Only works with --summary.')
     parser.add_argument('--create', action='store_false', help='Create a new batch.')
     parser.add_argument('--rm', type=int, nargs='+', help='Indices of batch df to remove.')
