@@ -179,7 +179,7 @@ def get_files(
             f"Input path should be an iterable list/tuple or PathLike object (string, pathlib.Path), not {pathnames}")
 
 
-def get_files_ext(base_dir, extension, max_depth):
+def get_files_ext(base_dir, extension, max_depth) -> list:
     """
     Recursively searches for files with a specific extension up to a given depth and stores their paths in a pickle file.
 
