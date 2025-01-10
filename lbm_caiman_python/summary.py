@@ -90,19 +90,45 @@ def plot_cnmf_components(data: pd.DataFrame | pd.Series, savepath: str | Path | 
     For a single row (Series):
     >>> plot_cnmf_components(df.iloc[0], savepath="./plots", marker_size=5)
     """
-    if isinstance(data, pd.Series):
-        print("Data is a Series. Wrapping in a list.")
-        data = [data]  # Wrap Series in a list for consistency
-    elif isinstance(data, pd.DataFrame):
-        print("Data is a DataFrame. Converting to list.")
-        data = data.to_dict('series')
-        data = list(data.values())
+    if isinstance(data, pd.DataFrame):
+        for idx, row in data.iterrows():
+            if isinstance(row["outputs"], dict) and not row["outputs"].get("success") or row["outputs"] is None:
+                print(f"Skipping {row.uuid} as it is not successful.")
+                continue
 
-    for row in data:
-        print(data)
+            if row["algo"] == "cnmf":
+                model = row.cnmf.get_output()
+                red_idx = model.estimates.idx_components_bad
+
+                spatial_footprints = model.estimates.A
+                dims = (model.dims[1], model.dims[0])
+
+                max_proj = spatial_footprints.max(axis=1).toarray().reshape(dims)
+                plt.imshow(max_proj, cmap="gray")
+
+                # Check marker size
+                if marker_size == 0:
+                    print('Skipping drawing centers')
+                else:
+                    print(f'Marker size is set to {marker_size}')
+                    centers = calculate_centers(spatial_footprints, dims)
+                    colors = ['b'] * len(centers)
+
+                    for i in red_idx:
+                        colors[i] = 'r'
+                    plt.scatter(centers[:, 0], centers[:, 1], c=colors, s=marker_size, marker='.')
+
+                plt.tight_layout()
+                plt.show()
+                if savepath:
+                    save_name = Path(savepath) / f"{row.uuid}_segmentation_plot.png"
+                    print(f"Saving to {save_name}.")
+                    plt.savefig(save_name.expanduser(), dpi=600, bbox_inches="tight")
+    else:
+        row = data
         if isinstance(row["outputs"], dict) and not row["outputs"].get("success") or row["outputs"] is None:
             print(f"Skipping {row.uuid} as it is not successful.")
-            continue
+            return
 
         if row["algo"] == "cnmf":
             model = row.cnmf.get_output()
