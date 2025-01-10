@@ -58,9 +58,50 @@ def get_item_by_algo(files: list, algo="cnmf") -> pd.DataFrame:
     return pd.DataFrame(temp_row)
 
 
-def plot_cnmf_components(df: pd.DataFrame, savepath: str | Path | None = None, marker_size=3):
-    for _, row in df.iterrows():
+def plot_cnmf_components(data: pd.DataFrame | pd.Series, savepath: str | Path | None = None, marker_size=3):
+    """
+    Plot CNMF components for a DataFrame or a Series.
+
+    Parameters
+    ----------
+    data : pandas.DataFrame or pandas.Series
+        A DataFrame containing CNMF data or a single Series (row) from the DataFrame.
+    savepath : str, Path, or None, optional
+        Directory to save the plots. If None, plots are not saved. Default is None.
+    marker_size : int, optional
+        Size of the markers for the center points. Set to 0 to skip drawing centers. Default is 3.
+
+    Returns
+    -------
+    None
+        Displays the plots and optionally saves them to the specified directory.
+
+    Notes
+    -----
+    - The function handles both `pandas.DataFrame` and `pandas.Series` as input.
+    - If `marker_size` is set to 0, no center points are drawn on the plot.
+    - The `savepath` must be a valid directory path if saving is enabled.
+
+    Examples
+    --------
+    For a DataFrame:
+    >>> plot_cnmf_components(df, savepath="./plots", marker_size=5)
+
+    For a single row (Series):
+    >>> plot_cnmf_components(df.iloc[0], savepath="./plots", marker_size=5)
+    """
+    if isinstance(data, pd.Series):
+        print("Data is a Series. Wrapping in a list.")
+        data = [data]  # Wrap Series in a list for consistency
+    elif isinstance(data, pd.DataFrame):
+        print("Data is a DataFrame. Converting to list.")
+        data = data.to_dict('series')
+        data = list(data.values())
+
+    for row in data:
+        print(data)
         if isinstance(row["outputs"], dict) and not row["outputs"].get("success") or row["outputs"] is None:
+            print(f"Skipping {row.uuid} as it is not successful.")
             continue
 
         if row["algo"] == "cnmf":
@@ -68,13 +109,12 @@ def plot_cnmf_components(df: pd.DataFrame, savepath: str | Path | None = None, m
             red_idx = model.estimates.idx_components_bad
 
             spatial_footprints = model.estimates.A
-
             dims = (model.dims[1], model.dims[0])
 
             max_proj = spatial_footprints.max(axis=1).toarray().reshape(dims)
             plt.imshow(max_proj, cmap="gray")
 
-            # set to 0 to not draw centers
+            # Check marker size
             if marker_size == 0:
                 print('Skipping drawing centers')
             else:
