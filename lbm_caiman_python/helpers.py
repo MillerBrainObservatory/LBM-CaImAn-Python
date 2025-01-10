@@ -17,6 +17,33 @@ from tqdm import tqdm
 from .lcp_io import get_metrics_path
 
 
+def get_single_patch_coords(dims, stride, overlap, patch_index):
+    """
+    Get coordinates of a single patch based on stride, overlap parameters of motion-correction.
+
+    Parameters
+    ----------
+    dims : tuple
+        Dimensions of the image as (rows, cols).
+    stride : int
+        Number of pixels to include in each patch.
+    overlap : int
+        Number of pixels to overlap between patches.
+    patch_index : tuple
+        Index of the patch to return.
+    """
+    patch_height = stride + overlap
+    patch_width = stride + overlap
+    rows = np.arange(0, dims[0] - patch_height + 1, stride)
+    cols = np.arange(0, dims[1] - patch_width + 1, stride)
+
+    row_idx, col_idx = patch_index
+    y_start = rows[row_idx]
+    x_start = cols[col_idx]
+
+    return y_start, y_start + patch_height, x_start, x_start + patch_width
+
+
 def _pad_image_for_even_patches(image, stride, overlap):
     patch_width = stride + overlap
     padded_x = int(np.ceil(image.shape[0] / patch_width) * patch_width) - image.shape[0]

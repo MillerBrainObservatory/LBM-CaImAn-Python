@@ -22,7 +22,8 @@ from .summary import get_item_by_algo, summarize_cnmf, plot_cnmf_components, con
     create_summary_df, compute_batch_metrics, create_batch_summary
 from .helpers import (
     generate_patch_view,
-    calculate_num_patches
+    calculate_num_patches,
+    get_single_patch_coords,
 )
 from .visualize import plot_with_scalebars, plot_optical_flows, plot_residual_flows, plot_correlations
 
@@ -60,4 +61,5 @@ __all__ = [
     "greedyROI",
     "imblur",
     "create_batch_summary",
+    "get_single_patch_coords",
 ]
