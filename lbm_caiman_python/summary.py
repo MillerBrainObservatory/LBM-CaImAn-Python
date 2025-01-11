@@ -280,6 +280,11 @@ def compute_mcorr_statistics(batch_df: pd.DataFrame, raw_filepath=None) -> pd.Da
     """
     Calculate summary statistics for each "mcorr" batch-item in a DataFrame.
 
+    Has an additional requirement that each batch item has the same
+    raw data path set by mc.set_parent_raw_data_path(data_path). For that reason,
+    this function is meant to be used during a parameter grid search-like task on
+    the same input data.
+
     Parameters
     ----------
     batch_df : DataFrame
@@ -312,7 +317,6 @@ def compute_mcorr_statistics(batch_df: pd.DataFrame, raw_filepath=None) -> pd.Da
     metrics_list = []
 
     with tqdm(total=total_tqdm, position=0, leave=True, desc="Computing mcorr statistics") as pbar:
-
 
         # Load raw data
         if raw_filepath:
