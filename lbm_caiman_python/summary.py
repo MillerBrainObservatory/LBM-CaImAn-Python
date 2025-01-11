@@ -25,7 +25,7 @@ SUMMARY_PARAMS = (
 )
 
 
-def get_item_by_algo(files: list, algo="cnmf") -> pd.DataFrame:
+def get_item_by_algo(files: list, algo="all") -> pd.DataFrame:
     """
     Load all cnmf items from a list of .pickle files.
 
@@ -46,14 +46,15 @@ def get_item_by_algo(files: list, algo="cnmf") -> pd.DataFrame:
             print(f"Error loading {file}: {e}", file=sys.stderr)
             continue
 
-        assert isinstance(df, pd.DataFrame), f"Expected DataFrame, got {type(df)}."
         for _, row in df.iterrows():
             if (isinstance(row["outputs"], dict)
                     and not row["outputs"].get("success")
                     or row["outputs"] is None
             ):
                 continue
-            if row["algo"] == algo:
+            if algo == "all":
+                temp_row.append(row)
+            elif row["algo"] == algo:
                 temp_row.append(row)
     return pd.DataFrame(temp_row)
 
@@ -275,7 +276,7 @@ def metrics_df_from_files(metrics_filepaths: list[str | Path]) -> pd.DataFrame:
     return pd.DataFrame(metrics_list)
 
 
-def compute_mcorr_statistics(batch_df: pd.DataFrame) -> pd.DataFrame:
+def compute_mcorr_statistics(batch_df: pd.DataFrame, raw_filepath=None) -> pd.DataFrame:
     """
     Calculate summary statistics for each "mcorr" batch-item in a DataFrame.
 
@@ -285,6 +286,9 @@ def compute_mcorr_statistics(batch_df: pd.DataFrame) -> pd.DataFrame:
         A DataFrame containing information about each batch of image data.
         Must be compatible with the mesmerize-core DataFrame API to call
         `get_output` on each row.
+
+    raw_filepath : str or Path
+        Path to the raw data file.
 
     Returns
     -------
@@ -305,34 +309,38 @@ def compute_mcorr_statistics(batch_df: pd.DataFrame) -> pd.DataFrame:
     batch_df = batch_df[batch_df.item_name == 'mcorr']
     total_tqdm = len(batch_df) + 1  # +1 for the raw file processing
 
+    metrics_list = []
+
     with tqdm(total=total_tqdm, position=0, leave=True, desc="Computing mcorr statistics") as pbar:
 
-        # Check for unique input files
-        if batch_df.input_movie_path.nunique() != 1:
-            raise ValueError(
-                "\n\n"
-                "The batch df have different input files. All input files must be the same.\n"
-                "Please check the **input_movie_path** column in the DataFrame.\n\n"
-                "To select a subset of your DataFrame with the same input file, you can use the following code:\n\n"
-                "batch_df = batch_df[batch_df.input_movie_path == batch_df.input_movie_path.iloc[0]]\n"
-            )
 
-        raw_filepath = batch_df.iloc[0].caiman.get_input_movie_path()
-        raw_data = tifffile.memmap(raw_filepath)
-        met = {
-            'item_name': 'Raw Data',
-            'batch_index': 'None',
-            'min': np.min(raw_data),
-            'max': np.max(raw_data),
-            'mean': np.mean(raw_data),
-            'std': np.std(raw_data),
-            'p1': np.percentile(raw_data, 1),
-            'p50': np.percentile(raw_data, 50),
-            'p99': np.percentile(raw_data, 99),
-            'uuid': None
-        }
-        metrics_list = [met]
-        pbar.update(1)
+        # Load raw data
+        if raw_filepath:
+
+            # Check for unique input files
+            if batch_df.input_movie_path.nunique() != 1:
+                raise ValueError(
+                    "\n\n"
+                    "The batch df have different input files. All input files must be the same.\n"
+                    "Please check the **input_movie_path** column in the DataFrame.\n\n"
+                    "To select a subset of your DataFrame with the same input file, you can use the following code:\n\n"
+                    "batch_df = batch_df[batch_df.input_movie_path == batch_df.input_movie_path.iloc[0]]\n"
+                )
+            raw_data = tifffile.memmap(raw_filepath)
+            met = {
+                'item_name': 'Raw Data',
+                'batch_index': 'None',
+                'min': np.min(raw_data),
+                'max': np.max(raw_data),
+                'mean': np.mean(raw_data),
+                'std': np.std(raw_data),
+                'p1': np.percentile(raw_data, 1),
+                'p50': np.percentile(raw_data, 50),
+                'p99': np.percentile(raw_data, 99),
+                'uuid': None
+            }
+            pbar.update(1)
+            metrics_list.append(met)
 
         for i, row in batch_df.iterrows():
             mmap_file = row.mcorr.get_output()

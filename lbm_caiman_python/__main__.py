@@ -396,43 +396,48 @@ def main():
         files = lcp.get_files_ext(args.summary, '.pickle', 3)
         if not files:
             raise ValueError(f"No .pickle files found in {args.summary} or its subdirectories.")
-        cnmf_df = lcp.get_item_by_algo(files, algo="cnmf")
-        mcorr_df = lcp.get_item_by_algo(files, algo="mcorr")
+        batch_df = lcp.get_item_by_algo(files, algo="all")
 
-        if cnmf_df.empty:
+        if batch_df.empty:
             print("No cnmf items found in the given pickle files.")
 
-        if mcorr_df.empty:
-            print("No mcorr items found in the given pickle files.")
-
         print(f"----Summary of batch files in {args.summary}:")
-        run_df = lcp.create_batch_summary(cnmf_df, mcorr_df)
-        print(run_df)
+        batch_summary_df = lcp.create_batch_summary(batch_df)
+        print(batch_summary_df)
         print("\n")
         print("---Summary of CNMF items:")
 
-        merged_df = lcp.summarize_cnmf(cnmf_df)
+        cnmf_df = batch_df[batch_df.algo == "cnmf"]
+        cnmf_summary_df = lcp.summarize_cnmf(cnmf_df)
         print_cols = ["algo", "algo_duration", "Accepted", "Rejected", "K", "gSig"]
 
         # no max columns
         pd.set_option('display.max_columns', None)
-        print_df = merged_df[print_cols]
+        print_df = cnmf_summary_df[print_cols]
         formatted_output = "\n".join(
             print_df.to_string(index=False).splitlines()
         )
 
-        lcp.compute_mcorr_statistics(mcorr_df)
 
         print(formatted_output)
 
         # save df to disk
-        merged_df.to_csv(args.summary + '/summary.csv')
+        cnmf_summary_df.to_csv(args.summary + '/summary.csv')
         print(f"Summary saved to {args.summary}/summary.csv")
         print('See this summary for batch_paths.')
 
+        mcorr_df = batch_df[batch_df.algo == "mcorr"]
+        mcorr_statistics_df = lcp.compute_mcorr_statistics(mcorr_df)
+
+        formatted_output = "\n".join(
+            mcorr_statistics_df.to_string(index=False).splitlines()
+        )
+        print("\n---Summary of MCORR items:")
+        print(formatted_output)
+
         if args.summary_plots:
             print("Generating summary plots.")
-            lcp.plot_spatial_components(merged_df, savepath=args.summary, marker_size=args.marker_size)
+            lcp.plot_spatial_components(cnmf_summary_df, savepath=args.summary, marker_size=args.marker_size)
 
         if args.run or args.rm or args.clean:
             print("Cannot run algorithms or modify batch when --summary is provided.")
