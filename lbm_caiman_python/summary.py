@@ -58,7 +58,7 @@ def get_item_by_algo(files: list, algo="cnmf") -> pd.DataFrame:
     return pd.DataFrame(temp_row)
 
 
-def plot_cnmf_components(data: pd.DataFrame | pd.Series, savepath: str | Path | None = None, marker_size=3):
+def plot_spatial_components(data: pd.DataFrame | pd.Series, savepath: str | Path | None = None, marker_size=3):
     """
     Plot spatial CNMF components for a DataFrame or a Series.
 
@@ -85,10 +85,10 @@ def plot_cnmf_components(data: pd.DataFrame | pd.Series, savepath: str | Path | 
     Examples
     --------
     For a DataFrame:
-    >>> plot_cnmf_components(df, savepath="./plots", marker_size=5)
+    >>> plot_spatial_components(df, savepath="./plots", marker_size=5)
 
     For a single row (Series):
-    >>> plot_cnmf_components(df.iloc[0], savepath="./plots", marker_size=5)
+    >>> plot_spatial_components(df.iloc[0], savepath="./plots", marker_size=5)
     """
     if isinstance(data, pd.DataFrame):
         for idx, row in data.iterrows():
@@ -463,6 +463,8 @@ def create_batch_summary(df) -> pd.DataFrame:
 
 def _num_traces_from_df(df: pd.DataFrame) -> pd.DataFrame:
     # Safely add new columns with default values of None
+    df = df[df["algo"].isin(["cnmf", "cnmfe"])]
+
     add_cols = ["Total Traces", "Accepted", "Rejected"]
     for col in add_cols:
         if col not in df.columns:

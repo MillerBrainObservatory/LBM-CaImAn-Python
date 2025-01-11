@@ -18,7 +18,7 @@ from .batch import (
 from .lcp_io import get_metadata, get_files, get_files_ext
 from .util.transform import vectorize, unvectorize, calculate_centers
 from .util.quality import get_noise_fft, find_peaks, mean_psd, _imblur, greedyROI, finetune
-from .summary import get_item_by_algo, summarize_cnmf, plot_cnmf_components, concat_param_diffs, metrics_df_from_files, \
+from .summary import get_item_by_algo, summarize_cnmf, plot_spatial_components, concat_param_diffs, metrics_df_from_files, \
     compute_mcorr_statistics, compute_mcorr_metrics_batch, create_batch_summary
 from .helpers import (
     generate_patch_view,
@@ -54,7 +54,7 @@ __all__ = [
     "get_files_ext",
     "get_item_by_algo",
     "summarize_cnmf",
-    "plot_cnmf_components",
+    "plot_spatial_components",
     "calculate_centers",
     "finetune",
     "greedyROI",

@@ -432,7 +432,7 @@ def main():
 
         if args.summary_plots:
             print("Generating summary plots.")
-            lcp.plot_cnmf_components(merged_df, savepath=args.summary, marker_size=args.marker_size)
+            lcp.plot_spatial_components(merged_df, savepath=args.summary, marker_size=args.marker_size)
 
         if args.run or args.rm or args.clean:
             print("Cannot run algorithms or modify batch when --summary is provided.")
