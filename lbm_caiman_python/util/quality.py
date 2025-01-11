@@ -109,7 +109,8 @@ def get_noise_fft(
 
 
 def find_peaks(trace):
-    """Find local peaks in the signal and compute prominence and width at half
+    """
+    Find local peaks in the signal and compute prominence and width at half
     prominence. Similar to Matlab's findpeaks.
 
     :param np.array trace: 1-d signal vector.
@@ -158,7 +159,7 @@ def find_peaks(trace):
     return peak_indices, prominences, widths
 
 
-def imblur(Y, sig=5, siz=11, nDimBlur=None, kernel=None, opencv=True):
+def _imblur(Y, sig=5, siz=11, nDimBlur=None, kernel=None, opencv=True):
     """
     Spatial filtering with a Gaussian or user defined kernel
 
@@ -343,7 +344,7 @@ def greedyROI(Y, nr=30, gSig=[5, 5], gSiz=[11, 11], nIter=5, kernel=None, nb=1,
     C = np.zeros((nr, d[-1]), dtype=np.float32)
     center = np.zeros((nr, Y.ndim - 1), dtype='uint16')
 
-    rho = imblur(Y, sig=gSig, siz=gSiz, nDimBlur=Y.ndim - 1, kernel=kernel)
+    rho = _imblur(Y, sig=gSig, siz=gSiz, nDimBlur=Y.ndim - 1, kernel=kernel)
 
     if rolling_sum:
         rolling_filter = np.ones(
@@ -391,8 +392,8 @@ def greedyROI(Y, nr=30, gSig=[5, 5], gSiz=[11, 11], nIter=5, kernel=None, nb=1,
                 Lag = [ijSig[c] - Mod[c][0] for c in range(len(ij))]
                 dataTemp = np.zeros(ModLen)
                 dataTemp[tuple([slice(*a) for a in Lag])] = coef
-                dataTemp = imblur(dataTemp[..., np.newaxis],
-                                  sig=gSig, siz=gSiz, kernel=kernel)
+                dataTemp = _imblur(dataTemp[..., np.newaxis],
+                                   sig=gSig, siz=gSiz, kernel=kernel)
                 temp = dataTemp * score.reshape([1] * (Y.ndim - 1) + [-1])
                 rho[tuple([slice(*a) for a in Mod])] -= temp.copy()
                 if rolling_sum:

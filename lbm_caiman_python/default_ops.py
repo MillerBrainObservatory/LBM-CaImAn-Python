@@ -31,7 +31,6 @@ def default_ops():
             "num_frames_split": 50,
             "niter_rig": 1,
             "is3D": False,
-            "indices": (slice(None), slice(None)),
             "splits_rig": 14,
             "num_splits_to_process_rig": None,
             # CNMF parameters

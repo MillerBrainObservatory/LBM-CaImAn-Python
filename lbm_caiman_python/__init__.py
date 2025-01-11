@@ -17,9 +17,9 @@ from .batch import (
 )
 from .lcp_io import get_metadata, get_files, get_files_ext
 from .util.transform import vectorize, unvectorize, calculate_centers
-from .util.quality import get_noise_fft, find_peaks, mean_psd, imblur, greedyROI, finetune
-from .summary import get_item_by_algo, summarize_cnmf, plot_cnmf_components, concat_param_diffs, create_metrics_df, \
-    create_summary_df, compute_batch_metrics, create_batch_summary
+from .util.quality import get_noise_fft, find_peaks, mean_psd, _imblur, greedyROI, finetune
+from .summary import get_item_by_algo, summarize_cnmf, plot_cnmf_components, concat_param_diffs, metrics_df_from_files, \
+    compute_mcorr_statistics, compute_mcorr_metrics_batch, create_batch_summary
 from .helpers import (
     generate_patch_view,
     calculate_num_patches,
@@ -36,7 +36,6 @@ __all__ = [
     "read_scan",
     "delete_batch_rows",
     "get_batch_from_path",
-    "validate_path",
     "clean_batch",
     "fix_scan_phase",
     "return_scan_offset",
@@ -59,7 +58,7 @@ __all__ = [
     "calculate_centers",
     "finetune",
     "greedyROI",
-    "imblur",
+    "_imblur",
     "create_batch_summary",
     "get_single_patch_coords",
 ]

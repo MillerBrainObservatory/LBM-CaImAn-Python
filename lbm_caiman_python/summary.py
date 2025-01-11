@@ -60,7 +60,7 @@ def get_item_by_algo(files: list, algo="cnmf") -> pd.DataFrame:
 
 def plot_cnmf_components(data: pd.DataFrame | pd.Series, savepath: str | Path | None = None, marker_size=3):
     """
-    Plot CNMF components for a DataFrame or a Series.
+    Plot spatial CNMF components for a DataFrame or a Series.
 
     Parameters
     ----------
@@ -197,8 +197,8 @@ def concat_param_diffs(input_df, param_diffs):
     >>> import lbm_caiman_python as lcp
     >>> import mesmerize_core as mc
     >>> batch_df = mc.load_batch('path/to/batch.pickle')
-    >>> metrics_files = lcp.summary.compute_batch_metrics(batch_df)
-    >>> metrics_df = lcp.summary.create_metrics_df(metrics_files)
+    >>> metrics_files = lcp.summary.compute_mcorr_metrics_batch(batch_df)
+    >>> metrics_df = lcp.summary.metrics_df_from_files(metrics_files)
     >>> param_diffs = batch_df.caiman.get_params_diffs("mcorr", item_name=batch_df.iloc[0]["item_name"])
     >>> final_df = lcp.concat_param_diffs(metrics_df, param_diffs)
     >>> print(final_df.head())
@@ -229,7 +229,7 @@ def concat_param_diffs(input_df, param_diffs):
     return input_df
 
 
-def create_metrics_df(metrics_filepaths: list[str | Path]) -> pd.DataFrame:
+def metrics_df_from_files(metrics_filepaths: list[str | Path]) -> pd.DataFrame:
     """
     Create a DataFrame from a list of metrics files.
 
@@ -252,8 +252,8 @@ def create_metrics_df(metrics_filepaths: list[str | Path]) -> pd.DataFrame:
     >>> import mesmerize_core as mc
     >>> batch_df = mc.load_batch('path/to/batch.pickle')
     >>> # overwrite=False will not recompute metrics if they already exist
-    >>> metrics_files = lcp.summary.compute_batch_metrics(batch_df, overwrite=False)
-    >>> metrics_df = lcp.create_metrics_df(metrics_files)
+    >>> metrics_files = lcp.summary.compute_mcorr_metrics_batch(batch_df, overwrite=False)
+    >>> metrics_df = lcp.metrics_df_from_files(metrics_files)
     >>> print(metrics_df.head())
     """
     metrics_list = []
@@ -275,9 +275,9 @@ def create_metrics_df(metrics_filepaths: list[str | Path]) -> pd.DataFrame:
     return pd.DataFrame(metrics_list)
 
 
-def create_summary_df(batch_df: pd.DataFrame) -> pd.DataFrame:
+def compute_mcorr_statistics(batch_df: pd.DataFrame) -> pd.DataFrame:
     """
-    Calculate summary statistics for each batch of image data and output results in a DataFrame.
+    Calculate summary statistics for each "mcorr" batch-item in a DataFrame.
 
     Parameters
     ----------
@@ -298,14 +298,14 @@ def create_summary_df(batch_df: pd.DataFrame) -> pd.DataFrame:
     >>> import lbm_caiman_python as lcp
     >>> import mesmerize_core as mc
     >>> batch_df = mc.load_batch('path/to/batch.pickle')
-    >>> summary_df = lcp.create_summary_df(batch_df)
+    >>> summary_df = lcp.compute_mcorr_statistics(batch_df)
     >>> print(summary_df)
     """
     # Filter DataFrame to only process 'mcorr' df
     batch_df = batch_df[batch_df.item_name == 'mcorr']
     total_tqdm = len(batch_df) + 1  # +1 for the raw file processing
 
-    with tqdm(total=total_tqdm, position=0, leave=True, desc="Computing Data Summary") as pbar:
+    with tqdm(total=total_tqdm, position=0, leave=True, desc="Computing mcorr statistics") as pbar:
 
         # Check for unique input files
         if batch_df.input_movie_path.nunique() != 1:
@@ -352,7 +352,7 @@ def create_summary_df(batch_df: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(metrics_list)
 
 
-def compute_batch_metrics(batch_df: pd.DataFrame, overwrite: bool = False) -> List[Path]:
+def compute_mcorr_metrics_batch(batch_df: pd.DataFrame, overwrite: bool = False) -> List[Path]:
     """
     Compute and store various statistical metrics for each batch of image data.
 
@@ -376,7 +376,7 @@ def compute_batch_metrics(batch_df: pd.DataFrame, overwrite: bool = False) -> Li
     >>> import lbm_caiman_python as lcp
     >>> import mesmerize_core as mc
     >>> batch_df = mc.load_batch('path/to/batch.pickle')
-    >>> metrics_paths = lcp.compute_batch_metrics(batch_df)
+    >>> metrics_paths = lcp.compute_mcorr_metrics_batch(batch_df)
     >>> print(metrics_paths)
     [Path('path/to/metrics1.npz'), Path('path/to/metrics2.npz'), ...]
 
@@ -445,7 +445,9 @@ def compute_batch_metrics(batch_df: pd.DataFrame, overwrite: bool = False) -> Li
     return metrics_paths
 
 
-def create_batch_summary(cnmf_df, mcorr_df) -> pd.DataFrame:
+def create_batch_summary(df) -> pd.DataFrame:
+    mcorr_df = df[df.item_name == 'mcorr']
+    cnmf_df = df[df.item_name != 'mcorr']
     succ_mcorr = _num_successful_from_df(mcorr_df)
     succ_cnmf = _num_successful_from_df(cnmf_df)
     unsucc_mcorr = len(mcorr_df) - succ_mcorr
@@ -481,19 +483,6 @@ def _num_traces_from_df(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-# def _params_from_df(df: pd.DataFrame, params: tuple | list | None = None):
-#     if params is None:
-#         params = SUMMARY_PARAMS
-#     for col in params:
-#         if col not in df.columns:
-#             df[col] = None
-#     for idx, row in df.iterrows():
-#         batch_df = load_batch(row.batch_path)
-#         item = batch_df[batch_df.uuid == row.uuid].iloc[0]
-#         for param in params:
-#             df.at[idx, param] = item.params['main'].get(param)
-#     return df
-
 def _params_from_df(df: pd.DataFrame, params: tuple | list | None = None):
     if params is None:
         params = SUMMARY_PARAMS
@@ -511,7 +500,6 @@ def _params_from_df(df: pd.DataFrame, params: tuple | list | None = None):
             else:
                 df.at[idx, param] = value
     return df
-
 
 
 def _num_successful_from_df(df: pd.DataFrame) -> int:

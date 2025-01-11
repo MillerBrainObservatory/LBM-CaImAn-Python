@@ -14,17 +14,17 @@ current_file = Path(__file__).parent
 print = partial(print, flush=True)
 
 
-def print_params(params, indent=5):
+def _print_params(params, indent=5):
     for k, v in params.items():
         # if value is a dictionary, recursively call the function
         if isinstance(v, dict):
             print(" " * indent + f"{k}:")
-            print_params(v, indent + 4)
+            _print_params(v, indent + 4)
         else:
             print(" " * indent + f"{k}: {v}")
 
 
-def parse_data_path(value):
+def _parse_data_path(value):
     """
     Cast the value to an integer if possible, otherwise treat as a file path.
     """
@@ -34,7 +34,7 @@ def parse_data_path(value):
         return str(Path(value).expanduser().resolve())  # expand ~
 
 
-def parse_int_float(value):
+def _parse_int_float(value):
     """ Cast the value to an integer if possible, otherwise treat as a float. """
     try:
         return int(value)
@@ -81,9 +81,9 @@ def add_args(parser: argparse.ArgumentParser):
     parser.add_argument('--version', action='store_true', help='Show version information.')
     parser.add_argument('--debug', action='store_true', help='Enable debug mode.')
     parser.add_argument('--batch_path', type=str, help='Path to the batch file.')
-    parser.add_argument('--data_path', type=parse_data_path, help='Path to the input data or index of the batch item.')
+    parser.add_argument('--data_path', type=_parse_data_path, help='Path to the input data or index of the batch item.')
     parser.add_argument('--summary', type=str, help='Get a summary of pickle files.')
-    parser.add_argument('--marker_size', type=parse_int_float, help='Scatterplot marker size for summary plots. Default: 3.')
+    parser.add_argument('--marker_size', type=_parse_int_float, help='Scatterplot marker size for summary plots. Default: 3.')
     parser.add_argument('--summary_plots', action='store_true', help='Get plots for the summary. Only works with --summary.')
     parser.add_argument('--create', action='store_false', help='Create a new batch.')
     parser.add_argument('--rm', type=int, nargs='+', help='Indices of batch df to remove.')
@@ -420,6 +420,8 @@ def main():
         formatted_output = "\n".join(
             print_df.to_string(index=False).splitlines()
         )
+
+        lcp.compute_mcorr_statistics(mcorr_df)
 
         print(formatted_output)
 

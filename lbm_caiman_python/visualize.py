@@ -87,8 +87,8 @@ def plot_optical_flows(input_df: pd.DataFrame, max_columns=4):
 import lbm_caiman_python.summary    >>> import lbm_caiman_python as lcp
 import lbm_caiman_python.summary    >>> import mesmerize_core as mc
     >>> batch_df = mc.load_batch('path/to/batch.pickle')
-    >>> metrics_files = lbm_caiman_python.summary.compute_batch_metrics(batch_df)
-    >>> metrics_df = lbm_caiman_python.summary.create_metrics_df(metrics_files)
+    >>> metrics_files = lbm_caiman_python.summary.compute_mcorr_metrics_batch(batch_df)
+    >>> metrics_df = lbm_caiman_python.summary.metrics_df_from_files(metrics_files)
     >>> lcp.plot_optical_flows(metrics_df, max_columns=2)
     """
     num_graphs = len(input_df)
@@ -190,8 +190,8 @@ def plot_residual_flows(results, num_batches=3, smooth=True, winsize=5):
 import lbm_caiman_python.summary    >>> import lbm_caiman_python as lcp
 import lbm_caiman_python.summary    >>> import mesmerize_core as mc
     >>> batch_df = mc.load_batch('path/to/batch.pickle')
-    >>> metrics_files = lbm_caiman_python.summary.compute_batch_metrics(batch_df)
-    >>> metrics_df = lbm_caiman_python.summary.create_metrics_df(metrics_files)
+    >>> metrics_files = lbm_caiman_python.summary.compute_mcorr_metrics_batch(batch_df)
+    >>> metrics_df = lbm_caiman_python.summary.metrics_df_from_files(metrics_files)
     >>> lcp.plot_residual_flows(metrics_df, num_batches=6, smooth=True, winsize=8)
     """
     # Sort and filter for top batches by mean_norm, lower is better
