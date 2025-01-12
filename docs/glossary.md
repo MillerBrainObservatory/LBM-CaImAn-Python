@@ -23,4 +23,9 @@ Non-rigid-registration
 pixel-resolution
   The length of each pixel, in micron (px/um).
 
+batch-path
+  Location where results are saved in the form `path/to/batch.pickle`.
+  All results (registration/segmentation outputs) will be saved in the same directory as this file.
+  The `.pickle` file is a table with the paths to the files and information about theh algorithm which was run.
+
 ```
