@@ -9,6 +9,8 @@ import pandas as pd
 import lbm_caiman_python as lcp
 import mesmerize_core as mc
 
+import lbm_caiman_python.visualize
+
 current_file = Path(__file__).parent
 
 print = partial(print, flush=True)
@@ -83,7 +85,7 @@ def add_args(parser: argparse.ArgumentParser):
     parser.add_argument('--batch_path', type=str, help='Path to the batch file.')
     parser.add_argument('--data_path', type=_parse_data_path, help='Path to the input data or index of the batch item.')
     parser.add_argument('--summary', type=str, help='Get a summary of pickle files.')
-    parser.add_argument('--max_depth', type=int, help='Maximum depth for searching pickle files. Default: 3.')
+    parser.add_argument('--max_depth', type=int, default=3, help='Maximum depth for searching pickle files. Default: 3.')
     parser.add_argument('--marker_size', type=_parse_int_float, help='Scatterplot marker size for summary plots. Default: 3.')
     parser.add_argument('--summary_plots', action='store_true', help='Get plots for the summary. Only works with --summary.')
     parser.add_argument('--create', action='store_false', help='Create a new batch.')
@@ -397,8 +399,10 @@ def main():
         # find all .pickle files in the given directory
         max_depth = args.max_depth
         files = lcp.get_files_ext(args.summary, '.pickle', max_depth)
+
         if not files:
             raise ValueError(f"No .pickle files found in {args.summary} or its subdirectories.")
+
         batch_df = lcp.get_item_by_algo(files, algo="all")
 
         if batch_df.empty:
@@ -417,9 +421,7 @@ def main():
         # no max columns
         pd.set_option('display.max_columns', None)
         print_df = cnmf_summary_df[print_cols]
-        formatted_output = "\n".join(
-            print_df.to_string(index=False).splitlines()
-        )
+        formatted_output = "\n".join(print_df.to_string(index=False).splitlines())
 
         print(formatted_output)
 
@@ -428,24 +430,25 @@ def main():
         print(f"Summary saved to {args.summary}/summary.csv")
         print('See this summary for batch_paths.')
 
-        mcorr_df = batch_df[batch_df.algo == "mcorr"]
-        try:
-            raw_filename = mcorr_df.iloc[0].get_input_movie_path()
-        except AttributeError as e:
-            print("No mcorr items found in the given pickle files.")
-            return
+        mcorr_metrics_files = lcp.compute_mcorr_metrics_batch(batch_df)
+        mcorr_metrics_df = lcp.metrics_df_from_files(mcorr_metrics_files)
 
-        mcorr_statistics_df = lcp.compute_mcorr_statistics(mcorr_df)
-
-        formatted_output = "\n".join(
-            mcorr_statistics_df.to_string(index=False).splitlines()
-        )
+        formatted_output = "\n".join(mcorr_metrics_df.to_string(index=False).splitlines())
         print("\n---Summary of MCORR items:")
         print(formatted_output)
 
         if args.summary_plots:
             print("Generating summary plots.")
-            lcp.plot_spatial_components(cnmf_summary_df, savepath=args.summary, marker_size=args.marker_size)
+            try:
+                save_path = args.summary + "residual_flows.png"
+                lcp.plot_residual_flows(mcorr_metrics_df, save_path=save_path)
+                save_path = args.summary + "correlations.png"
+                lcp.plot_correlations(mcorr_metrics_df, save_path=save_path)
+                save_path = args.summary + "optical_flows.png"
+                lcp.plot_optical_flows(mcorr_metrics_df, save_path=save_path)
+            except Exception as e:
+                print(f"Error generating summary plots: {e}")
+            lbm_caiman_python.visualize.plot_spatial_components(cnmf_summary_df, savepath=args.summary, marker_size=args.marker_size)
 
         if args.run or args.rm or args.clean:
             print("Cannot run algorithms or modify batch when --summary is provided.")
