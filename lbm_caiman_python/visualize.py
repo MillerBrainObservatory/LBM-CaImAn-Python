@@ -1,4 +1,5 @@
 import random
+from pathlib import Path
 from typing import Any as ArrayLike
 
 import matplotlib as mpl
@@ -7,6 +8,7 @@ import pandas as pd
 
 from matplotlib import pyplot as plt, patches as patches, patheffects as path_effects
 
+from lbm_caiman_python import calculate_centers
 from lbm_caiman_python.util.signal import smooth_data
 
 
@@ -70,7 +72,7 @@ def plot_with_scalebars(image: ArrayLike, pixel_resolution: float):
     plt.show()
 
 
-def plot_optical_flows(input_df: pd.DataFrame, max_columns=4):
+def plot_optical_flows(input_df: pd.DataFrame, max_columns=4, save_path=None):
     """
     Plots the dense optical flow images from a DataFrame containing metrics information.
 
@@ -84,8 +86,8 @@ def plot_optical_flows(input_df: pd.DataFrame, max_columns=4):
 
     Examples
     --------
-import lbm_caiman_python.summary    >>> import lbm_caiman_python as lcp
-import lbm_caiman_python.summary    >>> import mesmerize_core as mc
+    >>> import lbm_caiman_python as lcp
+    >>> import mesmerize_core as mc
     >>> batch_df = mc.load_batch('path/to/batch.pickle')
     >>> metrics_files = lbm_caiman_python.summary.compute_mcorr_metrics_batch(batch_df)
     >>> metrics_df = lbm_caiman_python.summary.metrics_df_from_files(metrics_files)
@@ -169,8 +171,12 @@ import lbm_caiman_python.summary    >>> import mesmerize_core as mc
     plt.tight_layout(rect=(0, 0, 0.9, 1))
     plt.show()
 
+    if save_path:
+        plt.savefig(save_path, dpi=300, bbox_inches='tight')
+        print(f"Residual flows saved to {save_path}")
 
-def plot_residual_flows(results, num_batches=3, smooth=True, winsize=5):
+
+def plot_residual_flows(results, num_batches=3, smooth=True, winsize=5, save_path=None):
     """
     Plot the top `num_batches` residual optical flows across batches.
 
@@ -187,11 +193,11 @@ def plot_residual_flows(results, num_batches=3, smooth=True, winsize=5):
 
     Examples
     --------
-import lbm_caiman_python.summary    >>> import lbm_caiman_python as lcp
-import lbm_caiman_python.summary    >>> import mesmerize_core as mc
+    >>> import lbm_caiman_python as lcp
+    >>> import mesmerize_core as mc
     >>> batch_df = mc.load_batch('path/to/batch.pickle')
-    >>> metrics_files = lbm_caiman_python.summary.compute_mcorr_metrics_batch(batch_df)
-    >>> metrics_df = lbm_caiman_python.summary.metrics_df_from_files(metrics_files)
+    >>> metrics_files = lcp.compute_mcorr_metrics_batch(batch_df)
+    >>> metrics_df = lcp.metrics_df_from_files(metrics_files)
     >>> lcp.plot_residual_flows(metrics_df, num_batches=6, smooth=True, winsize=8)
     """
     # Sort and filter for top batches by mean_norm, lower is better
@@ -205,14 +211,12 @@ import lbm_caiman_python.summary    >>> import mesmerize_core as mc
 
     fig, ax = plt.subplots(figsize=(20, 10))
 
-    # Color logic
     colors = plt.cm.Set1(np.linspace(0, 1, num_batches))  # Standout colors for other batches
     plotted_uuids = set()  # Track plotted UUIDs to avoid duplicates
 
     if raw_uuid in results['uuid'].values:
         row = results.loc[results['uuid'] == raw_uuid].iloc[0]
         metric_path = row['metric_path']
-        batch_idx = row['batch_index']
 
         with np.load(metric_path) as metric:
             flows = metric['flows']
@@ -271,9 +275,12 @@ import lbm_caiman_python.summary    >>> import mesmerize_core as mc
     ax.legend(loc='best', fontsize=12, title='Figure Key', title_fontsize=12, prop={'weight': 'bold'})
     plt.tight_layout()
     plt.show()
+    if save_path:
+        plt.savefig(save_path, dpi=300, bbox_inches='tight')
+        print(f"Residual flows saved to {save_path}")
 
 
-def plot_correlations(results, num_batches=3, smooth=True, winsize=5):
+def plot_correlations(results, num_batches=3, smooth=True, winsize=5, save_path=None):
     """
     Plot the top `num_batches` batches with the highest correlation coefficients.
 
@@ -353,6 +360,10 @@ def plot_correlations(results, num_batches=3, smooth=True, winsize=5):
     ax.legend(loc='best', fontsize=12, title='Figure Key', title_fontsize=12, prop={'weight': 'bold'})
     plt.tight_layout()
     plt.show()
+
+    if save_path:
+        plt.savefig(save_path, dpi=300, bbox_inches='tight')
+        print(f"Residual flows saved to {save_path}")
 
 
 def display_components(estimates, dims, num_random=5):
@@ -439,3 +450,105 @@ def display_components(estimates, dims, num_random=5):
 
     # Show all plots
     plt.show()
+
+
+def plot_spatial_components(data: pd.DataFrame | pd.Series, savepath: str | Path | None = None, marker_size=3):
+    """
+    Plot spatial CNMF components for a DataFrame or a Series.
+
+    Parameters
+    ----------
+    data : pandas.DataFrame or pandas.Series
+        A DataFrame containing CNMF data or a single Series (row) from the DataFrame.
+    savepath : str, Path, or None, optional
+        Directory to save the plots. If None, plots are not saved. Default is None.
+    marker_size : int, optional
+        Size of the markers for the center points. Set to 0 to skip drawing centers. Default is 3.
+
+    Returns
+    -------
+    None
+        Displays the plots and optionally saves them to the specified directory.
+
+    Notes
+    -----
+    - The function handles both `pandas.DataFrame` and `pandas.Series` as input.
+    - If `marker_size` is set to 0, no center points are drawn on the plot.
+    - The `savepath` must be a valid directory path if saving is enabled.
+
+    Examples
+    --------
+    For a DataFrame:
+    >>> plot_spatial_components(df, savepath="./plots", marker_size=5)
+
+    For a single row (Series):
+    >>> plot_spatial_components(df.iloc[0], savepath="./plots", marker_size=5)
+    """
+    if isinstance(data, pd.DataFrame):
+        for idx, row in data.iterrows():
+            if isinstance(row["outputs"], dict) and not row["outputs"].get("success") or row["outputs"] is None:
+                print(f"Skipping {row.uuid} as it is not successful.")
+                continue
+
+            if row["algo"] == "cnmf":
+                model = row.cnmf.get_output()
+                red_idx = model.estimates.idx_components_bad
+
+                spatial_footprints = model.estimates.A
+                dims = (model.dims[1], model.dims[0])
+
+                max_proj = spatial_footprints.max(axis=1).toarray().reshape(dims)
+                plt.imshow(max_proj, cmap="gray")
+
+                # Check marker size
+                if marker_size == 0:
+                    print('Skipping drawing centers')
+                else:
+                    print(f'Marker size is set to {marker_size}')
+                    centers = calculate_centers(spatial_footprints, dims)
+                    colors = ['b'] * len(centers)
+
+                    for i in red_idx:
+                        colors[i] = 'r'
+                    plt.scatter(centers[:, 0], centers[:, 1], c=colors, s=marker_size, marker='.')
+
+                plt.tight_layout()
+                plt.show()
+                if savepath:
+                    save_name = Path(savepath) / f"{row.uuid}_spatial_components.png"
+                    print(f"Saving to {save_name}.")
+                    plt.savefig(save_name.expanduser(), dpi=600, bbox_inches="tight")
+    else:
+        row = data
+        if isinstance(row["outputs"], dict) and not row["outputs"].get("success") or row["outputs"] is None:
+            print(f"Skipping {row.uuid} as it is not successful.")
+            return
+
+        if row["algo"] == "cnmf":
+            model = row.cnmf.get_output()
+            red_idx = model.estimates.idx_components_bad
+
+            spatial_footprints = model.estimates.A
+            dims = (model.dims[1], model.dims[0])
+
+            max_proj = spatial_footprints.max(axis=1).toarray().reshape(dims)
+            plt.imshow(max_proj, cmap="gray")
+
+            # Check marker size
+            if marker_size == 0:
+                print('Skipping drawing centers')
+            else:
+                print(f'Marker size is set to {marker_size}')
+                centers = calculate_centers(spatial_footprints, dims)
+                colors = ['b'] * len(centers)
+
+                for i in red_idx:
+                    colors[i] = 'r'
+                plt.scatter(centers[:, 0], centers[:, 1], c=colors, s=marker_size, marker='.')
+
+            plt.tight_layout()
+            plt.show()
+            if savepath:
+                save_name = Path(savepath) / f"{row.uuid}_spatial_components.png"
+                print(f"Saving to {save_name}.")
+                plt.savefig(save_name.expanduser(), dpi=600, bbox_inches="tight")
