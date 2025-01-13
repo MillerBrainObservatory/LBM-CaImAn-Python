@@ -8,13 +8,11 @@ import numpy as np
 import pandas as pd
 import tifffile
 
-from matplotlib import pyplot as plt
 from tqdm import tqdm
 
 from .batch import load_batch
 from .helpers import _compute_metrics_with_temp_file, _compute_metrics
 from .lcp_io import get_metrics_path
-from .util.transform import calculate_centers
 
 SUMMARY_PARAMS = (
     "K",
@@ -57,108 +55,6 @@ def get_item_by_algo(files: list, algo="all") -> pd.DataFrame:
             elif row["algo"] == algo:
                 temp_row.append(row)
     return pd.DataFrame(temp_row)
-
-
-def plot_spatial_components(data: pd.DataFrame | pd.Series, savepath: str | Path | None = None, marker_size=3):
-    """
-    Plot spatial CNMF components for a DataFrame or a Series.
-
-    Parameters
-    ----------
-    data : pandas.DataFrame or pandas.Series
-        A DataFrame containing CNMF data or a single Series (row) from the DataFrame.
-    savepath : str, Path, or None, optional
-        Directory to save the plots. If None, plots are not saved. Default is None.
-    marker_size : int, optional
-        Size of the markers for the center points. Set to 0 to skip drawing centers. Default is 3.
-
-    Returns
-    -------
-    None
-        Displays the plots and optionally saves them to the specified directory.
-
-    Notes
-    -----
-    - The function handles both `pandas.DataFrame` and `pandas.Series` as input.
-    - If `marker_size` is set to 0, no center points are drawn on the plot.
-    - The `savepath` must be a valid directory path if saving is enabled.
-
-    Examples
-    --------
-    For a DataFrame:
-    >>> plot_spatial_components(df, savepath="./plots", marker_size=5)
-
-    For a single row (Series):
-    >>> plot_spatial_components(df.iloc[0], savepath="./plots", marker_size=5)
-    """
-    if isinstance(data, pd.DataFrame):
-        for idx, row in data.iterrows():
-            if isinstance(row["outputs"], dict) and not row["outputs"].get("success") or row["outputs"] is None:
-                print(f"Skipping {row.uuid} as it is not successful.")
-                continue
-
-            if row["algo"] == "cnmf":
-                model = row.cnmf.get_output()
-                red_idx = model.estimates.idx_components_bad
-
-                spatial_footprints = model.estimates.A
-                dims = (model.dims[1], model.dims[0])
-
-                max_proj = spatial_footprints.max(axis=1).toarray().reshape(dims)
-                plt.imshow(max_proj, cmap="gray")
-
-                # Check marker size
-                if marker_size == 0:
-                    print('Skipping drawing centers')
-                else:
-                    print(f'Marker size is set to {marker_size}')
-                    centers = calculate_centers(spatial_footprints, dims)
-                    colors = ['b'] * len(centers)
-
-                    for i in red_idx:
-                        colors[i] = 'r'
-                    plt.scatter(centers[:, 0], centers[:, 1], c=colors, s=marker_size, marker='.')
-
-                plt.tight_layout()
-                plt.show()
-                if savepath:
-                    save_name = Path(savepath) / f"{row.uuid}_segmentation_plot.png"
-                    print(f"Saving to {save_name}.")
-                    plt.savefig(save_name.expanduser(), dpi=600, bbox_inches="tight")
-    else:
-        row = data
-        if isinstance(row["outputs"], dict) and not row["outputs"].get("success") or row["outputs"] is None:
-            print(f"Skipping {row.uuid} as it is not successful.")
-            return
-
-        if row["algo"] == "cnmf":
-            model = row.cnmf.get_output()
-            red_idx = model.estimates.idx_components_bad
-
-            spatial_footprints = model.estimates.A
-            dims = (model.dims[1], model.dims[0])
-
-            max_proj = spatial_footprints.max(axis=1).toarray().reshape(dims)
-            plt.imshow(max_proj, cmap="gray")
-
-            # Check marker size
-            if marker_size == 0:
-                print('Skipping drawing centers')
-            else:
-                print(f'Marker size is set to {marker_size}')
-                centers = calculate_centers(spatial_footprints, dims)
-                colors = ['b'] * len(centers)
-
-                for i in red_idx:
-                    colors[i] = 'r'
-                plt.scatter(centers[:, 0], centers[:, 1], c=colors, s=marker_size, marker='.')
-
-            plt.tight_layout()
-            plt.show()
-            if savepath:
-                save_name = Path(savepath) / f"{row.uuid}_segmentation_plot.png"
-                print(f"Saving to {save_name}.")
-                plt.savefig(save_name.expanduser(), dpi=600, bbox_inches="tight")
 
 
 def summarize_cnmf(df: pd.DataFrame) -> pd.DataFrame:
@@ -276,94 +172,6 @@ def metrics_df_from_files(metrics_filepaths: list[str | Path]) -> pd.DataFrame:
     return pd.DataFrame(metrics_list)
 
 
-def compute_mcorr_statistics(batch_df: pd.DataFrame, raw_filepath=None) -> pd.DataFrame:
-    """
-    Calculate summary statistics for each "mcorr" batch-item in a DataFrame.
-
-    Has an additional requirement that each batch item has the same
-    raw data path set by mc.set_parent_raw_data_path(data_path). For that reason,
-    this function is meant to be used during a parameter grid search-like task on
-    the same input data.
-
-    Parameters
-    ----------
-    batch_df : DataFrame
-        A DataFrame containing information about each batch of image data.
-        Must be compatible with the mesmerize-core DataFrame API to call
-        `get_output` on each row.
-
-    raw_filepath : str or Path
-        Path to the raw data file.
-
-    Returns
-    -------
-    summary_df : DataFrame
-        A DataFrame containing summary statistics for each batch of image data.
-        This includes the minimum, maximum, mean, standard deviation, and percentiles.
-
-    Examples
-    --------
-    >>> import pandas as pd
-    >>> import lbm_caiman_python as lcp
-    >>> import mesmerize_core as mc
-    >>> batch_df = mc.load_batch('path/to/batch.pickle')
-    >>> summary_df = lcp.compute_mcorr_statistics(batch_df)
-    >>> print(summary_df)
-    """
-    # Filter DataFrame to only process 'mcorr' df
-    batch_df = batch_df[batch_df.item_name == 'mcorr']
-    total_tqdm = len(batch_df) + 1  # +1 for the raw file processing
-
-    metrics_list = []
-
-    with tqdm(total=total_tqdm, position=0, leave=True, desc="Computing mcorr statistics") as pbar:
-
-        # Load raw data
-        if raw_filepath:
-
-            # Check for unique input files
-            if batch_df.input_movie_path.nunique() != 1:
-                raise ValueError(
-                    "\n\n"
-                    "The batch df have different input files. All input files must be the same.\n"
-                    "Please check the **input_movie_path** column in the DataFrame.\n\n"
-                    "To select a subset of your DataFrame with the same input file, you can use the following code:\n\n"
-                    "batch_df = batch_df[batch_df.input_movie_path == batch_df.input_movie_path.iloc[0]]\n"
-                )
-            raw_data = tifffile.memmap(raw_filepath)
-            met = {
-                'item_name': 'Raw Data',
-                'batch_index': 'None',
-                'min': np.min(raw_data),
-                'max': np.max(raw_data),
-                'mean': np.mean(raw_data),
-                'std': np.std(raw_data),
-                'p1': np.percentile(raw_data, 1),
-                'p50': np.percentile(raw_data, 50),
-                'p99': np.percentile(raw_data, 99),
-                'uuid': None
-            }
-            pbar.update(1)
-            metrics_list.append(met)
-
-        for i, row in batch_df.iterrows():
-            mmap_file = row.mcorr.get_output()
-            metrics_list.append({
-                'item_name': row.item_name,
-                'batch_index': i,
-                'min': np.min(mmap_file),
-                'max': np.max(mmap_file),
-                'mean': np.mean(mmap_file),
-                'std': np.std(mmap_file),
-                'p1': np.percentile(mmap_file, 1),
-                'p50': np.percentile(mmap_file, 50),
-                'p99': np.percentile(mmap_file, 99),
-                'uuid': row.uuid,
-            })
-            pbar.update(1)
-    return pd.DataFrame(metrics_list)
-
-
 def compute_mcorr_metrics_batch(batch_df: pd.DataFrame, overwrite: bool = False) -> List[Path]:
     """
     Compute and store various statistical metrics for each batch of image data.
@@ -458,8 +266,22 @@ def compute_mcorr_metrics_batch(batch_df: pd.DataFrame, overwrite: bool = False)
 
 
 def create_batch_summary(df) -> pd.DataFrame:
-    mcorr_df = df[df.item_name == 'mcorr']
-    cnmf_df = df[df.item_name != 'mcorr']
+    """
+    Create a summary of successful and unsuccessful runs for each algorithm.
+
+    Parameters
+    ----------
+    df
+
+    Returns
+    -------
+
+    """
+    if not hasattr(df, 'item_name'):
+        raise ValueError("Input DataFrame does not have an 'item_name' column.")
+
+    mcorr_df = df[df.algo == 'mcorr']
+    cnmf_df = df[df.algo.isin(['cnmf', 'cnmfe'])]
     succ_mcorr = _num_successful_from_df(mcorr_df)
     succ_cnmf = _num_successful_from_df(cnmf_df)
     unsucc_mcorr = len(mcorr_df) - succ_mcorr
