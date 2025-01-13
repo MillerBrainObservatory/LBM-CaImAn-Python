@@ -6,9 +6,6 @@ from typing import List
 import numpy as np
 
 import pandas as pd
-import tifffile
-
-from tqdm import tqdm
 
 from .batch import load_batch
 from .helpers import _compute_metrics_with_temp_file, _compute_metrics
