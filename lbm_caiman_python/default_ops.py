@@ -1,13 +1,36 @@
+import numpy as np
+
+
 def params_from_metadata(metadata):
+    """
+    Generate parameters for CNMF from metadata.
+
+    Based on the pixel resolution and frame rate, the parameters are set to reasonable values.
+
+    Parameters
+    ----------
+    metadata : dict
+        Metadata dictionary resulting from `lcp.get_metadata()`.
+
+    Returns
+    -------
+    dict
+        Dictionary of parameters for mesmerize_core.
+
+    """
     params = default_params()
+
+
     if metadata is None:
         print('No metadata found. Using default parameters.')
         return params
+
+    split_frames = params["main"]["num_frames_split"]
     params["main"]["fr"] = metadata["frame_rate"]
     params["main"]["dxy"] = metadata["pixel_resolution"]
 
-    # typical neuron ~20 microns
-    gSig = round(15 / metadata["pixel_resolution"][0]) / 2
+    # typical neuron ~16 microns
+    gSig = round(16 / metadata["pixel_resolution"][0]) / 2
     params["main"]["gSig"] = gSig
 
     gSiz = (2 * gSig + 1, 2 * gSig + 1)
@@ -16,7 +39,6 @@ def params_from_metadata(metadata):
     max_shifts = [int(round(10 / px)) for px in metadata["pixel_resolution"]]
     params["main"]["max_shifts"] = max_shifts
 
-    # stride/overlap, dividing the image into 8x8 patches
     strides = [int(round(64 / px)) for px in metadata["pixel_resolution"]]
     params["main"]["strides"] = strides
 
@@ -27,6 +49,15 @@ def params_from_metadata(metadata):
         print("Overlaps too small. Increasing to neuron diameter.")
         overlaps = [int(gSig)] * 2
     params["main"]["overlaps"] = overlaps
+
+    rf_0 = (strides[0] + overlaps[0]) // 2
+    rf_1 = (strides[1] + overlaps[1]) // 2
+    rf = int(np.mean([rf_0, rf_1]))
+
+    stride = int(np.mean([overlaps[0], overlaps[1]]))  # or just pick overlaps[0]
+
+    params["main"]["rf"] = rf
+    params["main"]["stride"] = stride
 
     return params
 
