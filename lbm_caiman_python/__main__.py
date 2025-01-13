@@ -59,7 +59,7 @@ def add_args(parser: argparse.ArgumentParser):
     argparse.ArgumentParser
         The parser with added arguments.
     """
-    default_ops = lcp.default_ops()["main"]
+    default_ops = lcp.default_params()["main"]
 
     for param, default_value in default_ops.items():
         param_type = type(default_value)
@@ -134,10 +134,10 @@ def load_ops(args, batch_path=None):
                 print(f"Loading parameters from {opsfile}")
             else:
                 print(f"Using default parameters.")
-                ops = lcp.default_ops()
+                ops = lcp.default_params()
         else:
             print(f"Using default parameters.")
-            ops = lcp.default_ops()
+            ops = lcp.default_params()
 
     # Get matching parameters from CLI args and update ops
     main_ops = ops["main"]
