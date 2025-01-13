@@ -21,7 +21,11 @@ def ops_from_metadata(metadata):
     ops["main"]["strides"] = strides
 
     # overlap should be ~neuron diameter
+    print(gSig)
     overlaps = [int(round(gSig / px)) for px in metadata["pixel_resolution"]]
+    if overlaps[0] < gSig:
+        print("Overlaps too small. Increasing to neuron diameter.")
+        overlaps = [int(gSig)] * 2
     ops["main"]["overlaps"] = overlaps
 
     return ops
