@@ -1,6 +1,6 @@
 from . import _version
 from . import stdout
-from .default_ops import default_ops, ops_from_metadata
+from .default_ops import default_params, params_from_metadata
 from .collation import combine_z_planes
 from .assembly import (
     read_scan,
@@ -39,8 +39,8 @@ __version__ = _version.get_versions()['version']
 
 __all__ = [
     "stdout",
-    "default_ops",
-    "ops_from_metadata",
+    "default_params",
+    "params_from_metadata",
     "combine_z_planes",
     "read_scan",
     "delete_batch_rows",

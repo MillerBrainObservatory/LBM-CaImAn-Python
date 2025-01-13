@@ -1,24 +1,24 @@
-def ops_from_metadata(metadata):
-    ops = default_ops()
+def params_from_metadata(metadata):
+    params = default_params()
     if metadata is None:
         print('No metadata found. Using default parameters.')
-        return ops
-    ops["main"]["fr"] = metadata["frame_rate"]
-    ops["main"]["dxy"] = metadata["pixel_resolution"]
+        return params
+    params["main"]["fr"] = metadata["frame_rate"]
+    params["main"]["dxy"] = metadata["pixel_resolution"]
 
     # typical neuron ~20 microns
     gSig = round(15 / metadata["pixel_resolution"][0]) / 2
-    ops["main"]["gSig"] = gSig
+    params["main"]["gSig"] = gSig
 
     gSiz = (2 * gSig + 1, 2 * gSig + 1)
-    ops["main"]["gSiz"] = gSiz
+    params["main"]["gSiz"] = gSiz
 
     max_shifts = [int(round(10 / px)) for px in metadata["pixel_resolution"]]
-    ops["main"]["max_shifts"] = max_shifts
+    params["main"]["max_shifts"] = max_shifts
 
     # stride/overlap, dividing the image into 8x8 patches
     strides = [int(round(64 / px)) for px in metadata["pixel_resolution"]]
-    ops["main"]["strides"] = strides
+    params["main"]["strides"] = strides
 
     # overlap should be ~neuron diameter
     print(gSig)
@@ -26,12 +26,12 @@ def ops_from_metadata(metadata):
     if overlaps[0] < gSig:
         print("Overlaps too small. Increasing to neuron diameter.")
         overlaps = [int(gSig)] * 2
-    ops["main"]["overlaps"] = overlaps
+    params["main"]["overlaps"] = overlaps
 
-    return ops
+    return params
 
 
-def default_ops():
+def default_params():
     """
     Default parameters for both registration and CNMF.
     The exception is gSiz being set relative to gSig.
