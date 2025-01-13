@@ -237,4 +237,5 @@ def get_metrics_path(fname: Path) -> Path:
     metrics_path : Path
         The path to the computed metrics file.
     """
+    fname = Path(fname)
     return fname.with_stem(fname.stem + '_metrics').with_suffix('.npz')
