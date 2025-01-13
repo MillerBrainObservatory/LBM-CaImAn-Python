@@ -4,14 +4,14 @@ def ops_from_metadata(metadata):
         print('No metadata found. Using default parameters.')
         return ops
     ops["main"]["fr"] = metadata["frame_rate"]
-    ops["main"]["dx"] = metadata["pixel_resolution"]
+    ops["main"]["dxy"] = metadata["pixel_resolution"]
 
     # typical neuron ~20 microns
     gSig = round(15 / metadata["pixel_resolution"][0]) / 2
     ops["main"]["gSig"] = gSig
 
-    gSize = (4 * gSig + 1, 4 * gSig + 1)
-    ops["main"]["gSiz"] = gSize
+    gSiz = (2 * gSig + 1, 2 * gSig + 1)
+    ops["main"]["gSiz"] = gSiz
 
     max_shifts = [int(round(10 / px)) for px in metadata["pixel_resolution"]]
     ops["main"]["max_shifts"] = max_shifts
