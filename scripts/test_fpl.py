@@ -83,5 +83,5 @@ isc = fig[0, 0].add_scatter(random_centers, colors="r", sizes=3, alpha=0.7, size
 fig.show()
 
 metrics_files = lbm_caiman_python.summary.compute_mcorr_metrics_batch(df, overwrite=True)
-metrics_df = lbm_caiman_python.summary.metrics_df_from_files(metrics_files)
+metrics_df = lbm_caiman_python.summary._create_df_from_metric_files(metrics_files)
 summary_df = lbm_caiman_python.summary.compute_mcorr_statistics(df)

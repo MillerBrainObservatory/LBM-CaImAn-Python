@@ -441,7 +441,7 @@ def main():
 
         if args.mcorr:
             mcorr_metrics_files = lcp.compute_mcorr_metrics_batch(batch_df)
-            mcorr_metrics_df = lcp.metrics_df_from_files(mcorr_metrics_files)
+            mcorr_metrics_df = lcp._create_df_from_metric_files(mcorr_metrics_files)
 
             formatted_output = "\n".join(mcorr_metrics_df.to_string(index=False).splitlines())
             print("\n---Summary of MCORR items:")
