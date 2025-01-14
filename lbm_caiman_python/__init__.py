@@ -21,11 +21,11 @@ from .util.transform import vectorize, unvectorize, calculate_centers
 from .util.quality import get_noise_fft, find_peaks, mean_psd, greedyROI, finetune
 from .summary import (
     get_all_batch_items,
-    summarize_cnmf,
+    get_summary_cnmf,
     concat_param_diffs,
     metrics_df_from_files,
     compute_mcorr_metrics_batch,
-    create_batch_summary,
+    get_summary_batch,
 )
 from .helpers import (
     generate_patch_view,
@@ -62,11 +62,11 @@ __all__ = [
     "unvectorize",
     "get_files_ext",
     "get_all_batch_items",
-    "summarize_cnmf",
+    "get_summary_cnmf",
     "calculate_centers",
     "finetune",
     "greedyROI",
-    "create_batch_summary",
+    "get_summary_batch",
     "get_single_patch_coords",
     "remove_batch_duplicates"
 ]
