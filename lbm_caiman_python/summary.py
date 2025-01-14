@@ -198,6 +198,9 @@ def compute_mcorr_metrics_batch(batch_df: pd.DataFrame, overwrite: bool = False)
     """
     metrics_paths = []
 
+    # raw_filename will be resolved if:
+    # 1. It is located in the batch dir
+    # 2. It is located in the global parent dir
     try:
         raw_filename = batch_df.iloc[0].caiman.get_input_movie_path()
     except AttributeError:
