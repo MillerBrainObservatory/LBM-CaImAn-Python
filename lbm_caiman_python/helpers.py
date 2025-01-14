@@ -180,8 +180,6 @@ def _compute_metrics(fname, uuid, batch_id, final_size_x, final_size_y, swap_dim
     """
     Compute metrics for a given movie file.
     """
-    print('Computing metrics for', fname)
-
     if not uuid:
         raise ValueError("UUID must be provided.")
 
