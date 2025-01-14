@@ -74,7 +74,6 @@ def get_metadata(file: os.PathLike | str):
         scanfields = roi_group[0]["scanfields"]  # assuming single ROI scanfield configuration
 
         # ROI metadata
-        center_xy = scanfields["centerXY"]
         size_xy = scanfields["sizeXY"]
         num_pixel_xy = scanfields["pixelResolutionXY"]
 
@@ -90,30 +89,25 @@ def get_metadata(file: os.PathLike | str):
         fov_y = round(objective_resolution * size_xy[1])
         fov_xy = (fov_x, fov_y / num_rois)
 
-        # Pixel resolution calculation
+        # Pixel resolution (dxy) calculation
         pixel_resolution = (fov_x / num_pixel_xy[0], fov_y / num_pixel_xy[1])
 
-        # Assembling metadata
-        # TODO: Split this into separate primary/secondary metadata
         return {
-            "ndim": series.ndim,
-            "dtype": 'uint16',
-            "size": series.size,
-            # "dim_labels": series.sizes,
             "num_planes": num_planes,
             "num_frames": int(len(pages) / num_planes),
             "fov": fov_xy,  # in microns
             "num_rois": num_rois,
             "frame_rate": frame_rate,
             "pixel_resolution": np.round(pixel_resolution, 2),
+            "ndim": series.ndim,
+            "dtype": 'uint16',
+            "size": series.size,
             "raw_height": pages[0].shape[0],
             "raw_width": pages[0].shape[1],
             "tiff_pages": len(pages),
             "roi_width_px": num_pixel_xy[0],
             "roi_height_px": num_pixel_xy[1],
             "sample_format": sample_format,
-            "num_lines_between_scanfields": round(
-                si["SI.hScan2D.flytoTimePerScanfield"] / si["SI.hRoiManager.linePeriod"]),
             "objective_resolution": objective_resolution,
         }
     else:
@@ -196,12 +190,11 @@ def get_files_ext(base_dir, extension, max_depth) -> list:
     if not base_path.is_dir():
         raise NotADirectoryError(f"'{base_path}' is not a directory.")
 
-    matching_files = [
+    return [
         str(file)
         for file in base_path.rglob(f'*{extension}')
         if len(file.relative_to(base_path).parts) <= max_depth + 1
     ]
-    return matching_files
 
 
 def get_pickle_files(data_path: str | Path) -> list:
