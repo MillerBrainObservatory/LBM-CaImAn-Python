@@ -20,7 +20,7 @@ from .lcp_io import get_metadata, get_files, get_files_ext
 from .util.transform import vectorize, unvectorize, calculate_centers
 from .util.quality import get_noise_fft, find_peaks, mean_psd, greedyROI, finetune
 from .summary import (
-    get_item_by_algo,
+    get_all_batch_items,
     summarize_cnmf,
     concat_param_diffs,
     metrics_df_from_files,
@@ -61,7 +61,7 @@ __all__ = [
     "vectorize",
     "unvectorize",
     "get_files_ext",
-    "get_item_by_algo",
+    "get_all_batch_items",
     "summarize_cnmf",
     "calculate_centers",
     "finetune",

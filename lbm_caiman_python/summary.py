@@ -20,7 +20,7 @@ SUMMARY_PARAMS = (
 )
 
 
-def get_item_by_algo(files: list, algo="all") -> pd.DataFrame:
+def get_all_batch_items(files: list, algo="all") -> pd.DataFrame:
     """
     Load all cnmf items from a list of .pickle files.
 
@@ -28,8 +28,13 @@ def get_item_by_algo(files: list, algo="all") -> pd.DataFrame:
     ----------
     files : list
         List of .pickle files to load.
-    algo : str
-        Algorithm to filter by. Default is "cnmf". Options are "cnmf", "cnmfe", "mcorr".
+    algo : str, optional
+        Algorithm to filter by. Default is "all". Options are "cnmf", "cnmfe", "mcorr" and "all".
+
+    Returns
+    -------
+    df : DataFrame
+        DataFrame containing all items with the specified algorithm
     """
     temp_row = []
     for file in files:
