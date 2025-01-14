@@ -11,6 +11,7 @@ install_deps = [
     "scipy>=1.9.0",
     "fastplotlib[notebook]",
     "matplotlib",
+    "lcp-mc",
     "fabric",
     "dask",
     "zarr",
