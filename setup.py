@@ -11,6 +11,7 @@ install_deps = [
     "scipy>=1.9.0",
     "fastplotlib[notebook]",
     "matplotlib",
+    "lcp-mc",
     "fabric",
     "dask",
     "zarr",
@@ -65,6 +66,7 @@ setuptools.setup(
             "lcp = lbm_caiman_python.__main__:main",
             "sr = lbm_caiman_python.assembly:main",
             "transfer = lbm_caiman_python.transfer:main",
+            "run_slurm = lbm_caiman_python.run_slurm:main",
         ]
     },
 )

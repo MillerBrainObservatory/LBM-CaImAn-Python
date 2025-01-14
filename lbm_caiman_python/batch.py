@@ -1,7 +1,7 @@
 import re as regex
 from pathlib import Path
 from typing import Union
-import mesmerize_core as mc
+import lbm_mc as mc
 from contextlib import contextmanager
 import pathlib
 
@@ -76,10 +76,10 @@ def load_batch(batch_path: str | Path):
 
 def clean_batch(df):
     """
-        Clean a batch of DataFrame entries by removing unsuccessful rows from storage.
+        Clean a batch of DataFrame entries by removing unsuccessful df from storage.
 
-        This function iterates over the rows of the given DataFrame, identifies
-        rows where the 'outputs' column is either `None` or a dictionary containing
+        This function iterates over the df of the given DataFrame, identifies
+        df where the 'outputs' column is either `None` or a dictionary containing
         a 'success' key with a `False` value. For each such row, the corresponding
         item is removed using the `df.caiman.remove_item()` method, and the removal
         is saved to disk.
@@ -140,6 +140,39 @@ def validate_path(path: Union[str, Path]):
             "hyphens ( - ), underscores ( _ ) or periods ( . )"
         )
     return path
+
+
+def remove_batch_duplicates(df):
+    """
+    Remove duplicate items from a batch DataFrame.
+
+    Parameters
+    ----------
+    df : pandas.DataFrame
+        The batch DataFrame to remove duplicates from.
+
+    Returns
+    -------
+    None
+
+    """
+    import hashlib
+    df["hash"] = df.apply(lambda row: hashlib.sha256(row.mcorr.get_output().tobytes()).hexdigest(), axis=1)
+    uuids_to_remove = []
+    for _, group in df.groupby("hash"):
+        if len(group) > 1:
+            for idx in group.index[1:]:
+                uuid = df.loc[idx, "uuid"]
+                uuids_to_remove.append(uuid)
+    if not uuids_to_remove:
+        print("No duplicates found.")
+        return
+    for uuid in uuids_to_remove:
+        print(f"Removing duplicate item {uuid}.")
+        df.caiman.remove_item(uuid, remove_data=True, safe_removal=False)
+    df.drop(columns="hash", inplace=True)
+    df.caiman.save_to_disk()
+    return df
 
 
 def get_batch_from_path(batch_path):

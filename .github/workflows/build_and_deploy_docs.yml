@@ -45,7 +45,6 @@ jobs:
 
             # Install Python dependencies
             pip install -r docs/requirements.txt
-            pip install mesmerize-core
             pip install git+https://github.com/atlab/scanreader.git
             pip install lbm_caiman_python
 

@@ -1,4 +1,3 @@
-# Heavily adapted from suite2p
 import numpy as np
 import argparse
 import logging
@@ -8,24 +7,26 @@ from functools import partial
 import pandas as pd
 
 import lbm_caiman_python as lcp
-import mesmerize_core as mc
+import lbm_mc as mc
+
+import lbm_caiman_python.visualize
 
 current_file = Path(__file__).parent
 
 print = partial(print, flush=True)
 
 
-def print_params(params, indent=5):
+def _print_params(params, indent=5):
     for k, v in params.items():
         # if value is a dictionary, recursively call the function
         if isinstance(v, dict):
             print(" " * indent + f"{k}:")
-            print_params(v, indent + 4)
+            _print_params(v, indent + 4)
         else:
             print(" " * indent + f"{k}: {v}")
 
 
-def parse_data_path(value):
+def _parse_data_path(value):
     """
     Cast the value to an integer if possible, otherwise treat as a file path.
     """
@@ -33,6 +34,14 @@ def parse_data_path(value):
         return int(value)
     except ValueError:
         return str(Path(value).expanduser().resolve())  # expand ~
+
+
+def _parse_int_float(value):
+    """ Cast the value to an integer if possible, otherwise treat as a float. """
+    try:
+        return int(value)
+    except ValueError:
+        return float(value)
 
 
 def add_args(parser: argparse.ArgumentParser):
@@ -50,7 +59,7 @@ def add_args(parser: argparse.ArgumentParser):
     argparse.ArgumentParser
         The parser with added arguments.
     """
-    default_ops = lcp.default_ops()["main"]
+    default_ops = lcp.default_params()["main"]
 
     for param, default_value in default_ops.items():
         param_type = type(default_value)
@@ -67,21 +76,28 @@ def add_args(parser: argparse.ArgumentParser):
         else:
             parser.add_argument(f'--{param}', help=f'Set {param} (default: {default_value})')
 
-    # Set default values so that args contains the defaults if no CLI input is given
     parser.set_defaults(**default_ops)
+    # non-run flags
     parser.add_argument('--ops', type=str, help='Path to the ops .npy file.')
     parser.add_argument('--save', type=str, help='Path to save the ops parameters.')
     parser.add_argument('--version', action='store_true', help='Show version information.')
     parser.add_argument('--debug', action='store_true', help='Enable debug mode.')
     parser.add_argument('--batch_path', type=str, help='Path to the batch file.')
-    parser.add_argument('--data_path', type=parse_data_path, help='Path to the input data or index '
-                                                                  'of the batch item.')
+    parser.add_argument('--data_path', type=_parse_data_path, help='Path to the input data or index of the batch item.')
+    # run flags
     parser.add_argument('--create', action='store_false', help='Create a new batch.')
-    parser.add_argument('--rm', type=int, nargs='+', help='Indices of batch rows to remove.')
+    parser.add_argument('--rm', type=int, nargs='+', help='Indices of batch df to remove.')
     parser.add_argument('--force', action='store_true', help='Force removal without safety checks.')
     parser.add_argument('--remove_data', action='store_true', help='Remove associated data.')
     parser.add_argument('--clean', action='store_true', help='Clean unsuccessful batch items.')
     parser.add_argument('--run', type=str, nargs='+', help='Algorithms to run (e.g., mcorr, cnmf).')
+    # --summary opts
+    parser.add_argument('--summary', type=str, help='Get a summary of pickle files.')
+    parser.add_argument('--cnmf', action="store_true", help='Get a summary of cnmf items.')
+    parser.add_argument('--mcorr', action="store_true", help='Get a summary of mcorr files.')
+    parser.add_argument('--max_depth', type=int, default=3, help='Maximum depth for searching pickle files. Default: 3.')
+    parser.add_argument('--summary_plots', action='store_true', help='Get plots for the summary. Only works with --summary.')
+    parser.add_argument('--marker_size', type=_parse_int_float, help='Scatterplot marker size for summary plots. Default: 3.')
 
     return parser
 
@@ -95,6 +111,8 @@ def load_ops(args, batch_path=None):
     ----------
     args : argparse.Namespace
         Command-line arguments containing the 'ops' path and 'save' option.
+    batch_path : str or Path
+        Path to the batch file.
 
     Returns
     -------
@@ -120,10 +138,10 @@ def load_ops(args, batch_path=None):
                 print(f"Loading parameters from {opsfile}")
             else:
                 print(f"Using default parameters.")
-                ops = lcp.default_ops()
+                ops = lcp.default_params()
         else:
             print(f"Using default parameters.")
-            ops = lcp.default_ops()
+            ops = lcp.default_params()
 
     # Get matching parameters from CLI args and update ops
     main_ops = ops["main"]
@@ -195,6 +213,12 @@ def create_load_batch(batch_path):
                 batch_path = batch_path.with_suffix(".pickle")
             print(f"Found existing batch {batch_path}")
             df = mc.load_batch(batch_path)
+
+    elif batch_path.suffix == '.pickle':
+        # non-existent fully qualified filename
+        batch_path.parent.mkdir(parents=True, exist_ok=True)
+        df = mc.create_batch(batch_path)
+        print(f"Created batch at {batch_path}")
     elif batch_path.parent.exists() and batch_path.parent.is_dir():
         # If parent directory exists, create batch.pickle
         batch_path = batch_path / "batch.pickle"
@@ -202,19 +226,7 @@ def create_load_batch(batch_path):
         df = mc.create_batch(batch_path)
         print(f"Batch created at {batch_path}")
     else:
-        # If the file does not exist, and the filetype isn't .pickle, don't create anything
-        if batch_path.suffix != ".pickle":
-            raise ValueError(
-                f"Invalid batch path suffix: {batch_path.suffix}. Expected .pickle."
-            )
-
-        if not batch_path.parent.exists():
-            # Create all necessary parent directories
-            batch_path.parent.mkdir(parents=True, exist_ok=True)
-
-        print(f"Creating batch at {batch_path}")
-        df = mc.create_batch(batch_path)
-        print(f"Batch created at {batch_path}")
+        raise ValueError(f"Batch path {batch_path} cannot be created.")
 
     return df, batch_path
 
@@ -244,10 +256,7 @@ def resolve_data_path(data_path, df):
         if data_path.is_file():
             return [data_path]
         elif data_path.is_dir():
-            files = list(data_path.glob("*.tif*"))
-            if not files:
-                raise ValueError(f"No .tif files found in data_path: {data_path}")
-            return files
+            return list(data_path.rglob("*.tif*"))
         else:
             raise NotADirectoryError(f"{data_path} is not a valid file or directory.")
     elif isinstance(data_path, int):
@@ -369,7 +378,9 @@ def main():
     """
     The main function that orchestrates the CLI operations.
     """
-    print("Beginning processing run ...")
+    print("\n")
+    print("-----------LBM-Caiman pipeline -----------")
+    print("\n")
     parser = argparse.ArgumentParser(description="LBM-Caiman pipeline parameters")
     parser = add_args(parser)
     args = parser.parse_args()
@@ -388,6 +399,71 @@ def main():
     else:
         backend = None
 
+    if args.summary:
+        if args.summary_plots:
+            args.cnmf = True
+            args.mcorr = True
+
+        # find all .pickle files in the given directory
+        files = lcp.get_files_ext(args.summary, '.pickle', args.max_depth)
+
+        if not files:
+            raise ValueError(f"No .pickle files found in {args.summary} or its subdirectories.")
+
+        print(f"Found {len(files)} pickle files in {args.summary}.")
+        batch_df = lcp.get_item_by_algo(files, algo="all")
+
+        if batch_df.empty:
+            print("No batch items found in the given pickle files.")
+
+        print(f"----Summary of batch files in {args.summary}:")
+        batch_summary_df = lcp.create_batch_summary(batch_df)
+        print(batch_summary_df)
+        print("\n")
+        if args.cnmf:
+            print("---Summary of CNMF items:")
+
+            cnmf_df = batch_df[batch_df.algo == "cnmf"]
+            cnmf_summary_df = lcp.summarize_cnmf(cnmf_df)
+            print_cols = ["algo", "algo_duration", "Accepted", "Rejected", "K", "gSig"]
+
+            # no max columns
+            pd.set_option('display.max_columns', None)
+            print_df = cnmf_summary_df[print_cols]
+            formatted_output = "\n".join(print_df.to_string(index=False).splitlines())
+
+            print(formatted_output)
+
+            # save df to disk
+            cnmf_summary_df.to_csv(args.summary + '/summary.csv')
+            print(f"Summary saved to {args.summary}/summary.csv")
+            print('See this summary for batch_paths.')
+
+        if args.mcorr:
+            mcorr_metrics_files = lcp.compute_mcorr_metrics_batch(batch_df)
+            mcorr_metrics_df = lcp.metrics_df_from_files(mcorr_metrics_files)
+
+            formatted_output = "\n".join(mcorr_metrics_df.to_string(index=False).splitlines())
+            print("\n---Summary of MCORR items:")
+            print(formatted_output)
+
+        if args.summary_plots:
+            print("Generating summary plots.")
+            try:
+                save_path = args.summary + "residual_flows.png"
+                lcp.plot_residual_flows(mcorr_metrics_df, save_path=save_path)
+                save_path = args.summary + "correlations.png"
+                lcp.plot_correlations(mcorr_metrics_df, save_path=save_path)
+                save_path = args.summary + "optical_flows.png"
+                lcp.plot_optical_flows(mcorr_metrics_df, save_path=save_path)
+            except Exception as e:
+                print(f"Error generating summary plots: {e}")
+            lbm_caiman_python.visualize.plot_spatial_components(cnmf_summary_df, savepath=args.summary, marker_size=args.marker_size)
+
+        if args.run or args.rm or args.clean:
+            print("Cannot run algorithms or modify batch when --summary is provided.")
+        return
+
     if args.data_path is None:
         parser.print_help()
 
@@ -399,7 +475,7 @@ def main():
     ops = load_ops(args, batch_path)
     ops['package'] = {'version': lcp.__version__}
 
-    # Handle removal of batch rows
+    # Handle removal of batch df
     if args.rm:
         print("--rm provided as an argument. Checking the index(s) to delete are valid for this dataframe.")
         safe = not args.force
@@ -437,13 +513,26 @@ def main():
     # Handle running algorithms
     if args.run:
         files = resolve_data_path(args.data_path, df)
+        if not files:
+            print(f"No files found in {args.data_path}.")
+            print(f"Current directory contents:\n")
+            print("\n".join([str(f) for f in Path(args.data_path).rglob("*")]))
+            return
         for algo in args.run:
             run_algorithm(algo, files, df, ops, backend)
+            df = df.caiman.reload_from_disk()
+            row = df.iloc[-1]
+            if isinstance(row["outputs"], dict) and row["outputs"].get("success") is False or row["outputs"] is None:
+                print(f"{algo} failed.")
+                traceback = row["outputs"].get("traceback")
+                if traceback:
+                    print(f"Traceback: {traceback}")
             print(f'{df.iloc[-1].algo} duration: {df.iloc[-1].algo_duration}')
 
     print(df)
     print("Processing complete -----------")
     return
+
 
 if __name__ == "__main__":
     main()

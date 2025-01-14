@@ -3,8 +3,6 @@
 
 Before continuing, users should review the [mesmerize-core user guide](https://mesmerize-core.readthedocs.io/en/latest/user_guide.html).
 
-Functions in this section are just wrappers for mesmerize-core, and all of it's functionality can be directly used in your resulting batch dataframes.
-
 ## Overview
 
 The general workflow is as follows:

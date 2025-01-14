@@ -1,7 +1,5 @@
 # Dependencies
 av
-coverage
-cython
 h5py>=3.4.0
 holoviews>=1.16.2
 ipykernel
@@ -9,8 +7,9 @@ ipython
 ipyparallel
 jupyter
 jupyter_bokeh
+pandas
+caiman
 matplotlib~=3.9.2
-moviepy
 mypy
 pytest
 numpy~=2.0.0

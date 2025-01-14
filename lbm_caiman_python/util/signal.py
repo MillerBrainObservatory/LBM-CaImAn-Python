@@ -1,10 +1,6 @@
 import numpy as np
 
 
-def correlate_gpu():
-    pass
-
-
 def notnan(x, start=0, increment=1):
     while np.isnan(x[start]) and 0 <= start < len(x):
         start += increment
@@ -94,3 +90,8 @@ def low_pass_filter(signal, sampling_freq, cutoff_freq, filter_size=1000):
     filtered_signal = mirrconv(signal, filter_)
 
     return filtered_signal
+
+
+def smooth_data(data, window_size=5):
+    """Smooth the data using a moving average."""
+    return np.convolve(data, np.ones(window_size) / window_size, mode='valid')

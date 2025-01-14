@@ -74,7 +74,6 @@ def get_metadata(file: os.PathLike | str):
         scanfields = roi_group[0]["scanfields"]  # assuming single ROI scanfield configuration
 
         # ROI metadata
-        center_xy = scanfields["centerXY"]
         size_xy = scanfields["sizeXY"]
         num_pixel_xy = scanfields["pixelResolutionXY"]
 
@@ -88,38 +87,27 @@ def get_metadata(file: os.PathLike | str):
         # As of now, this is for a single ROI
         fov_x = round(objective_resolution * size_xy[0])
         fov_y = round(objective_resolution * size_xy[1])
-        fov_xy = (fov_x, fov_y)
+        fov_xy = (fov_x, fov_y / num_rois)
 
-        # Pixel resolution calculation
+        # Pixel resolution (dxy) calculation
         pixel_resolution = (fov_x / num_pixel_xy[0], fov_y / num_pixel_xy[1])
 
-        # Assembling metadata
-        # TODO: Split this into separate primary/secondary metadata
         return {
-            "image_height": pages[0].shape[0],
-            "image_width": pages[0].shape[1],
-            "num_pages": len(pages),
-            # "dims": series.dims,
+            "num_planes": num_planes,
+            "num_frames": int(len(pages) / num_planes),
+            "fov": fov_xy,  # in microns
+            "num_rois": num_rois,
+            "frame_rate": frame_rate,
+            "pixel_resolution": np.round(pixel_resolution, 2),
             "ndim": series.ndim,
             "dtype": 'uint16',
-            # "is_multifile": series.is_multifile,
-            # "nbytes": series.nbytes,
             "size": series.size,
-            # "dim_labels": series.sizes,
-            "shape": series.shape,
-            "num_planes": num_planes,
-            "num_rois": num_rois,
-            "num_frames": len(pages) / num_planes,
-            "frame_rate": frame_rate,
-            "fov": fov_xy,  # in microns
-            "pixel_resolution": np.round(pixel_resolution, 2),
+            "raw_height": pages[0].shape[0],
+            "raw_width": pages[0].shape[1],
+            "tiff_pages": len(pages),
             "roi_width_px": num_pixel_xy[0],
             "roi_height_px": num_pixel_xy[1],
             "sample_format": sample_format,
-            "num_lines_between_scanfields": round(si["SI.hScan2D.flytoTimePerScanfield"] / si["SI.hRoiManager.linePeriod"]),
-            "center_xy": center_xy,
-            "line_period": si["SI.hRoiManager.linePeriod"],
-            "size_xy": size_xy,
             "objective_resolution": objective_resolution,
         }
     else:
@@ -149,7 +137,7 @@ def get_files(
         List of absolute filenames.
     """
     if '.' in ext or 'tiff' in ext:
-        ext = 'tif' #glob tiff and tif
+        ext = 'tif'  #glob tiff and tif
     if isinstance(pathnames, (list, tuple)):
         out_files = []
         excl_files = []
@@ -176,3 +164,64 @@ def get_files(
     else:
         raise ValueError(
             f"Input path should be an iterable list/tuple or PathLike object (string, pathlib.Path), not {pathnames}")
+
+
+def get_files_ext(base_dir, extension, max_depth) -> list:
+    """
+    Recursively searches for files with a specific extension up to a given depth and stores their paths in a pickle file.
+
+    Parameters
+    ----------
+    base_dir : str or Path
+        The base directory to start searching.
+    extension : str
+        The file extension to look for (e.g., '.txt').
+    max_depth : int
+        The maximum depth of subdirectories to search.
+
+    Returns
+    -------
+    list
+        A list of full file paths matching the given extension.
+    """
+    base_path = Path(base_dir).expanduser().resolve()
+    if not base_path.exists():
+        raise FileNotFoundError(f"Directory '{base_path}' does not exist.")
+    if not base_path.is_dir():
+        raise NotADirectoryError(f"'{base_path}' is not a directory.")
+
+    return [
+        str(file)
+        for file in base_path.rglob(f'*{extension}')
+        if len(file.relative_to(base_path).parts) <= max_depth + 1
+    ]
+
+
+def get_pickle_files(data_path: str | Path) -> list:
+    """
+    Get all .pickle files in a directory and its subdirectories.
+    """
+    files = get_files_ext(data_path, '.pickle', 3)
+    if not files:
+        raise ValueError(f"No .pickle files found in {data_path} or its subdirectories.")
+    return files
+
+
+def get_metrics_path(fname: Path) -> Path:
+    """
+    Get the path to the computed metrics file for a given data file.
+    Assumes the metrics file is to be stored in the same directory as the data file,
+    with the same name stem and a '_metrics.npz' suffix.
+
+    Parameters
+    ----------
+    fname : Path
+        The path to the input data file.
+
+    Returns
+    -------
+    metrics_path : Path
+        The path to the computed metrics file.
+    """
+    fname = Path(fname)
+    return fname.with_stem(fname.stem + '_metrics').with_suffix('.npz')

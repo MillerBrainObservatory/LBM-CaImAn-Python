@@ -6,7 +6,7 @@ For current installation instructions and requirements, see the project [README]
 
 ## How to
 
-The recommended way to use this pipeline is by using the [example notebooks](https://github.com/MillerBrainObservatory/LBM-CaImAn-Python/tree/master/demos/notebooks) 
+The recommended way to use this pipeline is by using the [example notebooks](https://github.com/MillerBrainObservatory/LBM-CaImAn-Python/tree/master/demos/notebooks)
 while having the user guide accessible as well. The notebooks act as a walkthrough tutorial that you can change to fit your dataset as you go. Fully rendered versions of the notebooks
 are available in the [tutorial section of this documentation](https://millerbrainobservatory.github.io/LBM-CaImAn-Python/examples/index.html).
 
@@ -48,6 +48,7 @@ There are 4 steps in this pipeline:
     - Lateral offset correction (between z-planes, COMING SOON)
 
 ----------------
+
 ## HPC
 
 Slurm utilities are available in the [utilities repository](https://github.com/MillerBrainObservatory/utilities/tree/master/slurm).

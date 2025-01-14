@@ -1,16 +1,10 @@
-import logging
-import os
-import sys
-
+import scipy
+from scipy import signal
+from sklearn.decomposition import NMF
 import cv2
 import numpy as np
-from sklearn.linear_model import TheilSenRegressor
-from scipy.stats import pearsonr
-from caiman.motion_correction import high_pass_filter_space, bin_median
-from caiman import load
-import matplotlib.pyplot as plt
-from scipy import signal
-from tqdm import tqdm
+from scipy.ndimage import correlate
+import sys
 
 
 def mean_psd(y, method="logmexp"):
@@ -47,43 +41,46 @@ def mean_psd(y, method="logmexp"):
 
 
 def get_noise_fft(
-    Y, noise_range=[0.25, 0.5], noise_method="logmexp", max_num_samples_fft=3072
+        Y, noise_range=None, noise_method="logmexp", max_num_samples_fft=3072
 ):
-    """Estimate the noise level for each pixel by averaging the power spectral density.
-
-    Args:
-        Y: np.ndarray
-            Input movie data with time in the last axis
-
-        noise_range: np.ndarray [2 x 1] between 0 and 0.5
-            Range of frequencies compared to Nyquist rate over which the power spectrum is averaged
-            default: [0.25,0.5]
-
-        noise method: string
-            method of averaging the noise.
-            Choices:
-                'mean': Mean
-                'median': Median
-                'logmexp': Exponential of the mean of the logarithm of PSD (default)
-
-    Returns:
-        sn: np.ndarray
-            Noise level for each pixel
     """
+    Compute the noise level in the Fourier domain for a given signal.
+
+    Parameters
+    ----------
+    Y : ndarray
+        Input data array. The last dimension is treated as time.
+    noise_range : list of float, optional
+        Frequency range to estimate noise, by default [0.25, 0.5].
+    noise_method : str, optional
+        Method to compute the mean noise power spectral density (PSD), by default "logmexp".
+    max_num_samples_fft : int, optional
+        Maximum number of samples to use for FFT computation, by default 3072.
+
+    Returns
+    -------
+    tuple
+        - sn : float or ndarray
+            Estimated noise level.
+        - psdx : ndarray
+            Power spectral density of the input data.
+    """
+    if noise_range is None:
+        noise_range = [0.25, 0.5]
     T = Y.shape[-1]
     # Y=np.array(Y,dtype=np.float64)
 
     if T > max_num_samples_fft:
         Y = np.concatenate(
             (
-                Y[..., 1 : max_num_samples_fft // 3 + 1],
+                Y[..., 1: max_num_samples_fft // 3 + 1],
                 Y[
-                    ...,
-                    int(T // 2 - max_num_samples_fft / 3 / 2) : int(
-                        T // 2 + max_num_samples_fft / 3 / 2
-                    ),
+                ...,
+                int(T // 2 - max_num_samples_fft / 3 / 2): int(
+                    T // 2 + max_num_samples_fft / 3 / 2
+                ),
                 ],
-                Y[..., -max_num_samples_fft // 3 :],
+                Y[..., -max_num_samples_fft // 3:],
             ),
             axis=-1,
         )
@@ -104,89 +101,16 @@ def get_noise_fft(
 
     else:
         xdft = np.fliplr(np.fft.rfft(Y))
-        psdx = 1.0 / T * (xdft**2)
+        psdx = 1.0 / T * (xdft ** 2)
         psdx[1:] *= 2
         sn = mean_psd(psdx[ind[: psdx.shape[0]]], method=noise_method)
 
     return sn, psdx
 
 
-def compute_quantal_size(scan):
-    """
-    Estimate the unit change in calcium response corresponding to a unit change in
-    pixel intensity (dubbed quantal size, lower is better).
-
-    Assumes images are stationary from one timestep to the next. Uses it to calculate a
-    measure of noise per bright intensity (which increases linearly given that imaging
-    noise is poisson), fits a line to it and uses the slope as the estimate.
-
-    :param np.array scan: 3-dimensional scan (image_height, image_width, num_frames).
-
-    :returns: int minimum pixel value in the scan (that appears a min number of times)
-    :returns: int maximum pixel value in the scan (that appears a min number of times)
-    :returns: np.array pixel intensities used for the estimation.
-    :returns: np.array noise variances used for the estimation.
-    :returns: float the estimated quantal size
-    :returns: float the estimated zero value
-    """
-    # Set some params
-    num_frames = scan.shape[2]
-    min_count = num_frames * 0.1  # pixel values with fewer appearances will be ignored
-    max_acceptable_intensity = 3000  # pixel values higher than this will be ignored
-
-    # Make sure field is at least 32 bytes (int16 overflows if summed to itself)
-    scan = scan.astype(np.float32, copy=False)
-
-    # Create pixel values at each position in field
-    eps = 1e-4  # needed for np.round to not be biased towards even numbers (0.5 -> 1, 1.5 -> 2, 2.5 -> 3, etc.)
-    pixels = np.round((scan[:, :, :-1] + scan[:, :, 1:]) / 2 + eps)
-    pixels = pixels.astype(np.int16 if np.max(abs(pixels)) < 2**15 else np.int32)
-
-    # Compute a good range of pixel values (common, not too bright values)
-    unique_pixels, counts = np.unique(pixels, return_counts=True)
-    min_intensity = min(unique_pixels[counts > min_count])
-    max_intensity = max(unique_pixels[counts > min_count])
-    max_acceptable_intensity = min(max_intensity, max_acceptable_intensity)
-    pixels_mask = np.logical_and(
-        pixels >= min_intensity, pixels <= max_acceptable_intensity
-    )
-
-    # Select pixels in good range
-    pixels = pixels[pixels_mask]
-    unique_pixels, counts = np.unique(pixels, return_counts=True)
-
-    # Compute noise variance
-    variances = ((scan[:, :, :-1] - scan[:, :, 1:]) ** 2 / 2)[pixels_mask]
-    pixels -= min_intensity
-    variance_sum = np.zeros(len(unique_pixels))  # sum of variances per pixel value
-    for i in range(0, len(pixels), int(1e8)):  # chunk it for memory efficiency
-        variance_sum += np.bincount(
-            pixels[i : i + int(1e8)],
-            weights=variances[i : i + int(1e8)],
-            minlength=np.ptp(unique_pixels) + 1,
-        )[unique_pixels - min_intensity]
-    unique_variances = variance_sum / counts  # average variance per intensity
-
-    # Compute quantal size (by fitting a linear regressor to predict the variance from intensity)
-    X = unique_pixels.reshape(-1, 1)
-    y = unique_variances
-    model = TheilSenRegressor()  # robust regression
-    model.fit(X, y)
-    quantal_size = model.coef_[0]
-    zero_level = -model.intercept_ / model.coef_[0]
-
-    return (
-        min_intensity,
-        max_intensity,
-        unique_pixels,
-        unique_variances,
-        quantal_size,
-        zero_level,
-    )
-
-
 def find_peaks(trace):
-    """Find local peaks in the signal and compute prominence and width at half
+    """
+    Find local peaks in the signal and compute prominence and width at half
     prominence. Similar to Matlab's findpeaks.
 
     :param np.array trace: 1-d signal vector.
@@ -209,7 +133,7 @@ def find_peaks(trace):
         for right in range(index + 1, len(trace)):
             if trace[right] > trace[index]:
                 break
-        contour_level = max(min(trace[left:index]), min(trace[index + 1 : right + 1]))
+        contour_level = max(min(trace[left:index]), min(trace[index + 1: right + 1]))
 
         # Compute prominence
         prominence = trace[index] - contour_level
@@ -224,7 +148,7 @@ def find_peaks(trace):
         for k in range(index + 1, len(trace)):
             if trace[k] <= half_prominence:
                 right = (
-                    k - 1 + (half_prominence - trace[k - 1]) / (trace[k] - trace[k - 1])
+                        k - 1 + (half_prominence - trace[k - 1]) / (trace[k] - trace[k - 1])
                 )
                 break
 
@@ -235,103 +159,259 @@ def find_peaks(trace):
     return peak_indices, prominences, widths
 
 
-def compute_metrics_motion_correction(fname, final_size_x=None, final_size_y=None, swap_dim=False, pyr_scale=.5, levels=3,
-                                      winsize=100, iterations=15, poly_n=5, poly_sigma=1.2 / 5, flags=0,
-                                      play_flow=False, resize_fact_flow=.2, template=None,
-                                      opencv=True, resize_fact_play=3, fr_play=30, max_flow=1,
-                                      gSig_filt=None):
-    logger = logging.getLogger("caiman")
-    if os.environ.get('ENABLE_TQDM') == 'True':
-        disable_tqdm = False
-    else:
-        disable_tqdm = True
+def _imblur(Y, sig=5, siz=11, nDimBlur=None, kernel=None, opencv=True):
+    """
+    Spatial filtering with a Gaussian or user defined kernel
 
-    vmin, vmax = -max_flow, max_flow
-    m = load(fname)
-    if final_size_x is None:
-        final_size_x = m.shape[1]
-    if final_size_y is None:
-        final_size_y = m.shape[2]
-    if gSig_filt is not None:
-        m = high_pass_filter_space(m, gSig_filt)
-    mi, ma = m.min(), m.max()
-    m_min = mi + (ma - mi) / 100
-    m_max = mi + (ma - mi) / 4
+    The parameters are specified in GreedyROI
 
-    max_shft_x = int(np.ceil((np.shape(m)[1] - final_size_x) / 2))
-    max_shft_y = int(np.ceil((np.shape(m)[2] - final_size_y) / 2))
-    max_shft_x_1 = - ((np.shape(m)[1] - max_shft_x) - (final_size_x))
-    max_shft_y_1 = - ((np.shape(m)[2] - max_shft_y) - (final_size_y))
-    if max_shft_x_1 == 0:
-        max_shft_x_1 = None
+    Args:
+        Y: np.ndarray
+            d1 x d2 [x d3] x T movie, raw data.
 
-    if max_shft_y_1 == 0:
-        max_shft_y_1 = None
-    logger.info([max_shft_x, max_shft_x_1, max_shft_y, max_shft_y_1])
-    m = m[:, max_shft_x:max_shft_x_1, max_shft_y:max_shft_y_1]
+        sig: [optional] list,tuple
+            half size of neurons
 
-    if template is None:
-        tmpl = bin_median(m)
-    else:
-        tmpl = template
+        siz: [optional] list,tuple
+            size of filter kernel (default 2*sig + 1).
 
-    m = m.resize(1, 1, resize_fact_flow)
-    norms = []
-    flows = []
-    count = 0
-    sys.stdout.flush()
-    for fr in tqdm(m, desc="Optical flow", disable=disable_tqdm):
-        if disable_tqdm:
-            if count % 100 == 0:
-                logger.debug(count)
+        nDimBlur: [optional]
+            if you want to specify the number of dimension
 
-        count += 1
-        flow = cv2.calcOpticalFlowFarneback(
-            tmpl, fr, None, pyr_scale, levels, winsize, iterations, poly_n, poly_sigma, flags)
+        kernel: [optional]
+            if you want to specify a kernel
 
-        if play_flow:
-            if opencv:
-                dims = tuple(np.array(flow.shape[:-1]) * resize_fact_play)
-                vid_frame = np.concatenate([
-                    np.repeat(np.clip((cv2.resize(fr, dims)[..., None] - m_min) /
-                                      (m_max - m_min), 0, 1), 3, -1),
-                    np.transpose([cv2.resize(np.clip(flow[:, :, 1] / vmax, 0, 1), dims),
-                                  np.zeros(dims, np.float32),
-                                  cv2.resize(np.clip(flow[:, :, 1] / vmin, 0, 1), dims)],
-                                 (1, 2, 0)),
-                    np.transpose([cv2.resize(np.clip(flow[:, :, 0] / vmax, 0, 1), dims),
-                                  np.zeros(dims, np.float32),
-                                  cv2.resize(np.clip(flow[:, :, 0] / vmin, 0, 1), dims)],
-                                 (1, 2, 0))], 1).astype(np.float32)
-                cv2.putText(vid_frame, 'movie', (10, 20), fontFace=5, fontScale=0.8, color=(
-                    0, 255, 0), thickness=1)
-                cv2.putText(vid_frame, 'y_flow', (dims[0] + 10, 20), fontFace=5, fontScale=0.8, color=(
-                    0, 255, 0), thickness=1)
-                cv2.putText(vid_frame, 'x_flow', (2 * dims[0] + 10, 20), fontFace=5, fontScale=0.8, color=(
-                    0, 255, 0), thickness=1)
-                cv2.imshow('frame', vid_frame)
-                cv2.waitKey(1 / fr_play)  # to pause between frames
-                if cv2.waitKey(1) & 0xFF == ord('q'):
-                    break
+        opencv: [optional]
+            if you want to process to the blur using OpenCV method
+
+    Returns:
+        the blurred image
+    """
+    # TODO: document (jerem)
+    if kernel is None:
+        if nDimBlur is None:
+            nDimBlur = Y.ndim - 1
+        else:
+            nDimBlur = np.min((Y.ndim, nDimBlur))
+
+        if np.isscalar(sig):
+            sig = sig * np.ones(nDimBlur)
+
+        if np.isscalar(siz):
+            siz = siz * np.ones(nDimBlur)
+
+        X = Y.copy()
+        if opencv and nDimBlur == 2:
+            if X.ndim > 2:
+                # if we are on a video we repeat for each frame
+                for frame in range(X.shape[-1]):
+                    if sys.version_info >= (3, 0):
+                        X[:, :, frame] = cv2.GaussianBlur(X[:, :, frame], tuple(
+                            siz), sig[0], None, sig[1], cv2.BORDER_CONSTANT)
+                    else:
+                        X[:, :, frame] = cv2.GaussianBlur(X[:, :, frame], tuple(siz), sig[
+                            0], sig[1], cv2.BORDER_CONSTANT, 0)
+
             else:
-                plt.subplot(1, 3, 1)
-                plt.cla()
-                plt.imshow(fr, vmin=m_min, vmax=m_max, cmap='gray')
-                plt.title('movie')
-                plt.subplot(1, 3, 3)
-                plt.cla()
-                plt.imshow(flow[:, :, 1], vmin=vmin, vmax=vmax)
-                plt.title('y_flow')
-                plt.subplot(1, 3, 2)
-                plt.cla()
-                plt.imshow(flow[:, :, 0], vmin=vmin, vmax=vmax)
-                plt.title('x_flow')
-                plt.pause(1 / fr_play)
+                if sys.version_info >= (3, 0):
+                    X = cv2.GaussianBlur(
+                        X, tuple(siz), sig[0], None, sig[1], cv2.BORDER_CONSTANT)
+                else:
+                    X = cv2.GaussianBlur(
+                        X, tuple(siz), sig[0], sig[1], cv2.BORDER_CONSTANT, 0)
+        else:
+            for i in range(nDimBlur):
+                h = np.exp(-np.arange(-np.floor(siz[i] / 2),
+                                      np.floor(siz[i] / 2) + 1) ** 2 / (2 * sig[i] ** 2))
+                h /= np.sqrt(h.dot(h))
+                shape = [1] * len(Y.shape)
+                shape[i] = -1
+                X = correlate(X, h.reshape(shape), mode='constant')
 
-        n = np.linalg.norm(flow)
-        flows.append(flow)
-        norms.append(n)
-    if play_flow and opencv:
-        cv2.destroyAllWindows()
+    else:
+        X = correlate(Y, kernel[..., np.newaxis], mode='constant')
+        # for t in range(np.shape(Y)[-1]):
+        #    X[:,:,t] = correlate(Y[:,:,t],kernel,mode='constant', cval=0.0)
 
-    return tmpl, flows, norms
+    return X
+
+
+def finetune(Y, cin, nIter=5):
+    """compute a initialized version of A and C
+
+    Args:
+        Y:  D1*d2*T*K patches
+
+        c: array T*K
+            the initial calcium traces
+
+        nIter: int
+            True indicates that time is listed in the last axis of Y (matlab format)
+            and moves it in the front
+
+    Returns:
+    a: array (d1,D2) the computed A as l2(Y*C)/Y*C
+
+    c: array(T) C as the sum of As on x*y axis
+"""
+    debug_ = False
+    if debug_:
+        import os
+        f = open('_LOG_1_' + str(os.getpid()), 'w+')
+        f.write('Y:' + str(np.mean(Y)) + '\n')
+        f.write('cin:' + str(np.mean(cin)) + '\n')
+        f.close()
+
+    # we compute the multiplication of patches per traces ( non negatively )
+    for _ in range(nIter):
+        a = np.maximum(np.dot(Y, cin), 0)
+        a = a / np.sqrt(np.sum(a**2) + np.finfo(np.float32).eps)  # compute the l2/a
+        # c as the variation of those patches
+        cin = np.sum(Y * a[..., np.newaxis], tuple(np.arange(Y.ndim - 1)))
+
+    return a, cin
+
+
+def greedyROI(Y, nr=30, gSig=[5, 5], gSiz=[11, 11], nIter=5, kernel=None, nb=1,
+              rolling_sum=False, rolling_length=100, seed_method='auto'):
+    """
+    Greedy initialization of spatial and temporal components using spatial Gaussian filtering
+
+    Args:
+        Y: np.array
+            3d or 4d array of fluorescence data with time appearing in the last axis.
+
+        nr: int
+            number of components to be found
+
+        gSig: scalar or list of integers
+            standard deviation of Gaussian kernel along each axis
+
+        gSiz: scalar or list of integers
+            size of spatial component
+
+        nIter: int
+            number of iterations when refining estimates
+
+        kernel: np.ndarray
+            User specified kernel to be used, if present, instead of Gaussian (default None)
+
+        nb: int
+            Number of background components
+
+        rolling_max: boolean
+            Detect new components based on a rolling sum of pixel activity (default: True)
+
+        rolling_length: int
+            Length of rolling window (default: 100)
+
+        seed_method: str {'auto', 'manual', 'semi'}
+            methods for choosing seed pixels
+            'semi' detects nr components automatically and allows to add more manually
+            if running as notebook 'semi' and 'manual' require a backend that does not
+            inline figures, e.g. %matplotlib tk
+
+    Returns:
+        A: np.array
+            2d array of size (# of pixels) x nr with the spatial components. Each column is
+            ordered columnwise (matlab format, order='F')
+
+        C: np.array
+            2d array of size nr X T with the temporal components
+
+        center: np.array
+            2d array of size nr x 2 [ or 3] with the components centroids
+
+    Author:
+        Eftychios A. Pnevmatikakis and Andrea Giovannucci based on a matlab implementation by Yuanjun Gao
+            Simons Foundation, 2015
+
+    See Also:
+        http://www.cell.com/neuron/pdf/S0896-6273(15)01084-3.pdf
+
+
+    """
+    d = np.shape(Y)
+    Y[np.isnan(Y)] = 0
+    med = np.median(Y, axis=-1)
+    Y = Y - med[..., np.newaxis]
+    gHalf = np.array(gSiz) // 2
+    gSiz = 2 * gHalf + 1
+    # we initialize every values to zero
+    if seed_method.lower() == 'manual':
+        nr = 0
+    A = np.zeros((np.prod(d[0:-1]), nr), dtype=np.float32)
+    C = np.zeros((nr, d[-1]), dtype=np.float32)
+    center = np.zeros((nr, Y.ndim - 1), dtype='uint16')
+
+    rho = _imblur(Y, sig=gSig, siz=gSiz, nDimBlur=Y.ndim - 1, kernel=kernel)
+
+    if rolling_sum:
+        rolling_filter = np.ones(
+            (rolling_length), dtype=np.float32) / rolling_length
+        rho_s = scipy.signal.lfilter(rolling_filter, 1., rho ** 2)
+        return rho_s
+        v = np.amax(rho_s, axis=-1)
+    else:
+        v = np.sum(rho ** 2, axis=-1)
+
+    if seed_method.lower() != 'manual':
+        for k in range(nr):
+            # we take the highest value of the blurred total image and we define it as
+            # the center of the neuron
+            ind = np.argmax(v)
+            ij = np.unravel_index(ind, d[0:-1])
+            for c, i in enumerate(ij):
+                center[k, c] = i
+
+            # we define a squared size around it
+            ijSig = [[np.maximum(ij[c] - gHalf[c], 0), np.minimum(ij[c] + gHalf[c] + 1, d[c])]
+                     for c in range(len(ij))]
+            # we create an array of it (fl like) and compute the trace like the pixel ij through time
+            dataTemp = np.array(
+                Y[tuple([slice(*a) for a in ijSig])].copy(), dtype=np.float32)
+            traceTemp = np.array(np.squeeze(rho[ij]), dtype=np.float32)
+
+            coef, score = finetune(dataTemp, traceTemp, nIter=nIter)
+            C[k, :] = np.squeeze(score)
+            dataSig = coef[..., np.newaxis] * \
+                      score.reshape([1] * (Y.ndim - 1) + [-1])
+            xySig = np.meshgrid(*[np.arange(s[0], s[1])
+                                  for s in ijSig], indexing='xy')
+            arr = np.array([np.reshape(s, (1, np.size(s)), order='F').squeeze()
+                            for s in xySig], dtype=int)
+            indices = np.ravel_multi_index(arr, d[0:-1], order='F')
+
+            A[indices, k] = np.reshape(
+                coef, (1, np.size(coef)), order='C').squeeze()
+            Y[tuple([slice(*a) for a in ijSig])] -= dataSig.copy()
+            if k < nr - 1 or seed_method.lower() != 'auto':
+                Mod = [[np.maximum(ij[c] - 2 * gHalf[c], 0),
+                        np.minimum(ij[c] + 2 * gHalf[c] + 1, d[c])] for c in range(len(ij))]
+                ModLen = [m[1] - m[0] for m in Mod]
+                Lag = [ijSig[c] - Mod[c][0] for c in range(len(ij))]
+                dataTemp = np.zeros(ModLen)
+                dataTemp[tuple([slice(*a) for a in Lag])] = coef
+                dataTemp = _imblur(dataTemp[..., np.newaxis],
+                                   sig=gSig, siz=gSiz, kernel=kernel)
+                temp = dataTemp * score.reshape([1] * (Y.ndim - 1) + [-1])
+                rho[tuple([slice(*a) for a in Mod])] -= temp.copy()
+                if rolling_sum:
+                    rho_filt = scipy.signal.lfilter(
+                        rolling_filter, 1., rho[tuple([slice(*a) for a in Mod])] ** 2)
+                    v[tuple([slice(*a) for a in Mod])] = np.amax(rho_filt, axis=-1)
+                else:
+                    v[tuple([slice(*a) for a in Mod])] = \
+                        np.sum(rho[tuple([slice(*a) for a in Mod])] ** 2, axis=-1)
+        center = center.tolist()
+    else:
+        center = []
+
+    res = np.reshape(Y, (np.prod(d[0:-1]), d[-1]),
+                     order='F') + med.flatten(order='F')[:, None]
+    #    model = NMF(n_components=nb, init='random', random_state=0)
+    model = NMF(n_components=nb, init='nndsvdar')
+    b_in = model.fit_transform(np.maximum(res, 0)).astype(np.float32)
+    f_in = model.components_.astype(np.float32)
+
+    return A, C, np.array(center, dtype='uint16'), b_in, f_in
