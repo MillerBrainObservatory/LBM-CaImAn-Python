@@ -197,16 +197,6 @@ def get_files_ext(base_dir, extension, max_depth) -> list:
     ]
 
 
-def get_pickle_files(data_path: str | Path) -> list:
-    """
-    Get all .pickle files in a directory and its subdirectories.
-    """
-    files = get_files_ext(data_path, '.pickle', 3)
-    if not files:
-        raise ValueError(f"No .pickle files found in {data_path} or its subdirectories.")
-    return files
-
-
 def get_metrics_path(fname: Path) -> Path:
     """
     Get the path to the computed metrics file for a given data file.
