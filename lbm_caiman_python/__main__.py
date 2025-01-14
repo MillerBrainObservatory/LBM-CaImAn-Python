@@ -411,7 +411,7 @@ def main():
             raise ValueError(f"No .pickle files found in {args.summary} or its subdirectories.")
 
         print(f"Found {len(files)} pickle files in {args.summary}.")
-        batch_df = lcp.get_item_by_algo(files, algo="all")
+        batch_df = lcp.get_all_batch_items(files, algo="all")
 
         if batch_df.empty:
             print("No batch items found in the given pickle files.")
