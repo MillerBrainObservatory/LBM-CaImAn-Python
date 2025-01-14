@@ -417,14 +417,14 @@ def main():
             print("No batch items found in the given pickle files.")
 
         print(f"----Summary of batch files in {args.summary}:")
-        batch_summary_df = lcp.create_batch_summary(batch_df)
+        batch_summary_df = lcp.get_summary_batch(batch_df)
         print(batch_summary_df)
         print("\n")
         if args.cnmf:
             print("---Summary of CNMF items:")
 
             cnmf_df = batch_df[batch_df.algo == "cnmf"]
-            cnmf_summary_df = lcp.summarize_cnmf(cnmf_df)
+            cnmf_summary_df = lcp.get_summary_cnmf(cnmf_df)
             print_cols = ["algo", "algo_duration", "Accepted", "Rejected", "K", "gSig"]
 
             # no max columns
