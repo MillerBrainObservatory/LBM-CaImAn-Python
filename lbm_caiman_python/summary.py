@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 
 from .batch import load_batch
-from .helpers import _compute_metrics_with_temp_file, _compute_metrics
+from .helpers import _compute_raw_mcorr_metrics, _compute_metrics
 from .lcp_io import get_metrics_path
 
 SUMMARY_PARAMS = (
@@ -219,7 +219,7 @@ def compute_mcorr_metrics_batch(batch_df: pd.DataFrame, overwrite: bool = False)
                 raw_metrics_path.unlink(missing_ok=True)
 
             start = time.time()
-            raw_metrics_path = _compute_metrics_with_temp_file(raw_filename, overwrite=overwrite)
+            raw_metrics_path = _compute_raw_mcorr_metrics(raw_filename, overwrite=overwrite)
             print(f'Computed metrics for raw data in {time.time() - start:.2f} seconds.')
 
         metrics_paths.append(raw_metrics_path)
