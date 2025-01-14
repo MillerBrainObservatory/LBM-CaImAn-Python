@@ -102,6 +102,7 @@ def default_params():
             'decay_time': 0.4,
             'p': 2,
             'nb': 1,
+            'gnb': 3,
             'K': 20,
             'rf': 64,
             'stride': [8, 8],
