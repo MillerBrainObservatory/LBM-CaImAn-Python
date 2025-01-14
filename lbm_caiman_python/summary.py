@@ -59,16 +59,8 @@ def get_all_batch_items(files: list, algo="all") -> pd.DataFrame:
     return pd.DataFrame(temp_row)
 
 
-def summarize_cnmf(df: pd.DataFrame) -> pd.DataFrame:
+def get_summary_cnmf(df: pd.DataFrame) -> pd.DataFrame:
     """
-    Summarize CNMF results from a list of df.
-    Returns a DataFrame with the following columns:
-    - batch_path (str): Path of the batch.
-    - algo_duration (float): Duration of the algorithm in seconds.
-    - Total Traces (int): Number of traces detected.
-    - Accepted (int): Number of accepted traces.
-    - Rejected (int): Number of rejected traces.
-    - K, gSig, gSiz, gSig_filt: Parameters used in the CNMF algorithm.
     """
     # Safely add new columns with traces / params
     return _params_from_df(_num_traces_from_df(df))
@@ -267,7 +259,7 @@ def compute_mcorr_metrics_batch(batch_df: pd.DataFrame, overwrite: bool = False)
     return metrics_paths
 
 
-def create_batch_summary(df) -> pd.DataFrame:
+def get_summary_batch(df) -> pd.DataFrame:
     """
     Create a summary of successful and unsuccessful runs for each algorithm.
 
