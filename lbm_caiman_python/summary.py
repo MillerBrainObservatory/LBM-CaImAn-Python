@@ -203,7 +203,7 @@ def compute_mcorr_metrics_batch(batch_df: pd.DataFrame, overwrite: bool = False)
 
     try:
         raw_filename = batch_df.iloc[0].caiman.get_input_movie_path()
-    except Exception as e:
+    except AttributeError:
         print('Skipping raw data metrics computation.'
               'Could not find raw data file.'
               'Make sure to call mc.set_parent_raw_data_path(data_path) before calling this function.')
@@ -274,7 +274,9 @@ def create_batch_summary(df) -> pd.DataFrame:
     -------
 
     """
-    if not hasattr(df, 'item_name'):
+    if df.empty:
+        raise ValueError("Input DataFrame is empty.")
+    elif not hasattr(df, 'item_name'):
         raise ValueError("Input DataFrame does not have an 'item_name' column.")
 
     mcorr_df = df[df.algo == 'mcorr']
