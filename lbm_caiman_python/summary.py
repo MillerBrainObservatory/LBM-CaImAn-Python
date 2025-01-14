@@ -1,7 +1,7 @@
 import sys
 import time
 from pathlib import Path
-from typing import List
+from typing import List, Iterable
 
 import numpy as np
 
@@ -59,11 +59,48 @@ def get_all_batch_items(files: list, algo="all") -> pd.DataFrame:
     return pd.DataFrame(temp_row)
 
 
+def get_summary_batch(df) -> pd.DataFrame:
+    """
+    Create a summary of successful and unsuccessful runs for each algorithm.
+
+    Parameters
+    ----------
+    df
+
+    Returns
+    -------
+
+    """
+    if df.empty:
+        raise ValueError("Input DataFrame is empty.")
+    elif not hasattr(df, 'item_name'):
+        raise ValueError("Input DataFrame does not have an 'item_name' column.")
+
+    mcorr_df = df[df.algo == 'mcorr']
+    cnmf_df = df[df.algo.isin(['cnmf', 'cnmfe'])]
+    succ_mcorr = _num_successful_from_df(mcorr_df)
+    succ_cnmf = _num_successful_from_df(cnmf_df)
+    unsucc_mcorr = len(mcorr_df) - succ_mcorr
+    unsucc_cnmf = len(cnmf_df) - succ_cnmf
+
+    return pd.DataFrame([
+        {'algo': 'mcorr', 'Runs': len(mcorr_df), 'Successful': succ_mcorr,
+         'Unsuccessful': unsucc_mcorr},
+        {'algo': 'cnmf', 'Runs': len(cnmf_df), 'Successful': succ_cnmf,
+         'Unsuccessful': unsucc_cnmf}
+    ])
+
+
 def get_summary_cnmf(df: pd.DataFrame) -> pd.DataFrame:
     """
     """
     # Safely add new columns with traces / params
     return _params_from_df(_num_traces_from_df(df))
+
+
+def get_summary_mcorr(df: pd.DataFrame) -> pd.DataFrame:
+    files = compute_mcorr_metrics_batch(df)
+    return _create_df_from_metric_files(files)
 
 
 def concat_param_diffs(input_df, param_diffs):
@@ -89,7 +126,7 @@ def concat_param_diffs(input_df, param_diffs):
     >>> import lbm_mc as mc
     >>> batch_df = mc.load_batch('path/to/batch.pickle')
     >>> metrics_files = lcp.summary.compute_mcorr_metrics_batch(batch_df)
-    >>> metrics_df = lcp.summary.metrics_df_from_files(metrics_files)
+    >>> metrics_df = lcp.summary._create_df_from_metric_files(metrics_files)
     >>> param_diffs = batch_df.caiman.get_params_diffs("mcorr", item_name=batch_df.iloc[0]["item_name"])
     >>> final_df = lcp.concat_param_diffs(metrics_df, param_diffs)
     >>> print(final_df.head())
@@ -120,7 +157,7 @@ def concat_param_diffs(input_df, param_diffs):
     return input_df
 
 
-def metrics_df_from_files(metrics_filepaths: list[str | Path]) -> pd.DataFrame:
+def _create_df_from_metric_files(metrics_filepaths: Iterable[str | Path]) -> pd.DataFrame:
     """
     Create a DataFrame from a list of metrics files.
 
@@ -144,7 +181,7 @@ def metrics_df_from_files(metrics_filepaths: list[str | Path]) -> pd.DataFrame:
     >>> batch_df = mc.load_batch('path/to/batch.pickle')
     >>> # overwrite=False will not recompute metrics if they already exist
     >>> metrics_files = lcp.summary.compute_mcorr_metrics_batch(batch_df, overwrite=False)
-    >>> metrics_df = lcp.metrics_df_from_files(metrics_files)
+    >>> metrics_df = lcp._create_df_from_metric_files(metrics_files)
     >>> print(metrics_df.head())
     """
     metrics_list = []
@@ -166,9 +203,13 @@ def metrics_df_from_files(metrics_filepaths: list[str | Path]) -> pd.DataFrame:
     return pd.DataFrame(metrics_list)
 
 
-def compute_mcorr_metrics_batch(batch_df: pd.DataFrame, overwrite: bool = False) -> List[Path]:
+def compute_mcorr_metrics_batch(batch_df: pd.DataFrame, overwrite: bool = False) -> Iterable[Path]:
     """
-    Compute and store various statistical metrics for each batch of image data.
+    Compute and store various statistical registration metrics for each batch of image data.
+
+    Attempts to compute metrics for raw data if:
+    1. The raw data file is found in the batch path.
+    2. The raw data file is found in the global parent directory set via `mc.set_parent_raw_data_path()`.
 
     Parameters
     ----------
@@ -260,38 +301,6 @@ def compute_mcorr_metrics_batch(batch_df: pd.DataFrame, overwrite: bool = False)
             print(f"Failed to compute metrics for batch index {i}. Error: {e}")
 
     return metrics_paths
-
-
-def get_summary_batch(df) -> pd.DataFrame:
-    """
-    Create a summary of successful and unsuccessful runs for each algorithm.
-
-    Parameters
-    ----------
-    df
-
-    Returns
-    -------
-
-    """
-    if df.empty:
-        raise ValueError("Input DataFrame is empty.")
-    elif not hasattr(df, 'item_name'):
-        raise ValueError("Input DataFrame does not have an 'item_name' column.")
-
-    mcorr_df = df[df.algo == 'mcorr']
-    cnmf_df = df[df.algo.isin(['cnmf', 'cnmfe'])]
-    succ_mcorr = _num_successful_from_df(mcorr_df)
-    succ_cnmf = _num_successful_from_df(cnmf_df)
-    unsucc_mcorr = len(mcorr_df) - succ_mcorr
-    unsucc_cnmf = len(cnmf_df) - succ_cnmf
-
-    return pd.DataFrame([
-        {'algo': 'mcorr', 'Runs': len(mcorr_df), 'Successful': succ_mcorr,
-         'Unsuccessful': unsucc_mcorr},
-        {'algo': 'cnmf', 'Runs': len(cnmf_df), 'Successful': succ_cnmf,
-         'Unsuccessful': unsucc_cnmf}
-    ])
 
 
 def _num_traces_from_df(df: pd.DataFrame) -> pd.DataFrame:

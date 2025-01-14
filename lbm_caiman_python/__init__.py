@@ -16,14 +16,14 @@ from .batch import (
     load_batch,
     remove_batch_duplicates
 )
-from .lcp_io import get_metadata, get_files, get_files_ext
+from .lcp_io import get_metadata, get_files_ext
 from .util.transform import vectorize, unvectorize, calculate_centers
-from .util.quality import get_noise_fft, find_peaks, mean_psd, greedyROI, finetune
+from .util.quality import get_noise_fft, find_peaks, mean_psd, greedyROI
 from .summary import (
     get_all_batch_items,
     get_summary_cnmf,
     concat_param_diffs,
-    metrics_df_from_files,
+    _create_df_from_metric_files,
     compute_mcorr_metrics_batch,
     get_summary_batch,
 )
@@ -48,7 +48,6 @@ __all__ = [
     "clean_batch",
     "fix_scan_phase",
     "return_scan_offset",
-    "get_files",
     "get_metadata",
     "save_as",
     "generate_patch_view",
@@ -64,7 +63,6 @@ __all__ = [
     "get_all_batch_items",
     "get_summary_cnmf",
     "calculate_centers",
-    "finetune",
     "greedyROI",
     "get_summary_batch",
     "get_single_patch_coords",

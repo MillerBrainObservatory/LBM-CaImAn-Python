@@ -32,7 +32,7 @@ def params_from_metadata(metadata):
     gSig = round(16 / metadata["pixel_resolution"][0]) / 2
     params["main"]["gSig"] = gSig
 
-    gSiz = (2 * gSig + 1, 2 * gSig + 1)
+    gSiz = (4 * gSig + 1, 4 * gSig + 1)
     params["main"]["gSiz"] = gSiz
 
     max_shifts = [int(round(10 / px)) for px in metadata["pixel_resolution"]]
