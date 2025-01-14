@@ -89,7 +89,7 @@ def concat_param_diffs(input_df, param_diffs):
     --------
     >>> import pandas as pd
     >>> import lbm_caiman_python as lcp
-    >>> import mesmerize_core as mc
+    >>> import lbm_mc as mc
     >>> batch_df = mc.load_batch('path/to/batch.pickle')
     >>> metrics_files = lcp.summary.compute_mcorr_metrics_batch(batch_df)
     >>> metrics_df = lcp.summary.metrics_df_from_files(metrics_files)
@@ -143,7 +143,7 @@ def metrics_df_from_files(metrics_filepaths: list[str | Path]) -> pd.DataFrame:
     --------
     >>> import pandas as pd
     >>> import lbm_caiman_python as lcp
-    >>> import mesmerize_core as mc
+    >>> import lbm_mc as mc
     >>> batch_df = mc.load_batch('path/to/batch.pickle')
     >>> # overwrite=False will not recompute metrics if they already exist
     >>> metrics_files = lcp.summary.compute_mcorr_metrics_batch(batch_df, overwrite=False)
@@ -191,7 +191,7 @@ def compute_mcorr_metrics_batch(batch_df: pd.DataFrame, overwrite: bool = False)
     --------
     >>> import pandas as pd
     >>> import lbm_caiman_python as lcp
-    >>> import mesmerize_core as mc
+    >>> import lbm_mc as mc
     >>> batch_df = mc.load_batch('path/to/batch.pickle')
     >>> metrics_paths = lcp.compute_mcorr_metrics_batch(batch_df)
     >>> print(metrics_paths)

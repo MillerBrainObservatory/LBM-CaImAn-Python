@@ -1,7 +1,7 @@
 import re as regex
 from pathlib import Path
 from typing import Union
-import mesmerize_core as mc
+import lbm_mc as mc
 from contextlib import contextmanager
 import pathlib
 

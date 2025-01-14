@@ -7,7 +7,7 @@ from functools import partial
 import pandas as pd
 
 import lbm_caiman_python as lcp
-import mesmerize_core as mc
+import lbm_mc as mc
 
 import lbm_caiman_python.visualize
 

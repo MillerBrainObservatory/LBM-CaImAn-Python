@@ -87,7 +87,7 @@ def plot_optical_flows(input_df: pd.DataFrame, max_columns=4, save_path=None):
     Examples
     --------
     >>> import lbm_caiman_python as lcp
-    >>> import mesmerize_core as mc
+    >>> import lbm_mc as mc
     >>> batch_df = mc.load_batch('path/to/batch.pickle')
     >>> metrics_files = lbm_caiman_python.summary.compute_mcorr_metrics_batch(batch_df)
     >>> metrics_df = lbm_caiman_python.summary.metrics_df_from_files(metrics_files)
@@ -194,7 +194,7 @@ def plot_residual_flows(results, num_batches=3, smooth=True, winsize=5, save_pat
     Examples
     --------
     >>> import lbm_caiman_python as lcp
-    >>> import mesmerize_core as mc
+    >>> import lbm_mc as mc
     >>> batch_df = mc.load_batch('path/to/batch.pickle')
     >>> metrics_files = lcp.compute_mcorr_metrics_batch(batch_df)
     >>> metrics_df = lcp.metrics_df_from_files(metrics_files)
