@@ -60,11 +60,10 @@ conda activate lcp
 
 If you already have `CaImAn` installed, skip this step.
 
-2. Install [LBM-CaImAn-Python](https://pypi.org/project/lbm-caiman-python/) and [scanreader](https://github.com/atlab/scanreader):
+2. Install [LBM-CaImAn-Python](https://pypi.org/project/lbm-caiman-python/)
 
 ``` bash
 pip install lbm_caiman_python
-pip install git+https://github.com/atlab/scanreader.git
 ```
 
 3. (Optional) Install `caimanmanager`

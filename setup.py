@@ -10,6 +10,7 @@ install_deps = [
     "numba>=0.57.0",
     "scipy>=1.9.0",
     "fastplotlib[notebook]",
+    "scanreader @ git+https://github.com/atlab/scanreader.git@master#egg=scanreader",
     "matplotlib",
     "lcp-mc",
     "fabric",
