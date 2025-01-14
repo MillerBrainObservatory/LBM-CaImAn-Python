@@ -54,7 +54,7 @@ def params_from_metadata(metadata):
     rf_1 = (strides[1] + overlaps[1]) // 2
     rf = int(np.mean([rf_0, rf_1]))
 
-    stride = int(np.mean([overlaps[0], overlaps[1]]))  # or just pick overlaps[0]
+    stride = int(np.mean([overlaps[0], overlaps[1]]))
 
     params["main"]["rf"] = rf
     params["main"]["stride"] = stride
