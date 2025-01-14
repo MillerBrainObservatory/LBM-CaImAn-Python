@@ -15,11 +15,10 @@ def params_from_metadata(metadata):
     Returns
     -------
     dict
-        Dictionary of parameters for mesmerize_core.
+        Dictionary of parameters for lbm_mc.
 
     """
     params = default_params()
-
 
     if metadata is None:
         print('No metadata found. Using default parameters.')
@@ -118,4 +117,5 @@ def default_params():
             'min_SNR': 1.4,
             'rval_thr': 0.8,
         },
+        "refit": True
     }
