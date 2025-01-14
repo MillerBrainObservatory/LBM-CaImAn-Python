@@ -82,22 +82,22 @@ def add_args(parser: argparse.ArgumentParser):
     parser.add_argument('--save', type=str, help='Path to save the ops parameters.')
     parser.add_argument('--version', action='store_true', help='Show version information.')
     parser.add_argument('--debug', action='store_true', help='Enable debug mode.')
-    parser.add_argument('--batch_path', type=str, help='Path to the batch file.')
-    parser.add_argument('--data_path', type=_parse_data_path, help='Path to the input data or index of the batch item.')
+    parser.add_argument('--batch-path', type=str, help='Path to the batch file.')
+    parser.add_argument('--data-path', type=_parse_data_path, help='Path to the input data or index of the batch item.')
     # run flags
     parser.add_argument('--create', action='store_false', help='Create a new batch.')
     parser.add_argument('--rm', type=int, nargs='+', help='Indices of batch df to remove.')
     parser.add_argument('--force', action='store_true', help='Force removal without safety checks.')
-    parser.add_argument('--remove_data', action='store_true', help='Remove associated data.')
+    parser.add_argument('--remove-data', action='store_true', help='Remove associated data.')
     parser.add_argument('--clean', action='store_true', help='Clean unsuccessful batch items.')
     parser.add_argument('--run', type=str, nargs='+', help='Algorithms to run (e.g., mcorr, cnmf).')
     # --summary opts
     parser.add_argument('--summary', type=str, help='Get a summary of pickle files.')
     parser.add_argument('--cnmf', action="store_true", help='Get a summary of cnmf items.')
     parser.add_argument('--mcorr', action="store_true", help='Get a summary of mcorr files.')
-    parser.add_argument('--max_depth', type=int, default=3, help='Maximum depth for searching pickle files. Default: 3.')
-    parser.add_argument('--summary_plots', action='store_true', help='Get plots for the summary. Only works with --summary.')
-    parser.add_argument('--marker_size', type=_parse_int_float, help='Scatterplot marker size for summary plots. Default: 3.')
+    parser.add_argument('--max-depth', type=int, default=3, help='Maximum depth for searching pickle files. Default: 3.')
+    parser.add_argument('--summary-plots', action='store_true', help='Get plots for the summary. Only works with --summary.')
+    parser.add_argument('--marker-size', type=_parse_int_float, help='Scatterplot marker size for summary plots. Default: 3.')
 
     return parser
 
