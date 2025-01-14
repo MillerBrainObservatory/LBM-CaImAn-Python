@@ -28,5 +28,6 @@ tensorflow>=2.4.0,<2.16
 tifffile
 tk
 tqdm
+lbm-mc
 yapf
 zarr~=2.18.3
