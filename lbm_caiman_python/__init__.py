@@ -18,7 +18,7 @@ from .batch import (
 )
 from .lcp_io import get_metadata, get_files_ext
 from .util.transform import vectorize, unvectorize, calculate_centers
-from .util.quality import get_noise_fft, find_peaks, mean_psd, greedyROI
+from .util.quality import get_noise_fft, greedyROI
 from .summary import (
     get_all_batch_items,
     get_summary_cnmf,
@@ -55,8 +55,6 @@ __all__ = [
     "calculate_num_patches",
     "concat_param_diffs",
     "get_noise_fft",
-    "mean_psd",
-    "find_peaks",
     "vectorize",
     "unvectorize",
     "get_files_ext",
