@@ -18,26 +18,6 @@ install_deps = [
     "zarr",
 ]
 
-extras_require = {
-    "docs": [
-        "sphinx>=6.1.3",
-        "docutils>=0.19",
-        "nbsphinx",
-        "numpydoc",
-        "sphinx-autodoc2",
-        "sphinx_gallery",
-        "sphinx-togglebutton",
-        "sphinx-copybutton",
-        "sphinx_book_theme",
-        "pydata_sphinx_theme",
-        "sphinx_design",
-        "sphinxcontrib-images",
-        "sphinxcontrib-video",
-        "sphinx_tippy",
-        "myst_nb",
-    ],
-}
-
 with open(Path(__file__).parent / "README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
@@ -54,7 +34,6 @@ setuptools.setup(
     url="https://github.com/millerbrainobservatory/LBM-CaImAn-Python",
     keywords="Pipeline Numpy Microscopy ScanImage multiROI tiff",
     install_requires=install_deps,
-    extras_require=extras_require,
     packages=setuptools.find_packages(exclude=["data", "data.*"]),
     include_package_data=True,
     classifiers=[
