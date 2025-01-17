@@ -3,6 +3,7 @@ import argparse
 import logging
 from pathlib import Path
 from functools import partial
+import tifffile
 
 import pandas as pd
 
@@ -82,22 +83,23 @@ def add_args(parser: argparse.ArgumentParser):
     parser.add_argument('--save', type=str, help='Path to save the ops parameters.')
     parser.add_argument('--version', action='store_true', help='Show version information.')
     parser.add_argument('--debug', action='store_true', help='Enable debug mode.')
-    parser.add_argument('--batch_path', type=str, help='Path to the batch file.')
-    parser.add_argument('--data_path', type=_parse_data_path, help='Path to the input data or index of the batch item.')
+    parser.add_argument('--batch-path', type=str, help='Path to the batch file.')
+    parser.add_argument('--data-path', type=_parse_data_path, help='Path to the input data or index of the batch item.')
     # run flags
     parser.add_argument('--create', action='store_false', help='Create a new batch.')
     parser.add_argument('--rm', type=int, nargs='+', help='Indices of batch df to remove.')
     parser.add_argument('--force', action='store_true', help='Force removal without safety checks.')
-    parser.add_argument('--remove_data', action='store_true', help='Remove associated data.')
+    parser.add_argument('--remove-data', action='store_true', help='Remove associated data.')
     parser.add_argument('--clean', action='store_true', help='Clean unsuccessful batch items.')
     parser.add_argument('--run', type=str, nargs='+', help='Algorithms to run (e.g., mcorr, cnmf).')
     # --summary opts
     parser.add_argument('--summary', type=str, help='Get a summary of pickle files.')
     parser.add_argument('--cnmf', action="store_true", help='Get a summary of cnmf items.')
     parser.add_argument('--mcorr', action="store_true", help='Get a summary of mcorr files.')
-    parser.add_argument('--max_depth', type=int, default=3, help='Maximum depth for searching pickle files. Default: 3.')
-    parser.add_argument('--summary_plots', action='store_true', help='Get plots for the summary. Only works with --summary.')
-    parser.add_argument('--marker_size', type=_parse_int_float, help='Scatterplot marker size for summary plots. Default: 3.')
+    parser.add_argument('--max-depth', type=int, default=3, help='Maximum depth for searching pickle files. Default: 3.')
+    parser.add_argument('--summary-plots', action='store_true', help='Get plots for the summary. Only works with --summary.')
+    parser.add_argument('--marker-size', type=_parse_int_float, help='Scatterplot marker size for summary plots. Default: 3.')
+    parser.add_argument('--gui', type=str, help='Run the GUI.')
 
     return parser
 
@@ -385,6 +387,12 @@ def main():
     parser = add_args(parser)
     args = parser.parse_args()
 
+    if args.gui:
+        from lbm_caiman_python.gui import run_gui
+        movie = tifffile.memmap(Path(args.gui))
+        run_gui(movie, text="TEST")
+        return
+
     # Handle version
     if args.version:
         print("lbm_caiman_python v{}".format(lcp.__version__))
@@ -411,20 +419,20 @@ def main():
             raise ValueError(f"No .pickle files found in {args.summary} or its subdirectories.")
 
         print(f"Found {len(files)} pickle files in {args.summary}.")
-        batch_df = lcp.get_item_by_algo(files, algo="all")
+        batch_df = lcp.get_all_batch_items(files, algo="all")
 
         if batch_df.empty:
             print("No batch items found in the given pickle files.")
 
         print(f"----Summary of batch files in {args.summary}:")
-        batch_summary_df = lcp.create_batch_summary(batch_df)
+        batch_summary_df = lcp.get_summary_batch(batch_df)
         print(batch_summary_df)
         print("\n")
         if args.cnmf:
             print("---Summary of CNMF items:")
 
             cnmf_df = batch_df[batch_df.algo == "cnmf"]
-            cnmf_summary_df = lcp.summarize_cnmf(cnmf_df)
+            cnmf_summary_df = lcp.get_summary_cnmf(cnmf_df)
             print_cols = ["algo", "algo_duration", "Accepted", "Rejected", "K", "gSig"]
 
             # no max columns
@@ -441,7 +449,7 @@ def main():
 
         if args.mcorr:
             mcorr_metrics_files = lcp.compute_mcorr_metrics_batch(batch_df)
-            mcorr_metrics_df = lcp.metrics_df_from_files(mcorr_metrics_files)
+            mcorr_metrics_df = lcp._create_df_from_metric_files(mcorr_metrics_files)
 
             formatted_output = "\n".join(mcorr_metrics_df.to_string(index=False).splitlines())
             print("\n---Summary of MCORR items:")

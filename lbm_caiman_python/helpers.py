@@ -180,8 +180,6 @@ def _compute_metrics(fname, uuid, batch_id, final_size_x, final_size_y, swap_dim
     """
     Compute metrics for a given movie file.
     """
-    print('Computing metrics for', fname)
-
     if not uuid:
         raise ValueError("UUID must be provided.")
 
@@ -252,7 +250,7 @@ def _compute_metrics(fname, uuid, batch_id, final_size_x, final_size_y, swap_dim
     )
 
 
-def _compute_metrics_with_temp_file(raw_fname: Path, overwrite=False) -> Path:
+def _compute_raw_mcorr_metrics(raw_fname: Path, overwrite=False) -> Path:
     """
     Wrapper for caiman.motion_correction.compute_metrics_motion_correction. Writes raw_file to a temporary memmapped file to
     run compute_metrics_motion_correction, and move the metrics file back to the fname directory.
