@@ -3,6 +3,7 @@ import argparse
 import logging
 from pathlib import Path
 from functools import partial
+import tifffile
 
 import pandas as pd
 
@@ -98,6 +99,7 @@ def add_args(parser: argparse.ArgumentParser):
     parser.add_argument('--max-depth', type=int, default=3, help='Maximum depth for searching pickle files. Default: 3.')
     parser.add_argument('--summary-plots', action='store_true', help='Get plots for the summary. Only works with --summary.')
     parser.add_argument('--marker-size', type=_parse_int_float, help='Scatterplot marker size for summary plots. Default: 3.')
+    parser.add_argument('--gui', type=str, help='Run the GUI.')
 
     return parser
 
@@ -384,6 +386,12 @@ def main():
     parser = argparse.ArgumentParser(description="LBM-Caiman pipeline parameters")
     parser = add_args(parser)
     args = parser.parse_args()
+
+    if args.gui:
+        from lbm_caiman_python.gui import run_gui
+        movie = tifffile.memmap(Path(args.gui))
+        run_gui(movie, text="TEST")
+        return
 
     # Handle version
     if args.version:
