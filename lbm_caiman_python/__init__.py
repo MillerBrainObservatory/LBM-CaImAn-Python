@@ -35,6 +35,8 @@ from .helpers import (
 from .visualize import plot_with_scalebars, plot_optical_flows, plot_residual_flows, plot_correlations, \
     plot_spatial_components
 
+from .gui import run_gui
+
 __version__ = _version.get_versions()['version']
 
 __all__ = [
