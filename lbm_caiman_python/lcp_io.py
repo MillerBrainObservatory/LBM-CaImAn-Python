@@ -168,3 +168,29 @@ def get_metrics_path(fname: Path) -> Path:
     """
     fname = Path(fname)
     return fname.with_stem(fname.stem + '_metrics').with_suffix('.npz')
+
+
+def stack_from_files(files: list):
+    """Stacks a list of TIFF files into a Dask array. Can be 3D Tyx or 4D Tzyx.
+
+    Parameters
+    ----------
+    files : list
+        List of TIFF files to stack.
+
+    Returns
+    -------
+    dask.array.core.Array
+        Dask array of the stacked files.
+
+    """
+    lazy_arrays = []
+    for file in files:
+        if Path(file).suffix not in [".tif", ".tiff"]:
+            continue
+        arr = tifffile.memmap(file)
+        dask_arr = da.from_array(arr, chunks="auto")
+        lazy_arrays.append(dask_arr)
+
+    zstack = da.stack(lazy_arrays, axis=1)
+    return zstack
