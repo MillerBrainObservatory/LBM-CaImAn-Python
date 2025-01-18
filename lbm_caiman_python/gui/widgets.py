@@ -1,7 +1,7 @@
 import webbrowser
 
 from pathlib import Path
-from qtpy.QtWidgets import QMainWindow, QFileDialog, QMessageBox
+from qtpy.QtWidgets import QMainWindow, QFileDialog
 from qtpy import QtGui, QtCore
 import fastplotlib as fpl
 from fastplotlib.ui import EdgeWindow
@@ -37,8 +37,10 @@ def load_folder(iw):
         return
     iw.data = stack_from_files(plane_folders_ext)
 
-def get_iw():
-    path = r"D:\DATA\2025-01-16_GCaMP8s_tdtomato_mk302\mk302_2umpx_17p07hz_224pxby448px_2mroi_200mw_50to550umdeep_tdtomato_CavAB_00001\zplanes"
+
+def get_iw(path, recursive=False):
+    if recursive:
+        files = get_files_ext(path, "plane", 2)
     files = get_files_ext(path, "plane", 2)
     zstack = stack_from_files(files)
     iw = fpl.ImageWidget(zstack, histogram_widget=False)
@@ -46,7 +48,7 @@ def get_iw():
 
 
 class LBMMainWindow(QMainWindow):
-    def __init__(self, ):
+    def __init__(self, path):
         super(LBMMainWindow, self).__init__()
 
         print('Setting up main window')
@@ -74,7 +76,7 @@ class LBMMainWindow(QMainWindow):
                               "color:gray;}")
 
         print('Setting up image widget')
-        self.image_widget = get_iw()
+        self.image_widget = get_iw(path)
         self.menu_widget = MenuWidget(self.image_widget, size=50)
 
         gui = MenuWidget(self.image_widget, size=50)

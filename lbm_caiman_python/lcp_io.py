@@ -119,7 +119,7 @@ def get_metadata(file: os.PathLike | str):
         raise ValueError(f"No metadata found in {file}.")
 
 
-def get_files_ext(base_dir, extension, max_depth) -> list:
+def get_files_ext(base_dir, str_contains, max_depth) -> list:
     """
     Recursively searches for files with a specific extension up to a given depth and stores their paths in a pickle file.
 
@@ -127,7 +127,7 @@ def get_files_ext(base_dir, extension, max_depth) -> list:
     ----------
     base_dir : str or Path
         The base directory to start searching.
-    extension : str
+    str_contains : str
         The file extension to look for (e.g., '.txt').
     max_depth : int
         The maximum depth of subdirectories to search.
@@ -145,7 +145,7 @@ def get_files_ext(base_dir, extension, max_depth) -> list:
 
     return [
         str(file)
-        for file in base_path.rglob(f'*{extension}')
+        for file in base_path.rglob(f'*{str_contains}*')
         if len(file.relative_to(base_path).parts) <= max_depth + 1
     ]
 
