@@ -16,7 +16,7 @@ from .batch import (
     load_batch,
     remove_batch_duplicates
 )
-from .lcp_io import get_metadata, get_files_ext
+from .lcp_io import get_metadata, get_files_ext, stack_from_files
 from .util.transform import vectorize, unvectorize, calculate_centers
 from .util.quality import get_noise_fft, greedyROI
 from .summary import (
@@ -64,5 +64,6 @@ __all__ = [
     "greedyROI",
     "get_summary_batch",
     "get_single_patch_coords",
-    "remove_batch_duplicates"
+    "remove_batch_duplicates",
+    "stack_from_files"
 ]
