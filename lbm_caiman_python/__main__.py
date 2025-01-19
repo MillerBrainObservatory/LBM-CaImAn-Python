@@ -388,9 +388,18 @@ def main():
     args = parser.parse_args()
 
     if args.gui:
+        try:
+            print("Attempting import for imgui")
+            import imgui_bundle as imgui
+        except ImportError:
+            raise ImportError("Please install imgui via `conda install -c conda-forge imgui-bundle`")
+        try:
+            print("Attempting import for qtpy")
+            import qtpy
+        except ImportError:
+            raise ImportError("Please install qtpy via `conda install -c conda-forge qtpy`")
         from lbm_caiman_python.gui import run_gui
-        movie = tifffile.memmap(Path(args.gui))
-        run_gui(movie, text="TEST")
+        run_gui(Path(args.gui))
         return
 
     # Handle version
