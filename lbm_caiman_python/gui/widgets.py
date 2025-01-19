@@ -1,10 +1,13 @@
 import webbrowser
 
 from pathlib import Path
+
+import numpy as np
 from qtpy.QtWidgets import QMainWindow, QFileDialog
 from qtpy import QtGui, QtCore
 import fastplotlib as fpl
 from fastplotlib.ui import EdgeWindow
+from rendercanvas import BaseRenderCanvas
 
 from lbm_caiman_python.lcp_io import get_files_ext, stack_from_files
 
@@ -14,41 +17,28 @@ except ImportError:
     raise ImportError("Please install imgui via `conda install -c conda-forge imgui-bundle`")
 
 
-def load_dialog_folder(iw):
-    dlg_kwargs = {
-        "parent": None,
-        "caption": "Open folder with z-planes",
-    }
-    name = QFileDialog.getExistingDirectory(**dlg_kwargs)
-    iw.fname = name
-    load_folder(iw)
 
 
-def load_folder(iw):
-    print(iw.fname)
-    save_folder = Path(iw.fname)
-    plane_folders_ext = get_files_ext(save_folder, "plane", 2)
-    plane_folders = list(save_folder.rglob("*plane*"))
-    if plane_folders:
-        stack_from_files(plane_folders_ext)
-        print("Found planeX folders in folder")
-    else:
-        print("No processed planeX folders in folder")
-        return
-    iw.data = stack_from_files(plane_folders_ext)
+def get_base_iw():
+    rand = np.random.randn(100, 100, 100)
+    iw = fpl.ImageWidget(rand, histogram_widget=False)
+    return iw
 
 
-def get_iw(path, recursive=False):
-    if recursive:
-        files = get_files_ext(path, "plane", 2)
-    files = get_files_ext(path, "plane", 2)
+def get_iw(path):
+    files = get_files_ext(path, "plane", 1)
     zstack = stack_from_files(files)
     iw = fpl.ImageWidget(zstack, histogram_widget=False)
     return iw
 
 
 class LBMMainWindow(QMainWindow):
-    def __init__(self, path):
+
+    @property
+    def image_widget(self):
+        return self._image_widget
+
+    def __init__(self):
         super(LBMMainWindow, self).__init__()
 
         print('Setting up main window')
@@ -76,84 +66,47 @@ class LBMMainWindow(QMainWindow):
                               "color:gray;}")
 
         print('Setting up image widget')
-        self.image_widget = get_iw(path)
-        self.menu_widget = MenuWidget(self.image_widget, size=50)
-
-        gui = MenuWidget(self.image_widget, size=50)
-        self.image_widget.figure.add_gui(gui)
-        qwidget = self.image_widget.show()
+        self._image_widget = get_base_iw()
+        gui = MenuWidget(self, size=50)
+        self._image_widget.figure.add_gui(gui)
+        qwidget = self._image_widget.show()
         self.setCentralWidget(qwidget)
-        self.resize(self.image_widget.data[0].shape[-2], self.image_widget.data[0].shape[-1])
+        self.resize(1200, 800)
 
+    def update_widget(self, path):
+        print('Updating image widget')
 
-class PreviewDataWidget(EdgeWindow):
-    def __init__(self, image_widget, size):
-        flags = imgui.WindowFlags_.no_collapse | imgui.WindowFlags_.no_resize
-        super().__init__(figure=image_widget.figure, size=size, location="right", title="Preview Data",
-                         window_flags=flags)
-        self.image_widget = image_widget
-        self.sigma = 0
-        self.mean_window_size = 0
+        # get a new MenuWidget instance
+        new_gui = MenuWidget(self, size=50)
 
-    def update(self):
-        if imgui.button("Open Pipeline Documentation"):
-            webbrowser.open(
-                "https://millerbrainobservatory.github.io/LBM-CaImAn-Python/"
-            )
+        # get a new ImageWidget instance
+        image_widget = get_iw(path)
 
-        imgui.new_line()
-        imgui.separator()
+        # add the new ImageWidget to the main window
+        image_widget.figure.add_gui(new_gui)
 
-        something_changed = False
+        # start the render loop
+        qwidget = image_widget.show()
 
-        # slider for gaussian filter sigma value
-        changed, value = imgui.slider_int(label="sigma", v=self.sigma, v_min=0, v_max=40)
-        if changed:
-            self.sigma = value
-            something_changed = True
+        self._image_widget.close()
 
-        # int entries for gaussian filter order
-        changed, value = imgui.slider_int(f"Mean window", v=self.mean_window_size, v_min=0, v_max=20)
-        if changed:
-            self.mean_window_size = value
-            something_changed = True
+        self.setCentralWidget(qwidget)
 
-        # calculate stats and display in a text widget
-        imgui.new_line()
-        imgui.separator()
-        imgui.text("Statistics")
-        if imgui.button("Calculate Noise"):
-            self.calculate_noise()
-            # display loading bar
-            imgui.text("Calculating noise...")
-        imgui.new_line()
-        imgui.separator()
-
-        if something_changed:
-            self.process_image()
-
-    def process_image(self):
-
-        self.image_widget.figure[0, 0].add_text(f"Window Size: {self.mean_window_size}")
-        self.image_widget.figure[0, 0].add_text(f"Window Size: {self.mean_window_size}")
-        # processed = gaussian_filter(self.image_widget.data, sigma=self.sigma, order=(self.order_y, self.order_x))
-        pass  # self.image_widget.window_funcs = {"t": (np.mean, self.mean_window_size)}
-
-    def calculate_noise(self):
-        pass
+        # delete the old ImageWidget
+        self._image_widget = image_widget
 
 
 class MenuWidget(EdgeWindow):
-    def __init__(self, image_widget, size):
+    def __init__(self, parent, size):
         flags = imgui.WindowFlags_.no_collapse | imgui.WindowFlags_.no_resize
         super().__init__(
-            figure=image_widget.figure,
+            figure=parent.image_widget.figure,
             size=size,
             location="top",
             title="Toolbar",
             window_flags=flags,
         )
-        self.image_widget = image_widget
+        self.parent = parent
 
     def update(self):
 
@@ -167,10 +120,34 @@ class MenuWidget(EdgeWindow):
         imgui.push_font(self._fa_icons)
         if imgui.button(label=fa.ICON_FA_FOLDER_OPEN):
             print("Opening file dialog")
-            load_dialog_folder(self.image_widget)
+            load_dialog_folder(self.parent)
 
         imgui.pop_font()
         if imgui.is_item_hovered(0):
             imgui.set_tooltip("Open a file dialog to load data")
 
         imgui.same_line()
+
+def load_dialog_folder(parent: LBMMainWindow):
+    dlg_kwargs = {
+        "parent": parent,
+        "caption": "Open folder with z-planes",
+    }
+    name = QFileDialog.getExistingDirectory(**dlg_kwargs)
+    print(name)
+    parent.update_widget(name)
+    # iw.figure[0, 0].graphics[0].data = np.random.randn(100, 100, 100)
+    # load_folder(iw)
+
+
+def load_folder(iw):
+    print(iw.fname)
+    save_folder = Path(iw.fname)
+    # plane_folders = get_files_ext(save_folder, "plane", 1)
+    # if plane_folders:
+    #     zstack = stack_from_files(plane_folders)
+    #     print("Found planeX folders in folder")
+    # else:
+    #     print("No processed planeX folders in folder")
+    #     return
+    # iw.data = stack_from_files(plane_folders_ext)
