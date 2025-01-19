@@ -3,6 +3,7 @@ import os
 import numpy as np
 import tifffile
 from pathlib import Path
+import dask.array as da
 
 
 def make_json_serializable(obj):
