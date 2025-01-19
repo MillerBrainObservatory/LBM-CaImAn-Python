@@ -16,9 +16,8 @@ except ImportError:
     raise ImportError("Please install imgui via `conda install -c conda-forge imgui-bundle`")
 
 
-
-
 def get_base_iw():
+    """Temp until I figure out how to start with an empty canvas"""
     rand = np.random.randn(100, 100, 100)
     iw = fpl.ImageWidget(rand, histogram_widget=False)
     return iw
