@@ -3,12 +3,11 @@ import argparse
 import logging
 from pathlib import Path
 from functools import partial
-import tifffile
 
 import pandas as pd
 
-import lbm_caiman_python as lcp
 import lbm_mc as mc
+import lbm_caiman_python as lcp
 
 import lbm_caiman_python.visualize
 
@@ -539,7 +538,12 @@ def main():
             run_algorithm(algo, files, df, ops, backend)
             df = df.caiman.reload_from_disk()
             row = df.iloc[-1]
-            if isinstance(row["outputs"], dict) and row["outputs"].get("success") is False or row["outputs"] is None:
+            if row["outputs"] is None:
+                print(f"No outputs found for {algo}")
+            elif (
+                    isinstance(row["outputs"], dict)
+                    and row["outputs"].get("success") is False
+            ):
                 print(f"{algo} failed.")
                 traceback = row["outputs"].get("traceback")
                 if traceback:
