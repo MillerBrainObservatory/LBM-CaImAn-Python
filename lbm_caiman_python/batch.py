@@ -1,9 +1,9 @@
 import re as regex
 from pathlib import Path
 from typing import Union
-import lbm_mc as mc
 from contextlib import contextmanager
 import pathlib
+import lbm_mc as mc
 
 COMPUTE_BACKEND_SUBPROCESS = "subprocess"  #: subprocess backend
 COMPUTE_BACKEND_SLURM = "slurm"  #: SLURM backend
