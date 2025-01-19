@@ -120,34 +120,16 @@ class MenuWidget(EdgeWindow):
         imgui.push_font(self._fa_icons)
         if imgui.button(label=fa.ICON_FA_FOLDER_OPEN):
             print("Opening file dialog")
-            load_dialog_folder(self.parent)
+            dlg_kwargs = {
+                "parent": self.parent,
+                "caption": "Open folder with z-planes",
+            }
+            name = QFileDialog.getExistingDirectory(**dlg_kwargs)
+            print(name)
+            self.parent.update_widget(name)
 
         imgui.pop_font()
         if imgui.is_item_hovered(0):
             imgui.set_tooltip("Open a file dialog to load data")
 
         imgui.same_line()
-
-def load_dialog_folder(parent: LBMMainWindow):
-    dlg_kwargs = {
-        "parent": parent,
-        "caption": "Open folder with z-planes",
-    }
-    name = QFileDialog.getExistingDirectory(**dlg_kwargs)
-    print(name)
-    parent.update_widget(name)
-    # iw.figure[0, 0].graphics[0].data = np.random.randn(100, 100, 100)
-    # load_folder(iw)
-
-
-def load_folder(iw):
-    print(iw.fname)
-    save_folder = Path(iw.fname)
-    # plane_folders = get_files_ext(save_folder, "plane", 1)
-    # if plane_folders:
-    #     zstack = stack_from_files(plane_folders)
-    #     print("Found planeX folders in folder")
-    # else:
-    #     print("No processed planeX folders in folder")
-    #     return
-    # iw.data = stack_from_files(plane_folders_ext)
