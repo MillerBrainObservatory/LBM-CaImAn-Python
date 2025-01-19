@@ -6,7 +6,7 @@ from lbm_caiman_python.gui.widgets import LBMMainWindow
 
 def run_gui(path):
     app = QApplication(sys.argv)
-    main_window = LBMMainWindow(path)
+    main_window = LBMMainWindow()
     print('--')
     main_window.show()
     app.exec()
