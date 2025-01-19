@@ -7,7 +7,6 @@ from qtpy.QtWidgets import QMainWindow, QFileDialog
 from qtpy import QtGui, QtCore
 import fastplotlib as fpl
 from fastplotlib.ui import EdgeWindow
-from rendercanvas import BaseRenderCanvas
 
 from lbm_caiman_python.lcp_io import get_files_ext, stack_from_files
 
