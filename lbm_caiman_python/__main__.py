@@ -395,7 +395,7 @@ def main():
             raise ImportError("Please install imgui via `conda install -c conda-forge imgui-bundle`")
         try:
             print("Attempting import for qtpy")
-            import qtpy
+            import PyQt5
         except ImportError:
             raise ImportError("Please install qtpy via `conda install -c conda-forge qtpy`")
         from lbm_caiman_python.gui import run_gui
