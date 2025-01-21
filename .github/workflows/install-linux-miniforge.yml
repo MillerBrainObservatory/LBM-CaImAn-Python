@@ -47,7 +47,6 @@ jobs:
           cd ..
 
           # Install Python dependencies
-          pip install lbm-mc
           pip install git+https://github.com/atlab/scanreader.git
           git clone https://github.com/MillerBrainObservatory/LBM-CaImAn-Python.git
           cd LBM-CaImAn-Python
