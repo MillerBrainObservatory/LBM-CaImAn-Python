@@ -35,16 +35,17 @@ jobs:
         
     - name: install caiman
       run: |
-        cd ..
         git clone https://github.com/flatironinstitute/CaImAn.git
         cd CaImAn
-        pip install -r requirements.txt
-        pip install .
+        pip install -e .
         caimanmanager install
-        pip install mesmerize-core
-        pip install lbm_caiman_python
+        cd ..
         pip install git+https://github.com/atlab/scanreader.git
-        
+        git clone https://github.com/MillerBrainObservatory/LBM-CaImAn-Python.git
+        cd LBM-CaImAn-Python
+        pip install -e .
+        cd ..
+
     - name: Test with pytest
       run: |
         pip install pytest
