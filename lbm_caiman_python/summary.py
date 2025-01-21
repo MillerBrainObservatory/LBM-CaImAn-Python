@@ -61,14 +61,18 @@ def get_all_batch_items(files: list, algo="all") -> pd.DataFrame:
 
 def get_summary_batch(df) -> pd.DataFrame:
     """
-    Create a summary of successful and unsuccessful runs for each algorithm.
+    Create a summary of successful and unsuccessful runs for each completed algorithm.
 
     Parameters
     ----------
-    df
+    df : pd.DataFrame
+        Batch dataframe containing the columns `algo` and `outputs`.
+
 
     Returns
     -------
+    summary_df : pd.DataFrame
+        DataFrame containing the number of successful and unsuccessful runs for each algorithm.
 
     """
     if df.empty:
@@ -93,6 +97,12 @@ def get_summary_batch(df) -> pd.DataFrame:
 
 def get_summary_cnmf(df: pd.DataFrame) -> pd.DataFrame:
     """
+    Get a summary of CNMF runs from a DataFrame.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        DataFrame containing the columns `algo` and `outputs`. Dataframe will be filtered by cnmf and cnmfe runs.
     """
     # Safely add new columns with traces / params
     return _params_from_df(_num_traces_from_df(df))
