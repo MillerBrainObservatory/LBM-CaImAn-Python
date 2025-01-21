@@ -39,7 +39,6 @@ jobs:
             git clone https://github.com/flatironinstitute/CaImAn.git
             cd CaImAn
             pip install --upgrade pip
-            pip install -r requirements.txt
             pip install -e .
             cd ..
 
