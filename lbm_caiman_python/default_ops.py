@@ -42,7 +42,6 @@ def params_from_metadata(metadata):
     params["main"]["strides"] = strides
 
     # overlap should be ~neuron diameter
-    print(gSig)
     overlaps = [int(round(gSig / px)) for px in metadata["pixel_resolution"]]
     if overlaps[0] < gSig:
         print("Overlaps too small. Increasing to neuron diameter.")
@@ -101,8 +100,7 @@ def default_params():
             'dxy': (1., 1.),
             'decay_time': 0.4,
             'p': 2,
-            'nb': 1,
-            'gnb': 3,
+            'nb': 3,
             'K': 20,
             'rf': 64,
             'stride': [8, 8],
