@@ -44,9 +44,10 @@ jobs:
             cd ..
 
             # Install Python dependencies
-            pip install -r docs/requirements.txt
             pip install git+https://github.com/atlab/scanreader.git
-            pip install lbm_caiman_python
+            git clone https://github.com/MillerBrainObservatory/LBM-CaImAn-Python.git
+            pip install -e .
+            cd ..
 
           build-command: "make html"
 
