@@ -12,7 +12,7 @@ install_deps = [
     "fastplotlib[notebook]",
     "scanreader @ git+https://github.com/atlab/scanreader.git@master#egg=scanreader",
     "matplotlib",
-    "lcp-mc",
+    "lbm-mc",
     "fabric",
     "dask",
     "zarr",
