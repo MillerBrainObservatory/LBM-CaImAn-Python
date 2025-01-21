@@ -30,7 +30,7 @@ jobs:
           CONDA: ${{ env.CONDA }}
         run: |
           source $CONDA/etc/profile.d/conda.sh
-          conda create -n lbm -c conda-forge python=3.10 -y
+          conda create -n lbm -c conda-forge python=3.10 caiman -y
 
       - name: Activate LBM environment and install dependencies
         shell: bash
@@ -39,8 +39,17 @@ jobs:
         run: |
           source $CONDA/etc/profile.d/conda.sh
           conda activate lbm
-          conda install -n lbm -c conda-forge mesmerize-core
+          git clone https://github.com/flatironinstitute/CaImAn.git
+          cd CaImAn
+          pip install --upgrade pip
+          pip install -e .
           caimanmanager install
-          pip install lbm_caiman_python
-          pip install git+https://github.com/atlab/scanreader.git
+          cd ..
 
+          # Install Python dependencies
+          pip install lbm-mc
+          pip install git+https://github.com/atlab/scanreader.git
+          git clone https://github.com/MillerBrainObservatory/LBM-CaImAn-Python.git
+          cd LBM-CaImAn-Python
+          pip install -e .
+          cd ..
