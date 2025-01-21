@@ -3,10 +3,10 @@ name: Miniforge Windows
 on:
   pull_request:
     branches:
-      - master
+#      - master
       - dev
-  push:
-    branches: [ master ]
+#  push:
+#    branches: [ master ]
 
 jobs:
   install-with-miniforge:

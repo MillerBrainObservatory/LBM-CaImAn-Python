@@ -6,10 +6,10 @@ name: Install with pip
 on:
   pull_request:
     branches:
-      - master
+#      - master
       - dev
-  push:
-    branches: [ master ]
+#  push:
+#    branches: [ master ]
 
 permissions:
   contents: read
