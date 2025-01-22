@@ -26,6 +26,8 @@ from .summary import (
     _create_df_from_metric_files,
     compute_mcorr_metrics_batch,
     get_summary_batch,
+    get_summary_mcorr,
+
 )
 from .helpers import (
     generate_patch_view,
@@ -60,6 +62,7 @@ __all__ = [
     "get_files_ext",
     "get_all_batch_items",
     "get_summary_cnmf",
+    "get_summary_mcorr",
     "calculate_centers",
     "greedyROI",
     "get_summary_batch",
