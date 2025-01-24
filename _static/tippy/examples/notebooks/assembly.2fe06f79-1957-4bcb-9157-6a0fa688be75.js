@@ -1,0 +1,22 @@
+selector_to_html = {"a[href=\"#include-more-z-planes-for-a-4d-graphic\"]": "<h3 class=\"tippy-header\" style=\"margin-top: 0;\"><span class=\"section-number\">1.3.2. </span>Include more z-planes for a 4D graphic<a class=\"headerlink\" href=\"#include-more-z-planes-for-a-4d-graphic\" title=\"Link to this heading\">#</a></h3>", "a[href=\"#preview-raw-traces\"]": "<h3 class=\"tippy-header\" style=\"margin-top: 0;\"><span class=\"section-number\">1.4.2. </span>Preview raw traces<a class=\"headerlink\" href=\"#preview-raw-traces\" title=\"Link to this heading\">#</a></h3><p>We can also preview the raw traces of the assembled image.</p><p>Click on a pixel to view the raw trace for that pixel over time.</p>", "a[href=\"#path-to-save-your-files\"]": "<h2 class=\"tippy-header\" style=\"margin-top: 0;\"><span class=\"section-number\">1.4. </span>Path to save your files<a class=\"headerlink\" href=\"#path-to-save-your-files\" title=\"Link to this heading\">#</a></h2><p>We can save the assembled image or individual ROIs to disk. The currently supported file extensions are <code class=\"docutils literal notranslate\"><span class=\"pre\">.tiff</span></code> (for now).</p>", "a[href=\"#image-assembly\"]": "<h1 class=\"tippy-header\" style=\"margin-top: 0;\"><span class=\"section-number\">1. </span>Image Assembly<a class=\"headerlink\" href=\"#image-assembly\" title=\"Link to this heading\">#</a></h1><p>Raw ScanImage <code class=\"docutils literal notranslate\"><span class=\"pre\">.tiff</span></code> files are saved to disk in an interleaved manner. The general workflow is as follows:</p>", "a[href=\"#initialize-a-scanreader-object\"]": "<h2 class=\"tippy-header\" style=\"margin-top: 0;\"><span class=\"section-number\">1.2. </span>Initialize a scanreader object<a class=\"headerlink\" href=\"#initialize-a-scanreader-object\" title=\"Link to this heading\">#</a></h2><p>(Option 1). Simply pass a string containing a wildcard pattern for files to gather</p>", "a[href=\"#input-data-path-to-your-raw-tiff-file-s\"]": "<h2 class=\"tippy-header\" style=\"margin-top: 0;\"><span class=\"section-number\">1.1. </span>Input data: Path to your raw .tiff file(s)<a class=\"headerlink\" href=\"#input-data-path-to-your-raw-tiff-file-s\" title=\"Link to this heading\">#</a></h2><p>Before processing, ensure:</p>", "a[href=\"#read-back-in-your-file-to-make-sure-it-saved-properly\"]": "<h3 class=\"tippy-header\" style=\"margin-top: 0;\"><span class=\"section-number\">1.4.1. </span>Read back in your file to make sure it saved properly<a class=\"headerlink\" href=\"#read-back-in-your-file-to-make-sure-it-saved-properly\" title=\"Link to this heading\">#</a></h3><p>make sure you include the <code class=\"docutils literal notranslate\"><span class=\"pre\">append_str</span></code> from the <code class=\"docutils literal notranslate\"><span class=\"pre\">save_as()</span></code> function.</p>", "a[href=\"#scanreader-object\"]": "<h2 class=\"tippy-header\" style=\"margin-top: 0;\"><span class=\"section-number\">1.3. </span>scanreader object<a class=\"headerlink\" href=\"#scanreader-object\" title=\"Link to this heading\">#</a></h2><p>When indexing the scanreader, a numpy array is returned with dimensions <code class=\"docutils literal notranslate\"><span class=\"pre\">[field,</span> <span class=\"pre\">T,</span> <span class=\"pre\">z,</span> <span class=\"pre\">y,</span> <span class=\"pre\">x]</span></code></p>", "a[href=\"#view-a-single-z-plane-timeseries\"]": "<h3 class=\"tippy-header\" style=\"margin-top: 0;\"><span class=\"section-number\">1.3.1. </span>View a single z-plane timeseries<a class=\"headerlink\" href=\"#view-a-single-z-plane-timeseries\" title=\"Link to this heading\">#</a></h3><p>You can pass in the scan object to preview your data before saving it to disk.</p>"}
+skip_classes = ["headerlink", "sd-stretched-link"]
+
+window.onload = function () {
+    for (const [select, tip_html] of Object.entries(selector_to_html)) {
+        const links = document.querySelectorAll(` ${select}`);
+        for (const link of links) {
+            if (skip_classes.some(c => link.classList.contains(c))) {
+                continue;
+            }
+
+            tippy(link, {
+                content: tip_html,
+                allowHTML: true,
+                arrow: true,
+                placement: 'auto-start', maxWidth: 500, interactive: false,
+
+            });
+        };
+    };
+    console.log("tippy tips loaded!");
+};
