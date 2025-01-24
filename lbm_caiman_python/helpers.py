@@ -57,8 +57,8 @@ def calculate_num_patches(image, stride, overlap):
 
     Parameters
     ----------
-    image_size : tuple
-        Size of the image as (df, cols).
+    image : ndarray
+        array representing the input image to be divided into patches.
     stride : int
         Half-size of the patches in pixels (patch width is rf*2 + 1).
     overlap : int

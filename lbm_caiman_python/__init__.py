@@ -14,9 +14,9 @@ from .batch import (
     validate_path,
     clean_batch,
     load_batch,
-    remove_batch_duplicates
+    drop_duplicates
 )
-from .lcp_io import get_metadata, get_files_ext, stack_from_files
+from .lcp_io import get_metadata, get_files_ext, stack_from_files, read_scan
 from .util.transform import vectorize, unvectorize, calculate_centers
 from .util.quality import get_noise_fft, greedyROI
 from .summary import (
@@ -26,6 +26,8 @@ from .summary import (
     _create_df_from_metric_files,
     compute_mcorr_metrics_batch,
     get_summary_batch,
+    get_summary_mcorr,
+
 )
 from .helpers import (
     generate_patch_view,
@@ -60,10 +62,12 @@ __all__ = [
     "get_files_ext",
     "get_all_batch_items",
     "get_summary_cnmf",
+    "get_summary_mcorr",
     "calculate_centers",
     "greedyROI",
     "get_summary_batch",
     "get_single_patch_coords",
-    "remove_batch_duplicates",
-    "stack_from_files"
+    "drop_duplicates",
+    "stack_from_files",
+    "read_scan"
 ]

@@ -65,55 +65,38 @@ class LBMMainWindow(QMainWindow):
 
         print('Setting up image widget')
         self._image_widget = get_base_iw()
-        gui = MenuWidget(self, size=50)
+        gui = PreviewTracesWidget(size=50)
         self._image_widget.figure.add_gui(gui)
         qwidget = self._image_widget.show()
         self.setCentralWidget(qwidget)
         self.resize(1200, 800)
 
-    def update_widget(self, path):
-        print('Updating image widget')
 
-        # get a new MenuWidget instance
-        new_gui = MenuWidget(self, size=50)
-
-        # get a new ImageWidget instance
-        image_widget = get_iw(path)
-
-        # add the new ImageWidget to the main window
-        image_widget.figure.add_gui(new_gui)
-
-        # start the render loop
-        qwidget = image_widget.show()
-
-        self._image_widget.close()
-
-        self.setCentralWidget(qwidget)
-
-        # delete the old ImageWidget
+class PreviewTracesWidget(EdgeWindow):
+    def __init__(self, figure, size, location, title, image_widget):
+        super().__init__(figure=figure, size=size, location=location, title=title)
         self._image_widget = image_widget
 
+        # whether or not a dimension is in play mode
+        self._playing: dict[str, bool] = {"t": False, "z": False}
 
-class MenuWidget(EdgeWindow):
-    def __init__(self, parent, size):
-        flags = imgui.WindowFlags_.no_collapse | imgui.WindowFlags_.no_resize
-        super().__init__(
-            figure=parent.image_widget.figure,
-            size=size,
-            location="top",
-            title="Toolbar",
-            window_flags=flags,
-        )
-        self.parent = parent
+        self.tfig = fpl.Figure()
+
+        self.raw_trace = self.tfig[0, 0].add_line(np.zeros(self._image_widget.data[0].shape[0]))
+        self._image_widget.managed_graphics[0].add_event_handler("click")
+        self.tfig.show()
+
+    def pixel_clicked(self, ev):
+        col, row = ev.pick_info["index"]
+        if self._image_widget.ndim == 4:
+            self.raw_trace.data[:, 1] = self._image_widget.data[0][:, self._image_widget.current_index["z"], row, col]
+        elif self._image_widget.ndim == 3:
+            self.raw_trace.data[:, 1] = self._image_widget.data[0][:, row, col]
+        else:
+            raise ValueError("ImageWidget has an unexpected number of dimensions. Expected 3 or 4.")
+        self.tfig[0, 0].auto_scale(maintain_aspect=False)
 
     def update(self):
-
-        if imgui.button("Documentation"):
-            webbrowser.open(
-                "https://millerbrainobservatory.github.io/LBM-CaImAn-Python/"
-            )
-
-        imgui.same_line()
 
         imgui.push_font(self._fa_icons)
         if imgui.button(label=fa.ICON_FA_FOLDER_OPEN):
@@ -129,5 +112,3 @@ class MenuWidget(EdgeWindow):
         imgui.pop_font()
         if imgui.is_item_hovered(0):
             imgui.set_tooltip("Open a file dialog to load data")
-
-        imgui.same_line()

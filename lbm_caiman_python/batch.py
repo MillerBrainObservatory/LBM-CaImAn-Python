@@ -142,7 +142,7 @@ def validate_path(path: Union[str, Path]):
     return path
 
 
-def remove_batch_duplicates(df):
+def drop_duplicates(df):
     """
     Remove duplicate items from a batch DataFrame.
 

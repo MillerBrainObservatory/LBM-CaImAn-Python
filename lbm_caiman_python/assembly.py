@@ -4,9 +4,13 @@ import os
 import time
 import warnings
 from pathlib import Path
+
+import lbm_caiman_python
 import numpy as np
 from scanreader import read_scan
 from scanreader.utils import listify_index
+from tqdm import tqdm
+
 from lbm_caiman_python.lcp_io import get_metadata, make_json_serializable
 
 import tifffile
@@ -244,6 +248,7 @@ def save_as(
         frames=None,
         metadata=None,
         overwrite=True,
+        append_str='',
         ext='.tiff',
 ):
     """
@@ -264,6 +269,8 @@ def save_as(
         Additional metadata to update the scan object's metadata. Default is `None`.
     overwrite : bool, optional
         Whether to overwrite existing files. Default is `True`.
+    append_str : str, optional
+        String to append to the file name. Default is `''`.
     ext : str, optional
         File extension for the saved data. Supported options are `'.tiff'` and `'.zarr'`.
         Default is `'.tiff'`.
@@ -295,27 +302,29 @@ def save_as(
     if not savedir.exists():
         logger.debug(f"Creating directory: {savedir}")
         savedir.mkdir(parents=True)
-    _save_data(scan, savedir, planes, frames, overwrite, ext, metadata)
+    _save_data(scan, savedir, planes, frames, overwrite, ext, append_str, metadata)
 
 
-def _save_data(scan, path, planes, frames, overwrite, file_extension, metadata):
+def _save_data(scan, path, planes, frames, overwrite, file_extension, append_str, metadata):
     path.mkdir(parents=True, exist_ok=True)
-    print(f'Planes: {planes}')
 
     file_writer = _get_file_writer(file_extension, overwrite, metadata)
     if len(scan.fields) > 1:
+        print(f"Saving {len(scan.fields)} ROIs.")
         for idx, field in enumerate(scan.fields):
-            for chan in planes:
+            for chan in tqdm(planes, desc='Saving planes', total=len(planes)):
                 if 'tif' in file_extension:
-                    arr = scan[idx, :, :, chan, frames]  # [y,x,T]
+                    arr = scan[idx, frames, chan, :, :]
                     logger.debug('arr shape:', arr.shape)
-                    file_writer(path, f'plane_{chan + 1}_roi_{idx + 1}', arr.T)
+                    file_writer(path, f'plane_{chan + 1}_roi_{idx + 1}{append_str}', arr)
     else:
-        for chan in planes:
+        print(f"Saving {len(planes)} planes.")
+        for chan in tqdm(planes, desc='Saving planes', total=len(planes)):
             if 'tif' in file_extension:
-                arr = scan[:, :, :, chan, frames]  # [y,x,T]
+                arr = scan[frames, chan, :, :]
                 logger.debug('arr shape:', arr.shape)
-                file_writer(path, f'plane_{chan + 1}', arr.T)
+                file_writer(path, f'plane_{chan + 1}{append_str}', arr)
+        print(f"Data successfully saved to {path}.")
 
 
 def _get_file_writer(ext, overwrite, metadata=None):
@@ -335,18 +344,18 @@ def _write_tiff(path, name, data, overwrite=True, metadata=None):
         return
     logger.info(f"Writing {filename}")
     t_write = time.time()
-    data = np.transpose(data.squeeze(), (0, 2, 1))
     tifffile.imwrite(filename, data, metadata=metadata)
     t_write_end = time.time() - t_write
     logger.info(f"Data written in {t_write_end:.2f} seconds.")
 
 
 def _write_zarr(path, name, data, metadata=None, overwrite=True):
-    store = zarr.DirectoryStore(path)
-    root = zarr.group(store, overwrite=overwrite)
-    ds = root.create_dataset(name=name, data=data.squeeze(), overwrite=True)
-    if metadata:
-        ds.attrs['metadata'] = metadata
+    raise NotImplementedError("Zarr writing is not yet implemented.")
+    # store = zarr.DirectoryStore(path)
+    # root = zarr.group(store, overwrite=overwrite)
+    # ds = root.create_dataset(name=name, data=data.squeeze(), overwrite=True)
+    # if metadata:
+    #     ds.attrs['metadata'] = metadata
 
 
 def main():
@@ -441,7 +450,7 @@ def main():
         logger.info(f"Saving data to {savepath}.")
 
         t_scan_init = time.time()
-        scan = read_scan(files, join_contiguous=join_contiguous, )
+        scan = lbm_caiman_python.read_scan(files, join_contiguous=join_contiguous, )
         t_scan_init_end = time.time() - t_scan_init
         logger.info(f"--- Scan initialized in {t_scan_init_end:.2f} seconds.")
 
@@ -482,4 +491,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

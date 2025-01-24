@@ -1,7 +1,7 @@
 import sys
 import time
 from pathlib import Path
-from typing import List, Iterable
+from typing import Iterable
 
 import numpy as np
 
@@ -61,14 +61,18 @@ def get_all_batch_items(files: list, algo="all") -> pd.DataFrame:
 
 def get_summary_batch(df) -> pd.DataFrame:
     """
-    Create a summary of successful and unsuccessful runs for each algorithm.
+    Create a summary of successful and unsuccessful runs for each completed algorithm.
 
     Parameters
     ----------
-    df
+    df : pd.DataFrame
+        Batch dataframe containing the columns `algo` and `outputs`.
+
 
     Returns
     -------
+    summary_df : pd.DataFrame
+        DataFrame containing the number of successful and unsuccessful runs for each algorithm.
 
     """
     if df.empty:
@@ -93,6 +97,12 @@ def get_summary_batch(df) -> pd.DataFrame:
 
 def get_summary_cnmf(df: pd.DataFrame) -> pd.DataFrame:
     """
+    Get a summary of CNMF runs from a DataFrame.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        DataFrame containing the columns `algo` and `outputs`. Dataframe will be filtered by cnmf and cnmfe runs.
     """
     # Safely add new columns with traces / params
     return _params_from_df(_num_traces_from_df(df))
@@ -304,6 +314,28 @@ def compute_mcorr_metrics_batch(batch_df: pd.DataFrame, overwrite: bool = False)
 
 
 def _num_traces_from_df(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Add trace-related columns to a DataFrame for specific algorithms.
+
+    Filters the DataFrame to include rows where the `algo` column contains
+    either "cnmf" or "cnmfe", then adds the following columns if they
+    do not already exist:
+    - "Total Traces": Total number of temporal components.
+    - "Accepted": Number of accepted components.
+    - "Rejected": Number of rejected components.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        DataFrame containing the columns `batch_path`, `uuid`, and `algo`.
+
+    Returns
+    -------
+    pd.DataFrame
+        DataFrame with the added trace-related columns, updated for rows
+        with `algo` values of "cnmf" or "cnmfe". For other rows, the new
+        columns are left as `None`.
+    """
     # Safely add new columns with default values of None
     df = df[df["algo"].isin(["cnmf", "cnmfe"])]
 
@@ -328,6 +360,29 @@ def _num_traces_from_df(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def _params_from_df(df: pd.DataFrame, params: tuple | list | None = None):
+    """
+    Add specified parameters to a DataFrame from a batch DataFrame.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        DataFrame containing the columns `batch_path`, `uuid`, and `algo`.
+
+    params : tuple or list, optional
+        List of parameter names to add to the DataFrame.
+        If not provided, defaults to `SUMMARY_PARAMS`, which includes:
+        - "K"
+        - "gSig"
+        - "gSig_filt"
+        - "min_SNR"
+        - "rval_thr"
+
+    Returns
+    -------
+    pd.DataFrame
+        DataFrame with the specified parameters added as columns. The values
+        are extracted from the corresponding batch file for each row.
+    """
     if params is None:
         params = SUMMARY_PARAMS
     for col in params:
@@ -347,4 +402,5 @@ def _params_from_df(df: pd.DataFrame, params: tuple | list | None = None):
 
 
 def _num_successful_from_df(df: pd.DataFrame) -> int:
+    """ Count the number of successful runs in a DataFrame with outputs."""
     return len(df[df.outputs.apply(lambda x: x.get("success"))])
