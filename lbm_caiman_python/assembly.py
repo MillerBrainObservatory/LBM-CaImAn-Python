@@ -474,9 +474,6 @@ def main():
             raise NotImplementedError("Only .zarr and .tif are supported file formats.")
 
         t_save = time.time()
-        # exclude the first frame
-        # make a list of all but the first index
-        frames = np.arange(1, scan.num_frames)
         save_as(
             scan,
             savepath,
