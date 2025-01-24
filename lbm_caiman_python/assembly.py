@@ -4,6 +4,8 @@ import os
 import time
 import warnings
 from pathlib import Path
+
+import lbm_caiman_python
 import numpy as np
 from scanreader import read_scan
 from scanreader.utils import listify_index
@@ -342,7 +344,6 @@ def _write_tiff(path, name, data, overwrite=True, metadata=None):
         return
     logger.info(f"Writing {filename}")
     t_write = time.time()
-    # data = np.transpose(data.squeeze(), (0, 2, 1))
     tifffile.imwrite(filename, data, metadata=metadata)
     t_write_end = time.time() - t_write
     logger.info(f"Data written in {t_write_end:.2f} seconds.")
@@ -449,7 +450,7 @@ def main():
         logger.info(f"Saving data to {savepath}.")
 
         t_scan_init = time.time()
-        scan = read_scan(files, join_contiguous=join_contiguous, )
+        scan = lbm_caiman_python.read_scan(files, join_contiguous=join_contiguous, )
         t_scan_init_end = time.time() - t_scan_init
         logger.info(f"--- Scan initialized in {t_scan_init_end:.2f} seconds.")
 
@@ -473,6 +474,9 @@ def main():
             raise NotImplementedError("Only .zarr and .tif are supported file formats.")
 
         t_save = time.time()
+        # exclude the first frame
+        # make a list of all but the first index
+        frames = np.arange(1, scan.num_frames)
         save_as(
             scan,
             savepath,
