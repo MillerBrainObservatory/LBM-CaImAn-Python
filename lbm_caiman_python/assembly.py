@@ -250,6 +250,7 @@ def save_as(
         overwrite=True,
         append_str='',
         ext='.tiff',
+        order=None,
 ):
     """
     Save scan data to the specified directory in the desired format.
@@ -274,6 +275,11 @@ def save_as(
     ext : str, optional
         File extension for the saved data. Supported options are `'.tiff'` and `'.zarr'`.
         Default is `'.tiff'`.
+    order : list or tuple, optional
+        A list or tuple specifying the desired order of planes. If provided, the number of
+        elements in `order` must match the number of planes. Default is `None`.
+        
+skip calculating centers if markersize=0, add colormap
 
     Raises
     ------
@@ -293,8 +299,15 @@ def save_as(
         planes = [planes]
     if frames is None:
         frames = list(range(scan.num_frames))
-    elif not isinstance(planes, (list, tuple)):
+    elif not isinstance(frames, (list, tuple)):
         frames = [frames]
+
+    if order is not None:
+        if len(order) != len(planes):
+            raise ValueError(
+                f"The length of the `order` ({len(order)}) does not match the number of planes ({len(planes)})."
+            )
+        planes = [planes[i] for i in order]
     if not metadata:
         metadata = {'si': scan.tiff_files[0].scanimage_metadata,
                     'image': make_json_serializable(get_metadata(scan.tiff_files[0].filehandle.path))}
