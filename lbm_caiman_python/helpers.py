@@ -16,6 +16,11 @@ from tqdm import tqdm
 
 from .lcp_io import get_metrics_path
 
+def _get_30p_order():
+    return (np.array([
+        1, 5, 6, 7, 8, 9, 2, 10, 11, 12, 13, 14, 15, 16, 17, 3, 18, 19, 20, 21, 22, 23, 4, 24, 25, 26, 27, 28, 29, 30
+    ]) - 1)
+
 
 def get_single_patch_coords(dims, stride, overlap, patch_index):
     """
