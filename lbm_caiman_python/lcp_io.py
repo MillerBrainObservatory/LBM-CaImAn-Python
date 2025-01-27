@@ -310,8 +310,8 @@ def stack_from_files(files: list):
         if Path(file).suffix not in [".tif", ".tiff"]:
             continue
         arr = tifffile.memmap(file)
-        dask_arr = da.from_array(arr, chunks="auto")
-        lazy_arrays.append(dask_arr)
+        lazy_arrays.append(arr)
+        # dask_arr = da.from_array(arr, chunks="auto")
 
-    zstack = da.stack(lazy_arrays, axis=1)
+    zstack = np.stack(lazy_arrays, axis=1)
     return zstack
