@@ -40,6 +40,7 @@ from .visualize import (
     plot_residual_flows,
     plot_correlations,
     plot_spatial_components,
+    plot_contours,
     save_mp4
 )
 
@@ -78,4 +79,5 @@ __all__ = [
     "read_scan",
     "save_mp4",
     "norm",
+    "plot_contours",
 ]
