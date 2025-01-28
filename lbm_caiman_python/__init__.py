@@ -18,7 +18,8 @@ from .batch import (
 )
 from .lcp_io import get_metadata, get_files_ext, stack_from_files, read_scan
 from .util.transform import vectorize, unvectorize, calculate_centers
-from .util.quality import get_noise_fft, greedyROI, norm
+from .util.quality import get_noise_fft, greedyROI
+from .util.signal import smooth_data, norm
 from .summary import (
     get_all_batch_items,
     get_summary_cnmf,
@@ -33,6 +34,7 @@ from .helpers import (
     generate_patch_view,
     calculate_num_patches,
     get_single_patch_coords,
+    extract_center_square,
 )
 from .visualize import (
     plot_with_scalebars,
@@ -78,6 +80,7 @@ __all__ = [
     "stack_from_files",
     "read_scan",
     "save_mp4",
-    "norm",
     "plot_contours",
+    "extract_center_square",
+    "smooth_data",
 ]

@@ -7,48 +7,6 @@ from scipy.ndimage import correlate
 import sys
 
 
-def norm(images):
-    """
-    Normalize a NumPy array to the range [0, 1].
-
-    Parameters
-    ----------
-    images : numpy.ndarray
-        Input array to be normalized. Can be of any shape and numeric data type.
-
-    Returns
-    -------
-    numpy.ndarray
-        The normalized array, where the minimum value maps to 0 and the maximum value maps to 1.
-        The output has the same shape as the input.
-
-    Notes
-    -----
-    - If `images` contains constant values (i.e., `images.max() == images.min()`), the result
-      will contain `NaN` values due to division by zero.
-    - The normalization is performed as:
-
-      .. math::
-          \text{normalized} = \frac{\text{images} - \text{images.min()}}{\text{images.max() - images.min()}}
-
-    Examples
-    --------
-    Normalize a 1D array:
-
-    >>> import numpy as np
-    >>> images = np.array([10, 20, 30, 40, 50])
-    >>> norm(images)
-    array([0.  , 0.25, 0.5 , 0.75, 1.  ])
-
-    Normalize a 2D array:
-
-    >>> images = np.array([[1, 2], [3, 4]])
-    >>> norm(images)
-    array([[0.  , 0.33],
-           [0.67, 1.  ]])
-    """
-    return (images - images.min()) / (images.max() - images.min())
-
 def _mean_psd(y, method="logmexp"):
     """
     Averaging the PSD
