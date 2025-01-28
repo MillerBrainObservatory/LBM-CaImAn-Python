@@ -62,9 +62,9 @@ def save_mp4(fname, images, framerate=60, speedup=1, chunk_size=100, cmap="gray"
     >>> images = np.random.rand(100, 600, 576) * 255
     >>> save_mp4('output.mp4', images, framerate=30, cmap='viridis', speedup=2)
 
-    Save a video with temporal averaging applied over a 5-frame window:
+    Save a video with temporal averaging applied over a 5-frame window at 4x speed:
 
-    >>> save_mp4('output_smoothed.mp4', images, framerate=30, cmap='gray', win=5)
+    >>> save_mp4('output_smoothed.mp4', images, framerate=30, speedup=4, cmap='gray', win=5)
 
     Save a video from a TIFF stack:
 
@@ -79,7 +79,6 @@ def save_mp4(fname, images, framerate=60, speedup=1, chunk_size=100, cmap="gray"
     T, height, width = images.shape
     colormap = cm.get_cmap(cmap)
 
-    # Apply averaging window if specified
     if win and win > 1:
         kernel = np.ones(win) / win
         images = np.apply_along_axis(lambda x: np.convolve(x, kernel, mode='same'), axis=0, arr=images)
@@ -87,7 +86,7 @@ def save_mp4(fname, images, framerate=60, speedup=1, chunk_size=100, cmap="gray"
     output_framerate = int(framerate * speedup)
     process = (
         ffmpeg
-        .input('pipe:', format='rawvideo', pix_fmt='rgb24', s=f'{width}x{height}', framerate=framerate)
+        .input('pipe:', format='rawvideo', pix_fmt='rgb24', s=f'{width}x{height}', framerate=output_framerate)
         .output(fname, pix_fmt='yuv420p', vcodec=vcodec, r=output_framerate)
         .overwrite_output()
         .run_async(pipe_stdin=True)
