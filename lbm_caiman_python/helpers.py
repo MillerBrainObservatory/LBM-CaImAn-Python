@@ -22,6 +22,35 @@ def _get_30p_order():
     ]) - 1)
 
 
+def extract_center_square(images, size):
+    """
+    Extracts a square crop from the center of the input images.
+
+    Parameters
+    ----------
+    images : ndarray
+
+    """
+    if not isinstance(images, np.ndarray):
+        raise ValueError("Input must be a numpy array.")
+
+    if images.ndim == 2:  # 2D array (H x W)
+        height, width = images.shape
+        center_h, center_w = height // 2, width // 2
+        half_size = size // 2
+        return images[center_h - half_size:center_h + half_size,
+               center_w - half_size:center_w + half_size]
+
+    elif images.ndim == 3:  # 3D array (T x H x W)
+        T, height, width = images.shape
+        center_h, center_w = height // 2, width // 2
+        half_size = size // 2
+        return images[:,
+               center_h - half_size:center_h + half_size,
+               center_w - half_size:center_w + half_size]
+    else:
+        raise ValueError("Input array must be 2D or 3D.")
+
 def get_single_patch_coords(dims, stride, overlap, patch_index):
     """
     Get coordinates of a single patch based on stride, overlap parameters of motion-correction.
