@@ -3,13 +3,14 @@ import argparse
 import logging
 from pathlib import Path
 from functools import partial
-
 import pandas as pd
 
-import lbm_mc as mc
 import lbm_caiman_python as lcp
 
 import lbm_caiman_python.visualize
+import lbm_mc as mc
+
+from lbm_caiman_python import save_mp4
 
 current_file = Path(__file__).parent
 
@@ -335,11 +336,16 @@ def run_item(algo, input_path, df, ops, backend):
         algo=algo,
         input_movie_path=input_movie_path,
         params=ops,
-        item_name=f"{algo}-lbm",
+        item_name=f"{algo}",
     )
     print(f"Running {algo} -----------")
     df.iloc[-1].caiman.run(backend=backend)
     df = df.caiman.reload_from_disk()
+    # if algo=="mcorr":
+    #     output_path = Path(df.iloc[-1].mcorr.get_output_path()).parent / 'output.mp4'
+    #     print(f"Saving mp4 to {output_path}")
+    #     images = lcp.norm(df.iloc[-1].mcorr.get_output())
+    #     save_mp4(output_path, images, framerate=60, speedup=2)
     print(f"Processing time: {df.iloc[-1].algo_duration}")
     return df
 

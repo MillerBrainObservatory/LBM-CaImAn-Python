@@ -16,7 +16,7 @@ from lbm_caiman_python import calculate_centers
 from lbm_caiman_python.util.signal import smooth_data
 
 
-def save_mp4(fname, images, framerate=60, speedup=1, chunk_size=100, cmap="gray", win=7, vcodec='libx264'):
+def save_mp4(fname: str | Path | np.ndarray, images, framerate=60, speedup=1, chunk_size=100, cmap="gray", win=7, vcodec='libx264'):
     """
     Save a video from a 3D array or TIFF stack to `.mp4`.
 

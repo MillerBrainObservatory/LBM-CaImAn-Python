@@ -32,7 +32,6 @@ from .summary import (
 )
 from .helpers import (
     generate_patch_view,
-    calculate_num_patches,
     get_single_patch_coords,
     extract_center_square,
 )
@@ -63,7 +62,6 @@ __all__ = [
     "save_as",
     "generate_patch_view",
     "load_batch",
-    "calculate_num_patches",
     "concat_param_diffs",
     "get_noise_fft",
     "vectorize",
