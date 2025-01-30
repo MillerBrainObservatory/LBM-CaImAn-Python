@@ -282,7 +282,6 @@ def handle_input_data_path(input_path, params):
     params : dict
         Updated parameters with metadata if applicable.
     """
-    input_movie_path = None  # what is fed into df.caiman.add_item()
     if isinstance(input_path, Path):
         if input_path.is_file():
             input_movie_path = input_path
@@ -342,13 +341,15 @@ def run_item(algo, input_path, df, params, backend):
     df.iloc[-1].caiman.run(backend=backend)
     df = df.caiman.reload_from_disk()
     if algo=="mcorr":
-        output_path = Path(df.iloc[-1].mcorr.get_output_path()).parent / 'output.mp4'
+        output_path = Path(df.iloc[-1].mcorr.get_output_path()).parent / 'registered_movie.mp4'
         print(f"Saving mp4 to {output_path}")
         images = lcp.norm(df.iloc[-1].mcorr.get_output())
-        save_mp4(output_path, images, framerate=60, speedup=2)
+        save_mp4(str(output_path), images, framerate=60, speedup=2)
     if algo=="cnmf":
-        output_path = Path(df.iloc[-1].cnmf.get_output_path()).parent / 'output.mp4'
+        print('Processing accepted/rejected components...')
+        output_path = Path(df.iloc[-1].cnmf.get_output_path()).parent / 'accepted_rejected_traces.png'
         lcp.export_contours_with_params(df.iloc[-1], save_path=output_path)
+        print(f"Figure saved to {output_path}...")
     print(f"Processing time: {df.iloc[-1].algo_duration}")
     return df
 
