@@ -3,7 +3,6 @@ from . import stdout
 from .default_ops import default_params, params_from_metadata
 from .collation import combine_z_planes
 from .assembly import (
-    read_scan,
     fix_scan_phase,
     return_scan_offset,
     save_as
@@ -43,6 +42,7 @@ from .visualize import (
     plot_spatial_components,
     plot_contours,
     save_mp4,
+    save_png,
     export_contours_with_params,
 )
 
@@ -79,6 +79,7 @@ __all__ = [
     "stack_from_files",
     "read_scan",
     "save_mp4",
+    "save_png",
     "plot_contours",
     "extract_center_square",
     "smooth_data",

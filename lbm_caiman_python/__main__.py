@@ -344,6 +344,7 @@ def run_item(algo, input_path, df, params, backend):
         output_path = Path(df.iloc[-1].mcorr.get_output_path()).parent / 'registered_movie.mp4'
         print(f"Saving mp4 to {output_path}")
         images = lcp.norm(df.iloc[-1].mcorr.get_output())
+        images = lcp.extract_center_square(images, 255)
         save_mp4(str(output_path), images, framerate=60, speedup=2)
     if algo=="cnmf":
         print('Processing accepted/rejected components...')

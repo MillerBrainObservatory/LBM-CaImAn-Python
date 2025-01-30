@@ -7,7 +7,6 @@ from pathlib import Path
 
 import lbm_caiman_python
 import numpy as np
-from scanreader import read_scan
 from scanreader.utils import listify_index
 from tqdm import tqdm
 
@@ -351,15 +350,24 @@ def _get_file_writer(ext, overwrite, metadata=None):
 
 def _write_tiff(path, name, data, overwrite=True, metadata=None):
     filename = Path(path / f'{name}.tiff')
+    fpath = Path(path) / 'summary_images'
+    mean_filename = fpath / f'{name}_mean.tiff'
+    movie_filename = fpath / f'{name}.mp4'
     if filename.exists() and not overwrite:
         logger.warning(
             f'File already exists: {filename}. To overwrite, set overwrite=True (--overwrite in command line)')
         return
-    logger.info(f"Writing {filename}")
+    print(f"Writing {filename}")
     t_write = time.time()
     tifffile.imwrite(filename, data, metadata=metadata)
+    data = np.mean(data)
+    print(f"Writing {mean_filename}")
+    tifffile.imwrite(mean_filename, data, metadata=metadata)
+    print(f"Writing {movie_filename}")
+    data = lbm_caiman_python.extract_center_square(lbm_caiman_python.norm(data), 255)
+    lbm_caiman_python.save_mp4(movie_filename, data)
     t_write_end = time.time() - t_write
-    logger.info(f"Data written in {t_write_end:.2f} seconds.")
+    print(f"Data written in {t_write_end:.2f} seconds.")
 
 
 def _write_zarr(path, name, data, metadata=None, overwrite=True):
@@ -375,7 +383,7 @@ def main():
     parser = argparse.ArgumentParser(description="CLI for processing ScanImage tiff files.")
     parser.add_argument("path",
                         type=str,
-                        nargs='?',  # Change this to make 'path' optional
+                        nargs='?',
                         default=None,
                         help="Path to the file or directory to process.")
     parser.add_argument("--frames",

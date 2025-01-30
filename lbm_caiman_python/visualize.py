@@ -722,3 +722,11 @@ def plot_spatial_components(data: pd.DataFrame | pd.Series, savepath: str | Path
                 save_name = Path(savepath) / f"{row.uuid}_spatial_components.png"
                 print(f"Saving to {save_name}.")
                 plt.savefig(save_name.expanduser(), dpi=600, bbox_inches="tight")
+
+def save_png(fname, data):
+    plt.imshow(data)
+    plt.axis('tight')
+    plt.axis('off')
+    plt.tight_layout()
+    plt.savefig(fname, dpi=300, bbox_inches='tight')
+    print(f"Saved data to {fname}")
