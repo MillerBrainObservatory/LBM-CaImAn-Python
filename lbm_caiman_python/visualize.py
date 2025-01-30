@@ -16,6 +16,39 @@ from lbm_caiman_python import calculate_centers
 from lbm_caiman_python.util.signal import smooth_data
 
 
+def export_contours_with_params(row, save_path):
+    params = row.params
+    corr = row.caiman.get_corr_image()
+    contours = row.cnmf.get_contours("good", swap_dim=False)[0]
+    contours_bad = row.cnmf.get_contours("bad", swap_dim=False)[0]
+
+    table_data = params["main"]
+    df_table = pd.DataFrame(list(table_data.items()), columns=["Parameter", "Value"])
+
+    fig, axes = plt.subplots(1, 2, figsize=(14, 7))
+    axes[0].imshow(corr, cmap='gray')
+    for contour in contours:
+        axes[0].plot(contour[:, 0], contour[:, 1], color='cyan', linewidth=1)
+    for contour in contours_bad:
+        axes[0].plot(contour[:, 0], contour[:, 1], color='red', linewidth=0.2)
+
+    axes[0].set_title(f'Accepted ({len(contours)}) and Rejected ({len(contours_bad)}) Neurons')
+    axes[0].axis('off')
+    axes[1].axis('tight')
+    axes[1].axis('off')
+
+    table = axes[1].table(cellText=df_table.values,
+                          colLabels=df_table.columns,
+                          loc='center',
+                          cellLoc='center',
+                          colWidths=[0.4, 0.6])
+
+    table.auto_set_font_size(False)
+    table.set_fontsize(10)
+    table.auto_set_column_width([0, 1])
+    plt.tight_layout()
+    plt.savefig(save_path, dpi=300, bbox_inches='tight')
+
 def save_mp4(fname: str | Path | np.ndarray, images, framerate=60, speedup=1, chunk_size=100, cmap="gray", win=7, vcodec='libx264'):
     """
     Save a video from a 3D array or TIFF stack to `.mp4`.
@@ -103,7 +136,7 @@ def save_mp4(fname: str | Path | np.ndarray, images, framerate=60, speedup=1, ch
     process.wait()
 
 
-def plot_contours(df, plot_index):
+def plot_contours(df, plot_index, histogram_widget=False):
     """
     Plot the contours of the accepted and rejected components.
 
@@ -113,6 +146,8 @@ def plot_contours(df, plot_index):
         DataFrame containing the CNMF pandas extension.
     plot_index : int
         Index of the DataFrame to plot.
+    histogram_widget : bool, optional
+        Flag to display the vmin/vmax histogram controller.
 
     Returns
     -------
@@ -129,7 +164,8 @@ def plot_contours(df, plot_index):
         data=[mcorr_movie, mcorr_movie],
         names=['Accepted', 'Rejected'],
         window_funcs={'t': (np.mean, 3)},
-        figure_kwargs={'size': (1200, 600)}
+        figure_kwargs={'size': (1200, 600)},
+        histogram_widget=histogram_widget
     )
     for subplot in image_widget.figure:
         if subplot.name == 'Accepted':

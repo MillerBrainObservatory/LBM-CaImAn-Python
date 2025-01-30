@@ -42,7 +42,8 @@ from .visualize import (
     plot_correlations,
     plot_spatial_components,
     plot_contours,
-    save_mp4
+    save_mp4,
+    export_contours_with_params,
 )
 
 __version__ = _version.get_versions()['version']
@@ -81,4 +82,5 @@ __all__ = [
     "plot_contours",
     "extract_center_square",
     "smooth_data",
+    "export_contours_with_params"
 ]

@@ -48,7 +48,7 @@ def _parse_int_float(value):
 def add_args(parser: argparse.ArgumentParser):
     """
     Add command-line arguments to the parser, dynamically adding arguments
-    for each key in the `ops` dictionary.
+    for each key in the `params` dictionary.
 
     Parameters
     ----------
@@ -60,9 +60,9 @@ def add_args(parser: argparse.ArgumentParser):
     argparse.ArgumentParser
         The parser with added arguments.
     """
-    default_ops = lcp.default_params()["main"]
+    default_params = lcp.default_params()["main"]
 
-    for param, default_value in default_ops.items():
+    for param, default_value in default_params.items():
         param_type = type(default_value)
 
         if param_type == bool:
@@ -77,10 +77,10 @@ def add_args(parser: argparse.ArgumentParser):
         else:
             parser.add_argument(f'--{param}', help=f'Set {param} (default: {default_value})')
 
-    parser.set_defaults(**default_ops)
+    parser.set_defaults(**default_params)
     # non-run flags
-    parser.add_argument('--ops', type=str, help='Path to the ops .npy file.')
-    parser.add_argument('--save', type=str, help='Path to save the ops parameters.')
+    parser.add_argument('--params', type=str, help='Path to the params .npy file.')
+    parser.add_argument('--save', type=str, help='Path to save the parameters.')
     parser.add_argument('--version', action='store_true', help='Show version information.')
     parser.add_argument('--debug', action='store_true', help='Enable debug mode.')
     parser.add_argument('--batch-path', type=str, help='Path to the batch file.')
@@ -104,73 +104,73 @@ def add_args(parser: argparse.ArgumentParser):
     return parser
 
 
-def load_ops(args, batch_path=None):
+def load_params(args, batch_path=None):
     """
-    Load or create the 'ops' dictionary from a file or default parameters.
-    Handles matching CLI arguments to the 'ops' dictionary.
+    Load or create the 'params' dictionary from a file or default parameters.
+    Handles matching CLI arguments to the 'params' dictionary.
 
     Parameters
     ----------
     args : argparse.Namespace
-        Command-line arguments containing the 'ops' path and 'save' option.
+        Command-line arguments containing the 'params' path and 'save' option.
     batch_path : str or Path
         Path to the batch file.
 
     Returns
     -------
     dict
-        The loaded or default 'ops' dictionary.
+        The loaded or default 'params' dictionary.
     """
     # If a filepath was provided, use that
-    if args.ops:
-        ops_path = Path(args.ops)
-        if ops_path.is_dir():
+    if args.params:
+        params = Path(args.params)
+        if params.is_dir():
             raise ValueError(
-                f"Given ops path {ops_path} is a directory. Please use a fully qualified path, "
-                f"including the filename and file extension, i.e. /path/to/ops.npy."
+                f"Given params path {params} is a directory. Please use a fully qualified path, "
+                f"including the filename and file extension, i.e. /path/to/params.npy."
             )
-        elif not ops_path.is_file():
-            raise FileNotFoundError(f"Given ops path {ops_path} is not a file.")
-        ops = np.load(ops_path, allow_pickle=True).item()
+        elif not params.is_file():
+            raise FileNotFoundError(f"Given params path {params} is not a file.")
+        params = np.load(params, allow_pickle=True).item()
     else:
         if batch_path is not None:
-            opsfile = Path(batch_path).parent / "ops.npy"
-            if opsfile.is_file():
-                ops = np.load(opsfile, allow_pickle=True).item()
-                print(f"Loading parameters from {opsfile}")
+            params_file = Path(batch_path).parent / "params.npy"
+            if params_file.is_file():
+                params = np.load(params_file, allow_pickle=True).item()
+                print(f"Loading parameters from {params_file}")
             else:
                 print(f"Using default parameters.")
-                ops = lcp.default_params()
+                params = lcp.default_params()
         else:
             print(f"Using default parameters.")
-            ops = lcp.default_params()
+            params = lcp.default_params()
 
-    # Get matching parameters from CLI args and update ops
-    main_ops = ops["main"]
+    # Get matching parameters from CLI args and update params
+    main_params = params["main"]
 
     matching_params = {
         k: getattr(args, k)
-        for k in main_ops.keys()
+        for k in main_params.keys()
         if hasattr(args, k) and getattr(args, k) is not None
     }
-    ops["main"].update(matching_params)
+    params["main"].update(matching_params)
 
-    for param in ops["main"]:
+    for param in params["main"]:
         # If defaults contain a list of length 2, handle cli with single entries
-        if hasattr(main_ops[param], "__len__") and len(main_ops[param]) == 2:
+        if hasattr(main_params[param], "__len__") and len(main_params[param]) == 2:
             arg_value = getattr(args, param, None)  # value from cli
             if arg_value is not None:
                 # if scalar
                 if not isinstance(arg_value, (list, tuple)):
                     arg_value = [arg_value]
                 if len(arg_value) == 1:
-                    ops["main"][param] = [arg_value[0], arg_value[0]]
+                    params["main"][param] = [arg_value[0], arg_value[0]]
                 elif len(arg_value) == 2:
-                    ops["main"][param] = list(arg_value)
+                    params["main"][param] = list(arg_value)
                 else:
                     raise ValueError(
                         f"Invalid number of values for --{param}. Expected 1 or 2 values, got {len(arg_value)}.")
-    return ops
+    return params
 
 
 def create_load_batch(batch_path):
@@ -267,19 +267,19 @@ def resolve_data_path(data_path, df):
         raise ValueError(f"Invalid data_path: {data_path}")
 
 
-def handle_input_data_path(input_path, ops):
+def handle_input_data_path(input_path, params):
     """Handles the metadata and raw data path for the input movie path.
 
     Parameters
     ----------
     input_path : Path or pd.Series
         Input movie path to process.
-    ops : dict
+    params : dict
         Parameters for the algorithm.
 
     Returns
     -------
-    ops : dict
+    params : dict
         Updated parameters with metadata if applicable.
     """
     input_movie_path = None  # what is fed into df.caiman.add_item()
@@ -295,7 +295,7 @@ def handle_input_data_path(input_path, ops):
 
         metadata = lcp.get_metadata(input_path)
         mc.set_parent_raw_data_path(raw_data_path)
-        ops['metadata'] = metadata
+        params['metadata'] = metadata
 
     elif isinstance(input_path, pd.Series):
         input_movie_path = input_path
@@ -307,10 +307,10 @@ def handle_input_data_path(input_path, ops):
         mc.set_parent_raw_data_path(output_path.parent)
     else:
         raise ValueError(f"Invalid input_path: {input_path}")
-    return ops, input_movie_path
+    return params, input_movie_path
 
 
-def run_item(algo, input_path, df, ops, backend):
+def run_item(algo, input_path, df, params, backend):
     """Runs the specified algorithm on a single input item.
 
     Parameters
@@ -321,7 +321,7 @@ def run_item(algo, input_path, df, ops, backend):
         Input movie path or dataframe item to process.
     df : pandas.DataFrame
         Dataframe for managing processing results.
-    ops : dict
+    params : dict
         Parameters for the algorithm.
     backend : str
         Backend to use for processing.
@@ -331,26 +331,29 @@ def run_item(algo, input_path, df, ops, backend):
     df : pandas.DataFrame
         Updated dataframe after processing.
     """
-    ops, input_movie_path = handle_input_data_path(input_path, ops)
+    params, input_movie_path = handle_input_data_path(input_path, params)
     df.caiman.add_item(
         algo=algo,
         input_movie_path=input_movie_path,
-        params=ops,
+        params=params,
         item_name=f"{algo}",
     )
     print(f"Running {algo} -----------")
     df.iloc[-1].caiman.run(backend=backend)
     df = df.caiman.reload_from_disk()
-    # if algo=="mcorr":
-    #     output_path = Path(df.iloc[-1].mcorr.get_output_path()).parent / 'output.mp4'
-    #     print(f"Saving mp4 to {output_path}")
-    #     images = lcp.norm(df.iloc[-1].mcorr.get_output())
-    #     save_mp4(output_path, images, framerate=60, speedup=2)
+    if algo=="mcorr":
+        output_path = Path(df.iloc[-1].mcorr.get_output_path()).parent / 'output.mp4'
+        print(f"Saving mp4 to {output_path}")
+        images = lcp.norm(df.iloc[-1].mcorr.get_output())
+        save_mp4(output_path, images, framerate=60, speedup=2)
+    if algo=="cnmf":
+        output_path = Path(df.iloc[-1].cnmf.get_output_path()).parent / 'output.mp4'
+        lcp.export_contours_with_params(df.iloc[-1], save_path=output_path)
     print(f"Processing time: {df.iloc[-1].algo_duration}")
     return df
 
 
-def run_algorithm(algo, files, df, ops, backend):
+def run_algorithm(algo, files, df, params, backend):
     """Runs the specified algorithm on the input files.
 
     Parameters
@@ -361,7 +364,7 @@ def run_algorithm(algo, files, df, ops, backend):
         List of input file paths or dataframe items.
     df : pandas.DataFrame
         Dataframe for managing processing results.
-    ops : dict
+    params : dict
         Parameters for the algorithm.
     backend : str
         Backend to use for processing.
@@ -377,7 +380,7 @@ def run_algorithm(algo, files, df, ops, backend):
         return df
 
     for input_movie_path in files:
-        df = run_item(algo, input_movie_path, df, ops, backend)
+        df = run_item(algo, input_movie_path, df, params, backend)
     return df
 
 
@@ -494,8 +497,8 @@ def main():
         return
 
     df, batch_path = create_load_batch(args.batch_path)
-    ops = load_ops(args, batch_path)
-    ops['package'] = {'version': lcp.__version__}
+    params = load_params(args, batch_path)
+    params['package'] = {'version': lcp.__version__}
 
     # Handle removal of batch df
     if args.rm:
@@ -541,7 +544,8 @@ def main():
             print("\n".join([str(f) for f in Path(args.data_path).rglob("*")]))
             return
         for algo in args.run:
-            run_algorithm(algo, files, df, ops, backend)
+            print("algo in args.run")
+            run_algorithm(algo, files, df, params, backend)
             df = df.caiman.reload_from_disk()
             row = df.iloc[-1]
             if row["outputs"] is None:
