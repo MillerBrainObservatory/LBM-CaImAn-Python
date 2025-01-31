@@ -18,7 +18,7 @@ from .batch import (
 from .lcp_io import get_metadata, get_files_ext, stack_from_files, read_scan
 from .util.transform import vectorize, unvectorize, calculate_centers
 from .util.quality import get_noise_fft, greedyROI
-from .util.signal import smooth_data, norm
+from .util.signal import smooth_data, norm_minmax
 from .summary import (
     get_all_batch_items,
     get_summary_cnmf,

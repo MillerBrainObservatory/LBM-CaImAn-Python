@@ -12,6 +12,6 @@ def smooth_data(data, window_size=5):
     return np.convolve(data, np.ones(window_size) / window_size, mode='valid')
 
 
-def norm(images):
+def norm_minmax(images):
     """ Normalize a NumPy array to the range [0, 1]. """
     return (images - images.min()) / (images.max() - images.min())

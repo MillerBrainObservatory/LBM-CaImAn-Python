@@ -3,7 +3,6 @@ import os
 import numpy as np
 import tifffile
 from pathlib import Path
-import dask.array as da
 from glob import glob
 from os import path
 from scanreader import scans
