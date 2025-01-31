@@ -50,7 +50,8 @@ def export_contours_with_params(row, save_path):
     plt.savefig(save_path, dpi=300, bbox_inches='tight')
 
 
-def save_mp4(fname: str | Path | np.ndarray, images, framerate=60, speedup=1, chunk_size=100, cmap="gray", win=7, vcodec='libx264'):
+def save_mp4(fname: str | Path | np.ndarray, images, framerate=60, speedup=1, chunk_size=100, cmap="gray", win=7,
+             vcodec='libx264'):
     """
     Save a video from a 3D array or TIFF stack to `.mp4`.
 
@@ -121,7 +122,7 @@ def save_mp4(fname: str | Path | np.ndarray, images, framerate=60, speedup=1, ch
     process = (
         ffmpeg
         .input('pipe:', format='rawvideo', pix_fmt='rgb24', s=f'{width}x{height}', framerate=output_framerate)
-        .output(fname, pix_fmt='yuv420p', vcodec=vcodec, r=output_framerate)
+        .output(str(fname), pix_fmt='yuv420p', vcodec=vcodec, r=output_framerate)
         .overwrite_output()
         .run_async(pipe_stdin=True)
     )
@@ -722,6 +723,7 @@ def plot_spatial_components(data: pd.DataFrame | pd.Series, savepath: str | Path
                 save_name = Path(savepath) / f"{row.uuid}_spatial_components.png"
                 print(f"Saving to {save_name}.")
                 plt.savefig(save_name.expanduser(), dpi=600, bbox_inches="tight")
+
 
 def save_png(fname, data):
     plt.imshow(data)
