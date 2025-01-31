@@ -351,21 +351,26 @@ def _get_file_writer(ext, overwrite, metadata=None):
 def _write_tiff(path, name, data, overwrite=True, metadata=None):
     filename = Path(path / f'{name}.tiff')
     fpath = Path(path) / 'summary_images'
+    fpath.mkdir(exist_ok=True, parents=True)
     mean_filename = fpath / f'{name}_mean.tiff'
     movie_filename = fpath / f'{name}.mp4'
     if filename.exists() and not overwrite:
         logger.warning(
             f'File already exists: {filename}. To overwrite, set overwrite=True (--overwrite in command line)')
         return
+    ####
     print(f"Writing {filename}")
     t_write = time.time()
     tifffile.imwrite(filename, data, metadata=metadata)
-    data = np.mean(data)
+    ####
+    print(f"Writing {movie_filename}")
+    data = lbm_caiman_python.norm_minmax(data)
+    data = lbm_caiman_python.extract_center_square(data, 255)
+    lbm_caiman_python.save_mp4(str(movie_filename), data)
+    ####
+    data = np.mean(data, axis=0)
     print(f"Writing {mean_filename}")
     tifffile.imwrite(mean_filename, data, metadata=metadata)
-    print(f"Writing {movie_filename}")
-    data = lbm_caiman_python.extract_center_square(lbm_caiman_python.norm(data), 255)
-    lbm_caiman_python.save_mp4(movie_filename, data)
     t_write_end = time.time() - t_write
     print(f"Data written in {t_write_end:.2f} seconds.")
 
