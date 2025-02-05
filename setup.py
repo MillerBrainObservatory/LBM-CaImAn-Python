@@ -11,6 +11,7 @@ install_deps = [
     "scipy>=1.9.0",
     "fastplotlib[notebook]",
     "scanreader @ git+https://github.com/atlab/scanreader.git@master#egg=scanreader",
+    "ffmpeg-python",
     "matplotlib",
     "lbm-mc",
     "fabric",
