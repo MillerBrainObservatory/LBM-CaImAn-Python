@@ -52,7 +52,7 @@ Note: If conda gets stuck `Solving Environment`, hitting enter can sometimes hel
 1. Create a new environment and install [CaImAn](https://github.com/nel-lab/mesmerize-core/tree/master)
 
 ``` bash
-conda create -n lcp -c defaults -c conda-forge caiman
+conda create -n lcp -c conda-forge caiman imgui-bundle
 conda activate lcp
 ```
 
