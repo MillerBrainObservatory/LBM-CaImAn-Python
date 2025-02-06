@@ -317,10 +317,10 @@ skip calculating centers if markersize=0, add colormap
     _save_data(scan, savedir, planes, frames, overwrite, ext, append_str, metadata)
 
 
-def _save_data(scan, path, planes, frames, overwrite, file_extension, append_str, metadata):
+def _save_data(scan, path, planes, frames, overwrite, file_extension, append_str, metadata, image_size=None):
     path.mkdir(parents=True, exist_ok=True)
 
-    file_writer = _get_file_writer(file_extension, overwrite, metadata)
+    file_writer = _get_file_writer(file_extension, overwrite, metadata, image_size)
     if len(scan.fields) > 1:
         print(f"Saving {len(scan.fields)} ROIs.")
         for idx, field in enumerate(scan.fields):
@@ -339,16 +339,16 @@ def _save_data(scan, path, planes, frames, overwrite, file_extension, append_str
         print(f"Data successfully saved to {path}.")
 
 
-def _get_file_writer(ext, overwrite, metadata=None):
+def _get_file_writer(ext, overwrite, metadata=None, image_size=None):
     if ext in ['.tif', '.tiff']:
-        return functools.partial(_write_tiff, overwrite=overwrite, metadata=metadata)
+        return functools.partial(_write_tiff, overwrite=overwrite, metadata=metadata, image_size=image_size)
     elif ext == '.zarr':
         return functools.partial(_write_zarr, overwrite=overwrite, metadata=metadata)
     else:
         raise ValueError(f'Unsupported file extension: {ext}')
 
 
-def _write_tiff(path, name, data, overwrite=True, metadata=None):
+def _write_tiff(path, name, data, overwrite=True, metadata=None, image_size=None):
     filename = Path(path / f'{name}.tiff')
     fpath = Path(path) / 'summary_images'
     fpath.mkdir(exist_ok=True, parents=True)
@@ -358,15 +358,28 @@ def _write_tiff(path, name, data, overwrite=True, metadata=None):
         logger.warning(
             f'File already exists: {filename}. To overwrite, set overwrite=True (--overwrite in command line)')
         return
+
     ####
     print(f"Writing {filename}")
     t_write = time.time()
     tifffile.imwrite(filename, data, metadata=metadata)
+
     ####
     print(f"Writing {movie_filename}")
     data = lbm_caiman_python.norm_minmax(data)
-    data = lbm_caiman_python.extract_center_square(data, 255)
+    if image_size:
+        if isinstance(image_size, (tuple, list)):
+            image_size = image_size[0]
+    else:
+        image_size = 255
+
+    # make sure image_size isnt larger than movie dimensions
+    if image_size > data.shape[1]:
+        image_size = data.shape[1]
+
+    data = lbm_caiman_python.extract_center_square(data, image_size)
     lbm_caiman_python.save_mp4(str(movie_filename), data)
+
     ####
     data = np.mean(data, axis=0)
     print(f"Writing {mean_filename}")
