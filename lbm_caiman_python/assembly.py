@@ -250,6 +250,7 @@ def save_as(
         append_str='',
         ext='.tiff',
         order=None,
+        image_size=None,
 ):
     """
     Save scan data to the specified directory in the desired format.
@@ -277,9 +278,10 @@ def save_as(
     order : list or tuple, optional
         A list or tuple specifying the desired order of planes. If provided, the number of
         elements in `order` must match the number of planes. Default is `None`.
+    image_size : int, optional
+        Size of the image to save. Default is 255x255 pixel image. If the image is larger
+        than the movie dimensions, it will be cropped to fit. Expected dimensions are square.
         
-skip calculating centers if markersize=0, add colormap
-
     Raises
     ------
     ValueError
@@ -314,7 +316,7 @@ skip calculating centers if markersize=0, add colormap
     if not savedir.exists():
         logger.debug(f"Creating directory: {savedir}")
         savedir.mkdir(parents=True)
-    _save_data(scan, savedir, planes, frames, overwrite, ext, append_str, metadata)
+    _save_data(scan, savedir, planes, frames, overwrite, ext, append_str, metadata, image_size)
 
 
 def _save_data(scan, path, planes, frames, overwrite, file_extension, append_str, metadata, image_size=None):
