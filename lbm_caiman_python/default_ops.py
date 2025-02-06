@@ -7,6 +7,12 @@ def params_from_metadata(metadata):
 
     Based on the pixel resolution and frame rate, the parameters are set to reasonable values.
 
+    - Sets overlaps and max-shifts to 16 micron.
+    - Sets gSig to 8 micron using your pixel-resolution.
+    - Sets gSiz to 4 times gSig.
+    - Sets max_shifts to 10 micron.
+    - Sets strides to 64 micron.
+
     Parameters
     ----------
     metadata : dict
@@ -41,11 +47,7 @@ def params_from_metadata(metadata):
     strides = [int(round(64 / px)) for px in metadata["pixel_resolution"]]
     params["main"]["strides"] = strides
 
-    # overlap should be ~neuron diameter
-    overlaps = [int(round(gSig / px)) for px in metadata["pixel_resolution"]]
-    if overlaps[0] < gSig:
-        print("Overlaps too small. Increasing to neuron diameter.")
-        overlaps = [int(gSig)] * 2
+    overlaps = [int(gSig)] * 2
     params["main"]["overlaps"] = overlaps
 
     rf_0 = (strides[0] + overlaps[0]) // 2
