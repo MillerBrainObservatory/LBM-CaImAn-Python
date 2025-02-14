@@ -76,7 +76,7 @@ def default_params():
     -----
     This will likely change as CaImAn is updated.
     """
-    gSig = 6
+    gSig = 4
     gSiz = (4 * gSig + 1, 4 * gSig + 1)
     return {
         "main": {
@@ -86,7 +86,7 @@ def default_params():
             "strides": [64, 64],
             "overlaps": [8, 8],
             "min_mov": None,
-            "gSig_filt": [0, 0],
+            "gSig_filt": [2, 2],
             "max_deviation_rigid": 3,
             "border_nan": "copy",
             "splits_els": 14,
@@ -100,7 +100,7 @@ def default_params():
             # CNMF parameters
             'fr': 10,
             'dxy': (1., 1.),
-            'decay_time': 0.4,
+            'decay_time': 0.5,
             'p': 2,
             'nb': 3,
             'K': 20,
@@ -110,13 +110,13 @@ def default_params():
             'gSiz': gSiz,
             'method_init': 'greedy_roi',
             'rolling_sum': True,
-            'use_cnn': False,
+            'use_cnn': True,
             'ssub': 1,
             'tsub': 1,
             'merge_thr': 0.7,
             'bas_nonneg': True,
             'min_SNR': 1.4,
-            'rval_thr': 0.8,
+            'rval_thr': 0.4,
         },
         "refit": True
     }
