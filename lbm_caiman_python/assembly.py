@@ -10,6 +10,7 @@ import numpy as np
 from scanreader.utils import listify_index
 from tqdm import tqdm
 
+import lbm_caiman_python.lcp_io
 from lbm_caiman_python.lcp_io import get_metadata, make_json_serializable
 
 import tifffile
@@ -335,9 +336,36 @@ def _save_data(scan, path, planes, frames, overwrite, file_extension, append_str
         print(f"Saving {len(planes)} planes.")
         for chan in tqdm(planes, desc='Saving planes', total=len(planes)):
             if 'tif' in file_extension:
-                arr = scan[frames, chan, :, :]
-                logger.debug('arr shape:', arr.shape)
-                file_writer(path, f'plane_{chan + 1}{append_str}', arr)
+
+                chunk_size = 10 * 1024 * 1024  # 10 MB
+
+                # Calculate the number of frames per chunk
+                nbytes_chan = scan.shape[0] * scan.shape[2] * scan.shape[3] * 2
+                num_chunks = max(1, int(np.ceil(nbytes_chan / chunk_size)))
+                frames_per_chunk = max(1, scan.shape[0] // num_chunks)
+
+                name = f'plane_{chan + 1}{append_str}'
+                filename = Path(path) / f'{name}.tiff'
+
+                if filename.exists() and not overwrite:
+                    logger.warning(
+                        f'File already exists: {filename}. To overwrite, set overwrite=True (--overwrite in command line)')
+                    return
+
+                # Open TIFF file in append mode
+                with tifffile.TiffWriter(filename, bigtiff=True) as tif:
+                    with tqdm(total=num_chunks, desc='Saving chunks', position=0, leave=True) as pbar:
+                        for chunk in range(num_chunks):
+                            start = chunk * frames_per_chunk
+                            end = min((chunk + 1) * frames_per_chunk, scan.shape[0])
+                            data = scan[start:end, chan, :, :]  # Extract the chunk
+
+                            # Append the chunk to the existing file
+                            tif.write(data, metadata=metadata)
+
+                            pbar.update(1)
+
+                print(f"Data successfully saved to {filename}.")
         print(f"Data successfully saved to {path}.")
 
 
@@ -380,7 +408,7 @@ def _write_tiff(path, name, data, overwrite=True, metadata=None, image_size=None
         image_size = data.shape[1]
 
     data = lbm_caiman_python.extract_center_square(data, image_size)
-    lbm_caiman_python.save_mp4(str(movie_filename), data)
+    lbm_caiman_python.lcp_io.save_mp4(str(movie_filename), data)
 
     ####
     data = np.mean(data, axis=0)

@@ -15,7 +15,7 @@ from .batch import (
     load_batch,
     drop_duplicates
 )
-from .lcp_io import get_metadata, get_files_ext, stack_from_files, read_scan
+from .lcp_io import get_metadata, get_files_ext, stack_from_files, read_scan, save_png, save_mp4
 from .util.transform import vectorize, unvectorize, calculate_centers
 from .util.quality import get_noise_fft, greedyROI
 from .util.signal import smooth_data, norm_minmax
@@ -39,10 +39,7 @@ from .visualize import (
     plot_optical_flows,
     plot_residual_flows,
     plot_correlations,
-    plot_spatial_components,
     plot_contours,
-    save_mp4,
-    save_png,
     export_contours_with_params,
 )
 
@@ -78,8 +75,6 @@ __all__ = [
     "drop_duplicates",
     "stack_from_files",
     "read_scan",
-    "save_mp4",
-    "save_png",
     "plot_contours",
     "extract_center_square",
     "smooth_data",
