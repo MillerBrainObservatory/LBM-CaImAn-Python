@@ -15,7 +15,7 @@ from .batch import (
     load_batch,
     drop_duplicates
 )
-from .lcp_io import get_metadata, get_files_ext, stack_from_files, read_scan, save_png, save_mp4
+from .lcp_io import get_metadata, get_files, stack_from_files, read_scan, save_png, save_mp4
 from .util.transform import vectorize, unvectorize, calculate_centers
 from .util.quality import get_noise_fft, greedyROI
 from .util.signal import smooth_data, norm_minmax
@@ -64,7 +64,7 @@ __all__ = [
     "get_noise_fft",
     "vectorize",
     "unvectorize",
-    "get_files_ext",
+    "get_files",
     "get_all_batch_items",
     "get_summary_cnmf",
     "get_summary_mcorr",

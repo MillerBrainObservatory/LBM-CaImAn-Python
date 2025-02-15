@@ -30,15 +30,14 @@ def params_from_metadata(metadata):
         print('No metadata found. Using default parameters.')
         return params
 
-    split_frames = params["main"]["num_frames_split"]
     params["main"]["fr"] = metadata["frame_rate"]
     params["main"]["dxy"] = metadata["pixel_resolution"]
 
     # typical neuron ~16 microns
     gSig = round(16 / metadata["pixel_resolution"][0]) / 2
-    params["main"]["gSig"] = gSig
+    params["main"]["gSig"] = (gSig, gSig)
 
-    gSiz = (4 * gSig + 1, 4 * gSig + 1)
+    gSiz = (4 * gSig[0] + 1, 4 * gSig[0] + 1)
     params["main"]["gSiz"] = gSiz
 
     max_shifts = [int(round(10 / px)) for px in metadata["pixel_resolution"]]
@@ -47,7 +46,7 @@ def params_from_metadata(metadata):
     strides = [int(round(64 / px)) for px in metadata["pixel_resolution"]]
     params["main"]["strides"] = strides
 
-    overlaps = [int(gSig)] * 2
+    overlaps = [int(gSig[0])] * 2
     params["main"]["overlaps"] = overlaps
 
     rf_0 = (strides[0] + overlaps[0]) // 2
@@ -76,8 +75,8 @@ def default_params():
     -----
     This will likely change as CaImAn is updated.
     """
-    gSig = 4
-    gSiz = (4 * gSig + 1, 4 * gSig + 1)
+    gSig = (5, 5)
+    gSiz = (4 * gSig[0] + 1, 4 * gSig[0] + 1)
     return {
         "main": {
             # Motion correction parameters

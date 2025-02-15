@@ -20,7 +20,7 @@ def main():
     mc.set_parent_raw_data_path(assembled_path)
     df = mc.create_batch(batch_path / 'results.pickle', remove_existing=True)
 
-    files = lcp.get_files_ext(assembled_path, str_contains='tif')
+    files = lcp.get_files(assembled_path, str_contains='tif')
     metadata = lcp.get_metadata(files[0])
 
     df.caiman.add_item(

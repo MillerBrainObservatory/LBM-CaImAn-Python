@@ -17,7 +17,7 @@ def main():
     results_path = batch_path / 'registered.pickle'
     df = mc.load_batch(results_path)
 
-    files = lcp.get_files_ext(raw_path, ".tif", 1)
+    files = lcp.get_files(raw_path, ".tif", 1)
     #files = sorted(files, key=lambda p: int(Path(p).stem.split("_")[-1]))
     data = tifffile.memmap(files[0])
     mc.set_parent_raw_data_path(raw_path)

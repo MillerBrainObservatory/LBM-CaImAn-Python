@@ -126,5 +126,5 @@ def calculate_interplane_shifts(volume, n_planes, params, json_logger=None):
 
 if __name__ == "__main__":
     path = Path().home() / 'lbm_data'
-    files = lbm_caiman_python.get_files_ext(path, ".tiff", 3)
+    files = lbm_caiman_python.get_files(path, ".tiff", 3)
     print(files)

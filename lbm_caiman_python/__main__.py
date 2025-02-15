@@ -432,7 +432,7 @@ def main():
             args.mcorr = True
 
         # find all .pickle files in the given directory
-        files = lcp.get_files_ext(args.summary, '.pickle', args.max_depth)
+        files = lcp.get_files(args.summary, '.pickle', args.max_depth)
 
         if not files:
             raise ValueError(f"No .pickle files found in {args.summary} or its subdirectories.")
