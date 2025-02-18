@@ -62,8 +62,6 @@ __all__ = [
     "load_batch",
     "concat_param_diffs",
     "get_noise_fft",
-    "vectorize",
-    "unvectorize",
     "get_files",
     "get_all_batch_items",
     "get_summary_cnmf",
