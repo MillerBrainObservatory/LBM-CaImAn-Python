@@ -15,7 +15,6 @@ from scanreader import scans
 
 from .util.signal import norm_minmax
 
-
 def expand_wildcard(wildcard):
     """ Expands a list of pathname patterns to form a sorted list of absolute filenames.
 

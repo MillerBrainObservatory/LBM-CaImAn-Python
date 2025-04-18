@@ -9,7 +9,6 @@ import fastplotlib as fpl
 
 from lbm_caiman_python.util.signal import smooth_data
 
-
 def export_contours_with_params(row, save_path):
     params = row.params
     corr = row.caiman.get_corr_image()
@@ -74,6 +73,7 @@ def plot_contours(df, plot_index, histogram_widget=False):
         window_funcs={'t': (np.mean, 3)},
         figure_kwargs={'size': (1200, 600)},
         histogram_widget=histogram_widget
+        figure_kwargs={'size': (1200, 600)}
     )
     for subplot in image_widget.figure:
         if subplot.name == 'Accepted':

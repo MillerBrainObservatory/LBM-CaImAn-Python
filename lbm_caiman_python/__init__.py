@@ -77,4 +77,5 @@ __all__ = [
     "extract_center_square",
     "smooth_data",
     "export_contours_with_params"
+    "read_scan"
 ]
