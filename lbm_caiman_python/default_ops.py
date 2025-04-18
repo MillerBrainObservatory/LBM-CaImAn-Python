@@ -7,6 +7,12 @@ def params_from_metadata(metadata):
 
     Based on the pixel resolution and frame rate, the parameters are set to reasonable values.
 
+    - Sets overlaps and max-shifts to 16 micron.
+    - Sets gSig to 8 micron using your pixel-resolution.
+    - Sets gSiz to 4 times gSig.
+    - Sets max_shifts to 10 micron.
+    - Sets strides to 64 micron.
+
     Parameters
     ----------
     metadata : dict
@@ -24,15 +30,14 @@ def params_from_metadata(metadata):
         print('No metadata found. Using default parameters.')
         return params
 
-    split_frames = params["main"]["num_frames_split"]
     params["main"]["fr"] = metadata["frame_rate"]
     params["main"]["dxy"] = metadata["pixel_resolution"]
 
     # typical neuron ~16 microns
     gSig = round(16 / metadata["pixel_resolution"][0]) / 2
-    params["main"]["gSig"] = gSig
+    params["main"]["gSig"] = (gSig, gSig)
 
-    gSiz = (4 * gSig + 1, 4 * gSig + 1)
+    gSiz = (4 * gSig[0] + 1, 4 * gSig[0] + 1)
     params["main"]["gSiz"] = gSiz
 
     max_shifts = [int(round(10 / px)) for px in metadata["pixel_resolution"]]
@@ -41,11 +46,7 @@ def params_from_metadata(metadata):
     strides = [int(round(64 / px)) for px in metadata["pixel_resolution"]]
     params["main"]["strides"] = strides
 
-    # overlap should be ~neuron diameter
-    overlaps = [int(round(gSig / px)) for px in metadata["pixel_resolution"]]
-    if overlaps[0] < gSig:
-        print("Overlaps too small. Increasing to neuron diameter.")
-        overlaps = [int(gSig)] * 2
+    overlaps = [int(gSig[0])] * 2
     params["main"]["overlaps"] = overlaps
 
     rf_0 = (strides[0] + overlaps[0]) // 2
@@ -74,8 +75,8 @@ def default_params():
     -----
     This will likely change as CaImAn is updated.
     """
-    gSig = 6
-    gSiz = (4 * gSig + 1, 4 * gSig + 1)
+    gSig = (5, 5)
+    gSiz = (4 * gSig[0] + 1, 4 * gSig[0] + 1)
     return {
         "main": {
             # Motion correction parameters
@@ -84,7 +85,7 @@ def default_params():
             "strides": [64, 64],
             "overlaps": [8, 8],
             "min_mov": None,
-            "gSig_filt": [0, 0],
+            "gSig_filt": [2, 2],
             "max_deviation_rigid": 3,
             "border_nan": "copy",
             "splits_els": 14,
@@ -98,7 +99,7 @@ def default_params():
             # CNMF parameters
             'fr': 10,
             'dxy': (1., 1.),
-            'decay_time': 0.4,
+            'decay_time': 0.5,
             'p': 2,
             'nb': 3,
             'K': 20,
@@ -108,13 +109,13 @@ def default_params():
             'gSiz': gSiz,
             'method_init': 'greedy_roi',
             'rolling_sum': True,
-            'use_cnn': False,
+            'use_cnn': True,
             'ssub': 1,
             'tsub': 1,
             'merge_thr': 0.7,
             'bas_nonneg': True,
             'min_SNR': 1.4,
-            'rval_thr': 0.8,
+            'rval_thr': 0.4,
         },
         "refit": True
     }

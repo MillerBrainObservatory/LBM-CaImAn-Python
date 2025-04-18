@@ -107,6 +107,7 @@ def get_noise_fft(
 
     return sn, psdx
 
+
 def _imblur(Y, sig=5, siz=11, nDimBlur=None, kernel=None, opencv=True):
     """
     Spatial filtering with a Gaussian or user defined kernel
@@ -213,7 +214,7 @@ def finetune(Y, cin, nIter=5):
     # we compute the multiplication of patches per traces ( non negatively )
     for _ in range(nIter):
         a = np.maximum(np.dot(Y, cin), 0)
-        a = a / np.sqrt(np.sum(a**2) + np.finfo(np.float32).eps)  # compute the l2/a
+        a = a / np.sqrt(np.sum(a ** 2) + np.finfo(np.float32).eps)  # compute the l2/a
         # c as the variation of those patches
         cin = np.sum(Y * a[..., np.newaxis], tuple(np.arange(Y.ndim - 1)))
 

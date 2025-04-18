@@ -25,8 +25,6 @@ For the `MATLAB` implementation, see [here](https://github.com/MillerBrainObserv
 ## Requirements
 
 - caiman
-- mesmerize-core
-- scanreader
 - numpy
 - scipy
 - fastplotlib
@@ -38,7 +36,7 @@ but is not guarenteed to work with Jupyter Notebook or Visual Studio Code notebo
 
 ## Installation
 
-This project is tested on Linux and Windows 10 using `Python 3.9`, `Python 3.10` and `Python 3.11`.
+This project is tested on Linux and Windows 10. It will likely work on Mac as well.
 
 Installation is tested using [miniforge](https://github.com/conda-forge/miniforge).
 Python [virtual-environments](https://virtualenv.pypa.io/en/latest/) are working for **Linux/MacOS only**.
@@ -51,52 +49,48 @@ Note: If conda gets stuck `Solving Environment`, hitting enter can sometimes hel
 
 1. Create a new environment and install [CaImAn](https://github.com/nel-lab/mesmerize-core/tree/master)
 
+Installing CaImAn requires extra steps on Windows:
+
+#### Windows Only
+
+:exclamation: **Note:** If you encounter errors during the installation of `CaImAn`, you may need to install Microsoft Visual C++ Build Tools. You can download them from [here](https://visualstudio.microsoft.com/visual-cpp-build-tools/).
+
 ``` bash
-conda create -n lcp -c defaults -c conda-forge caiman
+% -n is the name of the environment, but nama it whatever you want
+conda create -n lcp python=3.11 pip vs2019_win-64 imgui-bundle tifffile=2024.12.12
 conda activate lcp
 ```
 
-- Here, we use the `-n` flag to name the environment `lcp`, but you can name it whatever you'd like.
+Clone and install CaImAn using git:
 
-If you already have `CaImAn` installed, skip this step.
-
-2. Install [LBM-CaImAn-Python](https://pypi.org/project/lbm-caiman-python/)
-
-``` bash
-pip install lbm_caiman_python
+```bash
+git clone https://github.com/flatironinstitute/CaImAn.git
+cd CaImAn
+pip3 install .
+cd ../ 
+caimanmanager install -f
 ```
 
-3. (Optional) Install `caimanmanager`
+- if the command `pip3 install` leads to `pip3: command not found`, try `pip install .`
 
-CaImAn will sometimes look for neural network models, unless you tell it not to with parameters `use_cnn=False` during segmentation.
+#### Linux/MacOS
 
-To install these models, and CaImAn demo data to follow along with their notebooks:
+Install CaImAn with `conda`:
 
 ``` bash
-caimanmanager install
+
+% -n is the name of the environment, but nama it whatever you want
+conda create -n lcp -c conda-forge python=3.10 caiman imgui-bundle
+conda activate lcp
 ```
 
-This will create a directory in your home folder `~/caiman_data/`. We recommend doing this step, though it may be safe to skip.
-
-4. (Optional) Install `mesmerize-viz`:
-
-Several notebooks make use of [mesmerize-viz](https://github.com/kushalkolar/mesmerize-viz) for visualizing registration/segmentation results.
+2. Install LBM-CaImAn-Python
 
 ``` bash
-pip install mesmerize-viz
+pip install git+https://github.com/MillerBrainObservatory/LBM-CaImAn-Python.git@master
 ```
 
 :exclamation: **Harware requirements** The large CNMF visualizations with contours etc. usually require either a dedicated GPU or integrated GPU with access to at least 1GB of VRAM.
-
-[mesmerize-viz youtube video demonstration](https://www.youtube.com/watch?v=GWvaEeqA1hw)
-
-4. Stay up-to-date
-
-LBM-CaImAn-Python is in active development. To update to the latest release:
-
-```python
-pip install -U lbm_caiman_python
-```
 
 ----
 
@@ -191,20 +185,17 @@ git clone https://github.com/flatironinstitute/CaImAn.git
 
 Install CaImAn:
 
-1. **CaImAn:**
-   ```bash
+```bash
    cd CaImAn
-   pip install -r requirements.txt
    pip install .
-   ```
-    :exclamation: **Note:** If you encounter errors during the installation of `CaImAn`, you may need to install Microsoft Visual C++ Build Tools. You can download them from [here](https://visualstudio.microsoft.com/visual-cpp-build-tools/).
+```
 
-2. **Other dependencies:**
+Install LBM-CaImAn-Python:
 
-    ```bash
-    pip install mesmerize-core
-    pip install lbm_caiman_python
-    pip install git+https://github.com/atlab/scanreader.git
+2.
+
+```bash
+pip install git+https://github.com/MillerBrainObservatory/LBM-CaImAn-Python.git@master
     ```
 
 #### Run ipython to make sure everyting works
@@ -212,41 +203,14 @@ Install CaImAn:
 ``` python
 
 import lbm_caiman_python as lcp
-import mesmerize_core as mc
-import scanreader as sr
+import lbm_mc as mc
 
-scan = sr.read_scan('path/to/data/*.tif', join_contiguous=True)
+# optional
+scan = lcp.read_scan('path/to/data/*.tif', join_contiguous=True)
 
 ```
 
 ---
-
-## For Developers
-
-### Newest `LBM-CaImAn-Python`
-
-To get the newest version of this package, rather than `pip install lbm_caiman_python`:
-
-``` bash
-git clone https://github.com/MillerBrainObservatory/LBM-CaImAn-Python.git
-cd LBM-CaImAn-Python
-pip install ".[docs]"
-
-```
-
-### Newest `fastplotlib`
-
-```bash
-
-git clone https://github.com/fastplotlib/fastplotlib.git
-cd fastplotlib
-
-# install all extras in place
-pip install -e ".[notebook,docs,tests]"
-
-# install latest pygfx
-pip install git+https://github.com/pygfx/pygfx.git@main
-```
 
 ## Troubleshooting
 
@@ -255,8 +219,10 @@ pip install git+https://github.com/pygfx/pygfx.git@main
 If you recieve an error during pip installation with the hint:
 
 ```bash
+
 HINT: This error might have occurred since this system does not have Windows Long Path support enabled. You can find
  information on how to enable this at https://pip.pypa.io/warnings/enable-long-paths
+
 ```
 
 In Windows Powershell, as Administrator:

@@ -3,7 +3,6 @@ from . import stdout
 from .default_ops import default_params, params_from_metadata
 from .collation import combine_z_planes
 from .assembly import (
-    read_scan,
     fix_scan_phase,
     return_scan_offset,
     save_as
@@ -16,9 +15,10 @@ from .batch import (
     load_batch,
     drop_duplicates
 )
-from .lcp_io import get_metadata, get_files_ext, stack_from_files, read_scan
+from .lcp_io import get_metadata, get_files, stack_from_files, read_scan, save_png, save_mp4
 from .util.transform import vectorize, unvectorize, calculate_centers
 from .util.quality import get_noise_fft, greedyROI
+from .util.signal import smooth_data, norm_minmax
 from .summary import (
     get_all_batch_items,
     get_summary_cnmf,
@@ -31,11 +31,17 @@ from .summary import (
 )
 from .helpers import (
     generate_patch_view,
-    calculate_num_patches,
     get_single_patch_coords,
+    extract_center_square,
 )
-from .visualize import plot_with_scalebars, plot_optical_flows, plot_residual_flows, plot_correlations, \
-    plot_spatial_components
+from .visualize import (
+    plot_with_scalebars,
+    plot_optical_flows,
+    plot_residual_flows,
+    plot_correlations,
+    plot_contours,
+    export_contours_with_params,
+)
 
 __version__ = _version.get_versions()['version']
 
@@ -54,12 +60,9 @@ __all__ = [
     "save_as",
     "generate_patch_view",
     "load_batch",
-    "calculate_num_patches",
     "concat_param_diffs",
     "get_noise_fft",
-    "vectorize",
-    "unvectorize",
-    "get_files_ext",
+    "get_files",
     "get_all_batch_items",
     "get_summary_cnmf",
     "get_summary_mcorr",
@@ -69,5 +72,10 @@ __all__ = [
     "get_single_patch_coords",
     "drop_duplicates",
     "stack_from_files",
+    "read_scan",
+    "plot_contours",
+    "extract_center_square",
+    "smooth_data",
+    "export_contours_with_params"
     "read_scan"
 ]

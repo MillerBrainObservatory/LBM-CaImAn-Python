@@ -5,12 +5,18 @@ import versioneer
 from pathlib import Path
 
 install_deps = [
-    "tifffile",
+    "tifffile==2024.12.12",
     "numpy>=1.24.3,<2.0",
     "numba>=0.57.0",
     "scipy>=1.9.0",
-    "fastplotlib[notebook]",
+    "fastplotlib @ git+https://github.com/fastplotlib/fastplotlib.git@main",
+    # "mbo_utilities @ git+https://github.com/MillerBrainObservatory/mbo_utilities.git@master",
+    "pygfx @ git+https://github.com/pygfx/pygfx.git@main",
     "scanreader @ git+https://github.com/atlab/scanreader.git@master#egg=scanreader",
+    "PyWavelets",
+    "qtpy",
+    "pyqt5",
+    "ffmpeg-python",
     "matplotlib",
     "lbm-mc",
     "fabric",
@@ -44,8 +50,6 @@ setuptools.setup(
     entry_points={
         "console_scripts": [
             "lcp = lbm_caiman_python.__main__:main",
-            "sr = lbm_caiman_python.assembly:main",
-            "transfer = lbm_caiman_python.transfer:main",
             "run_slurm = lbm_caiman_python.run_slurm:main",
         ]
     },

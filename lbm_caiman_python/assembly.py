@@ -7,10 +7,10 @@ from pathlib import Path
 
 import lbm_caiman_python
 import numpy as np
-from scanreader import read_scan
 from scanreader.utils import listify_index
 from tqdm import tqdm
 
+import lbm_caiman_python.lcp_io
 from lbm_caiman_python.lcp_io import get_metadata, make_json_serializable
 
 import tifffile
@@ -250,6 +250,8 @@ def save_as(
         overwrite=True,
         append_str='',
         ext='.tiff',
+        order=None,
+        image_size=None,
 ):
     """
     Save scan data to the specified directory in the desired format.
@@ -274,7 +276,13 @@ def save_as(
     ext : str, optional
         File extension for the saved data. Supported options are `'.tiff'` and `'.zarr'`.
         Default is `'.tiff'`.
-
+    order : list or tuple, optional
+        A list or tuple specifying the desired order of planes. If provided, the number of
+        elements in `order` must match the number of planes. Default is `None`.
+    image_size : int, optional
+        Size of the image to save. Default is 255x255 pixel image. If the image is larger
+        than the movie dimensions, it will be cropped to fit. Expected dimensions are square.
+        
     Raises
     ------
     ValueError
@@ -293,8 +301,15 @@ def save_as(
         planes = [planes]
     if frames is None:
         frames = list(range(scan.num_frames))
-    elif not isinstance(planes, (list, tuple)):
+    elif not isinstance(frames, (list, tuple)):
         frames = [frames]
+
+    if order is not None:
+        if len(order) != len(planes):
+            raise ValueError(
+                f"The length of the `order` ({len(order)}) does not match the number of planes ({len(planes)})."
+            )
+        planes = [planes[i] for i in order]
     if not metadata:
         metadata = {'si': scan.tiff_files[0].scanimage_metadata,
                     'image': make_json_serializable(get_metadata(scan.tiff_files[0].filehandle.path))}
@@ -302,13 +317,13 @@ def save_as(
     if not savedir.exists():
         logger.debug(f"Creating directory: {savedir}")
         savedir.mkdir(parents=True)
-    _save_data(scan, savedir, planes, frames, overwrite, ext, append_str, metadata)
+    _save_data(scan, savedir, planes, frames, overwrite, ext, append_str, metadata, image_size)
 
 
-def _save_data(scan, path, planes, frames, overwrite, file_extension, append_str, metadata):
+def _save_data(scan, path, planes, frames, overwrite, file_extension, append_str, metadata, image_size=None):
     path.mkdir(parents=True, exist_ok=True)
 
-    file_writer = _get_file_writer(file_extension, overwrite, metadata)
+    file_writer = _get_file_writer(file_extension, overwrite, metadata, image_size)
     if len(scan.fields) > 1:
         print(f"Saving {len(scan.fields)} ROIs.")
         for idx, field in enumerate(scan.fields):
@@ -321,32 +336,86 @@ def _save_data(scan, path, planes, frames, overwrite, file_extension, append_str
         print(f"Saving {len(planes)} planes.")
         for chan in tqdm(planes, desc='Saving planes', total=len(planes)):
             if 'tif' in file_extension:
-                arr = scan[frames, chan, :, :]
-                logger.debug('arr shape:', arr.shape)
-                file_writer(path, f'plane_{chan + 1}{append_str}', arr)
+
+                chunk_size = 10 * 1024 * 1024  # 10 MB
+
+                # Calculate the number of frames per chunk
+                nbytes_chan = scan.shape[0] * scan.shape[2] * scan.shape[3] * 2
+                num_chunks = max(1, int(np.ceil(nbytes_chan / chunk_size)))
+                frames_per_chunk = max(1, scan.shape[0] // num_chunks)
+
+                name = f'plane_{chan + 1}{append_str}'
+                filename = Path(path) / f'{name}.tiff'
+
+                if filename.exists() and not overwrite:
+                    logger.warning(
+                        f'File already exists: {filename}. To overwrite, set overwrite=True (--overwrite in command line)')
+                    return
+
+                # Open TIFF file in append mode
+                with tifffile.TiffWriter(filename, bigtiff=True) as tif:
+                    with tqdm(total=num_chunks, desc='Saving chunks', position=0, leave=True) as pbar:
+                        for chunk in range(num_chunks):
+                            start = chunk * frames_per_chunk
+                            end = min((chunk + 1) * frames_per_chunk, scan.shape[0])
+                            data = scan[start:end, chan, :, :]  # Extract the chunk
+
+                            # Append the chunk to the existing file
+                            tif.write(data, metadata=metadata)
+
+                            pbar.update(1)
+
+                print(f"Data successfully saved to {filename}.")
         print(f"Data successfully saved to {path}.")
 
 
-def _get_file_writer(ext, overwrite, metadata=None):
+def _get_file_writer(ext, overwrite, metadata=None, image_size=None):
     if ext in ['.tif', '.tiff']:
-        return functools.partial(_write_tiff, overwrite=overwrite, metadata=metadata)
+        return functools.partial(_write_tiff, overwrite=overwrite, metadata=metadata, image_size=image_size)
     elif ext == '.zarr':
         return functools.partial(_write_zarr, overwrite=overwrite, metadata=metadata)
     else:
         raise ValueError(f'Unsupported file extension: {ext}')
 
 
-def _write_tiff(path, name, data, overwrite=True, metadata=None):
+def _write_tiff(path, name, data, overwrite=True, metadata=None, image_size=None):
     filename = Path(path / f'{name}.tiff')
+    fpath = Path(path) / 'summary_images'
+    fpath.mkdir(exist_ok=True, parents=True)
+    mean_filename = fpath / f'{name}_mean.tiff'
+    movie_filename = fpath / f'{name}.mp4'
     if filename.exists() and not overwrite:
         logger.warning(
             f'File already exists: {filename}. To overwrite, set overwrite=True (--overwrite in command line)')
         return
-    logger.info(f"Writing {filename}")
+
+    ####
+    print(f"Writing {filename}")
     t_write = time.time()
     tifffile.imwrite(filename, data, metadata=metadata)
+
+    ####
+    print(f"Writing {movie_filename}")
+    data = lbm_caiman_python.norm_minmax(data)
+    if image_size:
+        if isinstance(image_size, (tuple, list)):
+            image_size = image_size[0]
+    else:
+        image_size = 255
+
+    # make sure image_size isnt larger than movie dimensions
+    if image_size > data.shape[1]:
+        image_size = data.shape[1]
+
+    data = lbm_caiman_python.extract_center_square(data, image_size)
+    lbm_caiman_python.lcp_io.save_mp4(str(movie_filename), data)
+
+    ####
+    data = np.mean(data, axis=0)
+    print(f"Writing {mean_filename}")
+    tifffile.imwrite(mean_filename, data, metadata=metadata)
     t_write_end = time.time() - t_write
-    logger.info(f"Data written in {t_write_end:.2f} seconds.")
+    print(f"Data written in {t_write_end:.2f} seconds.")
 
 
 def _write_zarr(path, name, data, metadata=None, overwrite=True):
@@ -362,7 +431,7 @@ def main():
     parser = argparse.ArgumentParser(description="CLI for processing ScanImage tiff files.")
     parser.add_argument("path",
                         type=str,
-                        nargs='?',  # Change this to make 'path' optional
+                        nargs='?',
                         default=None,
                         help="Path to the file or directory to process.")
     parser.add_argument("--frames",

@@ -8,7 +8,7 @@ from qtpy import QtGui, QtCore
 import fastplotlib as fpl
 from fastplotlib.ui import EdgeWindow
 
-from lbm_caiman_python.lcp_io import get_files_ext, stack_from_files
+from lbm_caiman_python.lcp_io import get_files, stack_from_files
 
 try:
     from imgui_bundle import imgui, icons_fontawesome_6 as fa
@@ -24,7 +24,7 @@ def get_base_iw():
 
 
 def get_iw(path):
-    files = get_files_ext(path, "plane", 1)
+    files = get_files(path, "plane", 1)
     zstack = stack_from_files(files)
     iw = fpl.ImageWidget(zstack, histogram_widget=False)
     return iw

@@ -1,5 +1,3 @@
-import random
-from pathlib import Path
 from typing import Any as ArrayLike
 
 import matplotlib as mpl
@@ -9,11 +7,43 @@ import pandas as pd
 from matplotlib import pyplot as plt, patches as patches, patheffects as path_effects
 import fastplotlib as fpl
 
-from lbm_caiman_python import calculate_centers
 from lbm_caiman_python.util.signal import smooth_data
 
+def export_contours_with_params(row, save_path):
+    params = row.params
+    corr = row.caiman.get_corr_image()
+    contours = row.cnmf.get_contours("good", swap_dim=False)[0]
+    contours_bad = row.cnmf.get_contours("bad", swap_dim=False)[0]
 
-def plot_contours(df, plot_index):
+    table_data = params["main"]
+    df_table = pd.DataFrame(list(table_data.items()), columns=["Parameter", "Value"])
+
+    fig, axes = plt.subplots(1, 2, figsize=(14, 7))
+    axes[0].imshow(corr, cmap='gray')
+    for contour in contours:
+        axes[0].plot(contour[:, 0], contour[:, 1], color='cyan', linewidth=1)
+    for contour in contours_bad:
+        axes[0].plot(contour[:, 0], contour[:, 1], color='red', linewidth=0.2)
+
+    axes[0].set_title(f'Accepted ({len(contours)}) and Rejected ({len(contours_bad)}) Neurons')
+    axes[0].axis('off')
+    axes[1].axis('tight')
+    axes[1].axis('off')
+
+    table = axes[1].table(cellText=df_table.values,
+                          colLabels=df_table.columns,
+                          loc='center',
+                          cellLoc='center',
+                          colWidths=[0.4, 0.6])
+
+    table.auto_set_font_size(False)
+    table.set_fontsize(10)
+    table.auto_set_column_width([0, 1])
+    plt.tight_layout()
+    plt.savefig(save_path, dpi=300, bbox_inches='tight')
+
+
+def plot_contours(df, plot_index, histogram_widget=False):
     """
     Plot the contours of the accepted and rejected components.
 
@@ -23,6 +53,8 @@ def plot_contours(df, plot_index):
         DataFrame containing the CNMF pandas extension.
     plot_index : int
         Index of the DataFrame to plot.
+    histogram_widget : bool, optional
+        Flag to display the vmin/vmax histogram controller.
 
     Returns
     -------
@@ -39,6 +71,8 @@ def plot_contours(df, plot_index):
         data=[mcorr_movie, mcorr_movie],
         names=['Accepted', 'Rejected'],
         window_funcs={'t': (np.mean, 3)},
+        figure_kwargs={'size': (1200, 600)},
+        histogram_widget=histogram_widget
         figure_kwargs={'size': (1200, 600)}
     )
     for subplot in image_widget.figure:
@@ -407,191 +441,3 @@ def plot_correlations(results, num_batches=3, smooth=True, winsize=5, save_path=
     if save_path:
         plt.savefig(save_path, dpi=300, bbox_inches='tight')
         print(f"Residual flows saved to {save_path}")
-
-
-def display_components(estimates, dims, num_random=5):
-    """
-    Display side-by-side plots of accepted and rejected components,
-    and a separate figure with randomly selected components.
-
-    Parameters
-    ----------
-    estimates : object
-        Object containing spatial (A) and temporal (C) components and indices for accepted and rejected components.
-    dims : tuple
-        Dimensions of the field of view (FOV).
-    num_random : int, optional
-        Number of random components to display. Default is 5.
-    """
-    # Ensure idx_components and idx_components_bad exist
-    if not hasattr(estimates, 'idx_components') or not hasattr(estimates, 'idx_components_bad'):
-        raise ValueError("Estimates object must have 'idx_components' and 'idx_components_bad' attributes.")
-
-    # Extract indices for accepted and rejected components
-    idx_accepted = estimates.idx_components
-    idx_rejected = estimates.idx_components_bad
-
-    # Spatial components
-    A = estimates.A
-
-    # Temporal components
-    C = estimates.C
-
-    # Plot accepted components
-    plt.figure(figsize=(12, 6))
-    for i, idx in enumerate(idx_accepted[:min(5, len(idx_accepted))]):
-        plt.subplot(2, 5, i + 1)
-        component_image = np.reshape(A[:, idx].toarray(), dims, order='F')
-        plt.imshow(component_image, cmap='gray')
-        plt.title(f"Accepted {i + 1}")
-        plt.axis('off')
-
-    for i, idx in enumerate(idx_accepted[:min(5, len(idx_accepted))]):
-        plt.subplot(2, 5, i + 6)
-        plt.plot(C[idx])
-        plt.title(f"Trace {i + 1}")
-
-    plt.suptitle("Accepted Components")
-    plt.tight_layout()
-
-    # Plot rejected components
-    plt.figure(figsize=(12, 6))
-    for i, idx in enumerate(idx_rejected[:min(5, len(idx_rejected))]):
-        plt.subplot(2, 5, i + 1)
-        component_image = np.reshape(A[:, idx].toarray(), dims, order='F')
-        plt.imshow(component_image, cmap='gray')
-        plt.title(f"Rejected {i + 1}")
-        plt.axis('off')
-
-    for i, idx in enumerate(idx_rejected[:min(5, len(idx_rejected))]):
-        plt.subplot(2, 5, i + 6)
-        plt.plot(C[idx])
-        plt.title(f"Trace {i + 1}")
-
-    plt.suptitle("Rejected Components")
-    plt.tight_layout()
-
-    # Randomly selected components
-    all_indices = list(range(A.shape[1]))
-    random_indices = random.sample(all_indices, min(num_random, len(all_indices)))
-
-    plt.figure(figsize=(12, 6))
-    for i, idx in enumerate(random_indices):
-        plt.subplot(2, num_random, i + 1)
-        component_image = np.reshape(A[:, idx].toarray(), dims, order='F')
-        plt.imshow(component_image, cmap='gray')
-        plt.title(f"Random {i + 1}")
-        plt.axis('off')
-
-    for i, idx in enumerate(random_indices):
-        plt.subplot(2, num_random, i + num_random + 1)
-        plt.plot(C[idx])
-        plt.title(f"Trace {i + 1}")
-
-    plt.suptitle("Random Components")
-    plt.tight_layout()
-
-    # Show all plots
-    plt.show()
-
-
-def plot_spatial_components(data: pd.DataFrame | pd.Series, savepath: str | Path | None = None, marker_size=3):
-    """
-    Plot spatial CNMF components for a DataFrame or a Series.
-
-    Parameters
-    ----------
-    data : pandas.DataFrame or pandas.Series
-        A DataFrame containing CNMF data or a single Series (row) from the DataFrame.
-    savepath : str, Path, or None, optional
-        Directory to save the plots. If None, plots are not saved. Default is None.
-    marker_size : int, optional
-        Size of the markers for the center points. Set to 0 to skip drawing centers. Default is 3.
-
-    Returns
-    -------
-    None
-        Displays the plots and optionally saves them to the specified directory.
-
-    Notes
-    -----
-    - The function handles both `pandas.DataFrame` and `pandas.Series` as input.
-    - If `marker_size` is set to 0, no center points are drawn on the plot.
-    - The `savepath` must be a valid directory path if saving is enabled.
-
-    Examples
-    --------
-    For a DataFrame:
-    >>> plot_spatial_components(df, savepath="./plots", marker_size=5)
-
-    For a single row (Series):
-    >>> plot_spatial_components(df.iloc[0], savepath="./plots", marker_size=5)
-    """
-    if isinstance(data, pd.DataFrame):
-        for idx, row in data.iterrows():
-            if isinstance(row["outputs"], dict) and not row["outputs"].get("success") or row["outputs"] is None:
-                print(f"Skipping {row.uuid} as it is not successful.")
-                continue
-
-            if row["algo"] == "cnmf":
-                model = row.cnmf.get_output()
-                red_idx = model.estimates.idx_components_bad
-
-                spatial_footprints = model.estimates.A
-                dims = (model.dims[1], model.dims[0])
-
-                max_proj = spatial_footprints.max(axis=1).toarray().reshape(dims)
-                plt.imshow(max_proj, cmap="gray")
-
-                # Check marker size
-                if marker_size == 0:
-                    print('Skipping drawing centers')
-                else:
-                    print(f'Marker size is set to {marker_size}')
-                    centers = calculate_centers(spatial_footprints, dims)
-                    colors = ['b'] * len(centers)
-
-                    for i in red_idx:
-                        colors[i] = 'r'
-                    plt.scatter(centers[:, 0], centers[:, 1], c=colors, s=marker_size, marker='.')
-
-                plt.tight_layout()
-                plt.show()
-                if savepath:
-                    save_name = Path(savepath) / f"{row.uuid}_spatial_components.png"
-                    print(f"Saving to {save_name}.")
-                    plt.savefig(save_name.expanduser(), dpi=600, bbox_inches="tight")
-    else:
-        row = data
-        if isinstance(row["outputs"], dict) and not row["outputs"].get("success") or row["outputs"] is None:
-            print(f"Skipping {row.uuid} as it is not successful.")
-            return
-
-        if row["algo"] == "cnmf":
-            model = row.cnmf.get_output()
-            red_idx = model.estimates.idx_components_bad
-
-            spatial_footprints = model.estimates.A
-            dims = (model.dims[1], model.dims[0])
-
-            max_proj = spatial_footprints.max(axis=1).toarray().reshape(dims)
-            plt.imshow(max_proj, cmap="gray")
-
-            # Check marker size
-            if marker_size == 0:
-                print('Skipping drawing centers')
-            else:
-                print(f'Marker size is set to {marker_size}')
-                centers = calculate_centers(spatial_footprints, dims)
-                colors = ['b'] * len(centers)
-
-                for i in red_idx:
-                    colors[i] = 'r'
-                plt.scatter(centers[:, 0], centers[:, 1], c=colors, s=marker_size, marker='.')
-
-            plt.tight_layout()
-            plt.show()
-            if savepath:
-                save_name = Path(savepath) / f"{row.uuid}_spatial_components.png"
-                print(f"Saving to {save_name}.")
-                plt.savefig(save_name.expanduser(), dpi=600, bbox_inches="tight")
