@@ -20,10 +20,10 @@ modification, are permitted provided that the following conditions are met:
    this software without specific prior written permission.
    
 4. Redistributions for commercial purposes are not permitted without the
-   written permission of the code owner Kushal Kolar.
+   written permission of all code authors.
    For purposes of this license, commercial purposes is the incorporation of 
-   mesmerize-core into anything for which you will charge fees or other 
-   compensation. Contact kushalkolar@alumni.ubc.ca for more information.
+   LBM-CaImAn-Python into anything for which you will charge fees or other 
+   compensation. Contact mbo@rockefeller.edu for more information.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
