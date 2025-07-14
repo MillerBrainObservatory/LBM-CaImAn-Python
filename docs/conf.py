@@ -16,6 +16,7 @@ sys.path.insert(0, os.path.abspath(os.path.join("..", "lbm_caiman_python")))
 from lbm_caiman_python import __version__
 
 project = "LBM-CaImAn-Python"
+author = ""
 copyright = "2024, Elizabeth R. Miller Brain Observatory | The Rockefeller University. All Rights Reserved"
 release = __version__
 
