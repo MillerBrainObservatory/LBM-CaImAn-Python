@@ -1,5 +1,5 @@
-lbm-mc
 caiman
+lbm-mc
 sphinx>=6.1.3
 docutils>=0.19
 opencv-python
