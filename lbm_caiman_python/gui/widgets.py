@@ -8,7 +8,7 @@ from qtpy import QtGui, QtCore
 import fastplotlib as fpl
 from fastplotlib.ui import EdgeWindow
 
-from lbm_caiman_python.lcp_io import get_files, stack_from_files
+from lbm_caiman_python.metrics import get_files, stack_from_files
 
 try:
     from imgui_bundle import imgui, icons_fontawesome_6 as fa

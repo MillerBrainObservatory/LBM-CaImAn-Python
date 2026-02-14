@@ -10,8 +10,8 @@ import numpy as np
 from scanreader.utils import listify_index
 from tqdm import tqdm
 
-import lbm_caiman_python.lcp_io
-from lbm_caiman_python.lcp_io import get_metadata, make_json_serializable
+import lbm_caiman_python.metrics
+from lbm_caiman_python.metrics import get_metadata, make_json_serializable
 
 import tifffile
 import logging
