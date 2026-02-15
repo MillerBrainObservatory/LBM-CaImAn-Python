@@ -584,11 +584,30 @@ def run_plane(
         )
 
     # save movie to temp file for caiman (requires file path)
+    # always rewrite if shape changed (guards against stale 4d files from prior runs)
     temp_movie_path = plane_dir / "input_movie.tif"
-    if not temp_movie_path.exists() or force_mcorr:
-        print("  Writing input movie...")
+    rewrite_tiff = force_mcorr or not temp_movie_path.exists()
+    if not rewrite_tiff and temp_movie_path.exists():
+        import tifffile
+        with tifffile.TiffFile(str(temp_movie_path)) as tif:
+            existing_shape = tif.series[0].shape
+        if existing_shape != movie_data.shape:
+            print(f"  Stale temp tiff {existing_shape} != {movie_data.shape}, rewriting...")
+            rewrite_tiff = True
+    if rewrite_tiff:
+        print(f"  Writing input movie {movie_data.shape}...")
         import tifffile
         tifffile.imwrite(str(temp_movie_path), movie_data.astype(np.int16))
+
+    # if tiff was rewritten, invalidate stale mcorr/cnmf results
+    if rewrite_tiff:
+        for stale in list(plane_dir.glob("*.mmap")) + [
+            plane_dir / "mcorr_shifts.npy",
+            plane_dir / "mcorr_template.npy",
+            plane_dir / "estimates.npy",
+        ]:
+            if stale.exists():
+                stale.unlink()
 
     # run motion correction
     mcorr_done = (plane_dir / "mcorr_shifts.npy").exists()
@@ -632,6 +651,15 @@ def run_plane(
                     movie_for_cnmf = cm.load(str(mmap_files[0]))
                 else:
                     movie_for_cnmf = movie_data
+
+            # ensure 3d (T, Y, X) - squeeze out any singleton dims
+            movie_for_cnmf = np.asarray(movie_for_cnmf).squeeze()
+            if movie_for_cnmf.ndim != 3:
+                raise ValueError(
+                    f"movie for cnmf must be 3d (T, Y, X), got {movie_for_cnmf.shape}. "
+                    f"delete the output folder and re-run."
+                )
+            print(f"    Movie shape for CNMF: {movie_for_cnmf.shape}")
 
             cnmf_result = _run_cnmf(movie_for_cnmf, ops, plane_dir)
             ops.update(cnmf_result)
@@ -719,9 +747,12 @@ def _run_cnmf(movie, ops, output_dir):
     from caiman.source_extraction.cnmf import CNMF
     import caiman as cm
 
-    # convert to float32 caiman movie in C order
+    # convert to float32 3d caiman movie in C order
     if not isinstance(movie, np.ndarray):
         movie = np.array(movie)
+    movie = movie.squeeze()
+    if movie.ndim != 3:
+        raise ValueError(f"cnmf requires 3d movie (T, Y, X), got shape {movie.shape}")
     if movie.dtype != np.float32:
         movie = movie.astype(np.float32)
     if not movie.flags['C_CONTIGUOUS']:
