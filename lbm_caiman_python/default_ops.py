@@ -1,121 +1,92 @@
-import numpy as np
+"""
+default caiman parameters for lbm data processing.
+"""
 
 
-def params_from_metadata(metadata):
+def default_ops() -> dict:
     """
-    Generate parameters for CNMF from metadata.
+    return default caiman parameters optimized for lbm microscopy data.
 
-    Based on the pixel resolution and frame rate, the parameters are set to reasonable values.
-
-    - Sets overlaps and max-shifts to 16 micron.
-    - Sets gSig to 8 micron using your pixel-resolution.
-    - Sets gSiz to 4 times gSig.
-    - Sets max_shifts to 10 micron.
-    - Sets strides to 64 micron.
-
-    Parameters
-    ----------
-    metadata : dict
-        Metadata dictionary resulting from `lcp.get_metadata()`.
-
-    Returns
+    returns
     -------
     dict
-        Dictionary of parameters for lbm_mc.
-
+        dictionary of parameters for motion correction and cnmf.
     """
-    params = default_params()
-
-    if metadata is None:
-        print('No metadata found. Using default parameters.')
-        return params
-
-    params["main"]["fr"] = metadata["frame_rate"]
-    params["main"]["dxy"] = metadata["pixel_resolution"]
-
-    # typical neuron ~16 microns
-    gSig = round(16 / metadata["pixel_resolution"][0]) / 2
-    params["main"]["gSig"] = (gSig, gSig)
-
-    gSiz = (4 * gSig[0] + 1, 4 * gSig[0] + 1)
-    params["main"]["gSiz"] = gSiz
-
-    max_shifts = [int(round(10 / px)) for px in metadata["pixel_resolution"]]
-    params["main"]["max_shifts"] = max_shifts
-
-    strides = [int(round(64 / px)) for px in metadata["pixel_resolution"]]
-    params["main"]["strides"] = strides
-
-    overlaps = [int(gSig[0])] * 2
-    params["main"]["overlaps"] = overlaps
-
-    rf_0 = (strides[0] + overlaps[0]) // 2
-    rf_1 = (strides[1] + overlaps[1]) // 2
-    rf = int(np.mean([rf_0, rf_1]))
-
-    stride = int(np.mean([overlaps[0], overlaps[1]]))
-
-    params["main"]["rf"] = rf
-    params["main"]["stride"] = stride
-
-    return params
-
-
-def default_params():
-    """
-    Default parameters for both registration and CNMF.
-    The exception is gSiz being set relative to gSig.
-
-    Returns
-    -------
-    dict
-        Dictionary of default parameter values for registration and segmentation.
-
-    Notes
-    -----
-    This will likely change as CaImAn is updated.
-    """
-    gSig = (5, 5)
-    gSiz = (4 * gSig[0] + 1, 4 * gSig[0] + 1)
     return {
-        "main": {
-            # Motion correction parameters
-            "pw_rigid": True,
-            "max_shifts": [6, 6],
-            "strides": [64, 64],
-            "overlaps": [8, 8],
-            "min_mov": None,
-            "gSig_filt": [2, 2],
-            "max_deviation_rigid": 3,
-            "border_nan": "copy",
-            "splits_els": 14,
-            "upsample_factor_grid": 4,
-            "use_cuda": False,
-            "num_frames_split": 50,
-            "niter_rig": 1,
-            "is3D": False,
-            "splits_rig": 14,
-            "num_splits_to_process_rig": None,
-            # CNMF parameters
-            'fr': 10,
-            'dxy': (1., 1.),
-            'decay_time': 0.5,
-            'p': 2,
-            'nb': 3,
-            'K': 20,
-            'rf': 64,
-            'stride': [8, 8],
-            'gSig': gSig,
-            'gSiz': gSiz,
-            'method_init': 'greedy_roi',
-            'rolling_sum': True,
-            'use_cnn': True,
-            'ssub': 1,
-            'tsub': 1,
-            'merge_thr': 0.7,
-            'bas_nonneg': True,
-            'min_SNR': 1.4,
-            'rval_thr': 0.4,
-        },
-        "refit": True
+        # motion correction parameters
+        "do_motion_correction": True,
+        "max_shifts": (6, 6),
+        "strides": (48, 48),
+        "overlaps": (24, 24),
+        "max_deviation_rigid": 3,
+        "pw_rigid": True,
+        "gSig_filt": (2, 2),
+        "border_nan": "copy",
+        "niter_rig": 1,
+        "splits_rig": 14,
+        "num_splits_to_process_rig": None,
+        "splits_els": 14,
+        "num_splits_to_process_els": None,
+        "upsample_factor_grid": 4,
+        "max_deviation_rigid": 3,
+        "use_cuda": False,
+
+        # cnmf parameters
+        "do_cnmf": True,
+        "K": 50,
+        "gSig": (4, 4),
+        "gSiz": None,
+        "p": 1,
+        "merge_thresh": 0.8,
+        "min_SNR": 2.5,
+        "rval_thr": 0.85,
+        "decay_time": 0.4,
+        "method_init": "greedy_roi",
+        "ssub": 1,
+        "tsub": 1,
+        "rf": None,
+        "stride": None,
+        "nb": 1,
+        "gnb": 1,
+        "low_rank_background": True,
+        "update_background_components": True,
+        "rolling_sum": True,
+        "only_init": False,
+        "normalize_init": True,
+        "ring_size_factor": 1.5,
+
+        # component evaluation
+        "min_cnn_thr": 0.9,
+        "cnn_lowest": 0.1,
+        "use_cnn": False,
+
+        # general parameters
+        "fr": 30.0,
+        "n_processes": None,
+        "dxy": (1.0, 1.0),
     }
+
+
+def mcorr_ops() -> dict:
+    """return only motion correction parameters."""
+    ops = default_ops()
+    return {k: v for k, v in ops.items() if k in (
+        "do_motion_correction", "max_shifts", "strides", "overlaps",
+        "max_deviation_rigid", "pw_rigid", "gSig_filt", "border_nan",
+        "niter_rig", "splits_rig", "num_splits_to_process_rig",
+        "splits_els", "num_splits_to_process_els", "upsample_factor_grid",
+        "use_cuda", "fr", "n_processes", "dxy",
+    )}
+
+
+def cnmf_ops() -> dict:
+    """return only cnmf parameters."""
+    ops = default_ops()
+    return {k: v for k, v in ops.items() if k in (
+        "do_cnmf", "K", "gSig", "gSiz", "p", "merge_thresh", "min_SNR",
+        "rval_thr", "decay_time", "method_init", "ssub", "tsub", "rf",
+        "stride", "nb", "gnb", "low_rank_background",
+        "update_background_components", "rolling_sum", "only_init",
+        "normalize_init", "ring_size_factor", "min_cnn_thr", "cnn_lowest",
+        "use_cnn", "fr", "n_processes", "dxy",
+    )}

@@ -36,179 +36,24 @@ but is not guarenteed to work with Jupyter Notebook or Visual Studio Code notebo
 
 ## Installation
 
-This project is tested on Linux and Windows 10. It will likely work on Mac as well.
-
-Installation is tested using [miniforge](https://github.com/conda-forge/miniforge).
-Python [virtual-environments](https://virtualenv.pypa.io/en/latest/) are working for **Linux/MacOS only**.
-
-:exclamation: Anaconda and Miniconda will likely cause package conflicts.
-
-### (Option 1). Miniforge (conda)
-
-Note: If conda gets stuck `Solving Environment`, hitting enter can sometimes help.
-
-1. Create a new environment and install [CaImAn](https://github.com/nel-lab/mesmerize-core/tree/master)
-
-Installing CaImAn requires extra steps on Windows:
-
-#### Windows Only
-
-:exclamation: **Note:** If you encounter errors during the installation of `CaImAn`, you may need to install Microsoft Visual C++ Build Tools. You can download them from [here](https://visualstudio.microsoft.com/visual-cpp-build-tools/).
-
-``` bash
-% -n is the name of the environment, but nama it whatever you want
-conda create -n lcp python=3.11 pip vs2019_win-64 imgui-bundle tifffile=2024.12.12
-conda activate lcp
-```
-
-Clone and install CaImAn using git:
+Install [pixi](https://pixi.sh) (`pip install pixi` or see https://pixi.sh for other methods), then:
 
 ```bash
-git clone https://github.com/flatironinstitute/CaImAn.git
-cd CaImAn
-pip3 install .
-cd ../ 
-caimanmanager install -f
+git clone https://github.com/MillerBrainObservatory/LBM-CaImAn-Python.git
+cd LBM-CaImAn-Python
+pixi install
+pixi run setup-caiman
 ```
 
-- if the command `pip3 install` leads to `pip3: command not found`, try `pip install .`
+This installs CaImAn from conda-forge along with all dependencies and the project itself in editable mode.
 
-#### Linux/MacOS
-
-Install CaImAn with `conda`:
-
-``` bash
-
-% -n is the name of the environment, but nama it whatever you want
-conda create -n lcp -c conda-forge python=3.10 caiman imgui-bundle
-conda activate lcp
-```
-
-2. Install LBM-CaImAn-Python
-
-``` bash
-pip install git+https://github.com/MillerBrainObservatory/LBM-CaImAn-Python.git@master
-```
-
-:exclamation: **Harware requirements** The large CNMF visualizations with contours etc. usually require either a dedicated GPU or integrated GPU with access to at least 1GB of VRAM.
-
-----
-
-### (Option 2). Python Virtual Environments (Linux/MacOS)
-
-Ensure you have a system-wide Python installation.
-
-**Note:** Make sure you deactivate `conda` environments before proceeding (`conda deactivate`).
-
-Verify `Python` and `pip` installations:
-
-- **Linux/macOS:**
-  
-```bash
-
-python --version
-
-pip --version
-```
-
-- **Windows:**
+To verify:
 
 ```bash
-py --version
-
-py - m pip --version 
-
+pixi run python -c "import lbm_caiman_python as lcp; print(lcp.__version__)"
 ```
 
-:exclamation: Depending on how Python was installed,
-you may need to use `python3` or `python3.x` and `pip3` or `pip3.x` instead of `python` and `pip`.
-
-You should see a Python version output like `3.10.x` and a corresponding `pip` version.
-
-If Python is not installed, or an unsupported version is installed (i.e. 3.7),
-
-download and install [python.org](https://www.python.org/) or refer to this [installation guide](https://docs.python-guide.org/starting/installation/).
-
-You will also need [`git`](https://git-scm.com/):
-
-```bash
-git --version
-```
-
-#### Create a virtual environment
-
-This is normally in a directory dedicated to virtual environments, but can be anywhere you wish:
-
-```bash
-python -m venv ~/venv/lbm_caiman_python
-```
-
-Activate the virtual environment:
-
-- **Linux/macOS:**
-
-  ```bash
-  source ~/venv/lbm_caiman_python/bin/activate
-  ```
-
-- **Windows:**
-
-  ```bash
-  source ~/venv/lbm_caiman_python/Scripts/activate
-  ```
-
-Upgrade core tools in the virtual environment:
-
-```bash
-pip install --upgrade setuptools wheel pip
-```
-
-#### Clone and install CaImAn
-
-Create a directory to store the cloned repositories.
-
-Again, this can be anywhere you wish:
-
-```bash
-
-cd ~
-mkdir repos
-cd repos
-
-```
-
-Use git to clone CaImAn:
-
-```bash
-git clone https://github.com/flatironinstitute/CaImAn.git
-```
-
-Install CaImAn:
-
-```bash
-   cd CaImAn
-   pip install .
-```
-
-Install LBM-CaImAn-Python:
-
-2.
-
-```bash
-pip install git+https://github.com/MillerBrainObservatory/LBM-CaImAn-Python.git@master
-    ```
-
-#### Run ipython to make sure everyting works
-
-``` python
-
-import lbm_caiman_python as lcp
-import lbm_mc as mc
-
-# optional
-scan = lcp.read_scan('path/to/data/*.tif', join_contiguous=True)
-
-```
+:exclamation: **Hardware requirements** The large CNMF visualizations with contours etc. usually require either a dedicated GPU or integrated GPU with access to at least 1GB of VRAM.
 
 ---
 

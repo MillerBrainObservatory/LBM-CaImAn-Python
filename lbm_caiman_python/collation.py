@@ -4,9 +4,6 @@ from scipy.sparse import hstack
 import copy
 import scipy.signal
 import json
-import lbm_mc as mc
-
-import lbm_caiman_python
 
 
 def combine_z_planes(results: dict):
@@ -125,6 +122,4 @@ def calculate_interplane_shifts(volume, n_planes, params, json_logger=None):
 
 
 if __name__ == "__main__":
-    path = Path().home() / 'lbm_data'
-    files = lbm_caiman_python.get_files(path, ".tiff", 3)
-    print(files)
+    pass
