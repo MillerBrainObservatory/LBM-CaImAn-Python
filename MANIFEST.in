@@ -1,2 +1,0 @@
-include lbm_caiman_python/VERSION
-exclude data/*

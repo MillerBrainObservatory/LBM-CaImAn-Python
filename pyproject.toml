@@ -16,7 +16,7 @@ classifiers = [
 	"Programming Language :: Python :: 3 :: Only",
 ]
 dependencies = [
-	"numpy<2.0",
+	"numpy",
 	"scipy>=1.10",
 	"scikit-learn",
 	"scikit-image",
@@ -28,9 +28,9 @@ dependencies = [
 	"zarr",
 	"dask",
 	"pandas",
+	"mbo_utilities>=2.5.3",
 ]
 # caiman is installed via pixi (conda-forge) - see pixi.toml
-# note: mbo_utilities requires numpy>=2.2 which conflicts with caiman's numpy<2.0
 
 [project.urls]
 Homepage = "https://github.com/MillerBrainObservatory/LBM-CaImAn-Python"

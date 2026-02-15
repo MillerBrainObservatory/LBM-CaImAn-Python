@@ -268,7 +268,7 @@ examples:
 
     try:
         results = pipeline(
-            input_data=str(input_path),
+            input_data=input_path,
             save_path=str(output_path),
             ops=ops,
             planes=args.planes,

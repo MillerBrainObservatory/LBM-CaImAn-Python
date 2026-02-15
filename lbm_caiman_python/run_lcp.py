@@ -50,6 +50,23 @@ def _is_lazy_array(obj) -> bool:
     return type_name in lazy_types
 
 
+def _resolve_input_path(path):
+    """resolve a file or directory path for imread.
+
+    if path is a directory, finds tiff files inside it and returns the list.
+    if path is a file, returns it directly. this avoids relying on imread's
+    directory handling, which can fall through to tifffile on some versions.
+    """
+    path = Path(path)
+    if path.is_dir():
+        from mbo_utilities import get_files
+        files = get_files(str(path), str_contains="tif", max_depth=1)
+        if not files:
+            raise FileNotFoundError(f"no tiff files found in {path}")
+        return files
+    return path
+
+
 def _get_num_planes(arr) -> int:
     """get number of z-planes from array."""
     if hasattr(arr, "num_planes"):
@@ -250,7 +267,7 @@ def pipeline(
     list[Path]
         list of paths to ops.npy files.
     """
-    import tifffile
+    from mbo_utilities import imread
 
     reader_kwargs = reader_kwargs or {}
     writer_kwargs = writer_kwargs or {}
@@ -271,7 +288,7 @@ def pipeline(
             arr = input_data
         else:
             print(f"Loading input: {input_data}")
-            arr = tifffile.imread(str(input_data))
+            arr = imread(_resolve_input_path(input_data), **(reader_kwargs or {}))
 
         is_volumetric = arr.ndim == 4
 
@@ -343,7 +360,7 @@ def run_volume(
     list[Path]
         list of paths to ops.npy files.
     """
-    import tifffile
+    from mbo_utilities import imread
 
     reader_kwargs = reader_kwargs or {}
     writer_kwargs = writer_kwargs or {}
@@ -368,7 +385,7 @@ def run_volume(
         if save_path is None:
             save_path = input_path.parent / (input_path.stem + "_results")
         print(f"Loading volume: {input_path}")
-        input_arr = tifffile.imread(str(input_path))
+        input_arr = imread(_resolve_input_path(input_path), **(reader_kwargs or {}))
     else:
         raise TypeError(f"Invalid input_data type: {type(input_data)}")
 
@@ -397,8 +414,8 @@ def run_volume(
 
         # prepare input for run_plane
         if input_arr is not None:
-            # extract single plane from 4d array
-            current_input = input_arr[:, plane_idx, :, :]
+            # extract single plane from 4d array -> squeeze to 3d (T, Y, X)
+            current_input = np.asarray(input_arr[:, plane_idx, :, :]).squeeze()
         else:
             if plane_idx < len(input_paths):
                 current_input = input_paths[plane_idx]
@@ -477,7 +494,7 @@ def run_plane(
     Path
         path to ops.npy file.
     """
-    import tifffile
+    from mbo_utilities import imread
     import caiman as cm
 
     reader_kwargs = reader_kwargs or {}
@@ -492,15 +509,11 @@ def run_plane(
         filenames = getattr(input_arr, "filenames", [])
         if filenames:
             input_path = Path(filenames[0])
-        elif plane_name is None:
-            raise ValueError("plane_name required when input is array without filenames.")
         else:
-            input_path = Path(f"{plane_name}.tif")
+            input_path = Path(f"{plane_name or 'array_input'}.tif")
     elif isinstance(input_data, np.ndarray):
         input_arr = input_data
-        if plane_name is None:
-            plane_name = "plane01"
-        input_path = Path(f"{plane_name}.tif")
+        input_path = Path(f"{plane_name or 'array_input'}.tif")
     elif isinstance(input_data, (str, Path)):
         input_path = Path(input_data)
     else:
@@ -534,7 +547,7 @@ def run_plane(
         nframes = input_arr.shape[0] if hasattr(input_arr, "shape") else None
     else:
         print(f"  Loading: {input_path}")
-        input_arr = tifffile.imread(str(input_path))
+        input_arr = imread(_resolve_input_path(input_path), **(reader_kwargs or {}))
         nframes = input_arr.shape[0]
 
     # update ops with metadata
@@ -558,11 +571,17 @@ def run_plane(
 
     print(f"  Output: {plane_dir}")
 
-    # convert to numpy array for caiman
+    # convert to numpy array for caiman (must be 3d: T, Y, X)
     if hasattr(input_arr, "__array__"):
-        movie_data = np.asarray(input_arr)
+        movie_data = np.asarray(input_arr).squeeze()
     else:
-        movie_data = input_arr
+        movie_data = np.asarray(input_arr).squeeze()
+
+    if movie_data.ndim != 3:
+        raise ValueError(
+            f"expected 3d movie (T, Y, X), got shape {movie_data.shape}. "
+            f"make sure a single plane is extracted from volumetric data."
+        )
 
     # save movie to temp file for caiman (requires file path)
     temp_movie_path = plane_dir / "input_movie.tif"
@@ -603,11 +622,16 @@ def run_plane(
         cnmf_start = time.time()
         try:
             # use motion-corrected movie if available
-            mcorr_movie = plane_dir / "mcorr_movie.mmap"
-            if mcorr_movie.exists():
-                movie_for_cnmf = cm.load(str(mcorr_movie))
+            mmap_file = ops.get("mmap_file")
+            if mmap_file and Path(mmap_file).exists():
+                movie_for_cnmf = cm.load(str(mmap_file))
             else:
-                movie_for_cnmf = movie_data
+                # fall back to finding any mmap in the plane dir
+                mmap_files = list(plane_dir.glob("*.mmap"))
+                if mmap_files:
+                    movie_for_cnmf = cm.load(str(mmap_files[0]))
+                else:
+                    movie_for_cnmf = movie_data
 
             cnmf_result = _run_cnmf(movie_for_cnmf, ops, plane_dir)
             ops.update(cnmf_result)
@@ -633,7 +657,7 @@ def run_plane(
         print(f"  Warning: Plot generation failed: {e}")
 
     # cleanup temp files
-    if temp_movie_path.exists() and (plane_dir / "mcorr_movie.mmap").exists():
+    if temp_movie_path.exists() and list(plane_dir.glob("*.mmap")):
         temp_movie_path.unlink()
 
     return ops_file
@@ -677,14 +701,15 @@ def _run_motion_correction(movie_path, ops, output_dir):
     if mc.total_template_rig is not None:
         np.save(output_dir / "mcorr_template.npy", mc.total_template_rig)
 
-    # rename mmap to standard location
+    # move mmap into output dir, keeping original filename (caiman
+    # encodes dimensions in the name and cm.load() parses it)
     if mc.mmap_file:
         mmap_src = Path(mc.mmap_file[0])
-        mmap_dst = output_dir / "mcorr_movie.mmap"
+        mmap_dst = output_dir / mmap_src.name
         if mmap_src.exists() and mmap_src != mmap_dst:
             import shutil
             shutil.move(str(mmap_src), str(mmap_dst))
-            results["mmap_file"] = str(mmap_dst)
+        results["mmap_file"] = str(mmap_dst)
 
     return results
 
@@ -694,9 +719,14 @@ def _run_cnmf(movie, ops, output_dir):
     from caiman.source_extraction.cnmf import CNMF
     import caiman as cm
 
-    # convert to caiman movie if needed
-    if not isinstance(movie, cm.movie):
-        movie = cm.movie(movie)
+    # convert to float32 caiman movie in C order
+    if not isinstance(movie, np.ndarray):
+        movie = np.array(movie)
+    if movie.dtype != np.float32:
+        movie = movie.astype(np.float32)
+    if not movie.flags['C_CONTIGUOUS']:
+        movie = np.ascontiguousarray(movie)
+    movie = cm.movie(movie)
 
     # get dimensions
     T, Ly, Lx = movie.shape
@@ -718,14 +748,16 @@ def _run_cnmf(movie, ops, output_dir):
         tsub=ops.get("tsub", 1),
         rf=ops.get("rf"),
         stride=ops.get("stride"),
-        nb=ops.get("nb", 1),
         gnb=ops.get("gnb", 1),
         low_rank_background=ops.get("low_rank_background", True),
         update_background_components=ops.get("update_background_components", True),
         rolling_sum=ops.get("rolling_sum", True),
-        only_init=ops.get("only_init", False),
+        only_init_patch=ops.get("only_init", False),
         normalize_init=ops.get("normalize_init", True),
         ring_size_factor=ops.get("ring_size_factor", 1.5),
+        fr=ops.get("fr", 30.0),
+        decay_time=ops.get("decay_time", 0.4),
+        min_SNR=ops.get("min_SNR", 2.5),
     )
 
     # fit cnmf
