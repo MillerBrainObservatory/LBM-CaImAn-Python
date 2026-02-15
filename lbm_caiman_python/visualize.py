@@ -9,6 +9,85 @@ import fastplotlib as fpl
 
 from lbm_caiman_python.util.signal import smooth_data
 
+def export_contours_with_params(row, save_path):
+    params = row.params
+    corr = row.caiman.get_corr_image()
+    contours = row.cnmf.get_contours("good", swap_dim=False)[0]
+    contours_bad = row.cnmf.get_contours("bad", swap_dim=False)[0]
+
+    table_data = params["main"]
+    df_table = pd.DataFrame(list(table_data.items()), columns=["Parameter", "Value"])
+
+    fig, axes = plt.subplots(1, 2, figsize=(14, 7))
+    axes[0].imshow(corr, cmap='gray')
+    for contour in contours:
+        axes[0].plot(contour[:, 0], contour[:, 1], color='cyan', linewidth=1)
+    for contour in contours_bad:
+        axes[0].plot(contour[:, 0], contour[:, 1], color='red', linewidth=0.2)
+
+    axes[0].set_title(f'Accepted ({len(contours)}) and Rejected ({len(contours_bad)}) Neurons')
+    axes[0].axis('off')
+    axes[1].axis('tight')
+    axes[1].axis('off')
+
+    table = axes[1].table(cellText=df_table.values,
+                          colLabels=df_table.columns,
+                          loc='center',
+                          cellLoc='center',
+                          colWidths=[0.4, 0.6])
+
+    table.auto_set_font_size(False)
+    table.set_fontsize(10)
+    table.auto_set_column_width([0, 1])
+    plt.tight_layout()
+    plt.savefig(save_path, dpi=300, bbox_inches='tight')
+
+
+def plot_contours(df, plot_index, histogram_widget=False):
+    """
+    Plot the contours of the accepted and rejected components.
+
+    Parameters
+    ----------
+    df : DataFrame
+        DataFrame containing the CNMF pandas extension.
+    plot_index : int
+        Index of the DataFrame to plot.
+    histogram_widget : bool, optional
+        Flag to display the vmin/vmax histogram controller.
+
+    Returns
+    -------
+    fpl.ImageWidget
+        Widget with 2 subplots containing the contours of the accepted and rejected components.
+    """
+    model = df.iloc[plot_index].cnmf.get_output()
+    print(f"Accepted: {len(model.estimates.idx_components)} | Rejected: {len(model.estimates.idx_components_bad)}")
+    contours_g = df.iloc[plot_index].cnmf.get_contours("good", swap_dim=False)
+    contours_b = df.iloc[plot_index].cnmf.get_contours("bad", swap_dim=False)
+    mcorr_movie = df.iloc[plot_index].caiman.get_input_movie()
+
+    image_widget = fpl.ImageWidget(
+        data=[mcorr_movie, mcorr_movie],
+        names=['Accepted', 'Rejected'],
+        window_funcs={'t': (np.mean, 3)},
+        figure_kwargs={'size': (1200, 600)},
+        histogram_widget=histogram_widget
+        figure_kwargs={'size': (1200, 600)}
+    )
+    for subplot in image_widget.figure:
+        if subplot.name == 'Accepted':
+            subplot.add_line_collection(
+                contours_g[0],
+                name="contours"
+            )
+        elif subplot.name == 'Rejected':
+            subplot.add_line_collection(
+                contours_b[0],
+                name="contours"
+            )
+    return image_widget
+
 
 def export_contours_with_params(row, save_path):
     params = row.params
