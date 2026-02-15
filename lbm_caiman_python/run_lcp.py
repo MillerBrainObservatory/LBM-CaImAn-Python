@@ -495,7 +495,6 @@ def run_plane(
         path to ops.npy file.
     """
     from mbo_utilities import imread
-    import caiman as cm
 
     reader_kwargs = reader_kwargs or {}
     writer_kwargs = writer_kwargs or {}
@@ -640,28 +639,21 @@ def run_plane(
         print("  Running CNMF...")
         cnmf_start = time.time()
         try:
-            # use motion-corrected movie if available
+            # find mmap from motion correction (if it ran)
+            cnmf_mmap_file = None
             mmap_file = ops.get("mmap_file")
             if mmap_file and Path(mmap_file).exists():
-                movie_for_cnmf = cm.load(str(mmap_file))
+                cnmf_mmap_file = str(mmap_file)
             else:
-                # fall back to finding any mmap in the plane dir
                 mmap_files = list(plane_dir.glob("*.mmap"))
                 if mmap_files:
-                    movie_for_cnmf = cm.load(str(mmap_files[0]))
-                else:
-                    movie_for_cnmf = movie_data
+                    cnmf_mmap_file = str(mmap_files[0])
 
-            # ensure 3d (T, Y, X) - squeeze out any singleton dims
-            movie_for_cnmf = np.asarray(movie_for_cnmf).squeeze()
-            if movie_for_cnmf.ndim != 3:
-                raise ValueError(
-                    f"movie for cnmf must be 3d (T, Y, X), got {movie_for_cnmf.shape}. "
-                    f"delete the output folder and re-run."
-                )
-            print(f"    Movie shape for CNMF: {movie_for_cnmf.shape}")
-
-            cnmf_result = _run_cnmf(movie_for_cnmf, ops, plane_dir)
+            # _run_cnmf will create its own mmap if cnmf_mmap_file is None
+            cnmf_result = _run_cnmf(
+                movie_data, ops, plane_dir,
+                mmap_file=cnmf_mmap_file,
+            )
             ops.update(cnmf_result)
             add_processing_step(
                 ops, "cnmf",
@@ -742,25 +734,51 @@ def _run_motion_correction(movie_path, ops, output_dir):
     return results
 
 
-def _run_cnmf(movie, ops, output_dir):
-    """run caiman cnmf."""
+def _run_cnmf(movie, ops, output_dir, mmap_file=None):
+    """run caiman cnmf.
+
+    caiman's evaluate_components has a bug in its non-memmap code path:
+    it does ``dims, T = Y.shape[:-1], Y.shape[-1]`` assuming (d1,d2,T)
+    axis order, but cm.movie is (T,d1,d2). this causes a reshape crash.
+    the memmap code path works correctly by reloading dims from the
+    filename. so we always ensure a caiman-format mmap file exists and
+    load it as a memmap view for both fit() and evaluate_components().
+    """
     from caiman.source_extraction.cnmf import CNMF
     import caiman as cm
 
-    # convert to float32 3d caiman movie in C order
+    # validate input
     if not isinstance(movie, np.ndarray):
         movie = np.array(movie)
     movie = movie.squeeze()
     if movie.ndim != 3:
         raise ValueError(f"cnmf requires 3d movie (T, Y, X), got shape {movie.shape}")
-    if movie.dtype != np.float32:
-        movie = movie.astype(np.float32)
-    if not movie.flags['C_CONTIGUOUS']:
-        movie = np.ascontiguousarray(movie)
-    movie = cm.movie(movie)
 
-    # get dimensions
-    T, Ly, Lx = movie.shape
+    T, d1, d2 = movie.shape
+
+    # ensure we have a caiman-format mmap file
+    created_mmap = False
+    if mmap_file is None or not Path(mmap_file).exists():
+        print(f"    Creating mmap for CNMF ({T}, {d1}, {d2})...")
+        mmap_file = str(
+            output_dir / f'Yr_d1_{d1}_d2_{d2}_d3_1_order_C_frames_{T}_.mmap'
+        )
+        movie_f32 = movie.astype(np.float32)
+        fp = np.memmap(
+            mmap_file, mode='w+', dtype=np.float32,
+            shape=(d1 * d2, T), order='F',
+        )
+        for t in range(T):
+            fp[:, t] = movie_f32[t].ravel(order='F')
+        del fp
+        created_mmap = True
+
+    # load mmap as memmap view (T, d1, d2)
+    Yr, dims_mm, T_mm = cm.load_memmap(mmap_file)
+    images = np.reshape(Yr.T, [T_mm] + list(dims_mm), order='F')
+    print(f"    CNMF input: shape={images.shape}, type={type(images).__name__}")
+
+    Ly, Lx = dims_mm
 
     # setup cnmf parameters
     n_processes = ops.get("n_processes")
@@ -791,18 +809,23 @@ def _run_cnmf(movie, ops, output_dir):
         min_SNR=ops.get("min_SNR", 2.5),
     )
 
-    # fit cnmf
-    cnmf.fit(movie)
+    # fit and evaluate using the memmap view (avoids caiman axis-order bug)
+    cnmf.fit(images)
 
-    # evaluate components
     try:
         cnmf.estimates.evaluate_components(
-            movie,
-            cnmf.params,
-            dview=None,
+            images, cnmf.params, dview=None,
         )
     except Exception as e:
         print(f"    Component evaluation failed: {e}")
+
+    # cleanup temp mmap if we created it (motion correction mmap is kept)
+    if created_mmap:
+        try:
+            del images, Yr
+            Path(mmap_file).unlink(missing_ok=True)
+        except Exception:
+            pass
 
     # extract results
     estimates = cnmf.estimates
