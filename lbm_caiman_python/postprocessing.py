@@ -194,14 +194,15 @@ def compute_roi_stats(plane_dir) -> dict:
 
     if A is not None:
         from scipy import sparse
-        if sparse.issparse(A):
-            A = A.toarray()
 
         n_cells = A.shape[1]
         stats["n_cells"] = n_cells
 
-        # compute cell sizes (number of pixels)
-        cell_sizes = np.array([(A[:, i] > 0).sum() for i in range(n_cells)])
+        # compute cell sizes using sparse ops to avoid memory explosion
+        if sparse.issparse(A):
+            cell_sizes = np.array((A > 0).sum(axis=0)).ravel()
+        else:
+            cell_sizes = np.array([(A[:, i] > 0).sum() for i in range(n_cells)])
         stats["cell_sizes"] = cell_sizes
         stats["mean_cell_size"] = float(np.mean(cell_sizes))
         stats["median_cell_size"] = float(np.median(cell_sizes))

@@ -786,18 +786,24 @@ def _run_cnmf(movie, ops, output_dir, mmap_file=None):
         import multiprocessing
         n_processes = max(1, multiprocessing.cpu_count() - 1)
 
-    cnmf = CNMF(
+    # accept common aliases for caiman parameter names
+    gnb = ops.get("gnb", ops.get("nb", 1))
+    merge_thresh = ops.get("merge_thresh", ops.get("merge_thr", 0.8))
+    gSig = ops.get("gSig", (4, 4))
+    gSiz = ops.get("gSiz", None)
+
+    cnmf_kwargs = dict(
         n_processes=n_processes,
         k=ops.get("K", 50),
-        gSig=ops.get("gSig", (4, 4)),
+        gSig=gSig,
         p=ops.get("p", 1),
-        merge_thresh=ops.get("merge_thresh", 0.8),
+        merge_thresh=merge_thresh,
         method_init=ops.get("method_init", "greedy_roi"),
         ssub=ops.get("ssub", 1),
         tsub=ops.get("tsub", 1),
         rf=ops.get("rf"),
         stride=ops.get("stride"),
-        gnb=ops.get("gnb", 1),
+        gnb=gnb,
         low_rank_background=ops.get("low_rank_background", True),
         update_background_components=ops.get("update_background_components", True),
         rolling_sum=ops.get("rolling_sum", True),
@@ -808,14 +814,29 @@ def _run_cnmf(movie, ops, output_dir, mmap_file=None):
         decay_time=ops.get("decay_time", 0.4),
         min_SNR=ops.get("min_SNR", 2.5),
     )
+    if gSiz is not None:
+        cnmf_kwargs["gSiz"] = gSiz
+
+    # pass quality params so evaluate_components uses them
+    rval_thr = ops.get("rval_thr", 0.85)
+    cnmf_kwargs["rval_thr"] = rval_thr
+    cnmf_kwargs["min_cnn_thr"] = ops.get("min_cnn_thr", 0.99)
+    cnmf_kwargs["use_cnn"] = ops.get("use_cnn", False)
+
+    cnmf = CNMF(**cnmf_kwargs)
 
     # fit and evaluate using the memmap view (avoids caiman axis-order bug)
     cnmf.fit(images)
 
     try:
+        # disable cnn by default (requires caimanmanager install for model files)
+        cnmf.params.quality['use_cnn'] = ops.get("use_cnn", False)
         cnmf.estimates.evaluate_components(
             images, cnmf.params, dview=None,
         )
+        n_accepted = len(cnmf.estimates.idx_components) if cnmf.estimates.idx_components is not None else 0
+        n_rejected = len(cnmf.estimates.idx_components_bad) if cnmf.estimates.idx_components_bad is not None else 0
+        print(f"    Component evaluation: {n_accepted} accepted, {n_rejected} rejected")
     except Exception as e:
         print(f"    Component evaluation failed: {e}")
 
@@ -829,8 +850,11 @@ def _run_cnmf(movie, ops, output_dir, mmap_file=None):
 
     # extract results
     estimates = cnmf.estimates
+    n_total = estimates.A.shape[1] if hasattr(estimates, "A") and estimates.A is not None else 0
+    n_accepted = len(estimates.idx_components) if hasattr(estimates, "idx_components") and estimates.idx_components is not None else n_total
     results = {
-        "n_cells": estimates.A.shape[1] if hasattr(estimates, "A") and estimates.A is not None else 0,
+        "n_cells": n_accepted,
+        "n_cells_total": n_total,
         "Ly": Ly,
         "Lx": Lx,
         "nframes": T,
