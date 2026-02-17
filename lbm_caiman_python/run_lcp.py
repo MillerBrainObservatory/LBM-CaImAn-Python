@@ -495,7 +495,6 @@ def run_plane(
         path to ops.npy file.
     """
     from mbo_utilities import imread
-    import caiman as cm
 
     reader_kwargs = reader_kwargs or {}
     writer_kwargs = writer_kwargs or {}
@@ -584,11 +583,30 @@ def run_plane(
         )
 
     # save movie to temp file for caiman (requires file path)
+    # always rewrite if shape changed (guards against stale 4d files from prior runs)
     temp_movie_path = plane_dir / "input_movie.tif"
-    if not temp_movie_path.exists() or force_mcorr:
-        print("  Writing input movie...")
+    rewrite_tiff = force_mcorr or not temp_movie_path.exists()
+    if not rewrite_tiff and temp_movie_path.exists():
+        import tifffile
+        with tifffile.TiffFile(str(temp_movie_path)) as tif:
+            existing_shape = tif.series[0].shape
+        if existing_shape != movie_data.shape:
+            print(f"  Stale temp tiff {existing_shape} != {movie_data.shape}, rewriting...")
+            rewrite_tiff = True
+    if rewrite_tiff:
+        print(f"  Writing input movie {movie_data.shape}...")
         import tifffile
         tifffile.imwrite(str(temp_movie_path), movie_data.astype(np.int16))
+
+    # if tiff was rewritten, invalidate stale mcorr/cnmf results
+    if rewrite_tiff:
+        for stale in list(plane_dir.glob("*.mmap")) + [
+            plane_dir / "mcorr_shifts.npy",
+            plane_dir / "mcorr_template.npy",
+            plane_dir / "estimates.npy",
+        ]:
+            if stale.exists():
+                stale.unlink()
 
     # run motion correction
     mcorr_done = (plane_dir / "mcorr_shifts.npy").exists()
@@ -621,19 +639,21 @@ def run_plane(
         print("  Running CNMF...")
         cnmf_start = time.time()
         try:
-            # use motion-corrected movie if available
+            # find mmap from motion correction (if it ran)
+            cnmf_mmap_file = None
             mmap_file = ops.get("mmap_file")
             if mmap_file and Path(mmap_file).exists():
-                movie_for_cnmf = cm.load(str(mmap_file))
+                cnmf_mmap_file = str(mmap_file)
             else:
-                # fall back to finding any mmap in the plane dir
                 mmap_files = list(plane_dir.glob("*.mmap"))
                 if mmap_files:
-                    movie_for_cnmf = cm.load(str(mmap_files[0]))
-                else:
-                    movie_for_cnmf = movie_data
+                    cnmf_mmap_file = str(mmap_files[0])
 
-            cnmf_result = _run_cnmf(movie_for_cnmf, ops, plane_dir)
+            # _run_cnmf will create its own mmap if cnmf_mmap_file is None
+            cnmf_result = _run_cnmf(
+                movie_data, ops, plane_dir,
+                mmap_file=cnmf_mmap_file,
+            )
             ops.update(cnmf_result)
             add_processing_step(
                 ops, "cnmf",
@@ -714,22 +734,51 @@ def _run_motion_correction(movie_path, ops, output_dir):
     return results
 
 
-def _run_cnmf(movie, ops, output_dir):
-    """run caiman cnmf."""
+def _run_cnmf(movie, ops, output_dir, mmap_file=None):
+    """run caiman cnmf.
+
+    caiman's evaluate_components has a bug in its non-memmap code path:
+    it does ``dims, T = Y.shape[:-1], Y.shape[-1]`` assuming (d1,d2,T)
+    axis order, but cm.movie is (T,d1,d2). this causes a reshape crash.
+    the memmap code path works correctly by reloading dims from the
+    filename. so we always ensure a caiman-format mmap file exists and
+    load it as a memmap view for both fit() and evaluate_components().
+    """
     from caiman.source_extraction.cnmf import CNMF
     import caiman as cm
 
-    # convert to float32 caiman movie in C order
+    # validate input
     if not isinstance(movie, np.ndarray):
         movie = np.array(movie)
-    if movie.dtype != np.float32:
-        movie = movie.astype(np.float32)
-    if not movie.flags['C_CONTIGUOUS']:
-        movie = np.ascontiguousarray(movie)
-    movie = cm.movie(movie)
+    movie = movie.squeeze()
+    if movie.ndim != 3:
+        raise ValueError(f"cnmf requires 3d movie (T, Y, X), got shape {movie.shape}")
 
-    # get dimensions
-    T, Ly, Lx = movie.shape
+    T, d1, d2 = movie.shape
+
+    # ensure we have a caiman-format mmap file
+    created_mmap = False
+    if mmap_file is None or not Path(mmap_file).exists():
+        print(f"    Creating mmap for CNMF ({T}, {d1}, {d2})...")
+        mmap_file = str(
+            output_dir / f'Yr_d1_{d1}_d2_{d2}_d3_1_order_C_frames_{T}_.mmap'
+        )
+        movie_f32 = movie.astype(np.float32)
+        fp = np.memmap(
+            mmap_file, mode='w+', dtype=np.float32,
+            shape=(d1 * d2, T), order='F',
+        )
+        for t in range(T):
+            fp[:, t] = movie_f32[t].ravel(order='F')
+        del fp
+        created_mmap = True
+
+    # load mmap as memmap view (T, d1, d2)
+    Yr, dims_mm, T_mm = cm.load_memmap(mmap_file)
+    images = np.reshape(Yr.T, [T_mm] + list(dims_mm), order='F')
+    print(f"    CNMF input: shape={images.shape}, type={type(images).__name__}")
+
+    Ly, Lx = dims_mm
 
     # setup cnmf parameters
     n_processes = ops.get("n_processes")
@@ -737,18 +786,24 @@ def _run_cnmf(movie, ops, output_dir):
         import multiprocessing
         n_processes = max(1, multiprocessing.cpu_count() - 1)
 
-    cnmf = CNMF(
+    # accept common aliases for caiman parameter names
+    gnb = ops.get("gnb", ops.get("nb", 1))
+    merge_thresh = ops.get("merge_thresh", ops.get("merge_thr", 0.8))
+    gSig = ops.get("gSig", (4, 4))
+    gSiz = ops.get("gSiz", None)
+
+    cnmf_kwargs = dict(
         n_processes=n_processes,
         k=ops.get("K", 50),
-        gSig=ops.get("gSig", (4, 4)),
+        gSig=gSig,
         p=ops.get("p", 1),
-        merge_thresh=ops.get("merge_thresh", 0.8),
+        merge_thresh=merge_thresh,
         method_init=ops.get("method_init", "greedy_roi"),
         ssub=ops.get("ssub", 1),
         tsub=ops.get("tsub", 1),
         rf=ops.get("rf"),
         stride=ops.get("stride"),
-        gnb=ops.get("gnb", 1),
+        gnb=gnb,
         low_rank_background=ops.get("low_rank_background", True),
         update_background_components=ops.get("update_background_components", True),
         rolling_sum=ops.get("rolling_sum", True),
@@ -759,24 +814,47 @@ def _run_cnmf(movie, ops, output_dir):
         decay_time=ops.get("decay_time", 0.4),
         min_SNR=ops.get("min_SNR", 2.5),
     )
+    if gSiz is not None:
+        cnmf_kwargs["gSiz"] = gSiz
 
-    # fit cnmf
-    cnmf.fit(movie)
+    # pass quality params so evaluate_components uses them
+    rval_thr = ops.get("rval_thr", 0.85)
+    cnmf_kwargs["rval_thr"] = rval_thr
+    cnmf_kwargs["min_cnn_thr"] = ops.get("min_cnn_thr", 0.99)
+    cnmf_kwargs["use_cnn"] = ops.get("use_cnn", False)
 
-    # evaluate components
+    cnmf = CNMF(**cnmf_kwargs)
+
+    # fit and evaluate using the memmap view (avoids caiman axis-order bug)
+    cnmf.fit(images)
+
     try:
+        # disable cnn by default (requires caimanmanager install for model files)
+        cnmf.params.quality['use_cnn'] = ops.get("use_cnn", False)
         cnmf.estimates.evaluate_components(
-            movie,
-            cnmf.params,
-            dview=None,
+            images, cnmf.params, dview=None,
         )
+        n_accepted = len(cnmf.estimates.idx_components) if cnmf.estimates.idx_components is not None else 0
+        n_rejected = len(cnmf.estimates.idx_components_bad) if cnmf.estimates.idx_components_bad is not None else 0
+        print(f"    Component evaluation: {n_accepted} accepted, {n_rejected} rejected")
     except Exception as e:
         print(f"    Component evaluation failed: {e}")
 
+    # cleanup temp mmap if we created it (motion correction mmap is kept)
+    if created_mmap:
+        try:
+            del images, Yr
+            Path(mmap_file).unlink(missing_ok=True)
+        except Exception:
+            pass
+
     # extract results
     estimates = cnmf.estimates
+    n_total = estimates.A.shape[1] if hasattr(estimates, "A") and estimates.A is not None else 0
+    n_accepted = len(estimates.idx_components) if hasattr(estimates, "idx_components") and estimates.idx_components is not None else n_total
     results = {
-        "n_cells": estimates.A.shape[1] if hasattr(estimates, "A") and estimates.A is not None else 0,
+        "n_cells": n_accepted,
+        "n_cells_total": n_total,
         "Ly": Ly,
         "Lx": Lx,
         "nframes": T,
