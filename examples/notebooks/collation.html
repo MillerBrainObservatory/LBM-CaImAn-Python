@@ -1,0 +1,2018 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>5. Collate Planes &#8212; LBM-CaImAn-Python</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=475cc00c" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/documentation_options.js?v=a1637f0b"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js?v=1ae7504c"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
+    <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
+    <script defer="defer" src="../../_static/tippy/examples/notebooks/collation.e6ca1db4-9ea8-44ac-9e19-047331fa2930.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'examples/notebooks/collation';</script>
+    <link rel="icon" href="../../_static/icon_caiman_python.svg"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="API" href="../../api/index.html" />
+    <link rel="prev" title="4. Segmentation" href="segmentation.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/lcp_logo.svg" class="logo__image only-light" alt="LBM-CaImAn-Python - Home"/>
+    <script>document.write(`<img src="../../_static/lcp_logo.svg" class="logo__image only-dark" alt="LBM-CaImAn-Python - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://millerbrainobservatory.github.io/" title="MBO User Hub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../../icon_mbo_home.png" class="icon-link-image" alt="MBO User Hub"/></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/MillerBrainObservatory/" title="MBO Github" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">MBO Github</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://mbo.rockefeller.edu/contact/" title="Connect with MBO" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-regular fa-address-card fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Connect with MBO</span></a>
+        </li>
+</ul></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../user_guide/index.html">User Guide</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/assembly.html">1. Image Assembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/batch_utilities.html">2. Batch Utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/registration.html">3. Registration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/segmentation.html">4. Segmentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/collation.html">5. Z-Plane Collation</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../index.html">Tutorial</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="assembly.html">1. Image Assembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batch_helpers.html">2. Batch Helpers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="motion_correction.html">3. Registration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="segmentation.html">4. Segmentation</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">5. Collate Planes</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../glossary.html">Glossary</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/MillerBrainObservatory/LBM-CaImAn-Python/blob/master/docs/examples/notebooks/collation.ipynb?plain=1" target="_blank"
+   class="btn btn-sm btn-source-file-button dropdown-item"
+   title="Show source"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-code"></i>
+  </span>
+<span class="btn__text-container">Show source</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/MillerBrainObservatory/LBM-CaImAn-Python/edit/master/docs/examples/notebooks/collation.ipynb" target="_blank"
+   class="btn btn-sm btn-source-edit-button dropdown-item"
+   title="Suggest edit"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-pencil-alt"></i>
+  </span>
+<span class="btn__text-container">Suggest edit</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/MillerBrainObservatory/LBM-CaImAn-Python/issues/new?title=Issue%20on%20page%20%2Fexamples/notebooks/collation.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/examples/notebooks/collation.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Collate Planes</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#get-outputs-for-each-z-plane">5.1. Get outputs for each z-plane</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#total-number-of-neurons">5.2. Total number of Neurons</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#combine-results-of-different-z-planes">5.3. Combine results of different z_planes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#z-stack-alignment">5.4. z-stack alignment</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#align-each-plane-to-the-reference-plane">5.5. 1. Align each plane to the reference plane</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">5.6. 2. Align each plane to the reference plane</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="collate-planes">
+<h1><span class="section-number">5. </span>Collate Planes<a class="headerlink" href="#collate-planes" title="Link to this heading">#</a></h1>
+<p>In this notebook, we merge CNMF results across each of our z-planes.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">gui</span> qt
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">zarr</span>
+<span class="kn">import</span> <span class="nn">napari</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">lbm_caiman_python</span> <span class="k">as</span> <span class="nn">lbm</span>
+
+<span class="c1"># Importing this WONT WORK withotu adding to the path</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;../..&#39;</span><span class="p">)</span>  <span class="c1"># TODO: Take this out when we upload to pypi</span>
+
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">lbm_mc</span> <span class="k">as</span> <span class="nn">mc</span>
+<span class="kn">from</span> <span class="nn">mesmerize_viz</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">lbm_mc.caiman_extensions.cnmf</span> <span class="kn">import</span> <span class="n">cnmf_cache</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">__IPYTHON__</span><span class="p">:</span>
+        <span class="n">get_ipython</span><span class="p">()</span><span class="o">.</span><span class="n">run_line_magic</span><span class="p">(</span><span class="s1">&#39;load_ext&#39;</span><span class="p">,</span> <span class="s1">&#39;autoreload&#39;</span><span class="p">)</span>
+        <span class="n">get_ipython</span><span class="p">()</span><span class="o">.</span><span class="n">run_line_magic</span><span class="p">(</span><span class="s1">&#39;autoreload&#39;</span><span class="p">,</span> <span class="s1">&#39;2&#39;</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">NameError</span><span class="p">:</span>
+    <span class="k">pass</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">cv2</span>
+    <span class="n">cv2</span><span class="o">.</span><span class="n">setNumThreads</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="k">except</span><span class="p">():</span>
+    <span class="k">pass</span>
+
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">()</span>
+
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;CONDA_PREFIX_1&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;nt&quot;</span><span class="p">:</span>
+    <span class="c1"># disable the cache on windows, this will be automatic in a future version</span>
+    <span class="n">cnmf_cache</span><span class="o">.</span><span class="n">set_maxsize</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The autoreload extension is already loaded. To reload it, use:
+  %reload_ext autoreload
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">chan_order</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="mi">1</span><span class="p">,</span>
+                <span class="mi">5</span><span class="p">,</span>
+                <span class="mi">6</span><span class="p">,</span>
+                <span class="mi">7</span><span class="p">,</span>
+                <span class="mi">8</span><span class="p">,</span>
+                <span class="mi">9</span><span class="p">,</span>
+                <span class="mi">2</span><span class="p">,</span>
+                <span class="mi">10</span><span class="p">,</span>
+                <span class="mi">11</span><span class="p">,</span>
+                <span class="mi">12</span><span class="p">,</span>
+                <span class="mi">13</span><span class="p">,</span>
+                <span class="mi">14</span><span class="p">,</span>
+                <span class="mi">15</span><span class="p">,</span>
+                <span class="mi">16</span><span class="p">,</span>
+                <span class="mi">17</span><span class="p">,</span>
+                <span class="mi">3</span><span class="p">,</span>
+                <span class="mi">18</span><span class="p">,</span>
+                <span class="mi">19</span><span class="p">,</span>
+                <span class="mi">20</span><span class="p">,</span>
+                <span class="mi">21</span><span class="p">,</span>
+                <span class="mi">22</span><span class="p">,</span>
+                <span class="mi">23</span><span class="p">,</span>
+                <span class="mi">4</span><span class="p">,</span>
+                <span class="mi">24</span><span class="p">,</span>
+                <span class="mi">25</span><span class="p">,</span>
+                <span class="mi">26</span><span class="p">,</span>
+                <span class="mi">27</span><span class="p">,</span>
+                <span class="mi">28</span><span class="p">,</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+        <span class="o">-</span> <span class="mi">1</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">parent_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">()</span><span class="o">.</span><span class="n">home</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;caiman_data&quot;</span> <span class="o">/</span> <span class="s1">&#39;animal_01&#39;</span> <span class="o">/</span> <span class="s2">&quot;session_01&quot;</span>
+
+<span class="n">batch_path</span> <span class="o">=</span> <span class="n">parent_path</span> <span class="o">/</span> <span class="s1">&#39;batch.pickle&#39;</span>
+<span class="n">cnmf_batch_path</span> <span class="o">=</span> <span class="n">parent_path</span> <span class="o">/</span> <span class="s1">&#39;results&#39;</span> <span class="o">/</span> <span class="s1">&#39;cnmf_batch.pickle&#39;</span>
+
+<span class="c1"># you could alos load the registration batch and</span>
+<span class="c1"># save this patch in a new dataframe (saved to disk automatically)</span>
+<span class="n">cnmf_df</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">load_batch</span><span class="p">(</span><span class="n">cnmf_batch_path</span><span class="p">)</span>
+<span class="n">cnmf_df</span><span class="o">=</span><span class="n">cnmf_df</span><span class="o">.</span><span class="n">caiman</span><span class="o">.</span><span class="n">reload_from_disk</span><span class="p">()</span>
+<span class="n">mc</span><span class="o">.</span><span class="n">set_parent_raw_data_path</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">parent_path</span><span class="p">))</span>
+
+<span class="c1"># create a new batch</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">load_batch</span><span class="p">(</span><span class="n">batch_path</span><span class="p">)</span>
+<span class="k">except</span> <span class="p">(</span><span class="ne">IsADirectoryError</span><span class="p">,</span> <span class="ne">FileNotFoundError</span><span class="p">):</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">create_batch</span><span class="p">(</span><span class="n">batch_path</span><span class="p">)</span>
+
+<span class="n">df</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">caiman</span><span class="o">.</span><span class="n">reload_from_disk</span><span class="p">()</span>
+<span class="n">cnmf_df</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>algo</th>
+      <th>item_name</th>
+      <th>input_movie_path</th>
+      <th>params</th>
+      <th>outputs</th>
+      <th>added_time</th>
+      <th>ran_time</th>
+      <th>algo_duration</th>
+      <th>comments</th>
+      <th>uuid</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>cnmf</td>
+      <td>cnmf_1</td>
+      <td>tiff\extracted_plane_1.tif</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'deca...</td>
+      <td>{'mean-projection-path': faeb27e8-40b9-4e5a-ad...</td>
+      <td>2024-10-01T16:34:44</td>
+      <td>2024-10-01T16:54:16</td>
+      <td>946.94 sec</td>
+      <td>None</td>
+      <td>faeb27e8-40b9-4e5a-ad8c-b9cc73c03635</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>cnmf</td>
+      <td>cnmf_1</td>
+      <td>tiff\extracted_plane_2.tif</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'deca...</td>
+      <td>{'mean-projection-path': 89b676c7-9480-47d7-b1...</td>
+      <td>2024-10-01T16:34:44</td>
+      <td>2024-10-01T17:10:06</td>
+      <td>949.6 sec</td>
+      <td>None</td>
+      <td>89b676c7-9480-47d7-b190-e4bbc2a5decc</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>cnmf</td>
+      <td>cnmf_1</td>
+      <td>tiff\extracted_plane_3.tif</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'deca...</td>
+      <td>{'mean-projection-path': f03ead24-ab13-48e7-87...</td>
+      <td>2024-10-01T16:34:44</td>
+      <td>2024-10-01T17:28:57</td>
+      <td>1131.04 sec</td>
+      <td>None</td>
+      <td>f03ead24-ab13-48e7-87c0-27d5940a7c91</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>cnmf</td>
+      <td>cnmf_1</td>
+      <td>tiff\extracted_plane_4.tif</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'deca...</td>
+      <td>{'mean-projection-path': 585a0fc2-40d4-45f2-ba...</td>
+      <td>2024-10-01T16:34:44</td>
+      <td>2024-10-01T17:51:18</td>
+      <td>1340.32 sec</td>
+      <td>None</td>
+      <td>585a0fc2-40d4-45f2-badf-ba13d5cc77a6</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>cnmf</td>
+      <td>cnmf_1</td>
+      <td>tiff\extracted_plane_5.tif</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'deca...</td>
+      <td>{'mean-projection-path': 544c2a52-0b90-4b74-ba...</td>
+      <td>2024-10-01T16:34:44</td>
+      <td>2024-10-01T18:08:22</td>
+      <td>1024.35 sec</td>
+      <td>None</td>
+      <td>544c2a52-0b90-4b74-baae-b2ca913c7c2a</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>cnmf</td>
+      <td>cnmf_1</td>
+      <td>tiff\extracted_plane_6.tif</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'deca...</td>
+      <td>{'mean-projection-path': d6c3f33c-2b90-4c6d-a4...</td>
+      <td>2024-10-01T16:34:44</td>
+      <td>2024-10-01T18:24:00</td>
+      <td>937.73 sec</td>
+      <td>None</td>
+      <td>d6c3f33c-2b90-4c6d-a4ad-f237dae5f73b</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>cnmf</td>
+      <td>cnmf_1</td>
+      <td>tiff\extracted_plane_7.tif</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'deca...</td>
+      <td>{'mean-projection-path': ca269a68-06d0-4f96-b5...</td>
+      <td>2024-10-01T16:34:44</td>
+      <td>2024-10-01T18:39:39</td>
+      <td>939.58 sec</td>
+      <td>None</td>
+      <td>ca269a68-06d0-4f96-b508-87160fdf37ab</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>cnmf</td>
+      <td>cnmf_1</td>
+      <td>tiff\extracted_plane_8.tif</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'deca...</td>
+      <td>{'mean-projection-path': a9cb2077-073a-4552-96...</td>
+      <td>2024-10-01T16:34:44</td>
+      <td>2024-10-01T18:55:09</td>
+      <td>929.57 sec</td>
+      <td>None</td>
+      <td>a9cb2077-073a-4552-9669-e53ba0c96803</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>cnmf</td>
+      <td>cnmf_1</td>
+      <td>tiff\extracted_plane_9.tif</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'deca...</td>
+      <td>{'mean-projection-path': c0205f69-ccb6-4304-9c...</td>
+      <td>2024-10-01T16:34:44</td>
+      <td>2024-10-01T19:10:49</td>
+      <td>940.35 sec</td>
+      <td>None</td>
+      <td>c0205f69-ccb6-4304-9cee-18af09d11663</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>cnmf</td>
+      <td>cnmf_1</td>
+      <td>tiff\extracted_plane_10.tif</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'deca...</td>
+      <td>{'mean-projection-path': 1fac642d-6cef-4a68-94...</td>
+      <td>2024-10-01T16:34:44</td>
+      <td>2024-10-01T19:28:15</td>
+      <td>1045.02 sec</td>
+      <td>None</td>
+      <td>1fac642d-6cef-4a68-9415-737213b4462d</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>cnmf</td>
+      <td>cnmf_1</td>
+      <td>tiff\extracted_plane_11.tif</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'deca...</td>
+      <td>{'mean-projection-path': 97569a0f-b5c4-41b5-92...</td>
+      <td>2024-10-01T16:34:44</td>
+      <td>2024-10-01T19:45:46</td>
+      <td>1051.62 sec</td>
+      <td>None</td>
+      <td>97569a0f-b5c4-41b5-9268-b4ddeda9d740</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>cnmf</td>
+      <td>cnmf_1</td>
+      <td>tiff\extracted_plane_12.tif</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'deca...</td>
+      <td>{'mean-projection-path': c2d0864d-1313-4ded-8b...</td>
+      <td>2024-10-01T16:34:44</td>
+      <td>2024-10-01T20:01:40</td>
+      <td>953.4 sec</td>
+      <td>None</td>
+      <td>c2d0864d-1313-4ded-8b7f-4a7f02947b2d</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>cnmf</td>
+      <td>cnmf_1</td>
+      <td>tiff\extracted_plane_13.tif</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'deca...</td>
+      <td>{'mean-projection-path': 8301c084-fe7c-4e84-b8...</td>
+      <td>2024-10-01T16:34:44</td>
+      <td>2024-10-01T20:17:40</td>
+      <td>960.7 sec</td>
+      <td>None</td>
+      <td>8301c084-fe7c-4e84-b8d7-db6fcc8893ed</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>cnmf</td>
+      <td>cnmf_1</td>
+      <td>tiff\extracted_plane_14.tif</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'deca...</td>
+      <td>{'mean-projection-path': 1eabd9f9-1a57-4c08-a8...</td>
+      <td>2024-10-01T16:34:44</td>
+      <td>2024-10-01T20:33:51</td>
+      <td>970.13 sec</td>
+      <td>None</td>
+      <td>1eabd9f9-1a57-4c08-a830-9276371c00a9</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>cnmf</td>
+      <td>cnmf_1</td>
+      <td>tiff\extracted_plane_15.tif</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'deca...</td>
+      <td>{'mean-projection-path': 25be7a5b-dd16-42cd-bd...</td>
+      <td>2024-10-01T16:34:44</td>
+      <td>2024-10-01T20:52:06</td>
+      <td>1095.19 sec</td>
+      <td>None</td>
+      <td>25be7a5b-dd16-42cd-bd4a-1312b4c6e791</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>cnmf</td>
+      <td>cnmf_1</td>
+      <td>tiff\extracted_plane_16.tif</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'deca...</td>
+      <td>{'mean-projection-path': f87dc096-6bb2-40dd-8d...</td>
+      <td>2024-10-01T16:34:44</td>
+      <td>2024-10-01T21:08:23</td>
+      <td>977.02 sec</td>
+      <td>None</td>
+      <td>f87dc096-6bb2-40dd-8dff-20f1362423b0</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>cnmf</td>
+      <td>cnmf_1</td>
+      <td>tiff\extracted_plane_17.tif</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'deca...</td>
+      <td>{'mean-projection-path': 0e6f8223-3002-4430-a9...</td>
+      <td>2024-10-01T16:34:44</td>
+      <td>2024-10-01T21:28:21</td>
+      <td>1197.8 sec</td>
+      <td>None</td>
+      <td>0e6f8223-3002-4430-a987-d83a6d7c7bd8</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>cnmf</td>
+      <td>cnmf_1</td>
+      <td>tiff\extracted_plane_18.tif</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'deca...</td>
+      <td>{'mean-projection-path': 52ab80e3-880f-4ae5-bd...</td>
+      <td>2024-10-01T16:34:44</td>
+      <td>2024-10-01T21:46:45</td>
+      <td>1104.12 sec</td>
+      <td>None</td>
+      <td>52ab80e3-880f-4ae5-bd38-711c0138ebe2</td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>cnmf</td>
+      <td>cnmf_1</td>
+      <td>tiff\extracted_plane_19.tif</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'deca...</td>
+      <td>{'mean-projection-path': 65c8dfa4-2a65-4618-82...</td>
+      <td>2024-10-01T16:34:44</td>
+      <td>2024-10-01T22:05:32</td>
+      <td>1126.88 sec</td>
+      <td>None</td>
+      <td>65c8dfa4-2a65-4618-8240-7f08fccce4ad</td>
+    </tr>
+    <tr>
+      <th>19</th>
+      <td>cnmf</td>
+      <td>cnmf_1</td>
+      <td>tiff\extracted_plane_20.tif</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'deca...</td>
+      <td>{'mean-projection-path': 473b088b-1b8e-4ecb-97...</td>
+      <td>2024-10-01T16:34:44</td>
+      <td>2024-10-01T22:23:00</td>
+      <td>1048.28 sec</td>
+      <td>None</td>
+      <td>473b088b-1b8e-4ecb-97e2-75eb299851b2</td>
+    </tr>
+    <tr>
+      <th>20</th>
+      <td>cnmf</td>
+      <td>cnmf_1</td>
+      <td>tiff\extracted_plane_21.tif</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'deca...</td>
+      <td>{'mean-projection-path': 60d2fc66-20a9-4f00-b6...</td>
+      <td>2024-10-01T16:34:44</td>
+      <td>2024-10-01T22:41:10</td>
+      <td>1090.04 sec</td>
+      <td>None</td>
+      <td>60d2fc66-20a9-4f00-b6f7-b9e80440efe7</td>
+    </tr>
+    <tr>
+      <th>21</th>
+      <td>cnmf</td>
+      <td>cnmf_1</td>
+      <td>tiff\extracted_plane_22.tif</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'deca...</td>
+      <td>{'mean-projection-path': 8926526d-cc18-47e2-b5...</td>
+      <td>2024-10-01T16:34:44</td>
+      <td>2024-10-01T23:01:26</td>
+      <td>1215.23 sec</td>
+      <td>None</td>
+      <td>8926526d-cc18-47e2-b599-1496b2c9f03e</td>
+    </tr>
+    <tr>
+      <th>22</th>
+      <td>cnmf</td>
+      <td>cnmf_1</td>
+      <td>tiff\extracted_plane_23.tif</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'deca...</td>
+      <td>{'mean-projection-path': f2b1c811-e02a-4058-a1...</td>
+      <td>2024-10-01T16:34:44</td>
+      <td>2024-10-01T23:20:00</td>
+      <td>1114.08 sec</td>
+      <td>None</td>
+      <td>f2b1c811-e02a-4058-a15b-861ee1128793</td>
+    </tr>
+    <tr>
+      <th>23</th>
+      <td>cnmf</td>
+      <td>cnmf_1</td>
+      <td>tiff\extracted_plane_24.tif</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'deca...</td>
+      <td>{'mean-projection-path': 5c9bd42e-fb07-43f0-a1...</td>
+      <td>2024-10-01T16:34:44</td>
+      <td>2024-10-01T23:38:35</td>
+      <td>1114.86 sec</td>
+      <td>None</td>
+      <td>5c9bd42e-fb07-43f0-a18d-0b9e516db4ec</td>
+    </tr>
+    <tr>
+      <th>24</th>
+      <td>cnmf</td>
+      <td>cnmf_1</td>
+      <td>tiff\extracted_plane_25.tif</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'deca...</td>
+      <td>{'mean-projection-path': 84004c56-81c1-474b-ab...</td>
+      <td>2024-10-01T16:34:44</td>
+      <td>2024-10-01T23:57:28</td>
+      <td>1132.94 sec</td>
+      <td>None</td>
+      <td>84004c56-81c1-474b-ab38-327fbf79bf8c</td>
+    </tr>
+    <tr>
+      <th>25</th>
+      <td>cnmf</td>
+      <td>cnmf_1</td>
+      <td>tiff\extracted_plane_26.tif</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'deca...</td>
+      <td>{'mean-projection-path': 23521021-6791-4d41-85...</td>
+      <td>2024-10-01T16:34:44</td>
+      <td>2024-10-02T00:14:28</td>
+      <td>1019.75 sec</td>
+      <td>None</td>
+      <td>23521021-6791-4d41-855d-779eefce6840</td>
+    </tr>
+    <tr>
+      <th>26</th>
+      <td>cnmf</td>
+      <td>cnmf_1</td>
+      <td>tiff\extracted_plane_27.tif</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'deca...</td>
+      <td>{'mean-projection-path': 07907a0b-b138-41e3-99...</td>
+      <td>2024-10-01T16:34:44</td>
+      <td>2024-10-02T00:34:07</td>
+      <td>1179.51 sec</td>
+      <td>None</td>
+      <td>07907a0b-b138-41e3-99a7-f7153738a640</td>
+    </tr>
+    <tr>
+      <th>27</th>
+      <td>cnmf</td>
+      <td>cnmf_1</td>
+      <td>tiff\extracted_plane_28.tif</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'deca...</td>
+      <td>{'mean-projection-path': 8b7cbfb4-7c62-4780-a9...</td>
+      <td>2024-10-01T16:34:44</td>
+      <td>2024-10-02T00:49:55</td>
+      <td>947.96 sec</td>
+      <td>None</td>
+      <td>8b7cbfb4-7c62-4780-a90c-5275cbe1f318</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<section id="get-outputs-for-each-z-plane">
+<h2><span class="section-number">5.1. </span>Get outputs for each z-plane<a class="headerlink" href="#get-outputs-for-each-z-plane" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">cnmf_df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+    <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;outputs&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;algo&#39;</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;cnmf&#39;</span><span class="p">:</span> <span class="c1"># item has already been run</span>
+        <span class="n">results</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">cnmf_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">cnmf</span><span class="o">.</span><span class="n">get_output</span><span class="p">()</span>
+<span class="n">results</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{0: &lt;caiman.source_extraction.cnmf.cnmf.CNMF at 0x18ed447b1f0&gt;,
+ 1: &lt;caiman.source_extraction.cnmf.cnmf.CNMF at 0x18ed447b730&gt;,
+ 2: &lt;caiman.source_extraction.cnmf.cnmf.CNMF at 0x18ed447b340&gt;,
+ 3: &lt;caiman.source_extraction.cnmf.cnmf.CNMF at 0x18ed4479e10&gt;,
+ 4: &lt;caiman.source_extraction.cnmf.cnmf.CNMF at 0x18ed447b0a0&gt;,
+ 5: &lt;caiman.source_extraction.cnmf.cnmf.CNMF at 0x18e6b3ba3e0&gt;,
+ 6: &lt;caiman.source_extraction.cnmf.cnmf.CNMF at 0x18e6b3ba980&gt;,
+ 7: &lt;caiman.source_extraction.cnmf.cnmf.CNMF at 0x18e6b3baa40&gt;,
+ 8: &lt;caiman.source_extraction.cnmf.cnmf.CNMF at 0x18e6b3b8a60&gt;,
+ 9: &lt;caiman.source_extraction.cnmf.cnmf.CNMF at 0x18e6b3b83d0&gt;,
+ 10: &lt;caiman.source_extraction.cnmf.cnmf.CNMF at 0x18e6b3baa70&gt;,
+ 11: &lt;caiman.source_extraction.cnmf.cnmf.CNMF at 0x18e6b3bb790&gt;,
+ 12: &lt;caiman.source_extraction.cnmf.cnmf.CNMF at 0x18ed447b4c0&gt;,
+ 13: &lt;caiman.source_extraction.cnmf.cnmf.CNMF at 0x18e6b3bada0&gt;,
+ 14: &lt;caiman.source_extraction.cnmf.cnmf.CNMF at 0x18e6b3b81f0&gt;,
+ 15: &lt;caiman.source_extraction.cnmf.cnmf.CNMF at 0x18e6b3a9c90&gt;,
+ 16: &lt;caiman.source_extraction.cnmf.cnmf.CNMF at 0x18e6b3aa5f0&gt;,
+ 17: &lt;caiman.source_extraction.cnmf.cnmf.CNMF at 0x18e6b3a8be0&gt;,
+ 18: &lt;caiman.source_extraction.cnmf.cnmf.CNMF at 0x18e6b3aaf50&gt;,
+ 19: &lt;caiman.source_extraction.cnmf.cnmf.CNMF at 0x18e6b3aa020&gt;,
+ 20: &lt;caiman.source_extraction.cnmf.cnmf.CNMF at 0x18e6b3aa170&gt;,
+ 21: &lt;caiman.source_extraction.cnmf.cnmf.CNMF at 0x18e6b3bb1f0&gt;,
+ 22: &lt;caiman.source_extraction.cnmf.cnmf.CNMF at 0x18ed447b2b0&gt;,
+ 23: &lt;caiman.source_extraction.cnmf.cnmf.CNMF at 0x18e6b3a9a80&gt;,
+ 24: &lt;caiman.source_extraction.cnmf.cnmf.CNMF at 0x18e6b3a09d0&gt;,
+ 25: &lt;caiman.source_extraction.cnmf.cnmf.CNMF at 0x18e6b3a0820&gt;,
+ 26: &lt;caiman.source_extraction.cnmf.cnmf.CNMF at 0x18e6b3a3010&gt;,
+ 27: &lt;caiman.source_extraction.cnmf.cnmf.CNMF at 0x18ed447be20&gt;}
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">e1</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">estimates</span>
+<span class="n">e2</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">estimates</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.sparse</span> <span class="kn">import</span> <span class="n">csr_matrix</span><span class="p">,</span> <span class="n">vstack</span>
+<span class="kn">from</span> <span class="nn">caiman.source_extraction.cnmf</span> <span class="kn">import</span> <span class="n">estimates</span>
+<span class="kn">from</span> <span class="nn">scipy.sparse</span> <span class="kn">import</span> <span class="n">lil_matrix</span>
+<span class="o">%</span><span class="k">load_ext</span> autoreload
+<span class="o">%</span><span class="k">autoreload</span> 2
+<span class="kn">import</span> <span class="nn">lbm_caiman_python</span> <span class="k">as</span> <span class="nn">lbm</span>
+
+<span class="n">res</span> <span class="o">=</span> <span class="n">lbm</span><span class="o">.</span><span class="n">collation</span><span class="o">.</span><span class="n">combine_z_planes</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The autoreload extension is already loaded. To reload it, use:
+  %reload_ext autoreload
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="total-number-of-neurons">
+<h2><span class="section-number">5.2. </span>Total number of Neurons<a class="headerlink" href="#total-number-of-neurons" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">comps</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">cnmf_df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+    <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;outputs&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;algo&#39;</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;cnmf&#39;</span><span class="p">:</span> <span class="c1"># item has already been run</span>
+        <span class="n">comps</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">cnmf_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">cnmf</span><span class="o">.</span><span class="n">get_good_components</span><span class="p">()</span>
+<span class="n">comps</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{0: array([   1,    2,    4, ..., 8919, 8920, 8921]),
+ 1: array([   0,    1,    2, ..., 9015, 9017, 9018]),
+ 2: array([   0,    1,    2, ..., 8788, 8789, 8791]),
+ 3: array([    1,     3,     4, ..., 10061, 10063, 10065]),
+ 4: array([   0,    1,    4, ..., 8774, 8775, 8776]),
+ 5: array([   0,    1,    3, ..., 8845, 8846, 8848]),
+ 6: array([   0,    1,    2, ..., 8814, 8816, 8818]),
+ 7: array([   0,    1,    2, ..., 8846, 8847, 8848]),
+ 8: array([   0,    1,    3, ..., 8880, 8881, 8882]),
+ 9: array([   0,    2,    3, ..., 9042, 9043, 9044]),
+ 10: array([   3,    5,    6, ..., 9312, 9313, 9314]),
+ 11: array([   1,    7,    9, ..., 9460, 9461, 9462]),
+ 12: array([   4,    5,    9, ..., 9752, 9754, 9755]),
+ 13: array([   1,    3,    4, ..., 9915, 9917, 9918]),
+ 14: array([    0,     1,     3, ..., 10016, 10048, 10051]),
+ 15: array([    0,     1,     2, ..., 10127, 10128, 10129]),
+ 16: array([    0,     1,     2, ..., 10024, 10025, 10026]),
+ 17: array([   0,    1,    2, ..., 9151, 9152, 9154]),
+ 18: array([   0,    1,    2, ..., 9234, 9235, 9236]),
+ 19: array([   0,    1,    2, ..., 9453, 9456, 9457]),
+ 20: array([   0,    5,    8, ..., 9821, 9822, 9823]),
+ 21: array([   0,    4,    7, ..., 9972, 9973, 9974]),
+ 22: array([    0,     6,    22, ..., 10088, 10090, 10091]),
+ 23: array([    0,     2,     5, ..., 10213, 10214, 10215]),
+ 24: array([    1,    31,    48, ..., 10341, 10344, 10345]),
+ 25: array([    6,     9,    36, ..., 10460, 10472, 10475]),
+ 26: array([   16,    32,    45, ..., 10406, 10408, 10412]),
+ 27: array([    2,    18,    27, ..., 10316, 10317, 10324])}
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">num_components</span> <span class="o">=</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">comps</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+<span class="nb">sum</span><span class="p">(</span><span class="n">num_components</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>73973
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ipywidgets</span> <span class="kn">import</span> <span class="n">Tab</span><span class="p">,</span> <span class="n">interact_manual</span>
+<span class="nd">@interact_manual</span><span class="p">(</span><span class="n">parent_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">parent_path</span><span class="p">),</span> <span class="n">batch_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">cnmf_batch_path</span><span class="p">))</span>
+<span class="k">def</span> <span class="nf">start_widget</span><span class="p">(</span><span class="n">parent_path</span><span class="p">,</span> <span class="n">batch_path</span><span class="p">):</span>
+    <span class="n">mc</span><span class="o">.</span><span class="n">set_parent_raw_data_path</span><span class="p">(</span><span class="n">parent_path</span><span class="p">)</span>
+
+    <span class="n">df</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">load_batch</span><span class="p">(</span><span class="n">batch_path</span><span class="p">)</span>
+
+    <span class="n">tab</span> <span class="o">=</span> <span class="n">Tab</span><span class="p">()</span>
+
+    <span class="c1"># mcorr_container = df.mcorr.viz()</span>
+    <span class="n">cnmf_container</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">cnmf</span><span class="o">.</span><span class="n">viz</span><span class="p">(</span><span class="n">start_index</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">tab</span><span class="o">.</span><span class="n">children</span> <span class="o">=</span> <span class="p">[</span><span class="n">cnmf_container</span><span class="o">.</span><span class="n">show</span><span class="p">()]</span>
+    <span class="n">tab</span><span class="o">.</span><span class="n">titles</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;cnmf&quot;</span><span class="p">]</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">tab</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "fb006983b98c455e8805689b8c0baef8", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+</section>
+<section id="combine-results-of-different-z-planes">
+<h2><span class="section-number">5.3. </span>Combine results of different z_planes<a class="headerlink" href="#combine-results-of-different-z-planes" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_rows</span> <span class="o">=</span> <span class="n">cnmf_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">cnmf_df</span><span class="p">[</span><span class="n">cnmf_df</span><span class="p">[</span><span class="s1">&#39;algo&#39;</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;cnmf&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">df_rows</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>algo</th>
+      <th>item_name</th>
+      <th>input_movie_path</th>
+      <th>params</th>
+      <th>outputs</th>
+      <th>added_time</th>
+      <th>ran_time</th>
+      <th>algo_duration</th>
+      <th>comments</th>
+      <th>uuid</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>cnmf</td>
+      <td>cnmf_1</td>
+      <td>tiff\extracted_plane_1.tif</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'deca...</td>
+      <td>{'mean-projection-path': faeb27e8-40b9-4e5a-ad...</td>
+      <td>2024-10-01T16:34:44</td>
+      <td>2024-10-01T16:54:16</td>
+      <td>946.94 sec</td>
+      <td>None</td>
+      <td>faeb27e8-40b9-4e5a-ad8c-b9cc73c03635</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>cnmf</td>
+      <td>cnmf_1</td>
+      <td>tiff\extracted_plane_2.tif</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'deca...</td>
+      <td>{'mean-projection-path': 89b676c7-9480-47d7-b1...</td>
+      <td>2024-10-01T16:34:44</td>
+      <td>2024-10-01T17:10:06</td>
+      <td>949.6 sec</td>
+      <td>None</td>
+      <td>89b676c7-9480-47d7-b190-e4bbc2a5decc</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>cnmf</td>
+      <td>cnmf_1</td>
+      <td>tiff\extracted_plane_3.tif</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'deca...</td>
+      <td>{'mean-projection-path': f03ead24-ab13-48e7-87...</td>
+      <td>2024-10-01T16:34:44</td>
+      <td>2024-10-01T17:28:57</td>
+      <td>1131.04 sec</td>
+      <td>None</td>
+      <td>f03ead24-ab13-48e7-87c0-27d5940a7c91</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>cnmf</td>
+      <td>cnmf_1</td>
+      <td>tiff\extracted_plane_4.tif</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'deca...</td>
+      <td>{'mean-projection-path': 585a0fc2-40d4-45f2-ba...</td>
+      <td>2024-10-01T16:34:44</td>
+      <td>2024-10-01T17:51:18</td>
+      <td>1340.32 sec</td>
+      <td>None</td>
+      <td>585a0fc2-40d4-45f2-badf-ba13d5cc77a6</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>cnmf</td>
+      <td>cnmf_1</td>
+      <td>tiff\extracted_plane_5.tif</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'deca...</td>
+      <td>{'mean-projection-path': 544c2a52-0b90-4b74-ba...</td>
+      <td>2024-10-01T16:34:44</td>
+      <td>2024-10-01T18:08:22</td>
+      <td>1024.35 sec</td>
+      <td>None</td>
+      <td>544c2a52-0b90-4b74-baae-b2ca913c7c2a</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>cnmf</td>
+      <td>cnmf_1</td>
+      <td>tiff\extracted_plane_6.tif</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'deca...</td>
+      <td>{'mean-projection-path': d6c3f33c-2b90-4c6d-a4...</td>
+      <td>2024-10-01T16:34:44</td>
+      <td>2024-10-01T18:24:00</td>
+      <td>937.73 sec</td>
+      <td>None</td>
+      <td>d6c3f33c-2b90-4c6d-a4ad-f237dae5f73b</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>cnmf</td>
+      <td>cnmf_1</td>
+      <td>tiff\extracted_plane_7.tif</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'deca...</td>
+      <td>{'mean-projection-path': ca269a68-06d0-4f96-b5...</td>
+      <td>2024-10-01T16:34:44</td>
+      <td>2024-10-01T18:39:39</td>
+      <td>939.58 sec</td>
+      <td>None</td>
+      <td>ca269a68-06d0-4f96-b508-87160fdf37ab</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>cnmf</td>
+      <td>cnmf_1</td>
+      <td>tiff\extracted_plane_8.tif</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'deca...</td>
+      <td>{'mean-projection-path': a9cb2077-073a-4552-96...</td>
+      <td>2024-10-01T16:34:44</td>
+      <td>2024-10-01T18:55:09</td>
+      <td>929.57 sec</td>
+      <td>None</td>
+      <td>a9cb2077-073a-4552-9669-e53ba0c96803</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>cnmf</td>
+      <td>cnmf_1</td>
+      <td>tiff\extracted_plane_9.tif</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'deca...</td>
+      <td>{'mean-projection-path': c0205f69-ccb6-4304-9c...</td>
+      <td>2024-10-01T16:34:44</td>
+      <td>2024-10-01T19:10:49</td>
+      <td>940.35 sec</td>
+      <td>None</td>
+      <td>c0205f69-ccb6-4304-9cee-18af09d11663</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>cnmf</td>
+      <td>cnmf_1</td>
+      <td>tiff\extracted_plane_10.tif</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'deca...</td>
+      <td>{'mean-projection-path': 1fac642d-6cef-4a68-94...</td>
+      <td>2024-10-01T16:34:44</td>
+      <td>2024-10-01T19:28:15</td>
+      <td>1045.02 sec</td>
+      <td>None</td>
+      <td>1fac642d-6cef-4a68-9415-737213b4462d</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>cnmf</td>
+      <td>cnmf_1</td>
+      <td>tiff\extracted_plane_11.tif</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'deca...</td>
+      <td>{'mean-projection-path': 97569a0f-b5c4-41b5-92...</td>
+      <td>2024-10-01T16:34:44</td>
+      <td>2024-10-01T19:45:46</td>
+      <td>1051.62 sec</td>
+      <td>None</td>
+      <td>97569a0f-b5c4-41b5-9268-b4ddeda9d740</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>cnmf</td>
+      <td>cnmf_1</td>
+      <td>tiff\extracted_plane_12.tif</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'deca...</td>
+      <td>{'mean-projection-path': c2d0864d-1313-4ded-8b...</td>
+      <td>2024-10-01T16:34:44</td>
+      <td>2024-10-01T20:01:40</td>
+      <td>953.4 sec</td>
+      <td>None</td>
+      <td>c2d0864d-1313-4ded-8b7f-4a7f02947b2d</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>cnmf</td>
+      <td>cnmf_1</td>
+      <td>tiff\extracted_plane_13.tif</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'deca...</td>
+      <td>{'mean-projection-path': 8301c084-fe7c-4e84-b8...</td>
+      <td>2024-10-01T16:34:44</td>
+      <td>2024-10-01T20:17:40</td>
+      <td>960.7 sec</td>
+      <td>None</td>
+      <td>8301c084-fe7c-4e84-b8d7-db6fcc8893ed</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>cnmf</td>
+      <td>cnmf_1</td>
+      <td>tiff\extracted_plane_14.tif</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'deca...</td>
+      <td>{'mean-projection-path': 1eabd9f9-1a57-4c08-a8...</td>
+      <td>2024-10-01T16:34:44</td>
+      <td>2024-10-01T20:33:51</td>
+      <td>970.13 sec</td>
+      <td>None</td>
+      <td>1eabd9f9-1a57-4c08-a830-9276371c00a9</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>cnmf</td>
+      <td>cnmf_1</td>
+      <td>tiff\extracted_plane_15.tif</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'deca...</td>
+      <td>{'mean-projection-path': 25be7a5b-dd16-42cd-bd...</td>
+      <td>2024-10-01T16:34:44</td>
+      <td>2024-10-01T20:52:06</td>
+      <td>1095.19 sec</td>
+      <td>None</td>
+      <td>25be7a5b-dd16-42cd-bd4a-1312b4c6e791</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>cnmf</td>
+      <td>cnmf_1</td>
+      <td>tiff\extracted_plane_16.tif</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'deca...</td>
+      <td>{'mean-projection-path': f87dc096-6bb2-40dd-8d...</td>
+      <td>2024-10-01T16:34:44</td>
+      <td>2024-10-01T21:08:23</td>
+      <td>977.02 sec</td>
+      <td>None</td>
+      <td>f87dc096-6bb2-40dd-8dff-20f1362423b0</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>cnmf</td>
+      <td>cnmf_1</td>
+      <td>tiff\extracted_plane_17.tif</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'deca...</td>
+      <td>{'mean-projection-path': 0e6f8223-3002-4430-a9...</td>
+      <td>2024-10-01T16:34:44</td>
+      <td>2024-10-01T21:28:21</td>
+      <td>1197.8 sec</td>
+      <td>None</td>
+      <td>0e6f8223-3002-4430-a987-d83a6d7c7bd8</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>cnmf</td>
+      <td>cnmf_1</td>
+      <td>tiff\extracted_plane_18.tif</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'deca...</td>
+      <td>{'mean-projection-path': 52ab80e3-880f-4ae5-bd...</td>
+      <td>2024-10-01T16:34:44</td>
+      <td>2024-10-01T21:46:45</td>
+      <td>1104.12 sec</td>
+      <td>None</td>
+      <td>52ab80e3-880f-4ae5-bd38-711c0138ebe2</td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>cnmf</td>
+      <td>cnmf_1</td>
+      <td>tiff\extracted_plane_19.tif</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'deca...</td>
+      <td>{'mean-projection-path': 65c8dfa4-2a65-4618-82...</td>
+      <td>2024-10-01T16:34:44</td>
+      <td>2024-10-01T22:05:32</td>
+      <td>1126.88 sec</td>
+      <td>None</td>
+      <td>65c8dfa4-2a65-4618-8240-7f08fccce4ad</td>
+    </tr>
+    <tr>
+      <th>19</th>
+      <td>cnmf</td>
+      <td>cnmf_1</td>
+      <td>tiff\extracted_plane_20.tif</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'deca...</td>
+      <td>{'mean-projection-path': 473b088b-1b8e-4ecb-97...</td>
+      <td>2024-10-01T16:34:44</td>
+      <td>2024-10-01T22:23:00</td>
+      <td>1048.28 sec</td>
+      <td>None</td>
+      <td>473b088b-1b8e-4ecb-97e2-75eb299851b2</td>
+    </tr>
+    <tr>
+      <th>20</th>
+      <td>cnmf</td>
+      <td>cnmf_1</td>
+      <td>tiff\extracted_plane_21.tif</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'deca...</td>
+      <td>{'mean-projection-path': 60d2fc66-20a9-4f00-b6...</td>
+      <td>2024-10-01T16:34:44</td>
+      <td>2024-10-01T22:41:10</td>
+      <td>1090.04 sec</td>
+      <td>None</td>
+      <td>60d2fc66-20a9-4f00-b6f7-b9e80440efe7</td>
+    </tr>
+    <tr>
+      <th>21</th>
+      <td>cnmf</td>
+      <td>cnmf_1</td>
+      <td>tiff\extracted_plane_22.tif</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'deca...</td>
+      <td>{'mean-projection-path': 8926526d-cc18-47e2-b5...</td>
+      <td>2024-10-01T16:34:44</td>
+      <td>2024-10-01T23:01:26</td>
+      <td>1215.23 sec</td>
+      <td>None</td>
+      <td>8926526d-cc18-47e2-b599-1496b2c9f03e</td>
+    </tr>
+    <tr>
+      <th>22</th>
+      <td>cnmf</td>
+      <td>cnmf_1</td>
+      <td>tiff\extracted_plane_23.tif</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'deca...</td>
+      <td>{'mean-projection-path': f2b1c811-e02a-4058-a1...</td>
+      <td>2024-10-01T16:34:44</td>
+      <td>2024-10-01T23:20:00</td>
+      <td>1114.08 sec</td>
+      <td>None</td>
+      <td>f2b1c811-e02a-4058-a15b-861ee1128793</td>
+    </tr>
+    <tr>
+      <th>23</th>
+      <td>cnmf</td>
+      <td>cnmf_1</td>
+      <td>tiff\extracted_plane_24.tif</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'deca...</td>
+      <td>{'mean-projection-path': 5c9bd42e-fb07-43f0-a1...</td>
+      <td>2024-10-01T16:34:44</td>
+      <td>2024-10-01T23:38:35</td>
+      <td>1114.86 sec</td>
+      <td>None</td>
+      <td>5c9bd42e-fb07-43f0-a18d-0b9e516db4ec</td>
+    </tr>
+    <tr>
+      <th>24</th>
+      <td>cnmf</td>
+      <td>cnmf_1</td>
+      <td>tiff\extracted_plane_25.tif</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'deca...</td>
+      <td>{'mean-projection-path': 84004c56-81c1-474b-ab...</td>
+      <td>2024-10-01T16:34:44</td>
+      <td>2024-10-01T23:57:28</td>
+      <td>1132.94 sec</td>
+      <td>None</td>
+      <td>84004c56-81c1-474b-ab38-327fbf79bf8c</td>
+    </tr>
+    <tr>
+      <th>25</th>
+      <td>cnmf</td>
+      <td>cnmf_1</td>
+      <td>tiff\extracted_plane_26.tif</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'deca...</td>
+      <td>{'mean-projection-path': 23521021-6791-4d41-85...</td>
+      <td>2024-10-01T16:34:44</td>
+      <td>2024-10-02T00:14:28</td>
+      <td>1019.75 sec</td>
+      <td>None</td>
+      <td>23521021-6791-4d41-855d-779eefce6840</td>
+    </tr>
+    <tr>
+      <th>26</th>
+      <td>cnmf</td>
+      <td>cnmf_1</td>
+      <td>tiff\extracted_plane_27.tif</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'deca...</td>
+      <td>{'mean-projection-path': 07907a0b-b138-41e3-99...</td>
+      <td>2024-10-01T16:34:44</td>
+      <td>2024-10-02T00:34:07</td>
+      <td>1179.51 sec</td>
+      <td>None</td>
+      <td>07907a0b-b138-41e3-99a7-f7153738a640</td>
+    </tr>
+    <tr>
+      <th>27</th>
+      <td>cnmf</td>
+      <td>cnmf_1</td>
+      <td>tiff\extracted_plane_28.tif</td>
+      <td>{'main': {'fr': 9.62, 'dxy': (1.0, 1.0), 'deca...</td>
+      <td>{'mean-projection-path': 8b7cbfb4-7c62-4780-a9...</td>
+      <td>2024-10-01T16:34:44</td>
+      <td>2024-10-02T00:49:55</td>
+      <td>947.96 sec</td>
+      <td>None</td>
+      <td>8b7cbfb4-7c62-4780-a90c-5275cbe1f318</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dask.array</span> <span class="k">as</span> <span class="nn">da</span>
+<span class="n">projs</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">da</span><span class="o">.</span><span class="n">from_array</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">caiman</span><span class="o">.</span><span class="n">get_projection</span><span class="p">(</span><span class="s1">&#39;mean&#39;</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df_rows</span><span class="o">.</span><span class="n">iterrows</span><span class="p">()</span> <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;outputs&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;algo&#39;</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;cnmf&#39;</span><span class="p">])</span>
+<span class="n">projs</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(28, 583, 536)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># sort first index according to chan_order</span>
+<span class="n">projs</span> <span class="o">=</span> <span class="n">projs</span><span class="p">[</span><span class="n">chan_order</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">fastplotlib</span> <span class="k">as</span> <span class="nn">fpl</span>
+
+<span class="n">widget</span> <span class="o">=</span> <span class="n">fpl</span><span class="o">.</span><span class="n">ImageWidget</span><span class="p">(</span><span class="n">projs</span><span class="p">)</span>
+<span class="n">widget</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ValueError</span><span class="g g-Whitespace">                                </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">61</span><span class="p">],</span> <span class="n">line</span> <span class="mi">3</span>
+<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="kn">import</span> <span class="nn">fastplotlib</span> <span class="k">as</span> <span class="nn">fpl</span>
+<span class="ne">----&gt; </span><span class="mi">3</span> <span class="n">widget</span> <span class="o">=</span> <span class="n">fpl</span><span class="o">.</span><span class="n">ImageWidget</span><span class="p">(</span><span class="n">projs</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="n">widget</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="nn">File ~\anaconda3\envs\mescore\lib\site-packages\fastplotlib\widgets\image.py:577,</span> in <span class="ni">ImageWidget.__init__</span><span class="nt">(self, data, dims_order, slider_dims, window_funcs, frame_apply, grid_shape, names, grid_plot_kwargs, histogram_widget, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">574</span> <span class="n">subplot</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">576</span> <span class="k">if</span> <span class="n">histogram_widget</span><span class="p">:</span>
+<span class="ne">--&gt; </span><span class="mi">577</span>     <span class="n">hlut</span> <span class="o">=</span> <span class="n">HistogramLUT</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">578</span>         <span class="n">data</span><span class="o">=</span><span class="n">d</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">579</span>         <span class="n">image_graphic</span><span class="o">=</span><span class="n">ig</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">580</span>         <span class="n">name</span><span class="o">=</span><span class="s2">&quot;histogram_lut&quot;</span>
+<span class="g g-Whitespace">    </span><span class="mi">581</span>     <span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">583</span>     <span class="n">subplot</span><span class="o">.</span><span class="n">docks</span><span class="p">[</span><span class="s2">&quot;right&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">add_graphic</span><span class="p">(</span><span class="n">hlut</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">584</span>     <span class="n">subplot</span><span class="o">.</span><span class="n">docks</span><span class="p">[</span><span class="s2">&quot;right&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="mi">80</span>
+
+<span class="nn">File ~\anaconda3\envs\mescore\lib\site-packages\fastplotlib\widgets\histogram_lut.py:44,</span> in <span class="ni">HistogramLUT.__init__</span><span class="nt">(self, data, image_graphic, nbins, flank_divisor, **kwargs)</span>
+<span class="g g-Whitespace">     </span><span class="mi">40</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">weakref</span><span class="o">.</span><span class="n">proxy</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">42</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scale_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="ne">---&gt; </span><span class="mi">44</span> <span class="n">hist</span><span class="p">,</span> <span class="n">edges</span><span class="p">,</span> <span class="n">hist_scaled</span><span class="p">,</span> <span class="n">edges_flanked</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_histogram</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">46</span> <span class="n">line_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">([</span><span class="n">hist_scaled</span><span class="p">,</span> <span class="n">edges_flanked</span><span class="p">])</span>
+<span class="g g-Whitespace">     </span><span class="mi">48</span> <span class="bp">self</span><span class="o">.</span><span class="n">line</span> <span class="o">=</span> <span class="n">LineGraphic</span><span class="p">(</span><span class="n">line_data</span><span class="p">)</span>
+
+<span class="nn">File ~\anaconda3\envs\mescore\lib\site-packages\fastplotlib\widgets\histogram_lut.py:146,</span> in <span class="ni">HistogramLUT._calculate_histogram</span><span class="nt">(self, data)</span>
+<span class="g g-Whitespace">    </span><span class="mi">142</span>     <span class="n">ss2</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="mi">100</span><span class="p">))</span>
+<span class="g g-Whitespace">    </span><span class="mi">144</span>     <span class="n">data_ss</span> <span class="o">=</span> <span class="n">data</span><span class="p">[::</span><span class="n">ss0</span><span class="p">,</span> <span class="p">::</span><span class="n">ss1</span><span class="p">,</span> <span class="p">::</span><span class="n">ss2</span><span class="p">]</span>
+<span class="ne">--&gt; </span><span class="mi">146</span>     <span class="n">hist</span><span class="p">,</span> <span class="n">edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">data_ss</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_nbins</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">148</span> <span class="k">else</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">149</span>     <span class="c1"># allow max of 1000 x 1000</span>
+<span class="g g-Whitespace">    </span><span class="mi">150</span>     <span class="c1"># this takes ~4ms on a 8 core Ryzen laptop</span>
+<span class="g g-Whitespace">    </span><span class="mi">151</span>     <span class="n">ss0</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="mi">1_000</span><span class="p">))</span>
+
+<span class="nn">File ~\anaconda3\envs\mescore\lib\site-packages\dask\array\core.py:1756,</span> in <span class="ni">Array.__array_function__</span><span class="nt">(self, func, types, args, kwargs)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1753</span> <span class="k">if</span> <span class="n">has_keyword</span><span class="p">(</span><span class="n">da_func</span><span class="p">,</span> <span class="s2">&quot;like&quot;</span><span class="p">):</span>
+<span class="g g-Whitespace">   </span><span class="mi">1754</span>     <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;like&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span>
+<span class="ne">-&gt; </span><span class="mi">1756</span> <span class="k">return</span> <span class="n">da_func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<span class="nn">File ~\anaconda3\envs\mescore\lib\site-packages\dask\array\routines.py:962,</span> in <span class="ni">histogram</span><span class="nt">(a, bins, range, normed, weights, density)</span>
+<span class="g g-Whitespace">    </span><span class="mi">959</span>     <span class="n">scalar_bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">bins</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+<span class="g g-Whitespace">    </span><span class="mi">961</span> <span class="k">if</span> <span class="n">bins</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="p">(</span><span class="n">scalar_bins</span> <span class="ow">and</span> <span class="nb">range</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+<span class="ne">--&gt; </span><span class="mi">962</span>     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">963</span>         <span class="s2">&quot;dask.array.histogram requires either specifying &quot;</span>
+<span class="g g-Whitespace">    </span><span class="mi">964</span>         <span class="s2">&quot;bins as an iterable or specifying both a range and &quot;</span>
+<span class="g g-Whitespace">    </span><span class="mi">965</span>         <span class="s2">&quot;the number of bins&quot;</span>
+<span class="g g-Whitespace">    </span><span class="mi">966</span>     <span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">968</span> <span class="k">if</span> <span class="n">weights</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">weights</span><span class="o">.</span><span class="n">chunks</span> <span class="o">!=</span> <span class="n">a</span><span class="o">.</span><span class="n">chunks</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">969</span>     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Input array and weights must have the same chunked structure&quot;</span><span class="p">)</span>
+
+<span class="ne">ValueError</span>: dask.array.histogram requires either specifying bins as an iterable or specifying both a range and the number of bins
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">widget</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">napari</span>
+<span class="n">napari</span><span class="o">.</span><span class="n">view_image</span><span class="p">(</span><span class="n">projs</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;z-stack&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Viewer(camera=Camera(center=(0.0, 291.0, 267.5), zoom=1.0244402985074625, angles=(0.0, 0.0, 90.0), perspective=0.0, mouse_pan=True, mouse_zoom=True), cursor=Cursor(position=(13.0, 1.0, 0.0), scaled=True, style=&lt;CursorStyle.STANDARD: &#39;standard&#39;&gt;, size=1.0), dims=Dims(ndim=3, ndisplay=2, order=(0, 1, 2), axis_labels=(&#39;0&#39;, &#39;1&#39;, &#39;2&#39;), rollable=(True, True, True), range=(RangeTuple(start=0.0, stop=27.0, step=1.0), RangeTuple(start=0.0, stop=582.0, step=1.0), RangeTuple(start=0.0, stop=535.0, step=1.0)), margin_left=(0.0, 0.0, 0.0), margin_right=(0.0, 0.0, 0.0), point=(13.0, 291.0, 267.0), last_used=0), grid=GridCanvas(stride=1, shape=(-1, -1), enabled=False), layers=[&lt;Image layer &#39;z-stack&#39; at 0x196004b0910&gt;], help=&#39;use &lt;2&gt; for transform&#39;, status=&#39;Ready&#39;, tooltip=Tooltip(visible=False, text=&#39;&#39;), theme=&#39;dark&#39;, title=&#39;napari&#39;, mouse_over_canvas=False, mouse_move_callbacks=[], mouse_drag_callbacks=[], mouse_double_click_callbacks=[], mouse_wheel_callbacks=[&lt;function dims_scroll at 0x00000195FCF8DBD0&gt;], _persisted_mouse_event={}, _mouse_drag_gen={}, _mouse_wheel_gen={}, _keymap={})
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="z-stack-alignment">
+<h2><span class="section-number">5.4. </span>z-stack alignment<a class="headerlink" href="#z-stack-alignment" title="Link to this heading">#</a></h2>
+</section>
+<section id="align-each-plane-to-the-reference-plane">
+<h2><span class="section-number">5.5. </span>1. Align each plane to the reference plane<a class="headerlink" href="#align-each-plane-to-the-reference-plane" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">reference_image</span> <span class="o">=</span> <span class="n">projs</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id1">
+<h2><span class="section-number">5.6. </span>2. Align each plane to the reference plane<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">skimage.registration</span> <span class="kn">import</span> <span class="n">phase_cross_correlation</span>
+<span class="kn">from</span> <span class="nn">scipy.ndimage</span> <span class="kn">import</span> <span class="n">shift</span>
+<span class="kn">import</span> <span class="nn">dask</span>
+<span class="kn">from</span> <span class="nn">dask</span> <span class="kn">import</span> <span class="n">delayed</span>
+<span class="kn">import</span> <span class="nn">napari</span>
+
+<span class="k">def</span> <span class="nf">compute_shift_and_align</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">template</span><span class="p">):</span>
+    <span class="n">shift_estimate</span><span class="p">,</span> <span class="n">error</span><span class="p">,</span> <span class="n">diffphase</span> <span class="o">=</span> <span class="n">phase_cross_correlation</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Shift estimate: </span><span class="si">{</span><span class="n">shift_estimate</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">shift</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">shift</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="n">shift_estimate</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">-</span><span class="n">shift_estimate</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;constant&#39;</span><span class="p">,</span> <span class="n">cval</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="n">compute_shift_and_align_delayed</span> <span class="o">=</span> <span class="n">delayed</span><span class="p">(</span><span class="n">compute_shift_and_align</span><span class="p">)</span>
+
+<span class="n">aligned_images</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">compute_shift_and_align_delayed</span><span class="p">(</span><span class="n">projs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">compute</span><span class="p">(),</span> <span class="n">reference_image</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">projs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="p">]</span>
+
+<span class="n">aligned_images</span> <span class="o">=</span> <span class="n">dask</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="o">*</span><span class="n">aligned_images</span><span class="p">)</span>
+<span class="n">aligned_stack</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">aligned_images</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">aligned_stack</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">from_array</span><span class="p">(</span><span class="n">aligned_stack</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">compute_shift_and_align_pair</span><span class="p">(</span><span class="n">image1</span><span class="p">,</span> <span class="n">image2</span><span class="p">):</span>
+    <span class="n">shift_estimate</span><span class="p">,</span> <span class="n">error</span><span class="p">,</span> <span class="n">diffphase</span> <span class="o">=</span> <span class="n">phase_cross_correlation</span><span class="p">(</span><span class="n">image1</span><span class="p">,</span> <span class="n">image2</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Shift estimate between planes: </span><span class="si">{</span><span class="n">shift_estimate</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="c1"># Align image2 to image1</span>
+    <span class="n">aligned_image</span> <span class="o">=</span> <span class="n">shift</span><span class="p">(</span><span class="n">image2</span><span class="p">,</span> <span class="n">shift</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="n">shift_estimate</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">-</span><span class="n">shift_estimate</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;constant&#39;</span><span class="p">,</span> <span class="n">cval</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">aligned_image</span><span class="p">,</span> <span class="n">shift_estimate</span>
+
+<span class="n">aligned_images</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">shift_estimates</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="c1"># Use the first image as the starting point</span>
+<span class="n">aligned_images</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">projs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">compute</span><span class="p">())</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">projs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+    <span class="n">image1</span> <span class="o">=</span> <span class="n">aligned_images</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">image2</span> <span class="o">=</span> <span class="n">projs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
+    <span class="n">aligned_image</span><span class="p">,</span> <span class="n">shift_estimate</span> <span class="o">=</span> <span class="n">compute_shift_and_align_pair</span><span class="p">(</span><span class="n">image1</span><span class="p">,</span> <span class="n">image2</span><span class="p">)</span>
+    <span class="n">aligned_images</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">aligned_image</span><span class="p">)</span>
+    <span class="n">shift_estimates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">shift_estimate</span><span class="p">)</span>
+
+<span class="n">aligned_stack</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">aligned_images</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Shift estimate between planes: [ 0. 18.]
+Shift estimate between planes: [0. 0.]
+Shift estimate between planes: [ 0. 16.]
+Shift estimate between planes: [ 0. -1.]
+Shift estimate between planes: [ 0. 16.]
+Shift estimate between planes: [0. 9.]
+Shift estimate between planes: [  0. -22.]
+Shift estimate between planes: [ 0. 48.]
+Shift estimate between planes: [  0. -36.]
+Shift estimate between planes: [ 0. 48.]
+Shift estimate between planes: [  0. -36.]
+Shift estimate between planes: [ 0. 48.]
+Shift estimate between planes: [  0. -36.]
+Shift estimate between planes: [ 0. 48.]
+Shift estimate between planes: [   5. -266.]
+Shift estimate between planes: [  -5. -250.]
+Shift estimate between planes: [  5. 250.]
+Shift estimate between planes: [  -5. -234.]
+Shift estimate between planes: [  5. 249.]
+Shift estimate between planes: [230. -35.]
+Shift estimate between planes: [-230.   48.]
+Shift estimate between planes: [230. -35.]
+Shift estimate between planes: [-230.   48.]
+Shift estimate between planes: [230. -35.]
+Shift estimate between planes: [-230.   47.]
+Shift estimate between planes: [230. -35.]
+Shift estimate between planes: [-230.   47.]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">visualize_transform</span><span class="p">(</span><span class="n">image_1</span><span class="p">,</span> <span class="n">image_2</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">dipy.align.transforms</span> <span class="kn">import</span> <span class="n">AffineTransform2D</span>
+    <span class="kn">from</span> <span class="nn">dipy.align.imaffine</span> <span class="kn">import</span> <span class="n">AffineRegistration</span>
+    <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+    
+    <span class="n">affreg</span> <span class="o">=</span> <span class="n">AffineRegistration</span><span class="p">()</span>
+    <span class="n">transform</span> <span class="o">=</span> <span class="n">AffineTransform2D</span><span class="p">()</span>
+    <span class="n">affine</span> <span class="o">=</span> <span class="n">affreg</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">image_1</span><span class="p">,</span> <span class="n">image_2</span><span class="p">,</span> <span class="n">transform</span><span class="p">,</span> <span class="n">params0</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    
+    <span class="n">image_2_xform</span> <span class="o">=</span> <span class="n">affine</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">image_2</span><span class="p">)</span>
+
+    <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+
+    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">image_1</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">image_2</span><span class="p">)</span>
+
+    <span class="n">stereo</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">image_1</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">image_1</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">3</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+    <span class="n">stereo</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">image_1</span>
+    <span class="n">stereo</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">image_2_xform</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">stereo</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">image_2_xform</span>
+
+<span class="n">tranformed</span> <span class="o">=</span> <span class="n">visualize_transform</span><span class="p">(</span><span class="n">projs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">compute</span><span class="p">(),</span> <span class="n">projs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">compute</span><span class="p">())</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">projs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">compute</span><span class="p">(),</span> <span class="n">tranformed</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">viewer</span> <span class="o">=</span> <span class="n">napari</span><span class="o">.</span><span class="n">view_image</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Aligned Z-Planes&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Optimizing level 2 [max iter: 10000]
+Optimizing level 1 [max iter: 1000]
+Optimizing level 0 [max iter: 100]
+</pre></div>
+</div>
+<img alt="../../_images/a1cc60bbe9c45869a95380518679b1039fe9db0935998540d0c591a67dc9bb2c.png" src="../../_images/a1cc60bbe9c45869a95380518679b1039fe9db0935998540d0c591a67dc9bb2c.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">shift_estimates</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">shift_estimates</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">shift_estimates</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Shift X&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">shift_estimates</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Shift Y&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Shift Estimates Between Consecutive Planes&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Z-plane Index&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Shift (pixels)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/13c64d0eb37fd51b4a8e95a1d7be791eab255042f12ad071d7c07f498d44feff.png" src="../../_images/13c64d0eb37fd51b4a8e95a1d7be791eab255042f12ad071d7c07f498d44feff.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">viewer</span> <span class="o">=</span> <span class="n">napari</span><span class="o">.</span><span class="n">view_image</span><span class="p">(</span><span class="n">projs</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;z-stack&#39;</span><span class="p">)</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">add_image</span><span class="p">(</span><span class="n">aligned_stack</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;aligned z-stack&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Image layer &#39;aligned z-stack&#39; at 0x196bec56d10&gt;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">skimage.registration</span> <span class="kn">import</span> <span class="n">phase_cross_correlation</span>
+<span class="kn">from</span> <span class="nn">scipy.ndimage</span> <span class="kn">import</span> <span class="n">shift</span>
+<span class="kn">import</span> <span class="nn">napari</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="k">def</span> <span class="nf">compute_horizontal_shift_and_align_pair</span><span class="p">(</span><span class="n">image1</span><span class="p">,</span> <span class="n">image2</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the horizontal shift between two images and align image2 to image1.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:</span>
+<span class="sd">        image1 (ndarray): The reference image (previous z-plane).</span>
+<span class="sd">        image2 (ndarray): The image to align (current z-plane).</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        aligned_image (ndarray): The aligned image.</span>
+<span class="sd">        x_shift (float): The estimated horizontal shift.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Compute the shift using phase cross-correlation</span>
+    <span class="n">shift_estimate</span><span class="p">,</span> <span class="n">error</span><span class="p">,</span> <span class="n">diffphase</span> <span class="o">=</span> <span class="n">phase_cross_correlation</span><span class="p">(</span><span class="n">image1</span><span class="p">,</span> <span class="n">image2</span><span class="p">)</span>
+
+    <span class="c1"># Only take the shift along x-axis (horizontal shift)</span>
+    <span class="n">x_shift</span> <span class="o">=</span> <span class="n">shift_estimate</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Horizontal shift estimate between planes: </span><span class="si">{</span><span class="n">x_shift</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> pixels&quot;</span><span class="p">)</span>
+
+    <span class="n">aligned_image</span> <span class="o">=</span> <span class="n">shift</span><span class="p">(</span><span class="n">image2</span><span class="p">,</span> <span class="n">shift</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="n">x_shift</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;constant&#39;</span><span class="p">,</span> <span class="n">cval</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">aligned_image</span><span class="p">,</span> <span class="n">x_shift</span>
+
+<span class="c1"># Compute the first image and add it to the aligned_images list</span>
+<span class="n">first_image</span> <span class="o">=</span> <span class="n">projs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
+<span class="n">second_image</span> <span class="o">=</span> <span class="n">projs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
+
+<span class="c1"># Align the second image to the first image using only horizontal shifts</span>
+<span class="n">aligned_image</span><span class="p">,</span> <span class="n">x_shift</span> <span class="o">=</span> <span class="n">compute_horizontal_shift_and_align_pair</span><span class="p">(</span><span class="n">first_image</span><span class="p">,</span> <span class="n">second_image</span><span class="p">)</span>
+
+<span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">first_image</span><span class="p">,</span> <span class="n">aligned_image</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">viewer</span> <span class="o">=</span> <span class="n">napari</span><span class="o">.</span><span class="n">view_image</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Aligned Z-Planes&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Horizontal shift estimate between planes: 18.00 pixels
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Initialize lists to store aligned images and shift estimates</span>
+
+<span class="c1"># Iterate through each pair of z-planes</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">projs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+    <span class="c1"># Get the previous aligned image</span>
+    <span class="n">image1</span> <span class="o">=</span> <span class="n">aligned_images</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1"># Compute the current image</span>
+    <span class="n">image2</span> <span class="o">=</span> <span class="n">projs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
+
+    <span class="c1"># Align image2 to image1 using only horizontal shifts</span>
+    <span class="n">aligned_image</span><span class="p">,</span> <span class="n">x_shift</span> <span class="o">=</span> <span class="n">compute_horizontal_shift_and_align_pair</span><span class="p">(</span><span class="n">image1</span><span class="p">,</span> <span class="n">image2</span><span class="p">)</span>
+
+    <span class="c1"># Append the aligned image and shift estimate to the lists</span>
+    <span class="n">aligned_images</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">aligned_image</span><span class="p">)</span>
+    <span class="n">shift_estimates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x_shift</span><span class="p">)</span>
+
+<span class="c1"># Stack the aligned images into a 3D array</span>
+<span class="n">aligned_stack</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">aligned_images</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="c1"># Visualize the horizontal shift estimates</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">shift_estimates</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="n">shift_estimates</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Horizontal Shift Estimates Between Consecutive Z-Planes&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Z-plane Index&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Horizontal Shift (pixels)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="c1"># Visualize the original and aligned stacks using napari</span>
+<span class="n">viewer</span> <span class="o">=</span> <span class="n">napari</span><span class="o">.</span><span class="n">view_image</span><span class="p">(</span><span class="n">projs</span><span class="o">.</span><span class="n">compute</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Original Z-Stack&#39;</span><span class="p">)</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">add_image</span><span class="p">(</span><span class="n">aligned_stack</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Aligned Z-Stack&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="segmentation.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title"><span class="section-number">4. </span>Segmentation</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../../api/index.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">API</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#get-outputs-for-each-z-plane">5.1. Get outputs for each z-plane</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#total-number-of-neurons">5.2. Total number of Neurons</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#combine-results-of-different-z-planes">5.3. Combine results of different z_planes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#z-stack-alignment">5.4. z-stack alignment</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#align-each-plane-to-the-reference-plane">5.5. 1. Align each plane to the reference plane</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">5.6. 2. Align each plane to the reference plane</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Author name not set
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, Elizabeth R. Miller Brain Observatory | The Rockefeller University. All Rights Reserved.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

@@ -1,0 +1,750 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>LBM-CaImAn-Python Documentation &#8212; LBM-CaImAn-Python</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=475cc00c" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="_static/documentation_options.js?v=a1637f0b"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=1ae7504c"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
+    <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
+    <script defer="defer" src="_static/tippy/index.21affd2b-4c7e-4b4d-a8be-c5a9dd3d1ab5.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'index';</script>
+    <link rel="icon" href="_static/icon_caiman_python.svg"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="User Guide" href="user_guide/index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="#">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/lcp_logo.svg" class="logo__image only-light" alt="LBM-CaImAn-Python - Home"/>
+    <script>document.write(`<img src="_static/lcp_logo.svg" class="logo__image only-dark" alt="LBM-CaImAn-Python - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://millerbrainobservatory.github.io/" title="MBO User Hub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="icon_mbo_home.png" class="icon-link-image" alt="MBO User Hub"/></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/MillerBrainObservatory/" title="MBO Github" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">MBO Github</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://mbo.rockefeller.edu/contact/" title="Connect with MBO" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-regular fa-address-card fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Connect with MBO</span></a>
+        </li>
+</ul></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="user_guide/index.html">User Guide</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/assembly.html">1. Image Assembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/batch_utilities.html">2. Batch Utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/registration.html">3. Registration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/segmentation.html">4. Segmentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/collation.html">5. Z-Plane Collation</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="examples/index.html">Tutorial</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="examples/notebooks/assembly.html">1. Image Assembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/notebooks/batch_helpers.html">2. Batch Helpers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/notebooks/motion_correction.html">3. Registration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/notebooks/segmentation.html">4. Segmentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/notebooks/collation.html">5. Collate Planes</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/MillerBrainObservatory/LBM-CaImAn-Python/blob/master/docs/index.md?plain=1" target="_blank"
+   class="btn btn-sm btn-source-file-button dropdown-item"
+   title="Show source"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-code"></i>
+  </span>
+<span class="btn__text-container">Show source</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/MillerBrainObservatory/LBM-CaImAn-Python/edit/master/docs/index.md" target="_blank"
+   class="btn btn-sm btn-source-edit-button dropdown-item"
+   title="Suggest edit"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-pencil-alt"></i>
+  </span>
+<span class="btn__text-container">Suggest edit</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/MillerBrainObservatory/LBM-CaImAn-Python/issues/new?title=Issue%20on%20page%20%2Findex.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/index.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>LBM-CaImAn-Python Documentation</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-to">How to</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#documentation-contents">Documentation Contents</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pipeline-overview">Pipeline Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hpc">HPC</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#multi-file-batch-sbatch"><code class="docutils literal notranslate"><span class="pre">multi_file_batch.sbatch</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#transfering-posix-windows">Transfering POSIX-&gt;Windows</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#comparison-with-lbm-caiman-matlab">Comparison with LBM-CaImAn-MATLAB</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#usage">Usage</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#performance">Performance</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#helpful-resources">Helpful Resources</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="lbm-caiman-python-documentation">
+<h1>LBM-CaImAn-Python Documentation<a class="headerlink" href="#lbm-caiman-python-documentation" title="Link to this heading">#</a></h1>
+<p>For the <code class="docutils literal notranslate"><span class="pre">MATLAB</span></code> implementation of this pipeline, see <a class="reference external" href="https://github.com/MillerBrainObservatory/LBM-CaImAn-MATLAB/">here</a>.</p>
+<p>For current installation instructions and requirements, see the project <a class="reference external" href="https://github.com/MillerBrainObservatory/LBM-CaImAn-Python/blob/master/README.md">README</a>.</p>
+<section id="how-to">
+<h2>How to<a class="headerlink" href="#how-to" title="Link to this heading">#</a></h2>
+<p>The recommended way to use this pipeline is by using the <a class="reference external" href="https://github.com/MillerBrainObservatory/LBM-CaImAn-Python/tree/master/demos/notebooks">example notebooks</a>
+while having the user guide accessible as well. The notebooks act as a walkthrough tutorial that you can change to fit your dataset as you go. Fully rendered versions of the notebooks
+are available in the <a class="reference external" href="https://millerbrainobservatory.github.io/LBM-CaImAn-Python/examples/index.html">tutorial section of this documentation</a>.</p>
+</section>
+<section id="documentation-contents">
+<h2>Documentation Contents<a class="headerlink" href="#documentation-contents" title="Link to this heading">#</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="user_guide/index.html">User Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/assembly.html">1. Image Assembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/batch_utilities.html">2. Batch Utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/registration.html">3. Registration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/segmentation.html">4. Segmentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide/collation.html">5. Z-Plane Collation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples/index.html">Tutorial</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="examples/notebooks/assembly.html">1. Image Assembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/notebooks/batch_helpers.html">2. Batch Helpers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/notebooks/motion_correction.html">3. Registration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/notebooks/segmentation.html">4. Segmentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/notebooks/collation.html">5. Collate Planes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#lbm_caiman_python.add_processing_step"><code class="docutils literal notranslate"><span class="pre">add_processing_step()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#lbm_caiman_python.calculate_centers"><code class="docutils literal notranslate"><span class="pre">calculate_centers()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#lbm_caiman_python.cnmf_ops"><code class="docutils literal notranslate"><span class="pre">cnmf_ops()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#lbm_caiman_python.combine_z_planes"><code class="docutils literal notranslate"><span class="pre">combine_z_planes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#lbm_caiman_python.compute_roi_stats"><code class="docutils literal notranslate"><span class="pre">compute_roi_stats()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#lbm_caiman_python.default_ops"><code class="docutils literal notranslate"><span class="pre">default_ops()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#lbm_caiman_python.dff_rolling_percentile"><code class="docutils literal notranslate"><span class="pre">dff_rolling_percentile()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#lbm_caiman_python.extract_center_square"><code class="docutils literal notranslate"><span class="pre">extract_center_square()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#lbm_caiman_python.generate_patch_view"><code class="docutils literal notranslate"><span class="pre">generate_patch_view()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#lbm_caiman_python.generate_plane_dirname"><code class="docutils literal notranslate"><span class="pre">generate_plane_dirname()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#lbm_caiman_python.get_accepted_cells"><code class="docutils literal notranslate"><span class="pre">get_accepted_cells()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#lbm_caiman_python.get_contours"><code class="docutils literal notranslate"><span class="pre">get_contours()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#lbm_caiman_python.get_noise_fft"><code class="docutils literal notranslate"><span class="pre">get_noise_fft()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#lbm_caiman_python.get_single_patch_coords"><code class="docutils literal notranslate"><span class="pre">get_single_patch_coords()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#lbm_caiman_python.greedyROI"><code class="docutils literal notranslate"><span class="pre">greedyROI()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#lbm_caiman_python.load_ops"><code class="docutils literal notranslate"><span class="pre">load_ops()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#lbm_caiman_python.load_planar_results"><code class="docutils literal notranslate"><span class="pre">load_planar_results()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#lbm_caiman_python.mcorr_ops"><code class="docutils literal notranslate"><span class="pre">mcorr_ops()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#lbm_caiman_python.norm_minmax"><code class="docutils literal notranslate"><span class="pre">norm_minmax()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#lbm_caiman_python.pipeline"><code class="docutils literal notranslate"><span class="pre">pipeline()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#lbm_caiman_python.run_plane"><code class="docutils literal notranslate"><span class="pre">run_plane()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#lbm_caiman_python.run_volume"><code class="docutils literal notranslate"><span class="pre">run_volume()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#lbm_caiman_python.smooth_data"><code class="docutils literal notranslate"><span class="pre">smooth_data()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+</ul>
+</div>
+</section>
+<hr class="docutils" />
+<section id="pipeline-overview">
+<h2>Pipeline Overview<a class="headerlink" href="#pipeline-overview" title="Link to this heading">#</a></h2>
+<p>LBM-CaImAn-Pipeline uses <a class="reference external" href="https://github.com/nel-lab/mesmerize-core/tree/master">mesmerize-core</a> to interface with <a class="reference external" href="https://github.com/flatironinstitute/CaImAn">CaImAn</a> algorithms for Calcium Imaging data processing.</p>
+<p>There are 4 steps in this pipeline:</p>
+<ol class="arabic simple">
+<li><p>Assembly</p>
+<ul class="simple">
+<li><p>De-interleave planes</p></li>
+<li><p>(optional) Scan-Phase Correction</p></li>
+</ul>
+</li>
+<li><p>Motion Correction</p>
+<ul class="simple">
+<li><p>Rigid/non-rigid Registration (single z-plane)</p></li>
+<li><p>Evaluation metrics</p></li>
+<li><p>(optional) Parameter grid-search</p></li>
+<li><p>Register remaining z-planes</p></li>
+</ul>
+</li>
+<li><p>Segmentation</p>
+<ul class="simple">
+<li><p>CNMF (single z-plane)</p></li>
+<li><p>(optional) Deconvolution / spike-extraction</p></li>
+<li><p>Refine neuron selection</p></li>
+<li><p>Segment / deconvolve remianing z-planes</p></li>
+</ul>
+</li>
+<li><p>Collation</p>
+<ul class="simple">
+<li><p>Collate images and metadata into a single volume</p></li>
+<li><p>Lateral offset correction (between z-planes, COMING SOON)</p></li>
+</ul>
+</li>
+</ol>
+</section>
+<hr class="docutils" />
+<section id="hpc">
+<h2>HPC<a class="headerlink" href="#hpc" title="Link to this heading">#</a></h2>
+<p>Slurm utilities are available in the <a class="reference external" href="https://github.com/MillerBrainObservatory/utilities/tree/master/slurm">utilities repository</a>.</p>
+<p><strong>Installation</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/MillerBrainObservatory/utilities.git
+</pre></div>
+</div>
+<p><strong>Transfering data to the HPC</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>rsync<span class="w"> </span>-avPh<span class="w"> </span>/path/to/local/data<span class="w"> </span>username@dtn02-hpc.rockefeller.edu:/lustre/fs4/mbo/scratch/&lt;username&gt;/data/<span class="w"> </span>
+</pre></div>
+</div>
+<p><strong>Transfering data to the your local machine</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># you will need the ssh config for rbo in your .ssh/config file</span>
+rsync<span class="w"> </span>-avPh<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;ssh&quot;</span><span class="w"> </span>./path/to/data<span class="w"> </span>rbo:/path/to/destination
+</pre></div>
+</div>
+<p><strong>Files</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">multifile_batch.sbatch</span></code> - Submit a job to the HPC</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tunnel.sbatch</span></code> - Create a tunnel to the HPC</p></li>
+</ul>
+<section id="multi-file-batch-sbatch">
+<h3><code class="docutils literal notranslate"><span class="pre">multi_file_batch.sbatch</span></code><a class="headerlink" href="#multi-file-batch-sbatch" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>a user folder in the MBO accounts scratch/</p></li>
+<li><p>ssh keys for local-&gt;hpc and hpc-&gt;local transfers</p></li>
+<li><p>(windows only) <code class="docutils literal notranslate"><span class="pre">rsync</span></code> <a class="reference external" href="https://www.itefix.net/cwrsync">download</a> or <a class="reference external" href="https://scicomp.aalto.fi/scicomp/rsynconwindows/">with git bash and this utility</a>.</p></li>
+</ul>
+<p>Login to the hpc on the rocky-9 login node:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ssh<span class="w"> </span>username@login-05-hpc.rockefeller.edu
+</pre></div>
+</div>
+<p>Create a backup of your .bashrc file:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cp<span class="w"> </span>~/.bashrc<span class="w"> </span>~/.bashrc.bak
+</pre></div>
+</div>
+<p>Move the bashrc file in the utilities folder you cloned to replace the one you just backed up:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cp<span class="w"> </span>utilities/.bashrc<span class="w"> </span>~/.bashrc
+</pre></div>
+</div>
+<p>This file exports some environment variables that are necessary for the pipeline to run.</p>
+<p>You will need your files in the <code class="docutils literal notranslate"><span class="pre">mbo_data</span></code>.</p>
+<p>After submitting a job via <code class="docutils literal notranslate"><span class="pre">multifile_batch.sbatch</span></code>, you can monitor the job with <code class="docutils literal notranslate"><span class="pre">squeue</span> <span class="pre">-u</span> <span class="pre">$USER</span></code> and cancel it with <code class="docutils literal notranslate"><span class="pre">scancel</span> <span class="pre">$JOB_ID</span></code>.</p>
+<p>The resulting batch files will be synced back to your local machine.</p>
+</section>
+<section id="transfering-posix-windows">
+<h3>Transfering POSIX-&gt;Windows<a class="headerlink" href="#transfering-posix-windows" title="Link to this heading">#</a></h3>
+<p>You can move your batch contents anywhere. However, if moving them to a different operating system, you may encounter
+the followng error:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>NotImplementedError:<span class="w"> </span>cannot<span class="w"> </span>instantiate<span class="w"> </span><span class="s1">&#39;PosixPath&#39;</span><span class="w"> </span>on<span class="w"> </span>your<span class="w"> </span>system
+</pre></div>
+</div>
+<p>You can use <a class="reference internal" href="#load_batch_cross_platform"><span class="xref myst">lbm_caiman_python.load_batch_cross_platform</span></a> to load this batch item.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="comparison-with-lbm-caiman-matlab">
+<h2>Comparison with <a class="reference external" href="https://github.com/MillerBrainObservatory/LBM-CaImAn-MATLAB/">LBM-CaImAn-MATLAB</a><a class="headerlink" href="#comparison-with-lbm-caiman-matlab" title="Link to this heading">#</a></h2>
+<section id="usage">
+<h3>Usage<a class="headerlink" href="#usage" title="Link to this heading">#</a></h3>
+<p>Beyond the obviously different programming language (MATLAB -&gt; Python), there are a few differences in how these pipelines were constructed.</p>
+<p>The MATLAB implementation was essentially 4 functions spread across 4 <code class="docutils literal notranslate"><span class="pre">.m</span></code> files. These functions would be called from a user-made script (for example, <a class="reference external" href="https://github.com/MillerBrainObservatory/LBM-CaImAn-MATLAB/blob/master/demo_LBM_pipeline.m">demo_LBM_pipeline.m</a>).</p>
+</section>
+<section id="performance">
+<h3>Performance<a class="headerlink" href="#performance" title="Link to this heading">#</a></h3>
+<p>The primary pitfal of <a class="reference external" href="https://github.com/MillerBrainObservatory/LBM-CaImAn-MATLAB/">LBM-CaImAn-MATLAB</a> are the memory constraints. Though MATLAB is extremely efficient with threaded internal functions, the lack of 3rd-party library support means reading and writing to well-established file-formats (i.e. <code class="docutils literal notranslate"><span class="pre">.tiff</span></code>, <code class="docutils literal notranslate"><span class="pre">.hdf5</span></code>) lacking modern features like <a class="reference external" href="https://www.imperva.com/learn/performance/lazy-loading/">lazy-loading data</a>. As a result, the memory footprint required to process a <em>N-GB dataset</em> will be <em>N-GB of memory</em>.</p>
+<p>This pipeline utilizes the well-tested and optimized <a class="reference external" href="https://pypi.org/project/tifffile/">tifffile</a> to selectively load data only when it is needed. That is why processing a <code class="docutils literal notranslate"><span class="pre">35</span> <span class="pre">GB</span></code> file will only consume ~<code class="docutils literal notranslate"><span class="pre">5</span> <span class="pre">GB</span></code> of memory.</p>
+</section>
+</section>
+<section id="helpful-resources">
+<h2>Helpful Resources<a class="headerlink" href="#helpful-resources" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://caiman.readthedocs.io/en/latest/">CaImAn Documentation</a></p></li>
+<li><p><a class="reference external" href="https://mesmerize-core.readthedocs.io/en/latest/#installation">mesmerize-core Documentation</a></p></li>
+<li><p><a class="reference external" href="https://pandas.pydata.org/docs/user_guide/10min.html">pandas 10-minute tutorial</a></p></li>
+</ul>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="right-next"
+       href="user_guide/index.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">User Guide</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-to">How to</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#documentation-contents">Documentation Contents</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pipeline-overview">Pipeline Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hpc">HPC</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#multi-file-batch-sbatch"><code class="docutils literal notranslate"><span class="pre">multi_file_batch.sbatch</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#transfering-posix-windows">Transfering POSIX-&gt;Windows</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#comparison-with-lbm-caiman-matlab">Comparison with LBM-CaImAn-MATLAB</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#usage">Usage</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#performance">Performance</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#helpful-resources">Helpful Resources</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Author name not set
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, Elizabeth R. Miller Brain Observatory | The Rockefeller University. All Rights Reserved.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

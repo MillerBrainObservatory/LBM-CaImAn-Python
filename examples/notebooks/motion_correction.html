@@ -1,0 +1,2999 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>3. Registration &#8212; LBM-CaImAn-Python</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=475cc00c" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/documentation_options.js?v=a1637f0b"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js?v=1ae7504c"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
+    <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
+    <script defer="defer" src="../../_static/tippy/examples/notebooks/motion_correction.bd86adfd-51c7-49a2-becb-a973a0ef4e3a.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'examples/notebooks/motion_correction';</script>
+    <link rel="icon" href="../../_static/icon_caiman_python.svg"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="4. Segmentation" href="segmentation.html" />
+    <link rel="prev" title="2. Batch Helpers" href="batch_helpers.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/lcp_logo.svg" class="logo__image only-light" alt="LBM-CaImAn-Python - Home"/>
+    <script>document.write(`<img src="../../_static/lcp_logo.svg" class="logo__image only-dark" alt="LBM-CaImAn-Python - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://millerbrainobservatory.github.io/" title="MBO User Hub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../../icon_mbo_home.png" class="icon-link-image" alt="MBO User Hub"/></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/MillerBrainObservatory/" title="MBO Github" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">MBO Github</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://mbo.rockefeller.edu/contact/" title="Connect with MBO" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-regular fa-address-card fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Connect with MBO</span></a>
+        </li>
+</ul></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../user_guide/index.html">User Guide</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/assembly.html">1. Image Assembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/batch_utilities.html">2. Batch Utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/registration.html">3. Registration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/segmentation.html">4. Segmentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/collation.html">5. Z-Plane Collation</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../index.html">Tutorial</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="assembly.html">1. Image Assembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batch_helpers.html">2. Batch Helpers</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">3. Registration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="segmentation.html">4. Segmentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="collation.html">5. Collate Planes</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../glossary.html">Glossary</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/MillerBrainObservatory/LBM-CaImAn-Python/blob/master/docs/examples/notebooks/motion_correction.ipynb?plain=1" target="_blank"
+   class="btn btn-sm btn-source-file-button dropdown-item"
+   title="Show source"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-code"></i>
+  </span>
+<span class="btn__text-container">Show source</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/MillerBrainObservatory/LBM-CaImAn-Python/edit/master/docs/examples/notebooks/motion_correction.ipynb" target="_blank"
+   class="btn btn-sm btn-source-edit-button dropdown-item"
+   title="Suggest edit"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-pencil-alt"></i>
+  </span>
+<span class="btn__text-container">Suggest edit</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/MillerBrainObservatory/LBM-CaImAn-Python/issues/new?title=Issue%20on%20page%20%2Fexamples/notebooks/motion_correction.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/examples/notebooks/motion_correction.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Registration</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-path-and-batch-setup">3.1. Data path and batch setup</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-or-load-a-batch-set">3.1.1. Create or load a batch set</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#load-a-data-file-to-examine">3.1.2. Load a data file to examine</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#view-metadata">3.1.3. View metadata</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#registration-parameters">3.2. Registration parameters</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-metadata-to-assign-parameter-values">3.2.1. Using metadata to assign parameter values</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#scaling-patches-relative-to-neuron-size">3.2.2. Scaling patches relative to neuron size</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#parameters-from-metadata">3.2.3. Parameters from metadata</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tune-gsig-filt-high-pass-filter">3.2.4. Tune <code class="docutils literal notranslate"><span class="pre">gSig_filt</span></code> (high-pass-filter)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#change-a-parameter">3.2.5. Change a parameter</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#single-plane-registration">3.3. Single-plane registration</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#add-an-item-to-the-batch">3.3.1. Add an item to the batch</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#run-the-batch-item">3.3.2. Run the batch item</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#check-for-errors-in-outputs">3.3.3. Check for errors in outputs</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#preview-results-side-by-side-comparison">3.3.4. Preview results: side-by-side comparison</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#grid-search-for-best-parameters">3.4. Grid-search for best parameters</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#scale-factor-and-gsig-filt">3.4.1. <code class="docutils literal notranslate"><span class="pre">scale_factor</span></code> and <code class="docutils literal notranslate"><span class="pre">gSig_filt</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#view-the-parameter-differences">3.4.2. View the parameter differences</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#use-can-also-your-own-grid-search-values">3.4.3. Use can also your own grid-search values.</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#run-all-parameter-sets">3.4.4. Run all parameter sets</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#check-for-errors">3.4.5. Check for errors</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluate-results">3.5. Evaluate results</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#summary-statistics">3.5.1. Summary statistics</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#find-the-duplicates">Find the duplicates</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#reload-our-dataframe-if-you-made-a-mistake">Reload our dataframe if you made a mistake</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation-metrics">3.5.2. Evaluation metrics</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#compute-batch-metrics">Compute batch metrics</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#view-numerical-results">View numerical results</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#merge-metrics-results-with-added-parameters-used-for-grid-search">Merge metrics results with added parameters used for grid-search</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optical-flow">Optical Flow</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#plot-residual-flows-and-correlations">Plot residual flows and correlations</a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#with-many-batches">With many batches</a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#with-only-2-batches-no-smoothing">With only 2 batches, no smoothing</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#apply-the-best-parameters-to-remaining-files">3.6. Apply the ‘best parameters’ to remaining files</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="registration">
+<h1><span class="section-number">3. </span>Registration<a class="headerlink" href="#registration" title="Link to this heading">#</a></h1>
+<p>Correct for rigid/non-rigid movement</p>
+<ul class="simple">
+<li><p>Perfom motion-correction (rigid or piecewise-rigid) to eliminate movement in your movie.</p></li>
+<li><p>Run a grid-search across multiple sets of parameters.</p></li>
+<li><p>Use quality metrics to evaluate registration quality.</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">load_ext</span> autoreload
+<span class="o">%</span><span class="k">autoreload</span> 2
+
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">mbo_utilities</span> <span class="kn">import</span> <span class="n">imread</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="kn">import</span> <span class="nn">fastplotlib</span> <span class="k">as</span> <span class="nn">fpl</span>
+
+<span class="kn">import</span> <span class="nn">caiman</span> <span class="k">as</span> <span class="nn">cm</span>
+<span class="kn">import</span> <span class="nn">lbm_mc</span> <span class="k">as</span> <span class="nn">mc</span>
+<span class="kn">from</span> <span class="nn">lbm_mc.caiman_extensions.cnmf</span> <span class="kn">import</span> <span class="n">cnmf_cache</span>
+<span class="kn">from</span> <span class="nn">caiman.motion_correction</span> <span class="kn">import</span> <span class="n">compute_metrics_motion_correction</span>
+<span class="kn">import</span> <span class="nn">lbm_caiman_python</span> <span class="k">as</span> <span class="nn">lcp</span>
+
+<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;nt&quot;</span><span class="p">:</span>
+    <span class="c1"># disable the cache on windows, this will be automatic in a future version</span>
+    <span class="n">cnmf_cache</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="data-path-and-batch-setup">
+<h2><span class="section-number">3.1. </span>Data path and batch setup<a class="headerlink" href="#data-path-and-batch-setup" title="Link to this heading">#</a></h2>
+<p>We set 2 path variables:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">data_path</span></code> : input, path where you saved the output from the assembly step</p></li>
+</ol>
+<ul class="simple">
+<li><p>This will set the global <code class="docutils literal notranslate"><span class="pre">parent_raw_data_path</span></code>, so you can move the results anywhere you want as all results will be saved relative to this directory</p></li>
+</ul>
+<ol class="arabic simple" start="2">
+<li><p><code class="docutils literal notranslate"><span class="pre">batch_path</span></code> : a results, can be anywhere you please, must end in <code class="docutils literal notranslate"><span class="pre">.pickle</span></code></p></li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This notebook assumes you saved scans as TIFF with <code class="docutils literal notranslate"><span class="pre">join_contiguous=True</span></code> so filenames are <code class="docutils literal notranslate"><span class="pre">plane_N.tiff</span></code>
+The process for <code class="docutils literal notranslate"><span class="pre">join_contiguous=False</span></code> will differ and is not covered here.</p>
+</div>
+<p>In this demo we put our <code class="docutils literal notranslate"><span class="pre">batch_path</span></code> (which stores results) in raw directory, in its own folder.</p>
+<p>This is helpful as you can move this folder anywhere you wish.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;C:\Users\RBO\lbm_data\processed&quot;</span><span class="p">)</span>
+<span class="n">batch_path</span> <span class="o">=</span> <span class="n">data_path</span> <span class="o">/</span> <span class="s1">&#39;batch&#39;</span> <span class="o">/</span> <span class="s1">&#39;batch.pickle&#39;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="create-or-load-a-batch-set">
+<h3><span class="section-number">3.1.1. </span>Create or load a batch set<a class="headerlink" href="#create-or-load-a-batch-set" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create or load a batch results file</span>
+<span class="c1"># To overwrite (be very careful with this):</span>
+<span class="c1"># batch_df = mc.create_batch(batch_path, remove_existing=True)</span>
+
+<span class="k">if</span> <span class="ow">not</span> <span class="n">batch_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;creating batch: </span><span class="si">{</span><span class="n">batch_path</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">create_batch</span><span class="p">(</span><span class="n">batch_path</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">load_batch</span><span class="p">(</span><span class="n">batch_path</span><span class="p">)</span>
+
+<span class="c1"># tell mesmerize where the raw data is</span>
+<span class="n">mc</span><span class="o">.</span><span class="n">set_parent_raw_data_path</span><span class="p">(</span><span class="n">batch_path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>WindowsPath(&#39;C:/Users/RBO/lbm_data/processed&#39;)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tiff_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">Path</span><span class="p">(</span><span class="n">data_path</span><span class="p">)</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">&#39;*.tif*&#39;</span><span class="p">)]</span>
+<span class="n">tiff_files</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># first file</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>WindowsPath(&#39;C:/Users/RBO/lbm_data/processed/plane_10_assembled.tiff&#39;)
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="load-a-data-file-to-examine">
+<h3><span class="section-number">3.1.2. </span>Load a data file to examine<a class="headerlink" href="#load-a-data-file-to-examine" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">file</span> <span class="o">=</span> <span class="n">tiff_files</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">imread</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+<span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="view-metadata">
+<h3><span class="section-number">3.1.3. </span>View metadata<a class="headerlink" href="#view-metadata" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">lcp.get_metadata(filepath)</span></code> works on raw scanimage files and files processed through <code class="docutils literal notranslate"><span class="pre">lcp.save_as()</span></code></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">metadata</span> <span class="o">=</span> <span class="n">lcp</span><span class="o">.</span><span class="n">get_metadata</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+<span class="n">metadata</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;num_planes&#39;: 30,
+ &#39;num_frames&#39;: 1730,
+ &#39;fov&#39;: [150, 150],
+ &#39;num_rois&#39;: 4,
+ &#39;frame_rate&#39;: 9.60806,
+ &#39;pixel_resolution&#39;: [1.04, 1.0],
+ &#39;ndim&#39;: 3,
+ &#39;dtype&#39;: &#39;uint16&#39;,
+ &#39;size&#39;: 18648189000,
+ &#39;raw_height&#39;: 2478,
+ &#39;raw_width&#39;: 145,
+ &#39;tiff_pages&#39;: 51900,
+ &#39;roi_width_px&#39;: 144,
+ &#39;roi_height_px&#39;: 600,
+ &#39;sample_format&#39;: &#39;int16&#39;,
+ &#39;objective_resolution&#39;: 157.5}
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dxy</span> <span class="o">=</span> <span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;pixel_resolution&#39;</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Pixel resolution: </span><span class="si">{</span><span class="n">dxy</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> um/px, </span><span class="si">{</span><span class="n">dxy</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> um/px&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Pixel resolution: 1.04 um/px, 1.0 um/px
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># note this is only for a single ROI</span>
+<span class="n">fov</span> <span class="o">=</span> <span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;fov&#39;</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Field of View: </span><span class="si">{</span><span class="n">fov</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">px, </span><span class="si">{</span><span class="n">fov</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">px&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Field of View: 150px, 150px
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fr</span> <span class="o">=</span> <span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;frame_rate&#39;</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Frame rate: </span><span class="si">{</span><span class="n">fr</span><span class="si">}</span><span class="s2"> Hz&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Frame rate: 9.60806 Hz
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="registration-parameters">
+<h2><span class="section-number">3.2. </span>Registration parameters<a class="headerlink" href="#registration-parameters" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Value/Default</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">dxy</span></code></p></td>
+<td><p>Spatial resolution (pixel size in micrometers).</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">dxy</span></code> (from metadata)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">fr</span></code></p></td>
+<td><p>Frame rate of the video (frames per second).</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">fr</span></code> (from metadata)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">max_shifts</span></code></p></td>
+<td><p>Maximum allowed rigid shift in pixels for motion correction.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(int(10/dxy),</span> <span class="pre">int(10/dxy))</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">strides</span></code></p></td>
+<td><p>Size of patches for motion correction.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[48,</span> <span class="pre">48]</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">overlaps</span></code></p></td>
+<td><p>Overlap between patches for motion correction.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[24,</span> <span class="pre">24]</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">max_deviation_rigid</span></code></p></td>
+<td><p>Maximum allowed deviation for patches relative to rigid shifts.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">3</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">border_nan</span></code></p></td>
+<td><p>How to handle border values during motion correction.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">'copy'</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pw_rigid</span></code></p></td>
+<td><p>Flag indicating whether to perform piecewise rigid motion correction.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">gSig_filt</span></code></p></td>
+<td><p>Size of the Gaussian filter for smoothing the motion correction process.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(3,</span> <span class="pre">3)</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">shifts_opencv</span></code></p></td>
+<td><p>Flag to use bicubic interpolation for motion correction.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The parameters are passed <strong>directly</strong> to <code class="docutils literal notranslate"><span class="pre">caiman</span></code>, this means you need to use the same exact names for the parameters and you can use all the parameters that you can use with <code class="docutils literal notranslate"><span class="pre">caiman</span></code> - because it’s just passing them to <code class="docutils literal notranslate"><span class="pre">caiman</span></code>.</p>
+<p>The parameters dict for a mesmerize batch item must have the following structure. Put all the parameters in a dict under a key called <strong>main</strong>. The <strong>main</strong> dict is then fed directly to <code class="docutils literal notranslate"><span class="pre">caiman</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s2">&quot;main&quot;</span><span class="p">:</span> <span class="p">{</span><span class="o">...</span> <span class="n">params</span> <span class="n">directly</span> <span class="n">passed</span> <span class="n">to</span> <span class="n">caiman</span><span class="p">}}</span>
+</pre></div>
+</div>
+<section id="using-metadata-to-assign-parameter-values">
+<h3><span class="section-number">3.2.1. </span>Using metadata to assign parameter values<a class="headerlink" href="#using-metadata-to-assign-parameter-values" title="Link to this heading">#</a></h3>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>The goal here is to get an approximate neuron size in microns.
+This value is used as the basis of the <code class="docutils literal notranslate"><span class="pre">patch</span></code> and <code class="docutils literal notranslate"><span class="pre">max_shifts</span></code> parameters.</p>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">plot_data_with_scalebars</span></code> will give you 3 images, at 5, 10 and 20 um.</p>
+<p>You can use any summary images:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># a single frame</span>
+<span class="n">plot_with_scalebars</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">dxy</span><span class="p">))</span>           
+
+<span class="c1"># mean projection image</span>
+<span class="n">plot_with_scalebars</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">dxy</span><span class="p">))</span>  
+
+<span class="c1"># maximum projection image</span>
+<span class="n">plot_with_scalebars</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">dxy</span><span class="p">))</span>    
+</pre></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lbm_caiman_python</span> <span class="kn">import</span> <span class="n">plot_with_scalebars</span>
+
+<span class="c1"># plot_with_scalebars(data[0, :, :], np.mean(dxy))</span>
+<span class="n">plot_with_scalebars</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">dxy</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/47a1575bfde1006dd691c1c1f215ce80f3913037008df84baa9182f5060d4ea4.png" src="../../_images/47a1575bfde1006dd691c1c1f215ce80f3913037008df84baa9182f5060d4ea4.png" />
+</div>
+</div>
+</section>
+<section id="scaling-patches-relative-to-neuron-size">
+<h3><span class="section-number">3.2.2. </span>Scaling patches relative to neuron size<a class="headerlink" href="#scaling-patches-relative-to-neuron-size" title="Link to this heading">#</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">generate_patch_view</span></code> function divides the image into patches the same way CaImAn will do internally.</p>
+<p>Increasing / decreasing the <code class="docutils literal notranslate"><span class="pre">target_patch_size</span></code> and <code class="docutils literal notranslate"><span class="pre">overlap_fraction</span></code> parameters to examine the effect of different stride/overlap values displayed in the title.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>We want each patch to have “landmarks” (neurons) to use for alignment, so we want at least a few full neurons for each patch.</p>
+<p>For this reason, we use the <code class="docutils literal notranslate"><span class="pre">neuron_size</span></code> * <code class="docutils literal notranslate"><span class="pre">scale_factor</span></code> as our <code class="docutils literal notranslate"><span class="pre">target_patch_size</span></code>.</p>
+<p>We want to <strong>avoid</strong> neurons occupying the inner regions of multiple neighboring patches.</p>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">neuron_size</span> <span class="o">=</span> <span class="mi">15</span>    <span class="c1"># in micron</span>
+
+<span class="c1"># - value of 1 makes patches ~neuron sized</span>
+<span class="c1"># - value of 2 makes patches ~2x neuron sized</span>
+<span class="c1"># - the larger your neurons, the larger you want to make this number</span>
+<span class="n">scale_factor</span> <span class="o">=</span> <span class="mi">3</span> <span class="c1"># must be &gt; 0</span>
+
+<span class="n">overlap_fraction</span> <span class="o">=</span> <span class="mf">0.3</span>  <span class="c1"># 30% of the patch size will be overlap</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lbm_caiman_python</span> <span class="kn">import</span> <span class="n">generate_patch_view</span>
+
+<span class="n">target_patch_size</span><span class="o">=</span><span class="n">neuron_size</span><span class="o">*</span><span class="n">scale_factor</span>
+
+<span class="c1"># this function assumes a square pixel resolution, so take the mean</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">stride_px</span><span class="p">,</span> <span class="n">overlap_px</span> <span class="o">=</span> <span class="n">generate_patch_view</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">pixel_resolution</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">dxy</span><span class="p">),</span> <span class="n">target_patch_size</span><span class="o">=</span><span class="n">target_patch_size</span><span class="p">,</span> <span class="n">overlap_fraction</span><span class="o">=</span><span class="n">overlap_fraction</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/0da9ea6cd4b46c7ebf62623243211200271f3ee0dc6505303f7cc9dc59d5e0c2.png" src="../../_images/0da9ea6cd4b46c7ebf62623243211200271f3ee0dc6505303f7cc9dc59d5e0c2.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;stride : </span><span class="si">{</span><span class="n">stride_px</span><span class="si">}</span><span class="s1">px</span><span class="se">\n</span><span class="s1">overlap: </span><span class="si">{</span><span class="n">overlap_px</span><span class="si">}</span><span class="s1">px&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>stride : 44px
+overlap: 13px
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="parameters-from-metadata">
+<h3><span class="section-number">3.2.3. </span>Parameters from metadata<a class="headerlink" href="#parameters-from-metadata" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">lcp.params_from_metadata(metadata)</span></code> will calculate sensible defaults for registration (and segmentation).</p>
+<p>Compare the strides / overlaps generated from the <code class="docutils literal notranslate"><span class="pre">generate_patch_view()</span></code> function. If they are significantly different,
+we recommend you use the defaults for the first run, and tune with the values from your custom set overlap.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">params</span> <span class="o">=</span> <span class="n">lcp</span><span class="o">.</span><span class="n">params_from_metadata</span><span class="p">(</span><span class="n">metadata</span><span class="p">)</span>
+<span class="n">params</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Overlaps too small. Increasing to neuron diameter.
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;main&#39;: {&#39;pw_rigid&#39;: True,
+  &#39;max_shifts&#39;: [10, 10],
+  &#39;strides&#39;: [62, 64],
+  &#39;overlaps&#39;: [7, 7],
+  &#39;min_mov&#39;: None,
+  &#39;gSig_filt&#39;: [0, 0],
+  &#39;max_deviation_rigid&#39;: 3,
+  &#39;border_nan&#39;: &#39;copy&#39;,
+  &#39;splits_els&#39;: 14,
+  &#39;upsample_factor_grid&#39;: 4,
+  &#39;use_cuda&#39;: False,
+  &#39;num_frames_split&#39;: 50,
+  &#39;niter_rig&#39;: 1,
+  &#39;is3D&#39;: False,
+  &#39;splits_rig&#39;: 14,
+  &#39;num_splits_to_process_rig&#39;: None,
+  &#39;fr&#39;: 9.60806,
+  &#39;dxy&#39;: [1.04, 1.0],
+  &#39;decay_time&#39;: 0.4,
+  &#39;p&#39;: 2,
+  &#39;nb&#39;: 3,
+  &#39;K&#39;: 20,
+  &#39;rf&#39;: 34,
+  &#39;stride&#39;: 7,
+  &#39;gSig&#39;: 7.5,
+  &#39;gSiz&#39;: (31.0, 31.0),
+  &#39;method_init&#39;: &#39;greedy_roi&#39;,
+  &#39;rolling_sum&#39;: True,
+  &#39;use_cnn&#39;: False,
+  &#39;ssub&#39;: 1,
+  &#39;tsub&#39;: 1,
+  &#39;merge_thr&#39;: 0.7,
+  &#39;bas_nonneg&#39;: True,
+  &#39;min_SNR&#39;: 1.4,
+  &#39;rval_thr&#39;: 0.8},
+ &#39;refit&#39;: True}
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="tune-gsig-filt-high-pass-filter">
+<h3><span class="section-number">3.2.4. </span>Tune <code class="docutils literal notranslate"><span class="pre">gSig_filt</span></code> (high-pass-filter)<a class="headerlink" href="#tune-gsig-filt-high-pass-filter" title="Link to this heading">#</a></h3>
+<p>Use a spatial filter to highlight cells and eliminate low-frequency spatial information (i.e. blood-vessels)</p>
+<p>In the below widget, move the slider at the bottom titled ‘gSig_filt’ to see if adding a gaussian blur can help highlight neurons and hide blood-vessels.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ipywidgets</span> <span class="kn">import</span> <span class="n">IntSlider</span><span class="p">,</span> <span class="n">VBox</span>
+<span class="kn">from</span> <span class="nn">caiman.motion_correction</span> <span class="kn">import</span> <span class="n">high_pass_filter_space</span>
+
+<span class="n">slider_gsig_filt</span> <span class="o">=</span> <span class="n">IntSlider</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">33</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>  <span class="n">description</span><span class="o">=</span><span class="s2">&quot;high-pass-filter (σ)&quot;</span><span class="p">)</span>
+<span class="n">funcs</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">frame</span><span class="p">:</span> <span class="n">high_pass_filter_space</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="p">(</span><span class="n">slider_gsig_filt</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">slider_gsig_filt</span><span class="o">.</span><span class="n">value</span><span class="p">))}</span>
+
+<span class="c1"># input movie will be shown on left, filtered on right</span>
+<span class="n">iw_gs</span> <span class="o">=</span> <span class="n">fpl</span><span class="o">.</span><span class="n">ImageWidget</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="n">data</span><span class="p">,</span> <span class="n">data</span><span class="p">],</span>
+    <span class="n">frame_apply</span><span class="o">=</span><span class="n">funcs</span><span class="p">,</span>
+    <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;raw&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;filtered&quot;</span><span class="p">],</span>
+    <span class="n">figure_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">1200</span><span class="p">,</span> <span class="mi">600</span><span class="p">)},</span>
+    <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;gnuplot2&quot;</span>
+<span class="p">)</span>
+
+<span class="n">iw_gs</span><span class="o">.</span><span class="n">figure</span><span class="p">[</span><span class="s2">&quot;filtered&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;filtered σ=</span><span class="si">{</span><span class="n">slider_gsig_filt</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">force_update</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="c1"># forces the images to update when the gSig_filt slider is moved</span>
+    <span class="n">iw_gs</span><span class="o">.</span><span class="n">current_index</span> <span class="o">=</span> <span class="n">iw_gs</span><span class="o">.</span><span class="n">current_index</span>
+    <span class="n">iw_gs</span><span class="o">.</span><span class="n">reset_vmin_vmax</span><span class="p">()</span>
+    <span class="n">iw_gs</span><span class="o">.</span><span class="n">figure</span><span class="p">[</span><span class="s2">&quot;filtered&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;filtered σ=</span><span class="si">{</span><span class="n">slider_gsig_filt</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">iw_gs</span><span class="o">.</span><span class="n">reset_vmin_vmax</span><span class="p">()</span>
+
+<span class="n">slider_gsig_filt</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span><span class="n">force_update</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">)</span>
+
+<span class="n">VBox</span><span class="p">([</span><span class="n">iw_gs</span><span class="o">.</span><span class="n">show</span><span class="p">(),</span> <span class="n">slider_gsig_filt</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "4022164f9549462ea298fbc2500b8239", "version_major": 2, "version_minor": 0}</script><script type="application/vnd.jupyter.widget-view+json">{"model_id": "7bab13dc717b40f6a5cd24ffa669ad53", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">iw_gs</span><span class="o">.</span><span class="n">close</span><span class="p">();</span> <span class="n">slider_gsig_filt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="change-a-parameter">
+<h3><span class="section-number">3.2.5. </span>Change a parameter<a class="headerlink" href="#change-a-parameter" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;main&#39;</span><span class="p">][</span><span class="s1">&#39;gSig_filt&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="single-plane-registration">
+<h2><span class="section-number">3.3. </span>Single-plane registration<a class="headerlink" href="#single-plane-registration" title="Link to this heading">#</a></h2>
+<p>See the mesmerize-core <a class="reference external" href="https://mesmerize-core.readthedocs.io/en/latest/api/functions.html">utility docs</a> for more information on batch creation.</p>
+<p>We simple need to:</p>
+<ol class="arabic simple">
+<li><p>Add the batch item</p></li>
+<li><p>Run the batch item</p></li>
+</ol>
+<section id="add-an-item-to-the-batch">
+<h3><span class="section-number">3.3.1. </span>Add an item to the batch<a class="headerlink" href="#add-an-item-to-the-batch" title="Link to this heading">#</a></h3>
+<p>A “batch item” consists of:</p>
+<ul class="simple">
+<li><p>algorithm to run, <code class="docutils literal notranslate"><span class="pre">algo</span></code></p>
+<ul>
+<li><p>currently: mcorr, cnmf, cnmfe</p></li>
+</ul>
+</li>
+<li><p>input movie to run the algorithm on, <code class="docutils literal notranslate"><span class="pre">input_movie_path</span></code></p>
+<ul>
+<li><p>can be string or dataframe row</p></li>
+</ul>
+</li>
+<li><p>parameters for the specified algorithm, <code class="docutils literal notranslate"><span class="pre">params</span></code></p></li>
+<li><p>a name for you to keep track of things <code class="docutils literal notranslate"><span class="pre">item_name</span></code></p>
+<ul>
+<li><p>can be anything</p></li>
+</ul>
+</li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span><span class="o">.</span><span class="n">caiman</span><span class="o">.</span><span class="n">add_item</span><span class="p">(</span>
+    <span class="n">algo</span><span class="o">=</span><span class="s1">&#39;mcorr&#39;</span><span class="p">,</span>
+    <span class="n">input_movie_path</span><span class="o">=</span><span class="n">file</span><span class="p">,</span>
+    <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
+    <span class="n">item_name</span><span class="o">=</span><span class="s1">&#39;mcorr&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">df</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>algo</th>
+      <th>item_name</th>
+      <th>input_movie_path</th>
+      <th>params</th>
+      <th>outputs</th>
+      <th>added_time</th>
+      <th>ran_time</th>
+      <th>algo_duration</th>
+      <th>comments</th>
+      <th>uuid</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>mcorr</td>
+      <td>mcorr</td>
+      <td>plane_11_assembled.tiff</td>
+      <td>{'main': {'pw_rigid': True, 'max_shifts': [10, 10], 'strides': [62, 64], 'overlaps': [7, 7], 'min_mov': None, 'gSig_...</td>
+      <td>None</td>
+      <td>2025-01-23T22:01:50</td>
+      <td>None</td>
+      <td>None</td>
+      <td>None</td>
+      <td>22323919-7768-4d39-88ad-b0c3afff912f</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="run-the-batch-item">
+<h3><span class="section-number">3.3.2. </span>Run the batch item<a class="headerlink" href="#run-the-batch-item" title="Link to this heading">#</a></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>On Linux &amp; Mac it will run in subprocess but on Windows it will run in the local kernel.
+For this reason, on windows you need to reload the dataframe:</p>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">df</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">caiman</span><span class="o">.</span><span class="n">reload_from_disk</span><span class="p">()</span>
+<span class="n">df</span>
+</pre></div>
+</div>
+<p>If you ever get errors like</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ne">TypeError</span><span class="p">:</span> <span class="n">NoneType</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">subscriptable</span>
+</pre></div>
+</div>
+<p><strong>This likely means you need to reload the dataframe</strong>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>On windows, <code class="docutils literal notranslate"><span class="pre">df.iloc[i].caiman.run()</span></code> will sometimes stall if you run additional cells before it completes.</p>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">caiman</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Running 22323919-7768-4d39-88ad-b0c3afff912f with local backend
+starting mc
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>mc finished successfully!
+computing projections
+Computing correlation image
+finished computing correlation image
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;lbm_mc.caiman_extensions.common.DummyProcess at 0x2924802f490&gt;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">caiman</span><span class="o">.</span><span class="n">reload_from_disk</span><span class="p">()</span>
+<span class="n">df</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>algo</th>
+      <th>item_name</th>
+      <th>input_movie_path</th>
+      <th>params</th>
+      <th>outputs</th>
+      <th>added_time</th>
+      <th>ran_time</th>
+      <th>algo_duration</th>
+      <th>comments</th>
+      <th>uuid</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>mcorr</td>
+      <td>mcorr</td>
+      <td>plane_11_assembled.tiff</td>
+      <td>{'main': {'pw_rigid': True, 'max_shifts': [10, 10], 'strides': [62, 64], 'overlaps': [7, 7], 'min_mov': None, 'gSig_...</td>
+      <td>{'mean-projection-path': '22323919-7768-4d39-88ad-b0c3afff912f/22323919-7768-4d39-88ad-b0c3afff912f_mean_projection....</td>
+      <td>2025-01-23T22:01:50</td>
+      <td>2025-01-23T22:03:07</td>
+      <td>71.93 sec</td>
+      <td>None</td>
+      <td>22323919-7768-4d39-88ad-b0c3afff912f</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="check-for-errors-in-outputs">
+<h3><span class="section-number">3.3.3. </span>Check for errors in outputs<a class="headerlink" href="#check-for-errors-in-outputs" title="Link to this heading">#</a></h3>
+<p>In the table header <strong>outputs</strong>, you should see</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;mean-projection-path&#39;</span><span class="p">:</span> <span class="o">...</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>If you see instead:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;success&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="o">...</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Run the below cell to evaluate the error message.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pprint</span>
+<span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">outputs</span><span class="p">[</span><span class="s2">&quot;traceback&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>None
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="preview-results-side-by-side-comparison">
+<h3><span class="section-number">3.3.4. </span>Preview results: side-by-side comparison<a class="headerlink" href="#preview-results-side-by-side-comparison" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">mesmerize-core</span></code> lets us easily retrieve a memory-mappable movie</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fastplotlib</span></code> will efficiently display this movie using your GPU</p></li>
+</ul>
+<p><a class="reference external" href="https://mesmerize-core.readthedocs.io/en/latest/api/mcorr.html">See the mesmerize-core motion-correction (mcorr) API</a>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># get the motion corrected movie memmap</span>
+<span class="n">mcorr_movie</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">mcorr</span><span class="o">.</span><span class="n">get_output</span><span class="p">()</span>
+
+<span class="c1"># the input movie, note that we use `.caiman` here instead of `.mcorr`</span>
+<span class="n">input_movie</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">caiman</span><span class="o">.</span><span class="n">get_input_movie</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Its helpful to add a mean window and zoom into a cell to see if movement was corrected.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mcorr_iw</span> <span class="o">=</span> <span class="n">fpl</span><span class="o">.</span><span class="n">ImageWidget</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="n">input_movie</span><span class="p">,</span> <span class="n">mcorr_movie</span><span class="p">],</span>
+    <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;raw&#39;</span><span class="p">,</span> <span class="s1">&#39;registered&#39;</span><span class="p">],</span>
+    <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;gnuplot2&quot;</span><span class="p">,</span>
+    <span class="n">window_funcs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;t&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">,</span> <span class="mi">17</span><span class="p">)},</span> <span class="c1"># window functions, can change to np.max, np.std, anything that operates on a timeseries</span>
+    <span class="n">figure_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">900</span><span class="p">,</span> <span class="mi">560</span><span class="p">)},</span>
+    <span class="n">histogram_widget</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="c1"># helps keep plots close together</span>
+<span class="p">)</span>
+<span class="n">mcorr_iw</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "94b7931e9291442d9a065d40c1923d3e", "version_major": 2, "version_minor": 0}</script><script type="application/vnd.jupyter.widget-view+json">{"model_id": "7710eebce3c24386a7d349eb8205b37f", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mcorr_iw</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="grid-search-for-best-parameters">
+<h2><span class="section-number">3.4. </span>Grid-search for best parameters<a class="headerlink" href="#grid-search-for-best-parameters" title="Link to this heading">#</a></h2>
+<section id="scale-factor-and-gsig-filt">
+<h3><span class="section-number">3.4.1. </span><code class="docutils literal notranslate"><span class="pre">scale_factor</span></code> and <code class="docutils literal notranslate"><span class="pre">gSig_filt</span></code><a class="headerlink" href="#scale-factor-and-gsig-filt" title="Link to this heading">#</a></h3>
+<p>If you still see non-rigid motion in your movie, we can try increasing the <code class="docutils literal notranslate"><span class="pre">scale_factor</span></code> to increase our patch-size or decrease it.</p>
+<p>More than likely you will want to decrease the scale factor to process more patches.</p>
+<p>The patched graphs displayed show you what patches each of your movie will use.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">item_name</span></code> parameter of <code class="docutils literal notranslate"><span class="pre">df.caiman.add_item()</span></code> is used to group similar batch results.
+You should keep the <code class="docutils literal notranslate"><span class="pre">item_name</span></code> the same for grid search items.</p>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+
+<span class="k">for</span> <span class="n">scale</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">):</span> <span class="c1"># we started with a scale of 3</span>
+    <span class="k">for</span> <span class="n">gSig</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">):</span> <span class="c1"># very exaustive</span>
+        <span class="n">target_patch_size</span><span class="o">=</span><span class="n">neuron_size</span><span class="o">*</span><span class="n">scale</span>
+        <span class="n">overlap_fraction</span> <span class="o">=</span> <span class="mf">.3</span> <span class="c1"># keep overlap to 30% of patch size</span>
+
+        <span class="c1"># _, _, stride_px, overlap_px = generate_patch_view(np.max(data, axis=0), pixel_resolution=np.mean(dxy), target_patch_size=target_patch_size, overlap_fraction=overlap_fraction)</span>
+        <span class="n">stride</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">target_patch_size</span> <span class="o">/</span> <span class="n">pixel_resolution</span><span class="p">)</span>
+        <span class="n">overlap</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">overlap_fraction</span> <span class="o">*</span> <span class="n">stride</span><span class="p">)</span>
+ 
+        <span class="c1"># deep copy is the safest way to copy dicts</span>
+        <span class="n">new_params</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+
+        <span class="n">new_shift</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">overlap_px</span> <span class="o">/</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="n">new_stride</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">stride_px</span><span class="p">))</span>
+        <span class="n">new_overlap</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">overlap_px</span><span class="p">))</span>
+
+        <span class="n">new_params</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">][</span><span class="s2">&quot;max_shifts&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">new_shift</span><span class="p">,</span> <span class="n">new_shift</span><span class="p">)</span>
+        <span class="n">new_params</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">][</span><span class="s2">&quot;strides&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">new_stride</span><span class="p">,</span> <span class="n">new_stride</span><span class="p">)</span>
+        <span class="n">new_params</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">][</span><span class="s2">&quot;overlaps&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">new_overlap</span><span class="p">,</span> <span class="n">new_overlap</span><span class="p">)</span>
+        <span class="n">new_params</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">][</span><span class="s2">&quot;overlaps&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">new_overlap</span><span class="p">,</span> <span class="n">new_overlap</span><span class="p">)</span>
+        <span class="n">new_params</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">][</span><span class="s2">&quot;gSig_filt&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">gSig</span><span class="p">,</span> <span class="n">gSig</span><span class="p">)</span>
+
+        <span class="n">df</span><span class="o">.</span><span class="n">caiman</span><span class="o">.</span><span class="n">add_item</span><span class="p">(</span>
+            <span class="n">algo</span><span class="o">=</span><span class="s1">&#39;mcorr&#39;</span><span class="p">,</span>
+            <span class="n">input_movie_path</span><span class="o">=</span><span class="n">file</span><span class="p">,</span>
+            <span class="n">params</span><span class="o">=</span><span class="n">new_params</span><span class="p">,</span>
+            <span class="n">item_name</span><span class="o">=</span><span class="s1">&#39;mcorr&#39;</span><span class="p">,</span>
+        <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="view-the-parameter-differences">
+<h3><span class="section-number">3.4.2. </span>View the parameter differences<a class="headerlink" href="#view-the-parameter-differences" title="Link to this heading">#</a></h3>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>We can use the <code class="docutils literal notranslate"><span class="pre">caiman.get_params_diffs()</span></code> to see the unique parameters between rows with the same <code class="docutils literal notranslate"><span class="pre">item_name</span></code>.</p>
+<p>This shows the parameters that differ between our batch items.</p>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">diffs</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">caiman</span><span class="o">.</span><span class="n">get_params_diffs</span><span class="p">(</span><span class="n">algo</span><span class="o">=</span><span class="s2">&quot;mcorr&quot;</span><span class="p">,</span> <span class="n">item_name</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;item_name&quot;</span><span class="p">])</span>
+<span class="n">diffs</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>max_shifts</th>
+      <th>overlaps</th>
+      <th>strides</th>
+      <th>gSig_filt</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>[10, 10]</td>
+      <td>[7, 7]</td>
+      <td>[62, 64]</td>
+      <td>[0, 0]</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>(2, 2)</td>
+      <td>(4, 4)</td>
+      <td>(14, 14)</td>
+      <td>(0, 0)</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>(2, 2)</td>
+      <td>(4, 4)</td>
+      <td>(14, 14)</td>
+      <td>(1, 1)</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>(2, 2)</td>
+      <td>(4, 4)</td>
+      <td>(14, 14)</td>
+      <td>(2, 2)</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>(2, 2)</td>
+      <td>(4, 4)</td>
+      <td>(14, 14)</td>
+      <td>(4, 4)</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>(4, 4)</td>
+      <td>(8, 8)</td>
+      <td>(29, 29)</td>
+      <td>(0, 0)</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>(4, 4)</td>
+      <td>(8, 8)</td>
+      <td>(29, 29)</td>
+      <td>(1, 1)</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>(4, 4)</td>
+      <td>(8, 8)</td>
+      <td>(29, 29)</td>
+      <td>(2, 2)</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>(4, 4)</td>
+      <td>(8, 8)</td>
+      <td>(29, 29)</td>
+      <td>(4, 4)</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>(9, 9)</td>
+      <td>(17, 17)</td>
+      <td>(58, 58)</td>
+      <td>(0, 0)</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>(9, 9)</td>
+      <td>(17, 17)</td>
+      <td>(58, 58)</td>
+      <td>(1, 1)</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>(9, 9)</td>
+      <td>(17, 17)</td>
+      <td>(58, 58)</td>
+      <td>(2, 2)</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>(9, 9)</td>
+      <td>(17, 17)</td>
+      <td>(58, 58)</td>
+      <td>(4, 4)</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="use-can-also-your-own-grid-search-values">
+<h3><span class="section-number">3.4.3. </span>Use can also your own grid-search values.<a class="headerlink" href="#use-can-also-your-own-grid-search-values" title="Link to this heading">#</a></h3>
+<p>For example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+
+<span class="k">for</span> <span class="n">shifts</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">32</span><span class="p">]:</span>
+    <span class="k">for</span> <span class="n">strides</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">12</span><span class="p">,</span><span class="mi">64</span><span class="p">]:</span>
+        <span class="n">overlaps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">strides</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="c1"># deep copy is the safest way to copy dicts</span>
+        <span class="n">new_params</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">mcorr_params</span><span class="p">)</span>
+
+        <span class="c1"># assign the &quot;max_shifts&quot;</span>
+        <span class="n">new_params</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">][</span><span class="s2">&quot;pw_rigid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">new_params</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">][</span><span class="s2">&quot;max_shifts&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">shifts</span><span class="p">,</span> <span class="n">shifts</span><span class="p">)</span>
+        <span class="n">new_params</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">][</span><span class="s2">&quot;strides&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">strides</span><span class="p">,</span> <span class="n">strides</span><span class="p">)</span>
+        <span class="n">new_params</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">][</span><span class="s2">&quot;overlaps&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">overlaps</span><span class="p">,</span> <span class="n">overlaps</span><span class="p">)</span>
+
+        <span class="n">df</span><span class="o">.</span><span class="n">caiman</span><span class="o">.</span><span class="n">add_item</span><span class="p">(</span>
+            <span class="n">algo</span><span class="o">=</span><span class="s1">&#39;mcorr&#39;</span><span class="p">,</span>
+            <span class="n">input_movie_path</span><span class="o">=</span><span class="n">file</span><span class="p">,</span>
+            <span class="n">params</span><span class="o">=</span><span class="n">new_params</span><span class="p">,</span>
+            <span class="n">item_name</span><span class="o">=</span><span class="s1">&#39;mcorr&#39;</span><span class="p">,</span>  <span class="c1"># filename of the movie, but can be anything</span>
+        <span class="p">)</span>
+
+<span class="n">df</span><span class="o">.</span><span class="n">caiman</span><span class="o">.</span><span class="n">reload_from_disk</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="run-all-parameter-sets">
+<h3><span class="section-number">3.4.4. </span>Run all parameter sets<a class="headerlink" href="#run-all-parameter-sets" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">df.iterrows()</span></code> iterates through rows and returns the numerical index and row for each iteration</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+    <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;outputs&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="c1"># item has already been run</span>
+        <span class="k">continue</span> <span class="c1"># skip</span>
+
+    <span class="n">process</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">caiman</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+
+    <span class="c1"># on Windows you MUST reload the batch dataframe after every iteration because it uses the `local` backend.</span>
+    <span class="c1"># this is unnecessary on Linux &amp; Mac</span>
+    <span class="c1"># &quot;DummyProcess&quot; is used for local backend so this is automatic</span>
+    <span class="k">if</span> <span class="n">process</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;DummyProcess&quot;</span><span class="p">:</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">caiman</span><span class="o">.</span><span class="n">reload_from_disk</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Running 8d6ff88a-12d4-4029-8b41-064b13d5ff43 with local backend
+starting mc
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>mc finished successfully!
+computing projections
+Computing correlation image
+finished computing correlation image
+Running 958a6e01-8fb3-4ae5-b06b-623bce6782ae with local backend
+starting mc
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>mc finished successfully!
+computing projections
+Computing correlation image
+finished computing correlation image
+Running 58cd4cb9-e571-49a0-9c73-a33e6fdb83e2 with local backend
+starting mc
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>mc finished successfully!
+computing projections
+Computing correlation image
+finished computing correlation image
+Running 1842685d-e421-423b-b872-3c76cb684fa4 with local backend
+starting mc
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>mc finished successfully!
+computing projections
+Computing correlation image
+finished computing correlation image
+Running f8d5343d-14a3-4872-89d6-6f862f9ce255 with local backend
+starting mc
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>mc finished successfully!
+computing projections
+Computing correlation image
+finished computing correlation image
+Running d6ccef75-5a5f-4d30-8dfa-2e1fe493fee1 with local backend
+starting mc
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>mc finished successfully!
+computing projections
+Computing correlation image
+finished computing correlation image
+Running 9ad664bf-c22e-4ba6-ac2d-a7605933e2d2 with local backend
+starting mc
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>mc finished successfully!
+computing projections
+Computing correlation image
+finished computing correlation image
+Running 90963ca2-a226-4503-8781-33fe09b40960 with local backend
+starting mc
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>mc finished successfully!
+computing projections
+Computing correlation image
+finished computing correlation image
+Running 19d16022-e6e5-4bb6-b0fd-e9be9f7c4f9e with local backend
+starting mc
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>mc finished successfully!
+computing projections
+Computing correlation image
+finished computing correlation image
+Running 329e34f0-3c45-4427-820a-8000fc57c054 with local backend
+starting mc
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>mc finished successfully!
+computing projections
+Computing correlation image
+finished computing correlation image
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="check-for-errors">
+<h3><span class="section-number">3.4.5. </span>Check for errors<a class="headerlink" href="#check-for-errors" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># make sure everything works properly</span>
+<span class="c1"># check for outputs {&#39;success&#39;: False, ...</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">caiman</span><span class="o">.</span><span class="n">reload_from_disk</span><span class="p">()</span>
+<span class="n">df</span><span class="o">.</span><span class="n">outputs</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0     {&#39;mean-projection-path&#39;: &#39;22323919-7768-4d39-88ad-b0c3afff912f/22323919-7768-4d39-88ad-b0c3afff912f_mean_projection....
+1     {&#39;mean-projection-path&#39;: &#39;efd3fcee-ba9e-46ff-826e-cffbef906411/efd3fcee-ba9e-46ff-826e-cffbef906411_mean_projection....
+2     {&#39;mean-projection-path&#39;: &#39;ab1e18e8-d860-408c-8588-a7995f542639/ab1e18e8-d860-408c-8588-a7995f542639_mean_projection....
+3     {&#39;mean-projection-path&#39;: &#39;8d6ff88a-12d4-4029-8b41-064b13d5ff43/8d6ff88a-12d4-4029-8b41-064b13d5ff43_mean_projection....
+4     {&#39;mean-projection-path&#39;: &#39;958a6e01-8fb3-4ae5-b06b-623bce6782ae/958a6e01-8fb3-4ae5-b06b-623bce6782ae_mean_projection....
+5     {&#39;mean-projection-path&#39;: &#39;58cd4cb9-e571-49a0-9c73-a33e6fdb83e2/58cd4cb9-e571-49a0-9c73-a33e6fdb83e2_mean_projection....
+6     {&#39;mean-projection-path&#39;: &#39;1842685d-e421-423b-b872-3c76cb684fa4/1842685d-e421-423b-b872-3c76cb684fa4_mean_projection....
+7     {&#39;mean-projection-path&#39;: &#39;f8d5343d-14a3-4872-89d6-6f862f9ce255/f8d5343d-14a3-4872-89d6-6f862f9ce255_mean_projection....
+8     {&#39;mean-projection-path&#39;: &#39;d6ccef75-5a5f-4d30-8dfa-2e1fe493fee1/d6ccef75-5a5f-4d30-8dfa-2e1fe493fee1_mean_projection....
+9     {&#39;mean-projection-path&#39;: &#39;9ad664bf-c22e-4ba6-ac2d-a7605933e2d2/9ad664bf-c22e-4ba6-ac2d-a7605933e2d2_mean_projection....
+10    {&#39;mean-projection-path&#39;: &#39;90963ca2-a226-4503-8781-33fe09b40960/90963ca2-a226-4503-8781-33fe09b40960_mean_projection....
+11    {&#39;mean-projection-path&#39;: &#39;19d16022-e6e5-4bb6-b0fd-e9be9f7c4f9e/19d16022-e6e5-4bb6-b0fd-e9be9f7c4f9e_mean_projection....
+12    {&#39;mean-projection-path&#39;: &#39;329e34f0-3c45-4427-820a-8000fc57c054/329e34f0-3c45-4427-820a-8000fc57c054_mean_projection....
+Name: outputs, dtype: object
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="evaluate-results">
+<h2><span class="section-number">3.5. </span>Evaluate results<a class="headerlink" href="#evaluate-results" title="Link to this heading">#</a></h2>
+<section id="summary-statistics">
+<h3><span class="section-number">3.5.1. </span>Summary statistics<a class="headerlink" href="#summary-statistics" title="Link to this heading">#</a></h3>
+<p>You can evaluate some basic statistics like mean, median, and percentiles of each item in your batch results.</p>
+<p>It is possible that parameter sets you used for your grid-search yield the same output movie (i.e. overlaps of (2, 2) and (3, 3) likely yield the same result).</p>
+<p>You will want to compute registration statistics (correlation, optical flow) later which is computationally expensive, so it helps to limit the batch items you will use as input.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">summary_df</span> <span class="o">=</span> <span class="n">lcp</span><span class="o">.</span><span class="n">get_summary_batch</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+<span class="n">summary_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>algo</th>
+      <th>Runs</th>
+      <th>Successful</th>
+      <th>Unsuccessful</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>mcorr</td>
+      <td>13</td>
+      <td>13</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>cnmf</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<section id="find-the-duplicates">
+<h4>Find the duplicates<a class="headerlink" href="#find-the-duplicates" title="Link to this heading">#</a></h4>
+<p>Before calculating computationally intensive summary registration statistics like correlation and flow, we want to remove duplicates to avoid
+unnessesary computaion.</p>
+<p><code class="docutils literal notranslate"><span class="pre">lcp.drop_duplicates</span></code> will iterate over your dataframe and drop any duplicate results.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># make sure to use the batch dataframe, not the summary dataframe</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">lcp</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Removing duplicate item efd3fcee-ba9e-46ff-826e-cffbef906411.
+Removing duplicate item 58cd4cb9-e571-49a0-9c73-a33e6fdb83e2.
+Removing duplicate item 9ad664bf-c22e-4ba6-ac2d-a7605933e2d2.
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="reload-our-dataframe-if-you-made-a-mistake">
+<h4>Reload our dataframe if you made a mistake<a class="headerlink" href="#reload-our-dataframe-if-you-made-a-mistake" title="Link to this heading">#</a></h4>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">caiman</span><span class="o">.</span><span class="n">reload_from_disk</span><span class="p">()</span>
+<span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>algo</th>
+      <th>item_name</th>
+      <th>input_movie_path</th>
+      <th>params</th>
+      <th>outputs</th>
+      <th>added_time</th>
+      <th>ran_time</th>
+      <th>algo_duration</th>
+      <th>comments</th>
+      <th>uuid</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>mcorr</td>
+      <td>mcorr</td>
+      <td>plane_11_assembled.tiff</td>
+      <td>{'main': {'pw_rigid': True, 'max_shifts': [10, 10], 'strides': [62, 64], 'overlaps': [7, 7], 'min_mov': None, 'gSig_...</td>
+      <td>{'mean-projection-path': '22323919-7768-4d39-88ad-b0c3afff912f/22323919-7768-4d39-88ad-b0c3afff912f_mean_projection....</td>
+      <td>2025-01-23T22:01:50</td>
+      <td>2025-01-23T22:03:07</td>
+      <td>71.93 sec</td>
+      <td>None</td>
+      <td>22323919-7768-4d39-88ad-b0c3afff912f</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>mcorr</td>
+      <td>mcorr</td>
+      <td>plane_11_assembled.tiff</td>
+      <td>{'main': {'pw_rigid': True, 'max_shifts': (2, 2), 'strides': (14, 14), 'overlaps': (4, 4), 'min_mov': None, 'gSig_fi...</td>
+      <td>{'mean-projection-path': 'ab1e18e8-d860-408c-8588-a7995f542639/ab1e18e8-d860-408c-8588-a7995f542639_mean_projection....</td>
+      <td>2025-01-23T23:46:33</td>
+      <td>2025-01-23T23:51:40</td>
+      <td>126.03 sec</td>
+      <td>None</td>
+      <td>ab1e18e8-d860-408c-8588-a7995f542639</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>mcorr</td>
+      <td>mcorr</td>
+      <td>plane_11_assembled.tiff</td>
+      <td>{'main': {'pw_rigid': True, 'max_shifts': (2, 2), 'strides': (14, 14), 'overlaps': (4, 4), 'min_mov': None, 'gSig_fi...</td>
+      <td>{'mean-projection-path': '8d6ff88a-12d4-4029-8b41-064b13d5ff43/8d6ff88a-12d4-4029-8b41-064b13d5ff43_mean_projection....</td>
+      <td>2025-01-23T23:46:34</td>
+      <td>2025-01-24T10:34:48</td>
+      <td>124.27 sec</td>
+      <td>None</td>
+      <td>8d6ff88a-12d4-4029-8b41-064b13d5ff43</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>mcorr</td>
+      <td>mcorr</td>
+      <td>plane_11_assembled.tiff</td>
+      <td>{'main': {'pw_rigid': True, 'max_shifts': (2, 2), 'strides': (14, 14), 'overlaps': (4, 4), 'min_mov': None, 'gSig_fi...</td>
+      <td>{'mean-projection-path': '958a6e01-8fb3-4ae5-b06b-623bce6782ae/958a6e01-8fb3-4ae5-b06b-623bce6782ae_mean_projection....</td>
+      <td>2025-01-23T23:46:34</td>
+      <td>2025-01-24T10:36:55</td>
+      <td>126.95 sec</td>
+      <td>None</td>
+      <td>958a6e01-8fb3-4ae5-b06b-623bce6782ae</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>mcorr</td>
+      <td>mcorr</td>
+      <td>plane_11_assembled.tiff</td>
+      <td>{'main': {'pw_rigid': True, 'max_shifts': (4, 4), 'strides': (29, 29), 'overlaps': (8, 8), 'min_mov': None, 'gSig_fi...</td>
+      <td>{'mean-projection-path': '1842685d-e421-423b-b872-3c76cb684fa4/1842685d-e421-423b-b872-3c76cb684fa4_mean_projection....</td>
+      <td>2025-01-23T23:46:34</td>
+      <td>2025-01-24T10:39:52</td>
+      <td>89.0 sec</td>
+      <td>None</td>
+      <td>1842685d-e421-423b-b872-3c76cb684fa4</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+</section>
+<section id="evaluation-metrics">
+<h3><span class="section-number">3.5.2. </span>Evaluation metrics<a class="headerlink" href="#evaluation-metrics" title="Link to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p><strong>Metric</strong></p></th>
+<th class="head"><p><strong>Description</strong></p></th>
+<th class="head"><p><strong>Higher or Lower is Better?</strong></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Correlations</strong></p></td>
+<td><p>How similar each frame is to a reference “template” frame.</p></td>
+<td><p><strong>Higher is better</strong> (closer to 1 means frames are more similar)</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Norms</strong></p></td>
+<td><p>The amount of movement or change in each frame.</p></td>
+<td><p><strong>Lower is better</strong> (less movement indicates stability)</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Smoothness</strong></p></td>
+<td><p>How smooth/sharp/crisp the image appears.</p></td>
+<td><p><strong>Higher is better</strong> (crisper mean image)</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Flows</strong></p></td>
+<td><p>The direction and speed of pixel movement between frames.</p></td>
+<td><p><strong>Lower “better”</strong> (less movement relative to mean image)</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Smoothness (correlations)</strong></p></td>
+<td><p>How smooth the image of frame-to-frame correlations appears.</p></td>
+<td><p><strong>Higher is better</strong> (higher smoothness means sharper correlation map)</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Image Correlations</strong></p></td>
+<td><p>Shows the local similarity of neighboring pixels in each frame.</p></td>
+<td><p><strong>Higher is better</strong> (higher local similarity means more consistent images)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Many of these metrics are related. <code class="docutils literal notranslate"><span class="pre">Norms</span></code> is a measure of the stregnth of <code class="docutils literal notranslate"><span class="pre">flows</span></code> (which also include direction). <code class="docutils literal notranslate"><span class="pre">Smoothness</span></code> measures sharpness of edges which typically result in high<code class="docutils literal notranslate"><span class="pre">correlations</span></code> because individual pixels are located in the same location.</p>
+<p>For more a technical discussion on these metrics, see <a class="reference external" href="https://www.sciencedirect.com/science/article/pii/S0165027017302753#sec0010">NoRMCorre’s companion paper</a> (section 2.2.1 - 2.2.4, 3.2.1 - 3.2.4).</p>
+<section id="compute-batch-metrics">
+<h4>Compute batch metrics<a class="headerlink" href="#compute-batch-metrics" title="Link to this heading">#</a></h4>
+<p>Feed your batch dataframe to <code class="docutils literal notranslate"><span class="pre">compute_batch_metrics</span></code> to compute each of these metrics and save them to disk.</p>
+<p>This functiion will attempt to locate your raw data path to run evaluation metrics on the raw input-file for comparison.</p>
+<p>Use <code class="docutils literal notranslate"><span class="pre">overwrite=False</span></code> to avoid re-calculating these values.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p><code class="docutils literal notranslate"><span class="pre">compute_batch_metrics()</span></code> is a computationally intensive function. ~70s per batch item on a <code class="docutils literal notranslate"><span class="pre">600</span> <span class="pre">x</span> <span class="pre">576</span></code> pixel image with 1760 frames.</p>
+</div>
+<p>The returned <code class="docutils literal notranslate"><span class="pre">metrics_files</span></code> containes a list of paths to the saved metrics.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">metrics_df</span> <span class="o">=</span> <span class="n">lcp</span><span class="o">.</span><span class="n">get_summary_mcorr</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Correlations: 100%|██████████████████████████| 1729/1729 [00:08&lt;00:00, 214.51it/s]
+Optical flow: 100%|█████████████████████████████| 345/345 [00:38&lt;00:00,  8.93it/s]
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Computed metrics for raw data in 60.47 seconds.
+Processing batch index 0...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Correlations: 100%|██████████████████████████| 1729/1729 [00:08&lt;00:00, 210.83it/s]
+Optical flow: 100%|█████████████████████████████| 345/345 [00:38&lt;00:00,  9.03it/s]
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Computed metrics for batch index 0 in 60.22 seconds.
+Processing batch index 1...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Correlations: 100%|██████████████████████████| 1729/1729 [00:08&lt;00:00, 202.53it/s]
+Optical flow: 100%|█████████████████████████████| 345/345 [00:38&lt;00:00,  8.91it/s]
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Computed metrics for batch index 1 in 61.36 seconds.
+Processing batch index 2...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Correlations: 100%|██████████████████████████| 1729/1729 [00:07&lt;00:00, 217.11it/s]
+Optical flow: 100%|█████████████████████████████| 345/345 [00:38&lt;00:00,  8.89it/s]
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Computed metrics for batch index 2 in 60.87 seconds.
+Processing batch index 3...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Correlations: 100%|██████████████████████████| 1729/1729 [00:08&lt;00:00, 211.99it/s]
+Optical flow: 100%|█████████████████████████████| 345/345 [00:38&lt;00:00,  8.98it/s]
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Computed metrics for batch index 3 in 60.46 seconds.
+Processing batch index 4...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Correlations: 100%|██████████████████████████| 1729/1729 [00:08&lt;00:00, 209.26it/s]
+Optical flow: 100%|█████████████████████████████| 345/345 [00:38&lt;00:00,  9.02it/s]
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Computed metrics for batch index 4 in 60.60 seconds.
+Processing batch index 5...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Correlations: 100%|██████████████████████████| 1729/1729 [00:07&lt;00:00, 218.73it/s]
+Optical flow: 100%|█████████████████████████████| 345/345 [00:38&lt;00:00,  8.93it/s]
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Computed metrics for batch index 5 in 60.30 seconds.
+Processing batch index 6...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Correlations: 100%|██████████████████████████| 1729/1729 [00:08&lt;00:00, 206.74it/s]
+Optical flow: 100%|█████████████████████████████| 345/345 [00:38&lt;00:00,  8.99it/s]
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Computed metrics for batch index 6 in 60.51 seconds.
+Processing batch index 7...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Correlations: 100%|██████████████████████████| 1729/1729 [00:08&lt;00:00, 212.33it/s]
+Optical flow: 100%|█████████████████████████████| 345/345 [00:38&lt;00:00,  9.01it/s]
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Computed metrics for batch index 7 in 60.42 seconds.
+Processing batch index 8...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Correlations: 100%|██████████████████████████| 1729/1729 [00:08&lt;00:00, 209.08it/s]
+Optical flow: 100%|█████████████████████████████| 345/345 [00:38&lt;00:00,  9.01it/s]
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Computed metrics for batch index 8 in 60.29 seconds.
+Processing batch index 9...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Correlations: 100%|██████████████████████████| 1729/1729 [00:07&lt;00:00, 218.50it/s]
+Optical flow: 100%|█████████████████████████████| 345/345 [00:38&lt;00:00,  8.92it/s]
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Computed metrics for batch index 9 in 60.55 seconds.
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="view-numerical-results">
+<h4>View numerical results<a class="headerlink" href="#view-numerical-results" title="Link to this heading">#</a></h4>
+<p><code class="docutils literal notranslate"><span class="pre">lcp.get_summary_mcorr()</span></code> will use the resulting filepaths to load the <strong>mean</strong> metric statistic, along with the path to the metrics file.</p>
+<p>This gives you an overview of the best results. The metric_path is needed to load larger arrays for plotting that don’t performantly fit into a dataframe cell.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>batch_index = -1 for your <em>raw data</em>. This does not correspond to the ‘last index’, as it does with numpy slicing.
+It is just convenient to avoid casting another data type like str/np.null.</p>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">metrics_df</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>mean_corr</th>
+      <th>mean_norm</th>
+      <th>crispness</th>
+      <th>uuid</th>
+      <th>batch_index</th>
+      <th>metric_path</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0.889579</td>
+      <td>264.345490</td>
+      <td>19.149659</td>
+      <td>raw_628bcc12-4d11-4c1f-aa64-cb47526867f4</td>
+      <td>-1</td>
+      <td>C:\Users\RBO\lbm_data\processed\plane_11_assembled_metrics.npz</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0.917335</td>
+      <td>266.898865</td>
+      <td>19.722043</td>
+      <td>22323919-7768-4d39-88ad-b0c3afff912f</td>
+      <td>0</td>
+      <td>C:\Users\RBO\lbm_data\processed\batch\22323919-7768-4d39-88ad-b0c3afff912f\22323919-7768-4d39-88ad-b0c3afff912f-plan...</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0.903623</td>
+      <td>151.739716</td>
+      <td>19.741791</td>
+      <td>ab1e18e8-d860-408c-8588-a7995f542639</td>
+      <td>1</td>
+      <td>C:\Users\RBO\lbm_data\processed\batch\ab1e18e8-d860-408c-8588-a7995f542639\ab1e18e8-d860-408c-8588-a7995f542639-plan...</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0.906983</td>
+      <td>68.337738</td>
+      <td>20.577532</td>
+      <td>8d6ff88a-12d4-4029-8b41-064b13d5ff43</td>
+      <td>2</td>
+      <td>C:\Users\RBO\lbm_data\processed\batch\8d6ff88a-12d4-4029-8b41-064b13d5ff43\8d6ff88a-12d4-4029-8b41-064b13d5ff43-plan...</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>0.907472</td>
+      <td>105.332611</td>
+      <td>20.506616</td>
+      <td>958a6e01-8fb3-4ae5-b06b-623bce6782ae</td>
+      <td>3</td>
+      <td>C:\Users\RBO\lbm_data\processed\batch\958a6e01-8fb3-4ae5-b06b-623bce6782ae\958a6e01-8fb3-4ae5-b06b-623bce6782ae-plan...</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>0.899842</td>
+      <td>180.179504</td>
+      <td>19.350287</td>
+      <td>1842685d-e421-423b-b872-3c76cb684fa4</td>
+      <td>4</td>
+      <td>C:\Users\RBO\lbm_data\processed\batch\1842685d-e421-423b-b872-3c76cb684fa4\1842685d-e421-423b-b872-3c76cb684fa4-plan...</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>0.903309</td>
+      <td>88.548859</td>
+      <td>20.409476</td>
+      <td>f8d5343d-14a3-4872-89d6-6f862f9ce255</td>
+      <td>5</td>
+      <td>C:\Users\RBO\lbm_data\processed\batch\f8d5343d-14a3-4872-89d6-6f862f9ce255\f8d5343d-14a3-4872-89d6-6f862f9ce255-plan...</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>0.905676</td>
+      <td>85.730988</td>
+      <td>20.597341</td>
+      <td>d6ccef75-5a5f-4d30-8dfa-2e1fe493fee1</td>
+      <td>6</td>
+      <td>C:\Users\RBO\lbm_data\processed\batch\d6ccef75-5a5f-4d30-8dfa-2e1fe493fee1\d6ccef75-5a5f-4d30-8dfa-2e1fe493fee1-plan...</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>0.897103</td>
+      <td>206.667816</td>
+      <td>19.136277</td>
+      <td>90963ca2-a226-4503-8781-33fe09b40960</td>
+      <td>7</td>
+      <td>C:\Users\RBO\lbm_data\processed\batch\90963ca2-a226-4503-8781-33fe09b40960\90963ca2-a226-4503-8781-33fe09b40960-plan...</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>0.902426</td>
+      <td>105.812897</td>
+      <td>20.490284</td>
+      <td>19d16022-e6e5-4bb6-b0fd-e9be9f7c4f9e</td>
+      <td>8</td>
+      <td>C:\Users\RBO\lbm_data\processed\batch\19d16022-e6e5-4bb6-b0fd-e9be9f7c4f9e\19d16022-e6e5-4bb6-b0fd-e9be9f7c4f9e-plan...</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>0.905927</td>
+      <td>80.540215</td>
+      <td>20.706461</td>
+      <td>329e34f0-3c45-4427-820a-8000fc57c054</td>
+      <td>9</td>
+      <td>C:\Users\RBO\lbm_data\processed\batch\329e34f0-3c45-4427-820a-8000fc57c054\329e34f0-3c45-4427-820a-8000fc57c054-plan...</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="merge-metrics-results-with-added-parameters-used-for-grid-search">
+<h4>Merge metrics results with added parameters used for grid-search<a class="headerlink" href="#merge-metrics-results-with-added-parameters-used-for-grid-search" title="Link to this heading">#</a></h4>
+<p>We used <code class="docutils literal notranslate"><span class="pre">df.caiman.get_param_diffs()</span></code> to get a list of parameters that differ between batch runs, to filter out the parameters common to each item.</p>
+<p>We can add these values as columns to evaluate which parameters led to the desired metric by using <code class="docutils literal notranslate"><span class="pre">add_param_diffs</span></code> with either or both of the result tables we just calculated.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">param_diffs</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">caiman</span><span class="o">.</span><span class="n">get_params_diffs</span><span class="p">(</span><span class="s2">&quot;mcorr&quot;</span><span class="p">,</span> <span class="n">item_name</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;item_name&quot;</span><span class="p">])</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">lcp</span><span class="o">.</span><span class="n">concat_param_diffs</span><span class="p">(</span><span class="n">metrics_df</span><span class="p">,</span> <span class="n">param_diffs</span><span class="p">)</span>
+<span class="n">results</span>
+<span class="c1"># results.sort_values(&#39;mean_norm&#39;, ascending=True)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>mean_corr</th>
+      <th>mean_norm</th>
+      <th>crispness</th>
+      <th>gSig_filt</th>
+      <th>strides</th>
+      <th>overlaps</th>
+      <th>max_shifts</th>
+      <th>batch_index</th>
+      <th>uuid</th>
+      <th>metric_path</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0.889579</td>
+      <td>264.345490</td>
+      <td>19.149659</td>
+      <td>None</td>
+      <td>None</td>
+      <td>None</td>
+      <td>None</td>
+      <td>-1</td>
+      <td>raw_628bcc12-4d11-4c1f-aa64-cb47526867f4</td>
+      <td>C:\Users\RBO\lbm_data\processed\plane_11_assembled_metrics.npz</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0.917335</td>
+      <td>266.898865</td>
+      <td>19.722043</td>
+      <td>[0, 0]</td>
+      <td>[62, 64]</td>
+      <td>[7, 7]</td>
+      <td>[10, 10]</td>
+      <td>0</td>
+      <td>22323919-7768-4d39-88ad-b0c3afff912f</td>
+      <td>C:\Users\RBO\lbm_data\processed\batch\22323919-7768-4d39-88ad-b0c3afff912f\22323919-7768-4d39-88ad-b0c3afff912f-plan...</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0.903623</td>
+      <td>151.739716</td>
+      <td>19.741791</td>
+      <td>(1, 1)</td>
+      <td>(14, 14)</td>
+      <td>(4, 4)</td>
+      <td>(2, 2)</td>
+      <td>1</td>
+      <td>ab1e18e8-d860-408c-8588-a7995f542639</td>
+      <td>C:\Users\RBO\lbm_data\processed\batch\ab1e18e8-d860-408c-8588-a7995f542639\ab1e18e8-d860-408c-8588-a7995f542639-plan...</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0.906983</td>
+      <td>68.337738</td>
+      <td>20.577532</td>
+      <td>(2, 2)</td>
+      <td>(14, 14)</td>
+      <td>(4, 4)</td>
+      <td>(2, 2)</td>
+      <td>2</td>
+      <td>8d6ff88a-12d4-4029-8b41-064b13d5ff43</td>
+      <td>C:\Users\RBO\lbm_data\processed\batch\8d6ff88a-12d4-4029-8b41-064b13d5ff43\8d6ff88a-12d4-4029-8b41-064b13d5ff43-plan...</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>0.907472</td>
+      <td>105.332611</td>
+      <td>20.506616</td>
+      <td>(4, 4)</td>
+      <td>(14, 14)</td>
+      <td>(4, 4)</td>
+      <td>(2, 2)</td>
+      <td>3</td>
+      <td>958a6e01-8fb3-4ae5-b06b-623bce6782ae</td>
+      <td>C:\Users\RBO\lbm_data\processed\batch\958a6e01-8fb3-4ae5-b06b-623bce6782ae\958a6e01-8fb3-4ae5-b06b-623bce6782ae-plan...</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>0.899842</td>
+      <td>180.179504</td>
+      <td>19.350287</td>
+      <td>(1, 1)</td>
+      <td>(29, 29)</td>
+      <td>(8, 8)</td>
+      <td>(4, 4)</td>
+      <td>4</td>
+      <td>1842685d-e421-423b-b872-3c76cb684fa4</td>
+      <td>C:\Users\RBO\lbm_data\processed\batch\1842685d-e421-423b-b872-3c76cb684fa4\1842685d-e421-423b-b872-3c76cb684fa4-plan...</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>0.903309</td>
+      <td>88.548859</td>
+      <td>20.409476</td>
+      <td>(2, 2)</td>
+      <td>(29, 29)</td>
+      <td>(8, 8)</td>
+      <td>(4, 4)</td>
+      <td>5</td>
+      <td>f8d5343d-14a3-4872-89d6-6f862f9ce255</td>
+      <td>C:\Users\RBO\lbm_data\processed\batch\f8d5343d-14a3-4872-89d6-6f862f9ce255\f8d5343d-14a3-4872-89d6-6f862f9ce255-plan...</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>0.905676</td>
+      <td>85.730988</td>
+      <td>20.597341</td>
+      <td>(4, 4)</td>
+      <td>(29, 29)</td>
+      <td>(8, 8)</td>
+      <td>(4, 4)</td>
+      <td>6</td>
+      <td>d6ccef75-5a5f-4d30-8dfa-2e1fe493fee1</td>
+      <td>C:\Users\RBO\lbm_data\processed\batch\d6ccef75-5a5f-4d30-8dfa-2e1fe493fee1\d6ccef75-5a5f-4d30-8dfa-2e1fe493fee1-plan...</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>0.897103</td>
+      <td>206.667816</td>
+      <td>19.136277</td>
+      <td>(1, 1)</td>
+      <td>(58, 58)</td>
+      <td>(17, 17)</td>
+      <td>(9, 9)</td>
+      <td>7</td>
+      <td>90963ca2-a226-4503-8781-33fe09b40960</td>
+      <td>C:\Users\RBO\lbm_data\processed\batch\90963ca2-a226-4503-8781-33fe09b40960\90963ca2-a226-4503-8781-33fe09b40960-plan...</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>0.902426</td>
+      <td>105.812897</td>
+      <td>20.490284</td>
+      <td>(2, 2)</td>
+      <td>(58, 58)</td>
+      <td>(17, 17)</td>
+      <td>(9, 9)</td>
+      <td>8</td>
+      <td>19d16022-e6e5-4bb6-b0fd-e9be9f7c4f9e</td>
+      <td>C:\Users\RBO\lbm_data\processed\batch\19d16022-e6e5-4bb6-b0fd-e9be9f7c4f9e\19d16022-e6e5-4bb6-b0fd-e9be9f7c4f9e-plan...</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>0.905927</td>
+      <td>80.540215</td>
+      <td>20.706461</td>
+      <td>(4, 4)</td>
+      <td>(58, 58)</td>
+      <td>(17, 17)</td>
+      <td>(9, 9)</td>
+      <td>9</td>
+      <td>329e34f0-3c45-4427-820a-8000fc57c054</td>
+      <td>C:\Users\RBO\lbm_data\processed\batch\329e34f0-3c45-4427-820a-8000fc57c054\329e34f0-3c45-4427-820a-8000fc57c054-plan...</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="optical-flow">
+<h4>Optical Flow<a class="headerlink" href="#optical-flow" title="Link to this heading">#</a></h4>
+<p>Optical flow measures the movement of a pixel between two consecutive frames.</p>
+<p>Movement is illustrated as brighter values, with the hue (color) illustrating the direction of movement.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">lbm_caiman_python</span> <span class="k">as</span> <span class="nn">lcp</span>
+
+<span class="c1"># This will plot all batches.</span>
+<span class="n">lcp</span><span class="o">.</span><span class="n">plot_optical_flows</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">max_columns</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/50d72aaf5406ca1a1a04b6a6dfd3be4e9bcb17a8f4b7f4b704e5c0b76f57db02.png" src="../../_images/50d72aaf5406ca1a1a04b6a6dfd3be4e9bcb17a8f4b7f4b704e5c0b76f57db02.png" />
+</div>
+</div>
+</section>
+<section id="plot-residual-flows-and-correlations">
+<h4>Plot residual flows and correlations<a class="headerlink" href="#plot-residual-flows-and-correlations" title="Link to this heading">#</a></h4>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">lcp.plot_residual_flows()</span></code> and <code class="docutils literal notranslate"><span class="pre">lcp.plot_correlations()</span></code> will first <strong>sort your results by the corresponding metric</strong>.</p></li>
+<li><p>Use the <code class="docutils literal notranslate"><span class="pre">num_batches</span></code> argument to display just the <strong>best results</strong> and avoid cluttering your figure</p></li>
+<li><p>Increase the number of batches to see groupings</p></li>
+<li><p>You can then see the batch index in the key to query back to your metrics results and see if any parameters led to metrics being grouped</p></li>
+</ul>
+<section id="with-many-batches">
+<h5>With many batches<a class="headerlink" href="#with-many-batches" title="Link to this heading">#</a></h5>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">lcp</span><span class="o">.</span><span class="n">plot_residual_flows</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">num_batches</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">winsize</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/99f07736c36a693f45b4ad6ee203fab6fb047afa1e2a63f1218d0497c7b5c23d.png" src="../../_images/99f07736c36a693f45b4ad6ee203fab6fb047afa1e2a63f1218d0497c7b5c23d.png" />
+</div>
+</div>
+</section>
+<section id="with-only-2-batches-no-smoothing">
+<h5>With only 2 batches, no smoothing<a class="headerlink" href="#with-only-2-batches-no-smoothing" title="Link to this heading">#</a></h5>
+<p>Now, show only the best 2 batch runs as determiend by residual optical flow without smoothing</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>No matter how many batches you decide to include, the raw data will be displayed as well in a dotted line.</p>
+<p>If your raw data <strong>is the best result</strong>, it will be a blue dotted line.</p>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">lcp</span><span class="o">.</span><span class="n">plot_residual_flows</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">num_batches</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/758f6328c3efddc3bf2be7a42386c8b00bcf1923199ba0e8b83acbabdc17040d.png" src="../../_images/758f6328c3efddc3bf2be7a42386c8b00bcf1923199ba0e8b83acbabdc17040d.png" />
+</div>
+</div>
+<p>Notice how there are many batch results that seem to align perfectly with the “best” result.</p>
+<p>Correlation here is defined as the mean pixel correlation for each frame to the correlation image <strong>within each movie</strong>.</p>
+<p>It is possible to increase pixel-correlations and still have poor registration. Correlation and flow metrics should be used together.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">lcp</span><span class="o">.</span><span class="n">plot_correlations</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">num_batches</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">winsize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/51e24b41bb1806ad17111474e8f901339f469317057e6009e4099fb68222c9c4.png" src="../../_images/51e24b41bb1806ad17111474e8f901339f469317057e6009e4099fb68222c9c4.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">movie_A</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">mcorr</span><span class="o">.</span><span class="n">get_output</span><span class="p">()</span>  <span class="c1"># highest correlation</span>
+<span class="n">movie_B</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">mcorr</span><span class="o">.</span><span class="n">get_output</span><span class="p">()</span>  <span class="c1"># losest optical flow</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Change the size/shape depending on how many parameter sweep inputs you used</span>
+<span class="n">figure_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">900</span><span class="p">,</span> <span class="mi">700</span><span class="p">),</span> <span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)}</span>
+
+<span class="n">mcorr_iw_multiple</span> <span class="o">=</span> <span class="n">fpl</span><span class="o">.</span><span class="n">ImageWidget</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="n">movie_A</span><span class="p">,</span> <span class="n">movie_B</span><span class="p">],</span>  <span class="c1"># list of movies</span>
+    <span class="n">window_funcs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;t&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">,</span> <span class="mi">7</span><span class="p">)},</span> <span class="c1"># window functions as a kwarg, this is what the slider was used for in the ready-made viz</span>
+    <span class="n">figure_kwargs</span><span class="o">=</span><span class="n">figure_kwargs</span><span class="p">,</span>
+    <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Movie A&#39;</span><span class="p">,</span> <span class="s1">&#39;Movie B&#39;</span><span class="p">],</span>  <span class="c1"># subplot names used for titles</span>
+    <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;gnuplot2&quot;</span>
+<span class="p">)</span>
+
+<span class="c1"># free up some space</span>
+<span class="k">for</span> <span class="n">subplot</span> <span class="ow">in</span> <span class="n">mcorr_iw_multiple</span><span class="o">.</span><span class="n">figure</span><span class="p">:</span>
+    <span class="n">subplot</span><span class="o">.</span><span class="n">docks</span><span class="p">[</span><span class="s2">&quot;right&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">subplot</span><span class="o">.</span><span class="n">toolbar</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="n">mcorr_iw_multiple</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "cf62bdec0a2f4064957e54169556197e", "version_major": 2, "version_minor": 0}</script><script type="application/vnd.jupyter.widget-view+json">{"model_id": "7c597772812e4f0e885f54704441e1ce", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mcorr_iw_multiple</span><span class="o">.</span><span class="n">window_funcs</span><span class="p">[</span><span class="s2">&quot;t&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">window_size</span> <span class="o">=</span> <span class="mi">13</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mcorr_iw_multiple</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+</section>
+</section>
+<section id="apply-the-best-parameters-to-remaining-files">
+<h2><span class="section-number">3.6. </span>Apply the ‘best parameters’ to remaining files<a class="headerlink" href="#apply-the-best-parameters-to-remaining-files" title="Link to this heading">#</a></h2>
+<p>When you decide which parameter set works the best, we keep it and delete the other batch items.</p>
+<p>Remove batch items (i.e. rows) using <code class="docutils literal notranslate"><span class="pre">df.caiman.remove_item(&lt;item_uuid&gt;)</span></code>. This also cleans up the output data in the batch directory.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>On windows, you will get an error <code class="docutils literal notranslate"><span class="pre">PermissionError:</span> <span class="pre">You</span> <span class="pre">do</span> <span class="pre">not</span> <span class="pre">have</span> <span class="pre">permissions</span> <span class="pre">to</span> <span class="pre">remove</span> <span class="pre">the</span> <span class="pre">output</span> <span class="pre">data</span> <span class="pre">for</span> <span class="pre">the</span> <span class="pre">batch</span> <span class="pre">item,</span> <span class="pre">aborting.</span></code></p>
+<p>This can happen if you forgot to close one of the above widgets, or if you have a memory mapped file open.</p>
+<p>There is currently no way to close a <code class="docutils literal notranslate"><span class="pre">numpy.memmap</span></code>: https://github.com/numpy/numpy/issues/13510</p>
+<p>The solution is to restart your kernel. You will need to re-run the cells that define your batch/bath and reload your batch
+with df = mc.load_batch(batch_path). Make sure <code class="docutils literal notranslate"><span class="pre">mc.set_raw_parent_data_path()</span></code> is in the re-run cells.</p>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># UNCOMMENT THIS TO DELETE BATCH RUNS</span>
+<span class="c1"># THIS IS COMMENTED OUT SO YOU DONT ACCIDENTALLY DELETE RESULTS YOU HAVE BEEN WAITING FOR ALL NIGHT!!!</span>
+
+<span class="n">rows_keep</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+    <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">rows_keep</span><span class="p">:</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">caiman</span><span class="o">.</span><span class="n">remove_item</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">uuid</span><span class="p">,</span> <span class="n">safe_removal</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">df</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>algo</th>
+      <th>item_name</th>
+      <th>input_movie_path</th>
+      <th>params</th>
+      <th>outputs</th>
+      <th>added_time</th>
+      <th>ran_time</th>
+      <th>algo_duration</th>
+      <th>comments</th>
+      <th>uuid</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>mcorr</td>
+      <td>mcorr</td>
+      <td>plane_11_assembled.tiff</td>
+      <td>{'main': {'pw_rigid': True, 'max_shifts': (2, 2), 'strides': (14, 14), 'overlaps': (4, 4), 'min_mov': None, 'gSig_fi...</td>
+      <td>{'mean-projection-path': '8d6ff88a-12d4-4029-8b41-064b13d5ff43/8d6ff88a-12d4-4029-8b41-064b13d5ff43_mean_projection....</td>
+      <td>2025-01-23T23:46:34</td>
+      <td>2025-01-24T10:34:48</td>
+      <td>124.27 sec</td>
+      <td>None</td>
+      <td>8d6ff88a-12d4-4029-8b41-064b13d5ff43</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tiff_files</span><span class="p">)):</span>
+
+    <span class="c1"># don&#39;t re-process the same file</span>
+    <span class="k">if</span> <span class="n">tiff_files</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">input_movie_path</span><span class="p">:</span>
+        <span class="k">continue</span>
+
+    <span class="n">df</span><span class="o">.</span><span class="n">caiman</span><span class="o">.</span><span class="n">add_item</span><span class="p">(</span>
+        <span class="n">algo</span><span class="o">=</span><span class="s1">&#39;mcorr&#39;</span><span class="p">,</span>
+        <span class="n">input_movie_path</span><span class="o">=</span><span class="n">tiff_files</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+        <span class="n">params</span><span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">params</span><span class="p">,</span>          <span class="c1"># use the same parameters</span>
+        <span class="n">item_name</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">tiff_files</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>  <span class="c1"># filename of the movie, but can be anything</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span><span class="o">.</span><span class="n">caiman</span><span class="o">.</span><span class="n">reload_from_disk</span><span class="p">()</span>
+<span class="n">df</span><span class="o">.</span><span class="n">tail</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>algo</th>
+      <th>item_name</th>
+      <th>input_movie_path</th>
+      <th>params</th>
+      <th>outputs</th>
+      <th>added_time</th>
+      <th>ran_time</th>
+      <th>algo_duration</th>
+      <th>comments</th>
+      <th>uuid</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>54</th>
+      <td>mcorr</td>
+      <td>plane_5_assembled.tiff</td>
+      <td>plane_5_assembled.tiff</td>
+      <td>{'main': {'pw_rigid': True, 'max_shifts': (2, 2), 'strides': (14, 14), 'overlaps': (4, 4), 'min_mov': None, 'gSig_fi...</td>
+      <td>None</td>
+      <td>2025-01-24T11:36:38</td>
+      <td>None</td>
+      <td>None</td>
+      <td>None</td>
+      <td>1f5f8773-da41-4475-aa46-3b92fd7bc2e6</td>
+    </tr>
+    <tr>
+      <th>55</th>
+      <td>mcorr</td>
+      <td>plane_6_assembled.tiff</td>
+      <td>plane_6_assembled.tiff</td>
+      <td>{'main': {'pw_rigid': True, 'max_shifts': (2, 2), 'strides': (14, 14), 'overlaps': (4, 4), 'min_mov': None, 'gSig_fi...</td>
+      <td>None</td>
+      <td>2025-01-24T11:36:38</td>
+      <td>None</td>
+      <td>None</td>
+      <td>None</td>
+      <td>0872f10e-8745-45bd-b2b3-6b8560f193a7</td>
+    </tr>
+    <tr>
+      <th>56</th>
+      <td>mcorr</td>
+      <td>plane_7_assembled.tiff</td>
+      <td>plane_7_assembled.tiff</td>
+      <td>{'main': {'pw_rigid': True, 'max_shifts': (2, 2), 'strides': (14, 14), 'overlaps': (4, 4), 'min_mov': None, 'gSig_fi...</td>
+      <td>None</td>
+      <td>2025-01-24T11:36:38</td>
+      <td>None</td>
+      <td>None</td>
+      <td>None</td>
+      <td>0374178f-22e0-4843-bcb9-5e6308b368b1</td>
+    </tr>
+    <tr>
+      <th>57</th>
+      <td>mcorr</td>
+      <td>plane_8_assembled.tiff</td>
+      <td>plane_8_assembled.tiff</td>
+      <td>{'main': {'pw_rigid': True, 'max_shifts': (2, 2), 'strides': (14, 14), 'overlaps': (4, 4), 'min_mov': None, 'gSig_fi...</td>
+      <td>None</td>
+      <td>2025-01-24T11:36:38</td>
+      <td>None</td>
+      <td>None</td>
+      <td>None</td>
+      <td>d519cc68-a4ad-4fad-8c12-0cc2a1c4bc7a</td>
+    </tr>
+    <tr>
+      <th>58</th>
+      <td>mcorr</td>
+      <td>plane_9_assembled.tiff</td>
+      <td>plane_9_assembled.tiff</td>
+      <td>{'main': {'pw_rigid': True, 'max_shifts': (2, 2), 'strides': (14, 14), 'overlaps': (4, 4), 'min_mov': None, 'gSig_fi...</td>
+      <td>None</td>
+      <td>2025-01-24T11:36:38</td>
+      <td>None</td>
+      <td>None</td>
+      <td>None</td>
+      <td>6f5d3d95-5cec-49aa-889a-d4c2194bcdb3</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+    <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;outputs&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="c1"># item has already been run</span>
+        <span class="k">continue</span> <span class="c1"># skip</span>
+
+    <span class="n">process</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">caiman</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+
+    <span class="c1"># on Windows you MUST reload the batch dataframe after every iteration because it uses the `local` backend.</span>
+    <span class="c1"># this is unnecessary on Linux &amp; Mac</span>
+    <span class="c1"># &quot;DummyProcess&quot; is used for local backend so this is automatic</span>
+    <span class="k">if</span> <span class="n">process</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;DummyProcess&quot;</span><span class="p">:</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">caiman</span><span class="o">.</span><span class="n">reload_from_disk</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Running cbdd2903-c3c3-495c-842a-a611cc536ab9 with local backend
+starting mc
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>mc finished successfully!
+computing projections
+Computing correlation image
+finished computing correlation image
+Running e60d2fd3-d8cc-44f3-87fb-bb14ecd661e0 with local backend
+starting mc
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>mc finished successfully!
+computing projections
+Computing correlation image
+finished computing correlation image
+Running f8469e8d-f381-4347-a807-3ffc5e2da32f with local backend
+starting mc
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>mc finished successfully!
+computing projections
+Computing correlation image
+finished computing correlation image
+Running b42de600-4e8d-4c4c-bfae-633051431809 with local backend
+starting mc
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>mc finished successfully!
+computing projections
+Computing correlation image
+finished computing correlation image
+Running 7774bb43-ad40-4240-867a-2c81a0e99eb7 with local backend
+starting mc
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>mc finished successfully!
+computing projections
+Computing correlation image
+finished computing correlation image
+Running 9ad445d9-3e08-4547-b61d-c4ebeecff095 with local backend
+starting mc
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>mc finished successfully!
+computing projections
+Computing correlation image
+finished computing correlation image
+Running 1777e77c-0529-459c-86a1-64d3bdc01584 with local backend
+starting mc
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>mc finished successfully!
+computing projections
+Computing correlation image
+finished computing correlation image
+Running c57ce669-9380-4c4d-b161-576f970b5b57 with local backend
+starting mc
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>mc finished successfully!
+computing projections
+Computing correlation image
+finished computing correlation image
+Running 6df4fcf2-0375-4027-9e9f-bb0a13247877 with local backend
+starting mc
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>mc finished successfully!
+computing projections
+Computing correlation image
+finished computing correlation image
+Running e37174be-d7d9-4b0e-b438-61f080eaf691 with local backend
+starting mc
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="batch_helpers.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title"><span class="section-number">2. </span>Batch Helpers</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="segmentation.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title"><span class="section-number">4. </span>Segmentation</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-path-and-batch-setup">3.1. Data path and batch setup</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-or-load-a-batch-set">3.1.1. Create or load a batch set</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#load-a-data-file-to-examine">3.1.2. Load a data file to examine</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#view-metadata">3.1.3. View metadata</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#registration-parameters">3.2. Registration parameters</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-metadata-to-assign-parameter-values">3.2.1. Using metadata to assign parameter values</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#scaling-patches-relative-to-neuron-size">3.2.2. Scaling patches relative to neuron size</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#parameters-from-metadata">3.2.3. Parameters from metadata</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tune-gsig-filt-high-pass-filter">3.2.4. Tune <code class="docutils literal notranslate"><span class="pre">gSig_filt</span></code> (high-pass-filter)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#change-a-parameter">3.2.5. Change a parameter</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#single-plane-registration">3.3. Single-plane registration</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#add-an-item-to-the-batch">3.3.1. Add an item to the batch</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#run-the-batch-item">3.3.2. Run the batch item</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#check-for-errors-in-outputs">3.3.3. Check for errors in outputs</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#preview-results-side-by-side-comparison">3.3.4. Preview results: side-by-side comparison</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#grid-search-for-best-parameters">3.4. Grid-search for best parameters</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#scale-factor-and-gsig-filt">3.4.1. <code class="docutils literal notranslate"><span class="pre">scale_factor</span></code> and <code class="docutils literal notranslate"><span class="pre">gSig_filt</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#view-the-parameter-differences">3.4.2. View the parameter differences</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#use-can-also-your-own-grid-search-values">3.4.3. Use can also your own grid-search values.</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#run-all-parameter-sets">3.4.4. Run all parameter sets</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#check-for-errors">3.4.5. Check for errors</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluate-results">3.5. Evaluate results</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#summary-statistics">3.5.1. Summary statistics</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#find-the-duplicates">Find the duplicates</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#reload-our-dataframe-if-you-made-a-mistake">Reload our dataframe if you made a mistake</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation-metrics">3.5.2. Evaluation metrics</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#compute-batch-metrics">Compute batch metrics</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#view-numerical-results">View numerical results</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#merge-metrics-results-with-added-parameters-used-for-grid-search">Merge metrics results with added parameters used for grid-search</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optical-flow">Optical Flow</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#plot-residual-flows-and-correlations">Plot residual flows and correlations</a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#with-many-batches">With many batches</a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#with-only-2-batches-no-smoothing">With only 2 batches, no smoothing</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#apply-the-best-parameters-to-remaining-files">3.6. Apply the ‘best parameters’ to remaining files</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Author name not set
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, Elizabeth R. Miller Brain Observatory | The Rockefeller University. All Rights Reserved.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

@@ -1,0 +1,2112 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>4. Segmentation &#8212; LBM-CaImAn-Python</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=475cc00c" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/documentation_options.js?v=a1637f0b"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js?v=1ae7504c"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
+    <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
+    <script defer="defer" src="../../_static/tippy/examples/notebooks/segmentation.7ad7f488-499a-4398-8db8-849136e75263.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'examples/notebooks/segmentation';</script>
+    <link rel="icon" href="../../_static/icon_caiman_python.svg"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="5. Collate Planes" href="collation.html" />
+    <link rel="prev" title="3. Registration" href="motion_correction.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/lcp_logo.svg" class="logo__image only-light" alt="LBM-CaImAn-Python - Home"/>
+    <script>document.write(`<img src="../../_static/lcp_logo.svg" class="logo__image only-dark" alt="LBM-CaImAn-Python - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://millerbrainobservatory.github.io/" title="MBO User Hub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../../icon_mbo_home.png" class="icon-link-image" alt="MBO User Hub"/></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/MillerBrainObservatory/" title="MBO Github" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">MBO Github</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://mbo.rockefeller.edu/contact/" title="Connect with MBO" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-regular fa-address-card fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Connect with MBO</span></a>
+        </li>
+</ul></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../user_guide/index.html">User Guide</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/assembly.html">1. Image Assembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/batch_utilities.html">2. Batch Utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/registration.html">3. Registration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/segmentation.html">4. Segmentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/collation.html">5. Z-Plane Collation</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../index.html">Tutorial</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="assembly.html">1. Image Assembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batch_helpers.html">2. Batch Helpers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="motion_correction.html">3. Registration</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">4. Segmentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="collation.html">5. Collate Planes</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../glossary.html">Glossary</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/MillerBrainObservatory/LBM-CaImAn-Python/blob/master/docs/examples/notebooks/segmentation.ipynb?plain=1" target="_blank"
+   class="btn btn-sm btn-source-file-button dropdown-item"
+   title="Show source"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-code"></i>
+  </span>
+<span class="btn__text-container">Show source</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/MillerBrainObservatory/LBM-CaImAn-Python/edit/master/docs/examples/notebooks/segmentation.ipynb" target="_blank"
+   class="btn btn-sm btn-source-edit-button dropdown-item"
+   title="Suggest edit"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-pencil-alt"></i>
+  </span>
+<span class="btn__text-container">Suggest edit</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/MillerBrainObservatory/LBM-CaImAn-Python/issues/new?title=Issue%20on%20page%20%2Fexamples/notebooks/segmentation.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/examples/notebooks/segmentation.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Segmentation</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-path-setup">4.1. Data path setup</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cnmf-parameters">4.2. CNMF Parameters</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-most-important-step">4.2.1. <strong>The most important step</strong></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#get-values-for-k-and-gsig">4.3. Get values for K and gSig</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#set-new-parameters">4.4. Set new parameters</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#run-the-cnmf-algorithm">4.5. Run the CNMF algorithm</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#checking-for-an-errors">4.6. Checking for an errors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluate-cnmf-outputs">4.7. Evaluate CNMF outputs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plot-cnmf-components">4.8. Plot CNMF Components</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#view-accepted-neurons-on-a-summary-image">4.9. View accepted neurons on a summary image</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-happened">4.10. What happened?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#patches-are-tiny">4.11. Patches are tiny!</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#rerun-cnmf">4.12. Rerun CNMF</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluate-cnmf-results">4.13. Evaluate CNMF Results</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#parameter-gridsearch">4.14. Parameter Gridsearch</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#run-the-cnmf-batch-items">4.15. Run the <code class="docutils literal notranslate"><span class="pre">cnmf</span></code> batch items</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pick-the-best-parameter-set">4.16. Pick the best parameter set</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#adjust-quality-metrics-based-on-evaluation-parameters">4.17. Adjust quality metrics based on evaluation parameters</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#extras">4.18. Extras</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="segmentation">
+<h1><span class="section-number">4. </span>Segmentation<a class="headerlink" href="#segmentation" title="Link to this heading">#</a></h1>
+<p>Extract neuronal locations and planar time-traces.</p>
+<ul class="simple">
+<li><p>Apply the constrained nonnegative matrix factorization (CNMF) source separation algorithm to extract initial estimates of neuronal spatial footprints and calcium traces.</p></li>
+<li><p>Apply quality control metrics to evaluate the initial estimates, and narrow down to the final set of estimates.</p></li>
+</ul>
+<p>We will use the same strategy as for motion correction. That is, to evaluate parameter sets for a single z-plane before applying those parameters to subsequent z-planes.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">load_ext</span> autoreload
+<span class="o">%</span><span class="k">autoreload</span> 2
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">import</span> <span class="nn">lbm_mc</span> <span class="k">as</span> <span class="nn">mc</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">lbm_mc.caiman_extensions.cnmf</span> <span class="kn">import</span> <span class="n">cnmf_cache</span>
+<span class="kn">import</span> <span class="nn">lbm_caiman_python</span> <span class="k">as</span> <span class="nn">lcp</span>
+
+<span class="kn">import</span> <span class="nn">fastplotlib</span> <span class="k">as</span> <span class="nn">fpl</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">ipywidgets</span> <span class="kn">import</span> <span class="n">IntSlider</span><span class="p">,</span> <span class="n">VBox</span>
+<span class="kn">from</span> <span class="nn">sidecar</span> <span class="kn">import</span> <span class="n">Sidecar</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">cv2</span>
+    <span class="n">cv2</span><span class="o">.</span><span class="n">setNumThreads</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="k">except</span><span class="p">():</span>
+    <span class="k">pass</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s1">&#39;ignore&#39;</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;nt&quot;</span><span class="p">:</span>
+    <span class="c1"># disable the cache on windows, this will be automatic in a future version</span>
+    <span class="n">cnmf_cache</span><span class="o">.</span><span class="n">set_maxsize</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="n">pd</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">max_colwidth</span> <span class="o">=</span> <span class="mi">120</span>
+
+<span class="c1"># Unneeded in newer versions of mesmerize-core</span>
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;CONDA_PYTHON_EXE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;/home/flynn/miniforge3/bin/python&quot;</span>
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;CONDA_PREFIX_1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;lcp&quot;</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;caiman&quot;</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+<span class="n">handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">()</span>
+<span class="n">log_format</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%(relativeCreated)12d</span><span class="s2"> [</span><span class="si">%(filename)s</span><span class="s2">:</span><span class="si">%(funcName)10s</span><span class="s2">():</span><span class="si">%(lineno)s</span><span class="s2">] [</span><span class="si">%(process)d</span><span class="s2">] </span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">log_format</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
+
+<span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;caiman&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="data-path-setup">
+<h2><span class="section-number">4.1. </span>Data path setup<a class="headerlink" href="#data-path-setup" title="Link to this heading">#</a></h2>
+<p>Data setup is similar to <a class="reference internal" href="motion_correction.html"><span class="std std-doc">motion_correction notebook</span></a>.</p>
+<ul class="simple">
+<li><p>you can use the <strong>same batch path</strong> and simply add onto the end of it.</p></li>
+<li><p>you can define a <strong>completely new</strong> batch path to store these items separately.</p></li>
+</ul>
+<p>Here, to keep data organized, we will:</p>
+<ol class="arabic simple">
+<li><p>define our previous analaysis path as <code class="docutils literal notranslate"><span class="pre">mcorr_batch_path</span></code></p></li>
+<li><p>create a new ‘cnmf.pickle` to save our cnmf results.</p></li>
+</ol>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load MCORR batch and set raw data path</span>
+<span class="n">parent_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">()</span><span class="o">.</span><span class="n">home</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;caiman_data&quot;</span>
+<span class="n">data_path</span> <span class="o">=</span> <span class="n">parent_path</span> <span class="o">/</span> <span class="s1">&#39;high_res&#39;</span>                <span class="c1"># where the output files from the assembly step are located</span>
+<span class="n">mcorr_batch_path</span> <span class="o">=</span> <span class="n">data_path</span> <span class="o">/</span> <span class="s1">&#39;batch.pickle&#39;</span>  <span class="c1"># same as motion correction</span>
+
+<span class="n">mc</span><span class="o">.</span><span class="n">set_parent_raw_data_path</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">parent_path</span><span class="p">))</span>
+
+<span class="n">mcorr_df</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">load_batch</span><span class="p">(</span><span class="n">mcorr_batch_path</span><span class="p">)</span>
+<span class="n">mcorr_df</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Now create/load a new CNMF batch</span>
+<span class="n">cnmf_df_path</span> <span class="o">=</span> <span class="n">data_path</span> <span class="o">/</span> <span class="s1">&#39;cnmf_batch.pickle&#39;</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">cnmf_df_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;creating batch: </span><span class="si">{</span><span class="n">cnmf_df_path</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="c1"># cnmf_df = mc.create_batch(cnmf_df_path)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">cnmf_df</span> <span class="o">=</span> <span class="n">mc</span><span class="o">.</span><span class="n">load_batch</span><span class="p">(</span><span class="n">cnmf_df_path</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cnmf_df</span>
+</pre></div>
+</div>
+</div>
+</div>
+<ul class="simple">
+<li><p><a class="reference external" href="https://mesmerize-core.readthedocs.io/en/latest/api/common.html#lbm_mc.CaimanSeriesExtensions.get_input_movie_path">get_input_movie_path()</a> allows us to easily get filepaths to our raw files</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># we get metadata from our raw files</span>
+<span class="n">tiff_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">mcorr_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">caiman</span><span class="o">.</span><span class="n">get_input_movie_path</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">mcorr_df</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">mcorr_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">caiman</span><span class="o">.</span><span class="n">get_input_movie</span><span class="p">()</span>
+<span class="n">metadata</span> <span class="o">=</span> <span class="n">lcp</span><span class="o">.</span><span class="n">get_metadata</span><span class="p">(</span><span class="n">tiff_files</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">metadata</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="cnmf-parameters">
+<h2><span class="section-number">4.2. </span>CNMF Parameters<a class="headerlink" href="#cnmf-parameters" title="Link to this heading">#</a></h2>
+<p>In this section, we’ll define a <code class="docutils literal notranslate"><span class="pre">parameters</span></code> object that will subsequently be used to initialize our different estimators.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Default/Typical Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">decay_time</span></code></p></td>
+<td><p>Length of a typical transient in seconds. Approximation of the time scale for significant shifts in calcium signal. Defaults to <code class="docutils literal notranslate"><span class="pre">0.4</span></code> for fast indicators (e.g., GCaMP6f). Use <code class="docutils literal notranslate"><span class="pre">1</span></code> or more for slow indicators. Precise fitting is not necessary.</p></td>
+<td><p>0.4 (fast indicators)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">p</span></code></p></td>
+<td><p>Order of the autoregressive model. Use <code class="docutils literal notranslate"><span class="pre">p=0</span></code> to turn off deconvolution. Set <code class="docutils literal notranslate"><span class="pre">p=1</span></code> for instantaneous transients (e.g., low sample rate or slow indicator). Set <code class="docutils literal notranslate"><span class="pre">p=2</span></code> for visible rise time transients. Incorrect order leads to unreliable spike extraction.</p></td>
+<td><p>1 (slow), 2 (visible rise time)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">nb</span></code></p></td>
+<td><p>Number of global background components. Defaults to <code class="docutils literal notranslate"><span class="pre">2</span></code> for relatively homogeneous backgrounds. Use <code class="docutils literal notranslate"><span class="pre">3</span></code> for more complex noise, <code class="docutils literal notranslate"><span class="pre">1</span></code> is usually too low. Too low <code class="docutils literal notranslate"><span class="pre">nb</span></code> causes noisy traces; too high absorbs neuronal signals, reducing transients.</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">merge_thr</span></code></p></td>
+<td><p>Merging threshold for components after initialization. Components correlated above this threshold are merged, useful for splitting neurons during initialization.</p></td>
+<td><p>Typically between 0.7 and 0.9</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">rf</span></code></p></td>
+<td><p>Half-size of patches in pixels. Should be at least 3–4 times larger than neuron size to capture the neuron and local background. Larger patches reduce parallelization.</p></td>
+<td><p>3–4 × expected neuron size</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">stride</span></code></p></td>
+<td><p>Overlap between patches in pixels. Typically set to neuron diameter. Larger values increase computational load but improve reconstruction/denoising.</p></td>
+<td><p>Neuron diameter (~10–20 pixels)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">K</span></code></p></td>
+<td><p>Expected number of components per patch. Adjust based on patch size (<code class="docutils literal notranslate"><span class="pre">rf</span></code>) and component density.</p></td>
+<td><p>Varies based on data</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">gSig</span></code></p></td>
+<td><p>Expected half-size of neurons in pixels <code class="docutils literal notranslate"><span class="pre">[rows</span> <span class="pre">X</span> <span class="pre">columns]</span></code>. This is a <strong>crucial</strong> parameter for accurate component detection.</p></td>
+<td><p>Typically matches neuron half-size</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">method_init</span></code></p></td>
+<td><p>Initialization method. Depends on the recording method: use <code class="docutils literal notranslate"><span class="pre">greedy_roi</span></code> for 2p data, <code class="docutils literal notranslate"><span class="pre">corr_pnr</span></code> for 1p data, and <code class="docutils literal notranslate"><span class="pre">sparse_nmf</span></code> for dendritic/axonal data.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">greedy_roi</span></code>, <code class="docutils literal notranslate"><span class="pre">corr_pnr</span></code>, <code class="docutils literal notranslate"><span class="pre">sparse_nmf</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ssub/tsub</span></code></p></td>
+<td><p>Spatial and temporal subsampling during initialization. Defaults to <code class="docutils literal notranslate"><span class="pre">1</span></code> (no compression). Increase (e.g., <code class="docutils literal notranslate"><span class="pre">2</span></code> or more) to save resources but at the potential cost of impaired detection/extraction quality.</p></td>
+<td><p>1 (no compression), 2+ (for resource saving)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<section id="the-most-important-step">
+<h3><span class="section-number">4.2.1. </span><strong>The most important step</strong><a class="headerlink" href="#the-most-important-step" title="Link to this heading">#</a></h3>
+<p>We need to tell CaImAn our neuron size, and how many neurons to expect.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">gSig</span></code>: Your neurons <em>half-size</em>, in <code class="docutils literal notranslate"><span class="pre">um</span></code>.</p>
+<ul>
+<li><p>if your typical neuron is <code class="docutils literal notranslate"><span class="pre">14um</span></code>, <code class="docutils literal notranslate"><span class="pre">gSig</span></code> should be around 6-10.</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">K</span></code> : How many neurons should CaImAn expect, <strong>PER PATCH</strong></p></li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p><code class="docutils literal notranslate"><span class="pre">gSig_filt</span></code> controls the filter applied in <code class="docutils literal notranslate"><span class="pre">registration</span></code>. Don’t confuse the two parameters!</p>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mcorr_params</span> <span class="o">=</span> <span class="n">mcorr_df</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">mcorr_strides</span> <span class="o">=</span> <span class="n">mcorr_params</span><span class="p">[</span><span class="s1">&#39;main&#39;</span><span class="p">][</span><span class="s1">&#39;strides&#39;</span><span class="p">]</span>
+<span class="n">mcorr_overlaps</span> <span class="o">=</span> <span class="n">mcorr_params</span><span class="p">[</span><span class="s1">&#39;main&#39;</span><span class="p">][</span><span class="s1">&#39;overlaps&#39;</span><span class="p">]</span>
+<span class="p">(</span><span class="n">mcorr_strides</span><span class="p">,</span> <span class="n">mcorr_overlaps</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">caiman.utils.visualization</span> <span class="kn">import</span> <span class="n">view_quilt</span>
+<span class="n">q</span> <span class="o">=</span> <span class="n">view_quilt</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="n">mcorr_strides</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">mcorr_overlaps</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="get-values-for-k-and-gsig">
+<h2><span class="section-number">4.3. </span>Get values for K and gSig<a class="headerlink" href="#get-values-for-k-and-gsig" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">get_single_patch_coords()</span></code> takes your image dimensions and strides/overlaps values from registration to show you a single patch of your movie.</p>
+<p>Use the last parameter, <code class="docutils literal notranslate"><span class="pre">patch_index</span></code>, to select a patch with activity. This can be a list [] or tuple (), of the row/column you want to select.</p>
+<p>Use this widget to get an idea for the <strong>size of your neuron</strong> (in pixels) and the number of neurons you expect per-patch.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>You want to <em>slightly</em> over-estimate the number of neurons for a value of <code class="docutils literal notranslate"><span class="pre">K</span></code>.</p>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># patch at row/col 2/3</span>
+<span class="n">y_start</span><span class="p">,</span> <span class="n">y_end</span><span class="p">,</span> <span class="n">x_start</span><span class="p">,</span> <span class="n">x_end</span> <span class="o">=</span> <span class="n">lcp</span><span class="o">.</span><span class="n">get_single_patch_coords</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">mcorr_strides</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">mcorr_overlaps</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="n">data_patch_1</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="n">y_start</span><span class="p">:</span><span class="n">y_end</span><span class="p">,</span> <span class="n">x_start</span><span class="p">:</span><span class="n">x_end</span><span class="p">]</span> 
+<span class="c1"># patch at row/col 4/6</span>
+<span class="n">y_start</span><span class="p">,</span> <span class="n">y_end</span><span class="p">,</span> <span class="n">x_start</span><span class="p">,</span> <span class="n">x_end</span> <span class="o">=</span> <span class="n">lcp</span><span class="o">.</span><span class="n">get_single_patch_coords</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">mcorr_strides</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">mcorr_overlaps</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="n">data_patch_2</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="n">y_start</span><span class="p">:</span><span class="n">y_end</span><span class="p">,</span> <span class="n">x_start</span><span class="p">:</span><span class="n">x_end</span><span class="p">]</span> 
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">iw</span> <span class="o">=</span> <span class="n">fpl</span><span class="o">.</span><span class="n">ImageWidget</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="n">data_patch_1</span><span class="p">,</span> <span class="n">data_patch_2</span><span class="p">],</span> <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Patch [2, 3]&quot;</span><span class="p">,</span> <span class="s2">&quot;Patch [4, 6]&quot;</span><span class="p">],</span> <span class="n">figure_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;size&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">1600</span><span class="p">,</span> <span class="mi">800</span><span class="p">)})</span>
+<span class="n">iw</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">iw</span> <span class="o">=</span> <span class="n">fpl</span><span class="o">.</span><span class="n">ImageWidget</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="n">data_patch_1</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">data_patch_2</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)],</span> <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Patch [2, 3]&quot;</span><span class="p">,</span> <span class="s2">&quot;Patch [4, 6]&quot;</span><span class="p">],</span>  <span class="n">figure_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;size&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">1600</span><span class="p">,</span> <span class="mi">800</span><span class="p">)})</span>
+<span class="n">iw</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="set-new-parameters">
+<h2><span class="section-number">4.4. </span>Set new parameters<a class="headerlink" href="#set-new-parameters" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mcorr_strides</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+
+<span class="n">K</span> <span class="o">=</span> <span class="mi">12</span>    <span class="c1"># I counted 9/10 easily visible neurons in the above movie. Overestimating to 12 to account for neuron overlap / borders.</span>
+<span class="n">gSig</span> <span class="o">=</span> <span class="mi">7</span>  <span class="c1"># Set this to half the size of your neuron, so 7 um for an approximate neuron size of 12-15um.</span>
+<span class="n">rf</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">mcorr_strides</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>   <span class="c1"># To mirror your motion correction size, mcorr_strides / 2 </span>
+<span class="n">stride</span> <span class="o">=</span> <span class="n">mcorr_overlaps</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="n">cnmf_params</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">mcorr_params</span><span class="p">)</span>
+<span class="n">cnmf_params</span><span class="p">[</span><span class="s1">&#39;main&#39;</span><span class="p">][</span><span class="s1">&#39;K&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">K</span>
+<span class="n">cnmf_params</span><span class="p">[</span><span class="s1">&#39;main&#39;</span><span class="p">][</span><span class="s1">&#39;gSig&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gSig</span>
+<span class="n">cnmf_params</span><span class="p">[</span><span class="s1">&#39;main&#39;</span><span class="p">][</span><span class="s1">&#39;stride&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">stride</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">rf</span><span class="p">,</span> <span class="n">gSig</span><span class="p">,</span> <span class="n">stride</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="run-the-cnmf-algorithm">
+<h2><span class="section-number">4.5. </span>Run the CNMF algorithm<a class="headerlink" href="#run-the-cnmf-algorithm" title="Link to this heading">#</a></h2>
+<p>The API is identical to running mcorr.</p>
+<p>You can provide the mcorr item row to <code class="docutils literal notranslate"><span class="pre">input_movie_path</span></code> and it will resolve the path of the input movie from the entry in the DataFrame.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cnmf_df</span> <span class="o">=</span> <span class="n">cnmf_df</span><span class="o">.</span><span class="n">caiman</span><span class="o">.</span><span class="n">reload_from_disk</span><span class="p">()</span>
+
+<span class="n">cnmf_df</span><span class="o">.</span><span class="n">caiman</span><span class="o">.</span><span class="n">add_item</span><span class="p">(</span>
+    <span class="n">algo</span><span class="o">=</span><span class="s1">&#39;cnmf&#39;</span><span class="p">,</span>
+    <span class="n">input_movie_path</span><span class="o">=</span><span class="n">mcorr_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="c1"># our registration results row</span>
+    <span class="n">params</span><span class="o">=</span><span class="n">cnmf_params</span><span class="p">,</span>
+    <span class="n">item_name</span><span class="o">=</span><span class="s1">&#39;cnmf-highres&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cnmf_df</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If calling <code class="docutils literal notranslate"><span class="pre">caiman.run()</span></code> on Windows, avoid queueing / calling other jupyter cells. This can lead to the algorithm stalling.</p>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cnmf_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">caiman</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="checking-for-an-errors">
+<h2><span class="section-number">4.6. </span>Checking for an errors<a class="headerlink" href="#checking-for-an-errors" title="Link to this heading">#</a></h2>
+<p>After a batch run, check the results to make sure the outputs do not contain a “traceback” error.</p>
+<p>An error-free processing run will yield “None” in the cell below. Otherwise, an error will be printed.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pprint</span>
+<span class="c1"># Only need to reload on windows, but it doesn&#39;t hurt.</span>
+<span class="n">cnmf_df</span> <span class="o">=</span> <span class="n">cnmf_df</span><span class="o">.</span><span class="n">caiman</span><span class="o">.</span><span class="n">reload_from_disk</span><span class="p">()</span>
+<span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">cnmf_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">outputs</span><span class="p">[</span><span class="s2">&quot;traceback&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="evaluate-cnmf-outputs">
+<h2><span class="section-number">4.7. </span>Evaluate CNMF outputs<a class="headerlink" href="#evaluate-cnmf-outputs" title="Link to this heading">#</a></h2>
+<p>Similar to mcorr, you can use the <code class="docutils literal notranslate"><span class="pre">mesmerize-core</span></code> API to fetch the outputs.</p>
+<p><a class="reference external" href="https://mesmerize-core.readthedocs.io/en/latest/api/cnmf.html">API reference for mesmerize-CNMF</a>
+<a class="reference external" href="https://caiman.readthedocs.io/en/latest/Getting_Started.html#parameters">API reference for caiman-CNMF</a></p>
+<p>We can get a look at the total number of traces by counting how many values are in our <code class="docutils literal notranslate"><span class="pre">estimates.C</span></code>, which holds time-traces for each neuron (both accepted and rejected).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cnmf_model</span> <span class="o">=</span> <span class="n">cnmf_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">cnmf</span><span class="o">.</span><span class="n">get_output</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="plot-cnmf-components">
+<h2><span class="section-number">4.8. </span>Plot CNMF Components<a class="headerlink" href="#plot-cnmf-components" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">lcp.plot_cnmf_components(df,</span> <span class="pre">marker_size=3)</span></code> plots the <strong>estimates produced by CaImAn</strong></p>
+<p>This is essentially a small region around each “neuron”, or what CaImAn considers a neuron.</p>
+<p>The marker is simply a dot at the center of the neuron.
+Red = Accepted Neuron
+Blue = Rejected Neuronn</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">lcp</span><span class="o">.</span><span class="n">plot_cnmf_components</span><span class="p">(</span><span class="n">cnmf_df</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># set the marker_size to 0 to remove center-markers</span>
+<span class="n">lcp</span><span class="o">.</span><span class="n">plot_cnmf_components</span><span class="p">(</span><span class="n">cnmf_df</span><span class="p">,</span> <span class="n">marker_size</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="view-accepted-neurons-on-a-summary-image">
+<h2><span class="section-number">4.9. </span>View accepted neurons on a summary image<a class="headerlink" href="#view-accepted-neurons-on-a-summary-image" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">get_contours()</span></code> can take a while, ~3 minutes on a larger (1000x1000 4um/px) dataset.</p></li>
+<li><p>To view rejected neurons, simply rerun with <code class="docutils literal notranslate"><span class="pre">get_contours(&quot;bad&quot;,</span> <span class="pre">swap_dim=False)</span></code></p></li>
+</ul>
+<p>Now we’re going to display a summary image to plot our segmentation results on top of.</p>
+<p>You can try a variety of these images to see which gives you the clearest picture of your neurons at their most active state.</p>
+<ol class="arabic simple">
+<li><p>Correlation Image</p></li>
+<li><p>Mean Image</p></li>
+<li><p>Standard-deviation Image</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">corr</span> <span class="o">=</span> <span class="n">cnmf_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">caiman</span><span class="o">.</span><span class="n">get_corr_image</span><span class="p">()</span>
+<span class="n">mean_img</span> <span class="o">=</span> <span class="n">cnmf_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">caiman</span><span class="o">.</span><span class="n">get_projection</span><span class="p">(</span><span class="s1">&#39;mean&#39;</span><span class="p">)</span>
+<span class="n">std_img</span> <span class="o">=</span> <span class="n">cnmf_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">caiman</span><span class="o">.</span><span class="n">get_projection</span><span class="p">(</span><span class="s1">&#39;std&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">corr</span> <span class="o">=</span> <span class="n">cnmf_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">caiman</span><span class="o">.</span><span class="n">get_corr_image</span><span class="p">()</span>
+<span class="n">contours</span> <span class="o">=</span> <span class="n">cnmf_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">cnmf</span><span class="o">.</span><span class="n">get_contours</span><span class="p">(</span><span class="s2">&quot;good&quot;</span><span class="p">,</span> <span class="n">swap_dim</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">filtered</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">contours</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">figure</span> <span class="o">=</span> <span class="n">fpl</span><span class="o">.</span><span class="n">Figure</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">700</span><span class="p">,</span> <span class="mi">560</span><span class="p">))</span>
+<span class="n">image_graphic</span> <span class="o">=</span> <span class="n">figure</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">add_image</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">corr</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Correlation Image&quot;</span><span class="p">)</span>
+<span class="n">subplot</span> <span class="o">=</span> <span class="n">figure</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="n">graphic</span> <span class="o">=</span> <span class="n">subplot</span><span class="o">.</span><span class="n">add_line_collection</span><span class="p">(</span>
+    <span class="n">filtered</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;contours&quot;</span>
+<span class="p">)</span>
+<span class="n">figure</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">figure</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="what-happened">
+<h2><span class="section-number">4.10. </span>What happened?<a class="headerlink" href="#what-happened" title="Link to this heading">#</a></h2>
+<p>We see many more neurons than we expect. Why is this?</p>
+<p>Lets check the patches used for CNMF.</p>
+<p>Below is internally how CaImAn uses the <code class="docutils literal notranslate"><span class="pre">rf</span></code> and <code class="docutils literal notranslate"><span class="pre">stride</span></code> parameters to define patches.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cnmf_patch_width</span> <span class="o">=</span> <span class="n">cnmf_model</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">patch</span><span class="p">[</span><span class="s1">&#39;rf&#39;</span><span class="p">]</span><span class="o">*</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span>
+<span class="n">cnmf_patch_overlap</span> <span class="o">=</span> <span class="n">cnmf_model</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">patch</span><span class="p">[</span><span class="s1">&#39;stride&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+<span class="n">cnmf_patch_stride</span> <span class="o">=</span> <span class="n">cnmf_patch_width</span> <span class="o">-</span> <span class="n">cnmf_patch_overlap</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Patch width: </span><span class="si">{</span><span class="n">cnmf_patch_width</span><span class="si">}</span><span class="s1"> , Stride: </span><span class="si">{</span><span class="n">cnmf_patch_stride</span><span class="si">}</span><span class="s1">, Overlap: </span><span class="si">{</span><span class="n">cnmf_patch_overlap</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">);</span>
+
+<span class="c1"># plot the patches</span>
+<span class="n">patch_ax</span> <span class="o">=</span> <span class="n">view_quilt</span><span class="p">(</span><span class="n">corr</span><span class="p">,</span> 
+                      <span class="n">cnmf_model</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">patch</span><span class="p">[</span><span class="s1">&#39;rf&#39;</span><span class="p">],</span> 
+                      <span class="n">cnmf_model</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">patch</span><span class="p">[</span><span class="s1">&#39;stride&#39;</span><span class="p">]);</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="patches-are-tiny">
+<h2><span class="section-number">4.11. </span>Patches are tiny!<a class="headerlink" href="#patches-are-tiny" title="Link to this heading">#</a></h2>
+<p>There was an error in how we set up our patches.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+
+<span class="n">K</span> <span class="o">=</span> <span class="mi">12</span>    <span class="c1"># I counted 9/10 easily visible neurons in the above movie. Overestimating to 12 to account for neuron overlap / borders.</span>
+<span class="n">gSig</span> <span class="o">=</span> <span class="mi">7</span>  <span class="c1"># Set this to half the size of your neuron, so 7 um for an approximate neuron size of 12-15um.</span>
+<span class="n">rf</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">mcorr_strides</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>   <span class="c1"># To mirror your motion correction size, mcorr_strides / 2 </span>
+<span class="n">stride</span> <span class="o">=</span> <span class="n">mcorr_overlaps</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="n">cnmf_params</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">mcorr_params</span><span class="p">)</span>
+<span class="n">cnmf_params</span><span class="p">[</span><span class="s1">&#39;main&#39;</span><span class="p">][</span><span class="s1">&#39;K&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">K</span>
+<span class="n">cnmf_params</span><span class="p">[</span><span class="s1">&#39;main&#39;</span><span class="p">][</span><span class="s1">&#39;gSig&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gSig</span>
+<span class="n">cnmf_params</span><span class="p">[</span><span class="s1">&#39;main&#39;</span><span class="p">][</span><span class="s1">&#39;stride&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">stride</span>
+
+<span class="c1"># this time, actually set the RF parameter!</span>
+<span class="n">cnmf_params</span><span class="p">[</span><span class="s1">&#39;main&#39;</span><span class="p">][</span><span class="s1">&#39;rf&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rf</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="rerun-cnmf">
+<h2><span class="section-number">4.12. </span>Rerun CNMF<a class="headerlink" href="#rerun-cnmf" title="Link to this heading">#</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Setting multiple batch-items with the same <code class="docutils literal notranslate"><span class="pre">item_name</span></code> allows us to call <a class="reference external" href="https://mesmerize-core.readthedocs.io/en/latest/api/common.html#lbm_mc.CaimanDataFrameExtensions.get_params_diffs"><code class="docutils literal notranslate"><span class="pre">df.caiman.get_params_diffs</span></code></a>, which
+gives us a nice table of parameters that differ between runs.</p>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cnmf_df</span><span class="o">.</span><span class="n">caiman</span><span class="o">.</span><span class="n">add_item</span><span class="p">(</span>
+    <span class="n">algo</span><span class="o">=</span><span class="s1">&#39;cnmf&#39;</span><span class="p">,</span>
+    <span class="n">input_movie_path</span><span class="o">=</span><span class="n">mcorr_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="c1"># our registration results row</span>
+    <span class="n">params</span><span class="o">=</span><span class="n">cnmf_params</span><span class="p">,</span>
+    <span class="n">item_name</span><span class="o">=</span><span class="s1">&#39;cnmf-highres&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cnmf_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">caiman</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cnmf_df</span> <span class="o">=</span> <span class="n">cnmf_df</span><span class="o">.</span><span class="n">caiman</span><span class="o">.</span><span class="n">reload_from_disk</span><span class="p">()</span>
+<span class="n">cnmf_df</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">lcp</span><span class="o">.</span><span class="n">plot_cnmf_components</span><span class="p">(</span><span class="n">cnmf_df</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">contours</span> <span class="o">=</span> <span class="n">cnmf_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">cnmf</span><span class="o">.</span><span class="n">get_contours</span><span class="p">(</span><span class="s2">&quot;good&quot;</span><span class="p">,</span> <span class="n">swap_dim</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">filtered</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">contours</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">]</span>
+
+<span class="n">figure</span> <span class="o">=</span> <span class="n">fpl</span><span class="o">.</span><span class="n">Figure</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">700</span><span class="p">,</span> <span class="mi">560</span><span class="p">))</span>
+<span class="n">image_graphic</span> <span class="o">=</span> <span class="n">figure</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">add_image</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">corr</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Correlation Image&quot;</span><span class="p">)</span>
+<span class="n">subplot</span> <span class="o">=</span> <span class="n">figure</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="n">graphic</span> <span class="o">=</span> <span class="n">subplot</span><span class="o">.</span><span class="n">add_line_collection</span><span class="p">(</span>
+    <span class="n">filtered</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;contours&quot;</span>
+<span class="p">)</span>
+<span class="n">figure</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "ab09815262f041cc9b538935a4626ba3", "version_major": 2, "version_minor": 0}</script><script type="application/vnd.jupyter.widget-view+json">{"model_id": "d38f5f4d03fc4502a46a1ac235c644a8", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">figure</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cnmf_model</span> <span class="o">=</span> <span class="n">cnmf_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">cnmf</span><span class="o">.</span><span class="n">get_output</span><span class="p">()</span>
+<span class="n">cnmf_model</span><span class="o">.</span><span class="n">dview</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">AttributeError</span><span class="g g-Whitespace">                            </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">97</span><span class="p">],</span> <span class="n">line</span> <span class="mi">2</span>
+<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="n">cnmf_model</span> <span class="o">=</span> <span class="n">cnmf_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">cnmf</span><span class="o">.</span><span class="n">get_output</span><span class="p">()</span>
+<span class="ne">----&gt; </span><span class="mi">2</span> <span class="n">cnmf_model</span><span class="o">.</span><span class="n">dview</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+
+<span class="ne">AttributeError</span>: &#39;NoneType&#39; object has no attribute &#39;terminate&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># we overestimated by ~2 neurons, now overestimte by ~10 neurons</span>
+<span class="n">cnmf_params</span><span class="p">[</span><span class="s1">&#39;main&#39;</span><span class="p">][</span><span class="s1">&#39;K&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">20</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cnmf_df</span><span class="o">.</span><span class="n">caiman</span><span class="o">.</span><span class="n">add_item</span><span class="p">(</span>
+    <span class="n">algo</span><span class="o">=</span><span class="s1">&#39;cnmf&#39;</span><span class="p">,</span>
+    <span class="n">input_movie_path</span><span class="o">=</span><span class="n">mcorr_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="c1"># our registration results row</span>
+    <span class="n">params</span><span class="o">=</span><span class="n">cnmf_params</span><span class="p">,</span>
+    <span class="n">item_name</span><span class="o">=</span><span class="s1">&#39;K_20&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cnmf_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">caiman</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Running db90a859-df8a-49d9-9cb8-f7a671258057 with local backend
+************************************************************************
+
+Starting CNMF item:
+algo                                                                                                                                   cnmf
+item_name                                                                                                                              K_20
+input_movie_path    906ceafb-8dc4-4d21-8938-dd31795285de\906ceafb-8dc4-4d21-8938-dd31795285de-plane_1_els__d1_600_d2_576_d3_1_order_F_fr...
+params              {&#39;main&#39;: {&#39;pw_rigid&#39;: True, &#39;max_shifts&#39;: (10, 10), &#39;strides&#39;: (58, 58), &#39;overlaps&#39;: (17, 17), &#39;min_mov&#39;: None, &#39;gSi...
+outputs                                                                                                                                None
+added_time                                                                                                              2025-01-10T12:32:53
+ran_time                                                                                                                               None
+algo_duration                                                                                                                          None
+comments                                                                                                                               None
+uuid                                                                                                   db90a859-df8a-49d9-9cb8-f7a671258057
+Name: 2, dtype: object
+With params:{&#39;main&#39;: {&#39;pw_rigid&#39;: True, &#39;max_shifts&#39;: (10, 10), &#39;strides&#39;: (58, 58), &#39;overlaps&#39;: (17, 17), &#39;min_mov&#39;: None, &#39;gSig_filt&#39;: (0, 0), &#39;max_deviation_rigid&#39;: 3, &#39;border_nan&#39;: &#39;copy&#39;, &#39;splits_els&#39;: 14, &#39;upsample_factor_grid&#39;: 4, &#39;use_cuda&#39;: False, &#39;num_frames_split&#39;: 50, &#39;niter_rig&#39;: 1, &#39;is3D&#39;: False, &#39;indices&#39;: (slice(None, None, None), slice(None, None, None)), &#39;splits_rig&#39;: 14, &#39;num_splits_to_process_rig&#39;: None, &#39;fr&#39;: 10, &#39;dxy&#39;: (1.0, 1.0), &#39;decay_time&#39;: 0.4, &#39;p&#39;: 2, &#39;nb&#39;: 1, &#39;K&#39;: 20, &#39;rf&#39;: 29, &#39;gSig&#39;: 7, &#39;gSiz&#39;: (25, 25), &#39;stride&#39;: 17, &#39;method_init&#39;: &#39;greedy_roi&#39;, &#39;rolling_sum&#39;: True, &#39;use_cnn&#39;: False, &#39;ssub&#39;: 1, &#39;tsub&#39;: 1, &#39;merge_thr&#39;: 0.7, &#39;bas_nonneg&#39;: True, &#39;min_SNR&#39;: 1.4, &#39;rval_thr&#39;: 0.8}}
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>       79143 [cluster.py:setup_cluster():225] [15352] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+       79218 [params.py:change_params():1151] [15352] In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>making memmap
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>       90092 [cluster.py:setup_cluster():225] [15352] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>performing CNMF
+fitting images
+performing eval
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;lbm_mc.caiman_extensions.common.DummyProcess at 0x1b6ef53d450&gt;
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="evaluate-cnmf-results">
+<h2><span class="section-number">4.13. </span>Evaluate CNMF Results<a class="headerlink" href="#evaluate-cnmf-results" title="Link to this heading">#</a></h2>
+<p>The next step is to adjust evaluation parameters, <code class="docutils literal notranslate"><span class="pre">min_SNR</span></code> and <code class="docutils literal notranslate"><span class="pre">rval_thr</span></code> (and <code class="docutils literal notranslate"><span class="pre">cnn_thr</span></code> if you used <code class="docutils literal notranslate"><span class="pre">use_cnn=True</span></code>).</p>
+<p>These parameters <strong>will not compensate for poorly-calculated initialization parameters</strong>.</p>
+<p>If you did not properly set <code class="docutils literal notranslate"><span class="pre">K</span></code> (number of neurons per-patch) to your patch size, and you see too many neurons, you should instead rereun segmentation with these parameters tuned to the dataset.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Neurons cannot be “added” after initialization (calling <code class="docutils literal notranslate"><span class="pre">caiman.run()</span></code> is initialization). They can be removed quite easily.</p>
+<p>For this reason, you should overestimate K by a few values per patch.</p>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mesmerize_viz</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="n">viz</span> <span class="o">=</span> <span class="n">cnmf_df</span><span class="o">.</span><span class="n">cnmf</span><span class="o">.</span><span class="n">viz</span><span class="p">(</span><span class="n">start_index</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">viz</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>C:\Users\RBO\miniforge3\envs\lcp\lib\site-packages\traitlets\traitlets.py:1385: DeprecationWarning: Passing unrecognized arguments to super(Layout).__init__(disabled=True).
+object.__init__() takes exactly one argument (the instance to initialize)
+This is deprecated in traitlets 4.2.This error will be raised in a future release of traitlets.
+  warn(
+c:\users\rbo\repos\mesmerize-viz\mesmerize_viz\_cnmf.py:633: DeprecationWarning: the description_tooltip argument is deprecated, use tooltip instead
+  self.checkbox_zoom_components = Checkbox(
+c:\users\rbo\repos\mesmerize-viz\mesmerize_viz\_cnmf.py:639: DeprecationWarning: the description_tooltip argument is deprecated, use tooltip instead
+  self.zoom_components_scale = FloatSlider(
+c:\users\rbo\repos\mesmerize-viz\mesmerize_viz\_cnmf.py:662: DeprecationWarning: the description_tooltip argument is deprecated, use tooltip instead
+  self._radio_visible_components = RadioButtons(
+c:\users\rbo\repos\mesmerize-viz\mesmerize_viz\_cnmf.py:670: DeprecationWarning: the description_tooltip argument is deprecated, use tooltip instead
+  self._spinbox_alpha_invisible_contours = FloatSlider(
+c:\users\rbo\repos\mesmerize-viz\mesmerize_viz\_cnmf.py:176: DeprecationWarning: the description_tooltip argument is deprecated, use tooltip instead
+  spinbox = BoundedFloatText(
+C:\Users\RBO\miniforge3\envs\lcp\lib\site-packages\traitlets\traitlets.py:1385: DeprecationWarning: Passing unrecognized arguments to super(BoundedFloatText).__init__(readout_format=&#39;.2f&#39;).
+object.__init__() takes exactly one argument (the instance to initialize)
+This is deprecated in traitlets 4.2.This error will be raised in a future release of traitlets.
+  warn(
+c:\users\rbo\repos\mesmerize-viz\mesmerize_viz\_cnmf.py:176: DeprecationWarning: the description_tooltip argument is deprecated, use tooltip instead
+  spinbox = BoundedFloatText(
+C:\Users\RBO\miniforge3\envs\lcp\lib\site-packages\traitlets\traitlets.py:1385: DeprecationWarning: Passing unrecognized arguments to super(BoundedFloatText).__init__(readout_format=&#39;.2f&#39;).
+object.__init__() takes exactly one argument (the instance to initialize)
+This is deprecated in traitlets 4.2.This error will be raised in a future release of traitlets.
+  warn(
+c:\users\rbo\repos\mesmerize-viz\mesmerize_viz\_cnmf.py:176: DeprecationWarning: the description_tooltip argument is deprecated, use tooltip instead
+  spinbox = BoundedFloatText(
+C:\Users\RBO\miniforge3\envs\lcp\lib\site-packages\traitlets\traitlets.py:1385: DeprecationWarning: Passing unrecognized arguments to super(BoundedFloatText).__init__(readout_format=&#39;.2f&#39;).
+object.__init__() takes exactly one argument (the instance to initialize)
+This is deprecated in traitlets 4.2.This error will be raised in a future release of traitlets.
+  warn(
+c:\users\rbo\repos\mesmerize-viz\mesmerize_viz\_cnmf.py:176: DeprecationWarning: the description_tooltip argument is deprecated, use tooltip instead
+  spinbox = BoundedFloatText(
+C:\Users\RBO\miniforge3\envs\lcp\lib\site-packages\traitlets\traitlets.py:1385: DeprecationWarning: Passing unrecognized arguments to super(BoundedFloatText).__init__(readout_format=&#39;.2f&#39;).
+object.__init__() takes exactly one argument (the instance to initialize)
+This is deprecated in traitlets 4.2.This error will be raised in a future release of traitlets.
+  warn(
+c:\users\rbo\repos\mesmerize-viz\mesmerize_viz\_cnmf.py:176: DeprecationWarning: the description_tooltip argument is deprecated, use tooltip instead
+  spinbox = BoundedFloatText(
+C:\Users\RBO\miniforge3\envs\lcp\lib\site-packages\traitlets\traitlets.py:1385: DeprecationWarning: Passing unrecognized arguments to super(BoundedFloatText).__init__(readout_format=&#39;.2f&#39;).
+object.__init__() takes exactly one argument (the instance to initialize)
+This is deprecated in traitlets 4.2.This error will be raised in a future release of traitlets.
+  warn(
+c:\users\rbo\repos\mesmerize-viz\mesmerize_viz\_cnmf.py:176: DeprecationWarning: the description_tooltip argument is deprecated, use tooltip instead
+  spinbox = BoundedFloatText(
+C:\Users\RBO\miniforge3\envs\lcp\lib\site-packages\traitlets\traitlets.py:1385: DeprecationWarning: Passing unrecognized arguments to super(BoundedFloatText).__init__(readout_format=&#39;.2f&#39;).
+object.__init__() takes exactly one argument (the instance to initialize)
+This is deprecated in traitlets 4.2.This error will be raised in a future release of traitlets.
+  warn(
+c:\users\rbo\repos\mesmerize-viz\mesmerize_viz\_cnmf.py:191: DeprecationWarning: the description_tooltip argument is deprecated, use tooltip instead
+  self.use_cnn_checkbox = Checkbox(
+C:\Users\RBO\miniforge3\envs\lcp\lib\site-packages\traitlets\traitlets.py:1385: DeprecationWarning: Passing unrecognized arguments to super(Button).__init__(description_tooltip=&#39;Reset eval from disk&#39;).
+object.__init__() takes exactly one argument (the instance to initialize)
+This is deprecated in traitlets 4.2.This error will be raised in a future release of traitlets.
+  warn(
+</pre></div>
+</div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "d00d7b1d790645d6a552f1336c1a52bb", "version_major": 2, "version_minor": 0}</script><script type="application/vnd.jupyter.widget-view+json">{"model_id": "e6f6aeab8a1242ecbea969ff084843d3", "version_major": 2, "version_minor": 0}</script><script type="application/vnd.jupyter.widget-view+json">{"model_id": "c81e47e8695e477b896b8b7fb39ad022", "version_major": 2, "version_minor": 0}</script><script type="application/vnd.jupyter.widget-view+json">{"model_id": "288a7479ff204f0a85aa6fede5245c12", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">viz</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="parameter-gridsearch">
+<h2><span class="section-number">4.14. </span>Parameter Gridsearch<a class="headerlink" href="#parameter-gridsearch" title="Link to this heading">#</a></h2>
+<p>Once you have a close approximation for a value of <code class="docutils literal notranslate"><span class="pre">K</span></code>, <code class="docutils literal notranslate"><span class="pre">rf</span></code>, <code class="docutils literal notranslate"><span class="pre">stride</span></code> and <code class="docutils literal notranslate"><span class="pre">gSig</span></code>, we can further tune these values with a grid-search.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Don’t include <code class="docutils literal notranslate"><span class="pre">min_SNR</span></code> or <code class="docutils literal notranslate"><span class="pre">rval_thr</span></code> in your parameter search. These can be more effectively assessed in via <code class="docutils literal notranslate"><span class="pre">mesmerize-viz</span></code>.</p>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cnmf_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;main&#39;</span><span class="p">][</span><span class="s1">&#39;K&#39;</span><span class="p">]</span>
+<span class="n">cnmf_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;main&#39;</span><span class="p">][</span><span class="s1">&#39;gSig&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(7, 7)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># itertools.product makes it easy to loop through parameter variants</span>
+<span class="c1"># basically, it&#39;s easier to read that deeply nested for loops</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">product</span>
+
+<span class="c1"># variants of several parameters</span>
+<span class="n">gSig_variants</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">10</span><span class="p">]</span>
+<span class="n">K_variants</span> <span class="o">=</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">25</span><span class="p">]</span>
+
+<span class="c1"># always use deepcopy like before</span>
+<span class="n">new_params_cnmf</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">params_cnmf</span><span class="p">)</span>
+
+<span class="c1"># create a parameter grid</span>
+<span class="n">parameter_grid</span> <span class="o">=</span> <span class="n">product</span><span class="p">(</span><span class="n">gSig_variants</span><span class="p">,</span> <span class="n">K_variants</span><span class="p">)</span>
+
+<span class="c1"># a single for loop to go through all the various parameter combinations</span>
+<span class="k">for</span> <span class="n">gSig</span><span class="p">,</span> <span class="n">K</span> <span class="ow">in</span> <span class="n">parameter_grid</span><span class="p">:</span>
+    <span class="c1"># deep copy params dict just like before</span>
+    <span class="n">new_params_cnmf</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">new_params_cnmf</span><span class="p">)</span>
+
+    <span class="n">new_params_cnmf</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">][</span><span class="s2">&quot;gSig&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">gSig</span><span class="p">,</span> <span class="n">gSig</span><span class="p">]</span>
+    <span class="n">new_params_cnmf</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">][</span><span class="s2">&quot;K&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">K</span>
+
+    <span class="c1"># add param combination variant to batch</span>
+    <span class="n">cnmf_df</span><span class="o">.</span><span class="n">caiman</span><span class="o">.</span><span class="n">add_item</span><span class="p">(</span>
+        <span class="n">algo</span><span class="o">=</span><span class="s2">&quot;cnmf&quot;</span><span class="p">,</span>
+        <span class="c1"># TODO: This may not be a solution to choosing a name if you want a parameter variant in the name</span>
+        <span class="n">item_name</span><span class="o">=</span><span class="n">cnmf_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="s2">&quot;item_name&quot;</span><span class="p">],</span>
+        <span class="n">input_movie_path</span><span class="o">=</span><span class="n">cnmf_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">caiman</span><span class="o">.</span><span class="n">get_input_movie_path</span><span class="p">(),</span>
+        <span class="n">params</span><span class="o">=</span><span class="n">new_params_cnmf</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cnmf_df</span><span class="o">.</span><span class="n">caiman</span><span class="o">.</span><span class="n">get_params_diffs</span><span class="p">(</span><span class="n">algo</span><span class="o">=</span><span class="s2">&quot;cnmf&quot;</span><span class="p">,</span> <span class="n">item_name</span><span class="o">=</span><span class="n">cnmf_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="s2">&quot;item_name&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>gSig</th>
+      <th>K</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>1</th>
+      <td>(7, 7)</td>
+      <td>5</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>(4, 4)</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>(4, 4)</td>
+      <td>25</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>(10, 10)</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>(10, 10)</td>
+      <td>25</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="run-the-cnmf-batch-items">
+<h2><span class="section-number">4.15. </span>Run the <code class="docutils literal notranslate"><span class="pre">cnmf</span></code> batch items<a class="headerlink" href="#run-the-cnmf-batch-items" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">cnmf_df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+    <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;outputs&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="c1"># item has already been run</span>
+        <span class="k">continue</span> <span class="c1"># skip</span>
+
+    <span class="n">process</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">caiman</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+
+    <span class="c1"># on Windows you MUST reload the batch dataframe after every iteration because it uses the `local` backend.</span>
+    <span class="c1"># this is unnecessary on Linux &amp; Mac</span>
+    <span class="c1"># &quot;DummyProcess&quot; is used for local backend so this is automatic</span>
+    <span class="k">if</span> <span class="n">process</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;DummyProcess&quot;</span><span class="p">:</span>
+        <span class="n">cnmf_df</span> <span class="o">=</span> <span class="n">cnmf_df</span><span class="o">.</span><span class="n">caiman</span><span class="o">.</span><span class="n">reload_from_disk</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Running a5561c84-a784-433d-9e92-44112397245f with local backend
+************************************************************************
+
+Starting CNMF item:
+algo                                                                                                                                   cnmf
+item_name                                                                                                                          k_5_cnmf
+input_movie_path    d2323217-2056-4681-9656-2ddebc721ac4\d2323217-2056-4681-9656-2ddebc721ac4-plane_10_els__d1_600_d2_576_d3_1_order_F_f...
+params              {&#39;main&#39;: {&#39;fr&#39;: 9.60806, &#39;use_cnn&#39;: False, &#39;dxy&#39;: (1.04, 1.0), &#39;method_init&#39;: &#39;greedy_roi&#39;, &#39;K&#39;: 10, &#39;gSig&#39;: (4, 4),...
+outputs                                                                                                                                None
+added_time                                                                                                              2024-12-07T17:11:24
+ran_time                                                                                                                               None
+algo_duration                                                                                                                          None
+comments                                                                                                                               None
+uuid                                                                                                   a5561c84-a784-433d-9e92-44112397245f
+Name: 2, dtype: object
+With params:{&#39;main&#39;: {&#39;fr&#39;: 9.60806, &#39;use_cnn&#39;: False, &#39;dxy&#39;: (1.04, 1.0), &#39;method_init&#39;: &#39;greedy_roi&#39;, &#39;K&#39;: 10, &#39;gSig&#39;: (4, 4), &#39;gSiz&#39;: (15, 15), &#39;merge_thr&#39;: 0.7, &#39;p&#39;: 2, &#39;tsub&#39;: 1, &#39;ssub&#39;: 1, &#39;rf&#39;: 30, &#39;stride&#39;: 12, &#39;method_deconvolution&#39;: &#39;oasis&#39;, &#39;low_rank_background&#39;: None, &#39;update_background_components&#39;: True, &#39;del_duplicates&#39;: True, &#39;min_SNR&#39;: 1.5, &#39;rval_thr&#39;: 0.8}}
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>C:\Users\RBO\miniforge3\envs\lcp\lib\site-packages\caiman\cluster.py:225: DeprecationWarning: The &#39;warn&#39; method is deprecated, use &#39;warning&#39; instead
+  logger.warn(&#39;The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman&#39;)
+    94307817 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94307817 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94307817 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94307817 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94307817 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94307817 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94307817 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94307817 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94307817 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94307817 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94307912 [params.py:change_params():1151] [16948] In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+    94307912 [params.py:change_params():1151] [16948] In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+    94307912 [params.py:change_params():1151] [16948] In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+    94307912 [params.py:change_params():1151] [16948] In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+    94307912 [params.py:change_params():1151] [16948] In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+    94307912 [params.py:change_params():1151] [16948] In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+    94307912 [params.py:change_params():1151] [16948] In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+    94307912 [params.py:change_params():1151] [16948] In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+    94307912 [params.py:change_params():1151] [16948] In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+    94307912 [params.py:change_params():1151] [16948] In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>making memmap
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>C:\Users\RBO\miniforge3\envs\lcp\lib\site-packages\caiman\cluster.py:225: DeprecationWarning: The &#39;warn&#39; method is deprecated, use &#39;warning&#39; instead
+  logger.warn(&#39;The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman&#39;)
+    94323262 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94323262 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94323262 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94323262 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94323262 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94323262 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94323262 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94323262 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94323262 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94323262 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>performing CNMF
+fitting images
+performing eval
+Running 65c34bc6-8f23-480e-a96a-7643afa52653 with local backend
+************************************************************************
+
+Starting CNMF item:
+algo                                                                                                                                   cnmf
+item_name                                                                                                                          k_5_cnmf
+input_movie_path    d2323217-2056-4681-9656-2ddebc721ac4\d2323217-2056-4681-9656-2ddebc721ac4-plane_10_els__d1_600_d2_576_d3_1_order_F_f...
+params              {&#39;main&#39;: {&#39;fr&#39;: 9.60806, &#39;use_cnn&#39;: False, &#39;dxy&#39;: (1.04, 1.0), &#39;method_init&#39;: &#39;greedy_roi&#39;, &#39;K&#39;: 25, &#39;gSig&#39;: (4, 4),...
+outputs                                                                                                                                None
+added_time                                                                                                              2024-12-07T17:11:24
+ran_time                                                                                                                               None
+algo_duration                                                                                                                          None
+comments                                                                                                                               None
+uuid                                                                                                   65c34bc6-8f23-480e-a96a-7643afa52653
+Name: 3, dtype: object
+With params:{&#39;main&#39;: {&#39;fr&#39;: 9.60806, &#39;use_cnn&#39;: False, &#39;dxy&#39;: (1.04, 1.0), &#39;method_init&#39;: &#39;greedy_roi&#39;, &#39;K&#39;: 25, &#39;gSig&#39;: (4, 4), &#39;gSiz&#39;: (15, 15), &#39;merge_thr&#39;: 0.7, &#39;p&#39;: 2, &#39;tsub&#39;: 1, &#39;ssub&#39;: 1, &#39;rf&#39;: 30, &#39;stride&#39;: 12, &#39;method_deconvolution&#39;: &#39;oasis&#39;, &#39;low_rank_background&#39;: None, &#39;update_background_components&#39;: True, &#39;del_duplicates&#39;: True, &#39;min_SNR&#39;: 1.5, &#39;rval_thr&#39;: 0.8}}
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>C:\Users\RBO\miniforge3\envs\lcp\lib\site-packages\caiman\cluster.py:225: DeprecationWarning: The &#39;warn&#39; method is deprecated, use &#39;warning&#39; instead
+  logger.warn(&#39;The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman&#39;)
+    94416773 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94416773 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94416773 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94416773 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94416773 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94416773 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94416773 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94416773 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94416773 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94416773 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94416868 [params.py:change_params():1151] [16948] In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+    94416868 [params.py:change_params():1151] [16948] In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+    94416868 [params.py:change_params():1151] [16948] In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+    94416868 [params.py:change_params():1151] [16948] In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+    94416868 [params.py:change_params():1151] [16948] In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+    94416868 [params.py:change_params():1151] [16948] In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+    94416868 [params.py:change_params():1151] [16948] In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+    94416868 [params.py:change_params():1151] [16948] In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+    94416868 [params.py:change_params():1151] [16948] In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+    94416868 [params.py:change_params():1151] [16948] In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>making memmap
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>C:\Users\RBO\miniforge3\envs\lcp\lib\site-packages\caiman\cluster.py:225: DeprecationWarning: The &#39;warn&#39; method is deprecated, use &#39;warning&#39; instead
+  logger.warn(&#39;The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman&#39;)
+    94431435 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94431435 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94431435 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94431435 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94431435 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94431435 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94431435 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94431435 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94431435 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94431435 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>performing CNMF
+fitting images
+performing eval
+Running b322669d-7a04-4823-9003-97f6c96c9d7f with local backend
+************************************************************************
+
+Starting CNMF item:
+algo                                                                                                                                   cnmf
+item_name                                                                                                                          k_5_cnmf
+input_movie_path    d2323217-2056-4681-9656-2ddebc721ac4\d2323217-2056-4681-9656-2ddebc721ac4-plane_10_els__d1_600_d2_576_d3_1_order_F_f...
+params              {&#39;main&#39;: {&#39;fr&#39;: 9.60806, &#39;use_cnn&#39;: False, &#39;dxy&#39;: (1.04, 1.0), &#39;method_init&#39;: &#39;greedy_roi&#39;, &#39;K&#39;: 10, &#39;gSig&#39;: (10, 10...
+outputs                                                                                                                                None
+added_time                                                                                                              2024-12-07T17:11:24
+ran_time                                                                                                                               None
+algo_duration                                                                                                                          None
+comments                                                                                                                               None
+uuid                                                                                                   b322669d-7a04-4823-9003-97f6c96c9d7f
+Name: 4, dtype: object
+With params:{&#39;main&#39;: {&#39;fr&#39;: 9.60806, &#39;use_cnn&#39;: False, &#39;dxy&#39;: (1.04, 1.0), &#39;method_init&#39;: &#39;greedy_roi&#39;, &#39;K&#39;: 10, &#39;gSig&#39;: (10, 10), &#39;gSiz&#39;: (15, 15), &#39;merge_thr&#39;: 0.7, &#39;p&#39;: 2, &#39;tsub&#39;: 1, &#39;ssub&#39;: 1, &#39;rf&#39;: 30, &#39;stride&#39;: 12, &#39;method_deconvolution&#39;: &#39;oasis&#39;, &#39;low_rank_background&#39;: None, &#39;update_background_components&#39;: True, &#39;del_duplicates&#39;: True, &#39;min_SNR&#39;: 1.5, &#39;rval_thr&#39;: 0.8}}
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>C:\Users\RBO\miniforge3\envs\lcp\lib\site-packages\caiman\cluster.py:225: DeprecationWarning: The &#39;warn&#39; method is deprecated, use &#39;warning&#39; instead
+  logger.warn(&#39;The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman&#39;)
+    94597409 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94597409 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94597409 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94597409 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94597409 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94597409 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94597409 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94597409 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94597409 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94597409 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94597513 [params.py:change_params():1151] [16948] In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+    94597513 [params.py:change_params():1151] [16948] In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+    94597513 [params.py:change_params():1151] [16948] In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+    94597513 [params.py:change_params():1151] [16948] In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+    94597513 [params.py:change_params():1151] [16948] In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+    94597513 [params.py:change_params():1151] [16948] In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+    94597513 [params.py:change_params():1151] [16948] In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+    94597513 [params.py:change_params():1151] [16948] In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+    94597513 [params.py:change_params():1151] [16948] In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+    94597513 [params.py:change_params():1151] [16948] In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>making memmap
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>C:\Users\RBO\miniforge3\envs\lcp\lib\site-packages\caiman\cluster.py:225: DeprecationWarning: The &#39;warn&#39; method is deprecated, use &#39;warning&#39; instead
+  logger.warn(&#39;The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman&#39;)
+    94612117 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94612117 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94612117 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94612117 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94612117 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94612117 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94612117 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94612117 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94612117 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94612117 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>performing CNMF
+fitting images
+performing eval
+Running 8661d079-d63e-470e-a2a9-4bb74ea29dc2 with local backend
+************************************************************************
+
+Starting CNMF item:
+algo                                                                                                                                   cnmf
+item_name                                                                                                                          k_5_cnmf
+input_movie_path    d2323217-2056-4681-9656-2ddebc721ac4\d2323217-2056-4681-9656-2ddebc721ac4-plane_10_els__d1_600_d2_576_d3_1_order_F_f...
+params              {&#39;main&#39;: {&#39;fr&#39;: 9.60806, &#39;use_cnn&#39;: False, &#39;dxy&#39;: (1.04, 1.0), &#39;method_init&#39;: &#39;greedy_roi&#39;, &#39;K&#39;: 25, &#39;gSig&#39;: (10, 10...
+outputs                                                                                                                                None
+added_time                                                                                                              2024-12-07T17:11:24
+ran_time                                                                                                                               None
+algo_duration                                                                                                                          None
+comments                                                                                                                               None
+uuid                                                                                                   8661d079-d63e-470e-a2a9-4bb74ea29dc2
+Name: 5, dtype: object
+With params:{&#39;main&#39;: {&#39;fr&#39;: 9.60806, &#39;use_cnn&#39;: False, &#39;dxy&#39;: (1.04, 1.0), &#39;method_init&#39;: &#39;greedy_roi&#39;, &#39;K&#39;: 25, &#39;gSig&#39;: (10, 10), &#39;gSiz&#39;: (15, 15), &#39;merge_thr&#39;: 0.7, &#39;p&#39;: 2, &#39;tsub&#39;: 1, &#39;ssub&#39;: 1, &#39;rf&#39;: 30, &#39;stride&#39;: 12, &#39;method_deconvolution&#39;: &#39;oasis&#39;, &#39;low_rank_background&#39;: None, &#39;update_background_components&#39;: True, &#39;del_duplicates&#39;: True, &#39;min_SNR&#39;: 1.5, &#39;rval_thr&#39;: 0.8}}
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>C:\Users\RBO\miniforge3\envs\lcp\lib\site-packages\caiman\cluster.py:225: DeprecationWarning: The &#39;warn&#39; method is deprecated, use &#39;warning&#39; instead
+  logger.warn(&#39;The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman&#39;)
+    94703685 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94703685 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94703685 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94703685 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94703685 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94703685 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94703685 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94703685 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94703685 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94703685 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94703778 [params.py:change_params():1151] [16948] In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+    94703778 [params.py:change_params():1151] [16948] In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+    94703778 [params.py:change_params():1151] [16948] In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+    94703778 [params.py:change_params():1151] [16948] In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+    94703778 [params.py:change_params():1151] [16948] In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+    94703778 [params.py:change_params():1151] [16948] In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+    94703778 [params.py:change_params():1151] [16948] In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+    94703778 [params.py:change_params():1151] [16948] In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+    94703778 [params.py:change_params():1151] [16948] In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+    94703778 [params.py:change_params():1151] [16948] In setting CNMFParams, non-pathed parameters were used; this is deprecated. In some future version of Caiman, allow_legacy will default to False (and eventually will be removed)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>making memmap
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>C:\Users\RBO\miniforge3\envs\lcp\lib\site-packages\caiman\cluster.py:225: DeprecationWarning: The &#39;warn&#39; method is deprecated, use &#39;warning&#39; instead
+  logger.warn(&#39;The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman&#39;)
+    94718135 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94718135 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94718135 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94718135 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94718135 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94718135 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94718135 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94718135 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94718135 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+    94718135 [cluster.py:setup_cluster():225] [16948] The local backend is an alias for the multiprocessing backend, and the alias may be removed in some future version of Caiman
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>performing CNMF
+fitting images
+performing eval
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cnmf_df</span> <span class="o">=</span> <span class="n">cnmf_df</span><span class="o">.</span><span class="n">caiman</span><span class="o">.</span><span class="n">reload_from_disk</span><span class="p">()</span>
+<span class="n">cnmf_df</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>algo</th>
+      <th>item_name</th>
+      <th>input_movie_path</th>
+      <th>params</th>
+      <th>outputs</th>
+      <th>added_time</th>
+      <th>ran_time</th>
+      <th>algo_duration</th>
+      <th>comments</th>
+      <th>uuid</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>cnmf</td>
+      <td>mcorr_cnmf</td>
+      <td>d2323217-2056-4681-9656-2ddebc721ac4\d2323217-2056-4681-9656-2ddebc721ac4-plane_10_els__d1_600_d2_576_d3_1_order_F_f...</td>
+      <td>{'main': {'fr': 9.60806, 'use_cnn': False, 'dxy': (1.04, 1.0), 'method_init': 'greedy_roi', 'K': 50, 'gSig': (7, 7),...</td>
+      <td>{'mean-projection-path': a5c2f791-6d1b-4712-a66f-2c92adde5d61\a5c2f791-6d1b-4712-a66f-2c92adde5d61_mean_projection.n...</td>
+      <td>2024-12-07T14:25:59</td>
+      <td>2024-12-07T16:01:05</td>
+      <td>363.6 sec</td>
+      <td>None</td>
+      <td>a5c2f791-6d1b-4712-a66f-2c92adde5d61</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>cnmf</td>
+      <td>k_5_cnmf</td>
+      <td>d2323217-2056-4681-9656-2ddebc721ac4\d2323217-2056-4681-9656-2ddebc721ac4-plane_10_els__d1_600_d2_576_d3_1_order_F_f...</td>
+      <td>{'main': {'fr': 9.60806, 'use_cnn': False, 'dxy': (1.04, 1.0), 'method_init': 'greedy_roi', 'K': 5, 'gSig': (7, 7), ...</td>
+      <td>{'mean-projection-path': b9d43fcf-3aa8-4cf8-b186-c934afd77aa1\b9d43fcf-3aa8-4cf8-b186-c934afd77aa1_mean_projection.n...</td>
+      <td>2024-12-07T16:24:46</td>
+      <td>2024-12-07T16:26:18</td>
+      <td>90.23 sec</td>
+      <td>None</td>
+      <td>b9d43fcf-3aa8-4cf8-b186-c934afd77aa1</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>cnmf</td>
+      <td>k_5_cnmf</td>
+      <td>d2323217-2056-4681-9656-2ddebc721ac4\d2323217-2056-4681-9656-2ddebc721ac4-plane_10_els__d1_600_d2_576_d3_1_order_F_f...</td>
+      <td>{'main': {'fr': 9.60806, 'use_cnn': False, 'dxy': (1.04, 1.0), 'method_init': 'greedy_roi', 'K': 10, 'gSig': (4, 4),...</td>
+      <td>{'mean-projection-path': a5561c84-a784-433d-9e92-44112397245f\a5561c84-a784-433d-9e92-44112397245f_mean_projection.n...</td>
+      <td>2024-12-07T17:11:24</td>
+      <td>2024-12-07T17:15:25</td>
+      <td>108.93 sec</td>
+      <td>None</td>
+      <td>a5561c84-a784-433d-9e92-44112397245f</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>cnmf</td>
+      <td>k_5_cnmf</td>
+      <td>d2323217-2056-4681-9656-2ddebc721ac4\d2323217-2056-4681-9656-2ddebc721ac4-plane_10_els__d1_600_d2_576_d3_1_order_F_f...</td>
+      <td>{'main': {'fr': 9.60806, 'use_cnn': False, 'dxy': (1.04, 1.0), 'method_init': 'greedy_roi', 'K': 25, 'gSig': (4, 4),...</td>
+      <td>{'mean-projection-path': 65c34bc6-8f23-480e-a96a-7643afa52653\65c34bc6-8f23-480e-a96a-7643afa52653_mean_projection.n...</td>
+      <td>2024-12-07T17:11:24</td>
+      <td>2024-12-07T17:18:26</td>
+      <td>180.61 sec</td>
+      <td>None</td>
+      <td>65c34bc6-8f23-480e-a96a-7643afa52653</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>cnmf</td>
+      <td>k_5_cnmf</td>
+      <td>d2323217-2056-4681-9656-2ddebc721ac4\d2323217-2056-4681-9656-2ddebc721ac4-plane_10_els__d1_600_d2_576_d3_1_order_F_f...</td>
+      <td>{'main': {'fr': 9.60806, 'use_cnn': False, 'dxy': (1.04, 1.0), 'method_init': 'greedy_roi', 'K': 10, 'gSig': (10, 10...</td>
+      <td>{'mean-projection-path': b322669d-7a04-4823-9003-97f6c96c9d7f\b322669d-7a04-4823-9003-97f6c96c9d7f_mean_projection.n...</td>
+      <td>2024-12-07T17:11:24</td>
+      <td>2024-12-07T17:20:12</td>
+      <td>106.26 sec</td>
+      <td>None</td>
+      <td>b322669d-7a04-4823-9003-97f6c96c9d7f</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>cnmf</td>
+      <td>k_5_cnmf</td>
+      <td>d2323217-2056-4681-9656-2ddebc721ac4\d2323217-2056-4681-9656-2ddebc721ac4-plane_10_els__d1_600_d2_576_d3_1_order_F_f...</td>
+      <td>{'main': {'fr': 9.60806, 'use_cnn': False, 'dxy': (1.04, 1.0), 'method_init': 'greedy_roi', 'K': 25, 'gSig': (10, 10...</td>
+      <td>{'mean-projection-path': 8661d079-d63e-470e-a2a9-4bb74ea29dc2\8661d079-d63e-470e-a2a9-4bb74ea29dc2_mean_projection.n...</td>
+      <td>2024-12-07T17:11:24</td>
+      <td>2024-12-07T17:23:20</td>
+      <td>188.52 sec</td>
+      <td>None</td>
+      <td>8661d079-d63e-470e-a2a9-4bb74ea29dc2</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">image_data_options</span> <span class="o">=</span> <span class="p">[</span> <span class="s2">&quot;input&quot;</span><span class="p">,</span> <span class="p">]</span>
+<span class="n">viz</span> <span class="o">=</span> <span class="n">cnmf_df</span><span class="o">.</span><span class="n">cnmf</span><span class="o">.</span><span class="n">viz</span><span class="p">(</span><span class="n">start_index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">image_data_options</span><span class="o">=</span><span class="n">image_data_options</span><span class="p">)</span>
+<span class="n">viz</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "45f7985f1a8b447183cb1e3e026f44af", "version_major": 2, "version_minor": 0}</script><script type="application/vnd.jupyter.widget-view+json">{"model_id": "26bd2b0e00004716b3588bc43c4db093", "version_major": 2, "version_minor": 0}</script><script type="application/vnd.jupyter.widget-view+json">{"model_id": "2b31e40bb90c4df489b8efabf1c56346", "version_major": 2, "version_minor": 0}</script><script type="application/vnd.jupyter.widget-view+json">{"model_id": "75932a23555446f4a7bc835c1854cfee", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">viz</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="pick-the-best-parameter-set">
+<h2><span class="section-number">4.16. </span>Pick the best parameter set<a class="headerlink" href="#pick-the-best-parameter-set" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rows_keep</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">cnmf_df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+    <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">rows_keep</span><span class="p">:</span>
+        <span class="n">cnmf_df</span><span class="o">.</span><span class="n">caiman</span><span class="o">.</span><span class="n">remove_item</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">uuid</span><span class="p">,</span> <span class="n">safe_removal</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">cnmf_df</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>algo</th>
+      <th>item_name</th>
+      <th>input_movie_path</th>
+      <th>params</th>
+      <th>outputs</th>
+      <th>added_time</th>
+      <th>ran_time</th>
+      <th>algo_duration</th>
+      <th>comments</th>
+      <th>uuid</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>cnmf</td>
+      <td>k_5_cnmf</td>
+      <td>d2323217-2056-4681-9656-2ddebc721ac4\d2323217-2056-4681-9656-2ddebc721ac4-plane_10_els__d1_600_d2_576_d3_1_order_F_f...</td>
+      <td>{'main': {'fr': 9.60806, 'use_cnn': False, 'dxy': (1.04, 1.0), 'method_init': 'greedy_roi', 'K': 10, 'gSig': (4, 4),...</td>
+      <td>{'mean-projection-path': a5561c84-a784-433d-9e92-44112397245f\a5561c84-a784-433d-9e92-44112397245f_mean_projection.n...</td>
+      <td>2024-12-07T17:11:24</td>
+      <td>2024-12-07T17:15:25</td>
+      <td>108.93 sec</td>
+      <td>None</td>
+      <td>a5561c84-a784-433d-9e92-44112397245f</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="adjust-quality-metrics-based-on-evaluation-parameters">
+<h2><span class="section-number">4.17. </span>Adjust quality metrics based on evaluation parameters<a class="headerlink" href="#adjust-quality-metrics-based-on-evaluation-parameters" title="Link to this heading">#</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">min_SNR</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">trace</span> <span class="n">SNR</span> <span class="n">threshold</span>
+<span class="n">SNR_lowest</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">minimum</span> <span class="n">required</span> <span class="n">trace</span> <span class="n">SNR</span>
+<span class="n">rval_thr</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">space</span> <span class="n">correlation</span> <span class="n">threshold</span>
+<span class="n">rval_lowest</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">minimum</span> <span class="n">required</span> <span class="n">space</span> <span class="n">correlation</span>
+<span class="n">use_cnn</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="n">flag</span> <span class="k">for</span> <span class="n">using</span> <span class="n">the</span> <span class="n">CNN</span> <span class="n">classifier</span>
+<span class="n">min_cnn_thr</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">CNN</span> <span class="n">classifier</span> <span class="n">threshold</span>
+</pre></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+
+<span class="n">new_params</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">cnmf_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">params</span><span class="p">)</span>
+
+<span class="c1"># assign the &quot;max_shifts&quot;</span>
+<span class="n">new_params</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">][</span><span class="s2">&quot;min_SNR&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">2.1</span>
+<span class="n">new_params</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">][</span><span class="s2">&quot;SNR_lowest&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">3.25</span>
+<span class="n">new_params</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">][</span><span class="s2">&quot;rval_thr&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.3</span>
+<span class="c1"># new_params[&quot;main&quot;][&quot;rval_lowest&quot;] = 0.0</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cnmf_df</span> <span class="o">=</span> <span class="n">cnmf_df</span><span class="o">.</span><span class="n">caiman</span><span class="o">.</span><span class="n">reload_from_disk</span><span class="p">()</span>
+<span class="n">cnmf_df</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>algo</th>
+      <th>item_name</th>
+      <th>input_movie_path</th>
+      <th>params</th>
+      <th>outputs</th>
+      <th>added_time</th>
+      <th>ran_time</th>
+      <th>algo_duration</th>
+      <th>comments</th>
+      <th>uuid</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>cnmf</td>
+      <td>k_5_cnmf</td>
+      <td>d2323217-2056-4681-9656-2ddebc721ac4\d2323217-2056-4681-9656-2ddebc721ac4-plane_10_els__d1_600_d2_576_d3_1_order_F_f...</td>
+      <td>{'main': {'fr': 9.60806, 'use_cnn': False, 'dxy': (1.04, 1.0), 'method_init': 'greedy_roi', 'K': 10, 'gSig': (4, 4),...</td>
+      <td>{'mean-projection-path': a5561c84-a784-433d-9e92-44112397245f\a5561c84-a784-433d-9e92-44112397245f_mean_projection.n...</td>
+      <td>2024-12-07T17:11:24</td>
+      <td>2024-12-07T17:15:25</td>
+      <td>108.93 sec</td>
+      <td>None</td>
+      <td>a5561c84-a784-433d-9e92-44112397245f</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">output_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">cnmf_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">input_movie_path</span><span class="p">)</span><span class="o">.</span><span class="n">stem</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">mcorr_df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+    <span class="c1"># Don&#39;t process the same file twice</span>
+    <span class="k">if</span> <span class="n">Path</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">mcorr</span><span class="o">.</span><span class="n">get_output_path</span><span class="p">())</span><span class="o">.</span><span class="n">stem</span> <span class="o">==</span> <span class="n">output_path</span><span class="p">:</span>
+        <span class="k">continue</span>
+
+    <span class="n">cnmf_df</span><span class="o">.</span><span class="n">caiman</span><span class="o">.</span><span class="n">add_item</span><span class="p">(</span>
+        <span class="n">algo</span><span class="o">=</span><span class="s1">&#39;cnmf&#39;</span><span class="p">,</span>
+        <span class="n">input_movie_path</span><span class="o">=</span><span class="n">row</span><span class="p">,</span>
+        <span class="n">params</span><span class="o">=</span><span class="n">new_params</span><span class="p">,</span>          <span class="c1"># use the same parameters</span>
+        <span class="n">item_name</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;cnmf_batch&#39;</span><span class="p">,</span>  <span class="c1"># filename of the movie, but can be anything</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># double check that the new value is set properly</span>
+<span class="n">cnmf_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;main&#39;</span><span class="p">][</span><span class="s1">&#39;min_SNR&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2.1
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">cnmf_df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+    <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;outputs&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="c1"># item has already been run</span>
+        <span class="k">continue</span> <span class="c1"># skip</span>
+
+    <span class="n">process</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">caiman</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+
+    <span class="c1"># on Windows you MUST reload the batch dataframe after every iteration because it uses the `local` backend.</span>
+    <span class="c1"># this is unnecessary on Linux &amp; Mac</span>
+    <span class="c1"># &quot;DummyProcess&quot; is used for local backend so this is automatic</span>
+    <span class="k">if</span> <span class="n">process</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;DummyProcess&quot;</span><span class="p">:</span>
+        <span class="n">cnmf_df</span> <span class="o">=</span> <span class="n">cnmf_df</span><span class="o">.</span><span class="n">caiman</span><span class="o">.</span><span class="n">reload_from_disk</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="extras">
+<h2><span class="section-number">4.18. </span>Extras<a class="headerlink" href="#extras" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">fastplitlib</span> <span class="k">as</span> <span class="nn">fpl</span>
+
+<span class="c1"># create image widget for raw neural activity</span>
+<span class="n">raw_iw</span> <span class="o">=</span> <span class="n">fpl</span><span class="o">.</span><span class="n">Figure</span><span class="p">()</span>
+
+<span class="c1"># re-add our identified good components from before using the SNR mapping</span>
+<span class="n">contours_graphic</span> <span class="o">=</span> <span class="n">raw_iw</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">add_line_collection</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">contours</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;spring&quot;</span><span class="p">,</span> <span class="n">thickness</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;contours&quot;</span><span class="p">)</span>
+
+<span class="c1"># get temporal components</span>
+<span class="n">temporal</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">row_ix</span><span class="p">]</span><span class="o">.</span><span class="n">cnmf</span><span class="o">.</span><span class="n">get_temporal</span><span class="p">(</span><span class="n">component_indices</span><span class="o">=</span><span class="s2">&quot;good&quot;</span><span class="p">)</span>
+
+<span class="c1"># temporal plot</span>
+<span class="n">plot_temporal</span> <span class="o">=</span> <span class="n">fpl</span><span class="o">.</span><span class="n">Figure</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">600</span><span class="p">,</span><span class="mi">100</span><span class="p">))</span>
+<span class="n">plot_temporal</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">add_line</span><span class="p">(</span><span class="n">temporal</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">colors</span><span class="o">=</span><span class="s2">&quot;magenta&quot;</span><span class="p">)</span>
+
+<span class="c1"># add a linear selector to temporal trace</span>
+<span class="n">plot_temporal</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">graphics</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">add_linear_selector</span><span class="p">()</span>
+
+<span class="c1"># show temporal plot and mcorr/rcm plot in ipywidgets VBox</span>
+<span class="n">sc</span> <span class="o">=</span> <span class="n">Sidecar</span><span class="p">()</span>
+
+<span class="c1"># with sc:</span>
+<span class="n">display</span><span class="p">(</span><span class="n">VBox</span><span class="p">([</span><span class="n">raw_iw</span><span class="o">.</span><span class="n">show</span><span class="p">(),</span> <span class="n">plot_temporal</span><span class="o">.</span><span class="n">show</span><span class="p">()]))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">index</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>  <span class="c1"># the last item added</span>
+
+<span class="n">rcb</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">cnmf</span><span class="o">.</span><span class="n">get_rcb</span><span class="p">()</span>
+<span class="n">residuals</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">cnmf</span><span class="o">.</span><span class="n">get_residuals</span><span class="p">()</span>
+<span class="n">input_movie</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">caiman</span><span class="o">.</span><span class="n">get_input_movie</span><span class="p">()</span>
+
+<span class="c1"># temporal components</span>
+<span class="n">temporal</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">cnmf</span><span class="o">.</span><span class="n">get_temporal</span><span class="p">()</span>
+
+<span class="n">temporal_good</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">cnmf</span><span class="o">.</span><span class="n">get_temporal</span><span class="p">(</span><span class="s2">&quot;good&quot;</span><span class="p">)</span>
+<span class="n">temporal_bad</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">cnmf</span><span class="o">.</span><span class="n">get_temporal</span><span class="p">(</span><span class="s2">&quot;bad&quot;</span><span class="p">)</span>
+
+<span class="n">temporal_with_residuals</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">cnmf</span><span class="o">.</span><span class="n">get_temporal</span><span class="p">(</span><span class="n">add_residuals</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">correlation_image</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">caiman</span><span class="o">.</span><span class="n">get_corr_image</span><span class="p">()</span>
+
+<span class="n">components_good</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">cnmf</span><span class="o">.</span><span class="n">get_good_components</span><span class="p">()</span>
+<span class="n">components_bad</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">cnmf</span><span class="o">.</span><span class="n">get_bad_components</span><span class="p">()</span>
+
+<span class="n">mean_img</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">caiman</span><span class="o">.</span><span class="n">get_projection</span><span class="p">(</span><span class="s1">&#39;mean&#39;</span><span class="p">)</span>
+<span class="n">std_img</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">caiman</span><span class="o">.</span><span class="n">get_projection</span><span class="p">(</span><span class="s1">&#39;std&#39;</span><span class="p">)</span>
+
+<span class="n">masks</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">cnmf</span><span class="o">.</span><span class="n">get_masks</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Temporal Components (good/bad): </span><span class="si">{</span><span class="n">temporal_good</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s1"> / </span><span class="si">{</span><span class="n">temporal_bad</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Spatial Components (good/bad): </span><span class="si">{</span><span class="n">components_good</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s1"> / </span><span class="si">{</span><span class="n">components_bad</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Temporal Components (good/bad): (2111, 1000) / (2683, 1000)
+Spatial Components (good/bad): (2111,) / (2683,)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">row_ix</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="c1"># get the contours and center of masses using lbm_mc</span>
+<span class="n">contours</span><span class="p">,</span> <span class="n">coms</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">row_ix</span><span class="p">]</span><span class="o">.</span><span class="n">cnmf</span><span class="o">.</span><span class="n">get_contours</span><span class="p">(</span><span class="n">component_indices</span><span class="o">=</span><span class="s2">&quot;good&quot;</span><span class="p">,</span> <span class="n">swap_dim</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="c1"># get the signal-to-noise ratio of each &quot;good&quot; component to color components</span>
+<span class="n">snr_comps</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">row_ix</span><span class="p">]</span><span class="o">.</span><span class="n">cnmf</span><span class="o">.</span><span class="n">get_output</span><span class="p">()</span><span class="o">.</span><span class="n">estimates</span><span class="o">.</span><span class="n">SNR_comp</span>
+
+<span class="c1"># get the good component_ixs</span>
+<span class="n">good_ixs</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">row_ix</span><span class="p">]</span><span class="o">.</span><span class="n">cnmf</span><span class="o">.</span><span class="n">get_good_components</span><span class="p">()</span>
+
+<span class="c1"># only get snr_comps of good_ixs</span>
+<span class="n">snr_comps</span> <span class="o">=</span> <span class="n">snr_comps</span><span class="p">[</span><span class="n">good_ixs</span><span class="p">]</span>
+
+<span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">snr_comps</span><span class="p">)[:</span><span class="mi">10</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="motion_correction.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title"><span class="section-number">3. </span>Registration</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="collation.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title"><span class="section-number">5. </span>Collate Planes</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-path-setup">4.1. Data path setup</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cnmf-parameters">4.2. CNMF Parameters</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-most-important-step">4.2.1. <strong>The most important step</strong></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#get-values-for-k-and-gsig">4.3. Get values for K and gSig</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#set-new-parameters">4.4. Set new parameters</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#run-the-cnmf-algorithm">4.5. Run the CNMF algorithm</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#checking-for-an-errors">4.6. Checking for an errors</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluate-cnmf-outputs">4.7. Evaluate CNMF outputs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plot-cnmf-components">4.8. Plot CNMF Components</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#view-accepted-neurons-on-a-summary-image">4.9. View accepted neurons on a summary image</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-happened">4.10. What happened?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#patches-are-tiny">4.11. Patches are tiny!</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#rerun-cnmf">4.12. Rerun CNMF</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluate-cnmf-results">4.13. Evaluate CNMF Results</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#parameter-gridsearch">4.14. Parameter Gridsearch</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#run-the-cnmf-batch-items">4.15. Run the <code class="docutils literal notranslate"><span class="pre">cnmf</span></code> batch items</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pick-the-best-parameter-set">4.16. Pick the best parameter set</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#adjust-quality-metrics-based-on-evaluation-parameters">4.17. Adjust quality metrics based on evaluation parameters</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#extras">4.18. Extras</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Author name not set
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, Elizabeth R. Miller Brain Observatory | The Rockefeller University. All Rights Reserved.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

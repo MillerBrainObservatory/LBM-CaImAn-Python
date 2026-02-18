@@ -1,0 +1,816 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>3. Registration &#8212; LBM-CaImAn-Python</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=475cc00c" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=a1637f0b"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=1ae7504c"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
+    <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
+    <script defer="defer" src="../_static/tippy/user_guide/registration.3db6711f-e21f-48c0-891b-ce4bbf8a11a0.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'user_guide/registration';</script>
+    <link rel="icon" href="../_static/icon_caiman_python.svg"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="4. Segmentation" href="segmentation.html" />
+    <link rel="prev" title="2. Batch-Utilities" href="batch_utilities.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/lcp_logo.svg" class="logo__image only-light" alt="LBM-CaImAn-Python - Home"/>
+    <script>document.write(`<img src="../_static/lcp_logo.svg" class="logo__image only-dark" alt="LBM-CaImAn-Python - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://millerbrainobservatory.github.io/" title="MBO User Hub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../icon_mbo_home.png" class="icon-link-image" alt="MBO User Hub"/></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/MillerBrainObservatory/" title="MBO Github" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">MBO Github</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://mbo.rockefeller.edu/contact/" title="Connect with MBO" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-regular fa-address-card fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Connect with MBO</span></a>
+        </li>
+</ul></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">User Guide</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="assembly.html">1. Image Assembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batch_utilities.html">2. Batch Utils</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">3. Registration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="segmentation.html">4. Segmentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="collation.html">5. Z-Plane Collation</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../examples/index.html">Tutorial</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../examples/notebooks/assembly.html">1. Image Assembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/notebooks/batch_helpers.html">2. Batch Helpers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/notebooks/motion_correction.html">3. Registration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/notebooks/segmentation.html">4. Segmentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/notebooks/collation.html">5. Collate Planes</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../glossary.html">Glossary</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/MillerBrainObservatory/LBM-CaImAn-Python/blob/master/docs/user_guide/registration.md?plain=1" target="_blank"
+   class="btn btn-sm btn-source-file-button dropdown-item"
+   title="Show source"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-code"></i>
+  </span>
+<span class="btn__text-container">Show source</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/MillerBrainObservatory/LBM-CaImAn-Python/edit/master/docs/user_guide/registration.md" target="_blank"
+   class="btn btn-sm btn-source-edit-button dropdown-item"
+   title="Suggest edit"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-pencil-alt"></i>
+  </span>
+<span class="btn__text-container">Suggest edit</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/MillerBrainObservatory/LBM-CaImAn-Python/issues/new?title=Issue%20on%20page%20%2Fuser_guide/registration.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/user_guide/registration.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Registration</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">3.1. Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#registration-parameters">3.2. Registration Parameters</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gsig-filt-visualization">3.2.1. gSig_filt visualization</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#registration-results">3.3. Registration Results</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary-and-metrics">3.4. <strong>Summary and Metrics</strong></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">3.5. <strong>Summary and Metrics</strong></a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="registration">
+<span id="id1"></span><h1><span class="section-number">3. </span>Registration<a class="headerlink" href="#registration" title="Link to this heading">#</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The terms motion-correction and registration are often used interchangably.
+Similary, non-rigid and peicewise-rigid are often used interchangably.
+Here, peicewise-rigid registration is the <strong>method</strong> to correct for non-rigid motion.</p>
+</div>
+<section id="overview">
+<h2><span class="section-number">3.1. </span>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
+<p>We use <a class="reference external" href="https://en.wikipedia.org/wiki/Image_registration">image registration</a> to make sure that our neuron in the first frame is in the same spatial location as in frame N throughout the time-series.</p>
+<p>As described in the <a class="reference internal" href="batch_utilities.html#batch"><span class="std std-ref">Batch-Utilities</span></a>, registration can be run on your data by adding an <code class="docutils literal notranslate"><span class="pre">mcorr</span></code> item to the batch with parameters:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mesmerize_core</span> <span class="k">as</span> <span class="nn">mc</span>
+
+<span class="n">mcorr_params</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;main&#39;</span><span class="p">:</span>  <span class="c1"># this key is necessary for specifying that these are the &quot;main&quot; params for the algorithm</span>
+    <span class="p">{</span>
+        <span class="s1">&#39;max_shifts&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">),</span>
+        <span class="s1">&#39;strides&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">48</span><span class="p">,</span> <span class="mi">48</span><span class="p">],</span>
+        <span class="s1">&#39;overlaps&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">24</span><span class="p">,</span> <span class="mi">24</span><span class="p">],</span>
+        <span class="s1">&#39;max_deviation_rigid&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="s1">&#39;border_nan&#39;</span><span class="p">:</span> <span class="s1">&#39;copy&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;pw_rigid&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s1">&#39;gSig_filt&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+
+<span class="n">mc</span><span class="o">.</span><span class="n">set_raw_data_path</span><span class="p">(</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">tiff</span><span class="p">)</span>
+<span class="n">df</span><span class="o">.</span><span class="n">caiman</span><span class="o">.</span><span class="n">add_item</span><span class="p">(</span>
+    <span class="n">algo</span><span class="o">=</span><span class="s1">&#39;mcorr&#39;</span><span class="p">,</span>
+    <span class="n">input_movie_path</span><span class="o">=</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">tiff</span><span class="p">,</span>
+    <span class="n">params</span><span class="o">=</span><span class="n">mcorr_params</span><span class="p">,</span>
+    <span class="n">item_name</span><span class="o">=</span><span class="n">movie_path</span><span class="o">.</span><span class="n">stem</span><span class="p">,</span>  <span class="c1"># filename of the movie, but can be anything</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="registration-parameters">
+<span id="id2"></span><h2><span class="section-number">3.2. </span>Registration Parameters<a class="headerlink" href="#registration-parameters" title="Link to this heading">#</a></h2>
+<p>Parameters for motion correction are fed into <code class="docutils literal notranslate"><span class="pre">CaImAn</span></code> in an object which holds and organizes parameters for registration, segmentation, deconvolution, and pre-processing steps.</p>
+<p>As such, you can put any parameter found in that structure into the parameters dictionary. Only the parameters that apply to registration will be used.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p><strong>Parameter</strong></p></th>
+<th class="head"><p><strong>Description</strong></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">border_nan</span></code></p></td>
+<td><p>Flag for allowing NaN in the boundaries. <code class="docutils literal notranslate"><span class="pre">True</span></code> allows NaN, whereas <code class="docutils literal notranslate"><span class="pre">'copy'</span></code> copies the value of the nearest data point.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">gSig_filt</span></code></p></td>
+<td><p>Size of kernel for high pass spatial filtering in 1p data. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, no spatial filtering is performed.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">is3D</span></code></p></td>
+<td><p>Flag for 3D recordings for motion correction.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">max_deviation_rigid</span></code></p></td>
+<td><p>Maximum deviation in pixels between rigid shifts and shifts of individual patches.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">max_shifts</span></code></p></td>
+<td><p>Maximum shifts per dimension in pixels. (tuple of two integers)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">min_mov</span></code></p></td>
+<td><p>Minimum value of movie. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, it gets computed.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">niter_rig</span></code></p></td>
+<td><p>Number of iterations for rigid motion correction.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">nonneg_movie</span></code></p></td>
+<td><p>Flag for producing a non-negative movie.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">num_frames_split</span></code></p></td>
+<td><p>Split movie every <code class="docutils literal notranslate"><span class="pre">x</span></code> frames for parallel processing.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">overlaps</span></code></p></td>
+<td><p>Overlap between patches in pixels in pw-rigid motion correction. (tuple of two integers)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pw_rigid</span></code></p></td>
+<td><p>Flag for performing pw-rigid motion correction.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">shifts_opencv</span></code></p></td>
+<td><p>Flag for applying shifts using cubic interpolation (otherwise FFT).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">splits_els</span></code></p></td>
+<td><p>Number of splits across time for pw-rigid registration.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">splits_rig</span></code></p></td>
+<td><p>Number of splits across time for rigid registration.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">strides</span></code></p></td>
+<td><p>How often to start a new patch in pw-rigid registration. Size of each patch will be <code class="docutils literal notranslate"><span class="pre">strides</span> <span class="pre">+</span> <span class="pre">overlaps</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">upsample_factor_grid</span></code></p></td>
+<td><p>Motion field upsampling factor during FFT shifts.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">use_cuda</span></code></p></td>
+<td><p>Flag for using a GPU.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">indices</span></code></p></td>
+<td><p>Use that to apply motion correction only on a part of the FOV. (tuple of slices)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The most important/influencial parameters in this set are:</p>
+<ol class="arabic simple">
+<li><p><code class="code docutils literal notranslate"><span class="pre">gSig_filt</span></code>
+: Apply a gaussian filter, helps to make neuronal features stand out especially in noisy recordings.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">max_shift</span></code>
+: Determines the maximum number of pixels that your movie will be translated in X/Y.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">fr</span></code>
+: The frame rate of our movie, which is likely different than the 30Hz default.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">pw_rigid</span></code>
+: Correct for non-uniform motion at different spatial locations in your recording.</p></li>
+</ol>
+<div class="dropdown admonition">
+<p class="admonition-title">A note on <code class="docutils literal notranslate"><span class="pre">max_shift</span></code></p>
+<p>For timeseries where the FOV is sparsely labeled or a frame is corrupted, the registration process of two neighboring patches can produce very different shifts, which can lead to corrupted registered frames.
+We limit the largest allowed shift with the <code class="code docutils literal notranslate"><span class="pre">max_shift</span></code> parameter.</p>
+</div>
+<section id="gsig-filt-visualization">
+<h3><span class="section-number">3.2.1. </span>gSig_filt visualization<a class="headerlink" href="#gsig-filt-visualization" title="Link to this heading">#</a></h3>
+<p>gSig_filt is an especially useful parameter for handling noisy datasets.</p>
+<p>To register your movie, CaImAn needs a “template”, or a 2D image, to align each frame to. Applying a gaussian filter can help make the neurons have more contrast relative to the background.</p>
+<p>Using <a class="reference external" href="https://github.com/fastplotlib/fastplotlib">fastplotlib</a> we can easily create a visualization to gather which value of <code class="docutils literal notranslate"><span class="pre">gSig_filt</span></code> will give our neuronal landmarks the most contrast for alignmnet.</p>
+<p>Setting <code class="docutils literal notranslate"><span class="pre">gSig_filt</span> <span class="pre">=</span> <span class="pre">(1,</span> <span class="pre">1)</span></code> yields the following:</p>
+<figure class="align-center">
+<img alt="../_images/gsig_1.png" src="../_images/gsig_1.png" />
+</figure>
+<p>Comparing the above image with <code class="docutils literal notranslate"><span class="pre">gSig_filt</span> <span class="pre">=</span> <span class="pre">(2,</span> <span class="pre">2)</span></code>:</p>
+<figure class="align-center">
+<img alt="../_images/gsig_2.png" src="../_images/gsig_2.png" />
+</figure>
+<p>… we can see much more clearly the neurons that will be used for alignment.</p>
+<div class="dropdown admonition">
+<p class="admonition-title">How To: Create the above visualization</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">## slider</span>
+<span class="kn">from</span> <span class="nn">ipywidgets</span> <span class="kn">import</span> <span class="n">IntSlider</span><span class="p">,</span> <span class="n">VBox</span>
+<span class="n">slider_gsig_filt</span> <span class="o">=</span> <span class="n">IntSlider</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">33</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>  <span class="n">description</span><span class="o">=</span><span class="s2">&quot;gSig_filt&quot;</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">caiman.motion_correction</span> <span class="kn">import</span> <span class="n">high_pass_filter_space</span>
+
+<span class="k">def</span> <span class="nf">apply_filter</span><span class="p">(</span><span class="n">frame</span><span class="p">):</span>
+    <span class="n">gSig_filt</span> <span class="o">=</span> <span class="p">(</span><span class="n">slider_gsig_filt</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">slider_gsig_filt</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="c1"># apply filter</span>
+    <span class="k">return</span> <span class="n">high_pass_filter_space</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">gSig_filt</span><span class="p">)</span>
+
+<span class="c1"># filter shown on 2 right plots, index 1 and 2</span>
+<span class="n">funcs</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span><span class="n">apply_filter</span><span class="p">}</span>
+
+<span class="n">iw</span> <span class="o">=</span> <span class="n">fpl</span><span class="o">.</span><span class="n">ImageWidget</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="n">movie</span><span class="p">[:</span><span class="mi">500</span><span class="p">],</span> <span class="n">movie</span><span class="p">[:</span><span class="mi">500</span><span class="p">]],</span> <span class="c1"># we&#39;ll apply the filter to the second movie</span>
+    <span class="n">frame_apply</span><span class="o">=</span><span class="n">funcs</span><span class="p">,</span>
+    <span class="n">figure_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">1200</span><span class="p">,</span> <span class="mi">600</span><span class="p">)},</span>
+    <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;raw&#39;</span><span class="p">,</span> <span class="s1">&#39;filtered&#39;</span><span class="p">],</span>
+    <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;gnuplot2&quot;</span>
+<span class="p">)</span>
+<span class="n">iw</span><span class="o">.</span><span class="n">figure</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">auto_scale</span><span class="p">()</span>
+<span class="n">iw</span><span class="o">.</span><span class="n">figure</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">auto_scale</span><span class="p">()</span>
+
+<span class="n">iw</span><span class="o">.</span><span class="n">figure</span><span class="p">[</span><span class="s2">&quot;filtered&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;filtered: σ=</span><span class="si">{</span><span class="n">slider_gsig_filt</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">iw</span><span class="o">.</span><span class="n">window_funcs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;t&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">,</span> <span class="mi">3</span><span class="p">)}</span>
+
+<span class="k">def</span> <span class="nf">force_update</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="c1"># forces the images to update when the gSig_filt slider is moved</span>
+    <span class="n">iw</span><span class="o">.</span><span class="n">current_index</span> <span class="o">=</span> <span class="n">iw</span><span class="o">.</span><span class="n">current_index</span>
+    <span class="n">iw</span><span class="o">.</span><span class="n">reset_vmin_vmax</span><span class="p">()</span>
+    <span class="n">iw</span><span class="o">.</span><span class="n">figure</span><span class="p">[</span><span class="s2">&quot;filtered&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;filtered: σ=</span><span class="si">{</span><span class="n">slider_gsig_filt</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">iw</span><span class="o">.</span><span class="n">reset_vmin_vmax</span><span class="p">()</span>
+
+<span class="n">slider_gsig_filt</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span><span class="n">force_update</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">)</span>
+
+<span class="n">VBox</span><span class="p">([</span><span class="n">iw</span><span class="o">.</span><span class="n">show</span><span class="p">(),</span> <span class="n">slider_gsig_filt</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+<section id="registration-results">
+<h2><span class="section-number">3.3. </span>Registration Results<a class="headerlink" href="#registration-results" title="Link to this heading">#</a></h2>
+<p>Following a registration run, results can be quickly viewed with the help of <a class="reference external" href="https://github.com/kushalkolar/mesmerize-viz">mesmerize-viz</a>.</p>
+<!-- TODO: The installation instructions wont properly install mesmerize-viz until the changes are merged -->
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Mesmerize-viz needs a separate install step, this will be fixed once the <a class="reference external" href="https://github.com/kushalkolar/mesmerize-viz/pull/45">pull request</a> is merged</p>
+<p>Until then:</p>
+<p>conda activate env
+git clone https://github.com/FlynnOConnell/mesmerize-viz.git
+cd mesmerize-viz
+pip install -e .</p>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mesmerize_viz</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">viz</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">mcorr</span><span class="o">.</span><span class="n">viz</span><span class="p">(</span><span class="n">start_index</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">viz</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<figure class="align-center">
+<img alt="../_images/mv_mcorr.png" src="../_images/mv_mcorr.png" />
+</figure>
+</section>
+<section id="summary-and-metrics">
+<h2><span class="section-number">3.4. </span><strong>Summary and Metrics</strong><a class="headerlink" href="#summary-and-metrics" title="Link to this heading">#</a></h2>
+<p>The registration process generates several key metrics that help assess the quality and accuracy of the motion-correction. These metrics provide insight into how well frames align with the template and the overall stability of the video.</p>
+</section>
+<section id="id3">
+<h2><span class="section-number">3.5. </span><strong>Summary and Metrics</strong><a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
+<p>The registration process generates several key metrics that help assess the quality and accuracy of the motion-correction. These metrics provide insight into how well frames align with the template and the overall stability of the video.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p><strong>Metric</strong></p></th>
+<th class="head"><p><strong>What It Measures</strong></p></th>
+<th class="head"><p><strong>What It Means</strong></p></th>
+<th class="head"><p><strong>How It Helps You</strong></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>correlations</strong></p></td>
+<td><p>How similar each frame is to the template frame.</p></td>
+<td><p>Higher values mean better alignment, while lower values suggest misalignment or noise.</p></td>
+<td><p>If correlations are low, it may indicate poor alignment, noise, or significant differences between the frame and the template.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>smoothness</strong></p></td>
+<td><p>How “smooth” the pixel brightness is across the entire frame.</p></td>
+<td><p>Higher smoothness means smoother, more stable frames, while lower values indicate sharp edges, noise, or misalignment.</p></td>
+<td><p>Helps identify noisy or unstable frames. High smoothness suggests the frames are well-aligned and free of sudden changes in pixel brightness.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>flows</strong></p></td>
+<td><p>The movement of pixels from frame to frame relative to the template.</p></td>
+<td><p>Large pixel movements mean the frame is shifting a lot, while smaller movements indicate better stability.</p></td>
+<td><p>Useful for visualizing how much each pixel moves between frames. Large movements suggest frame misalignment.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>norms</strong></p></td>
+<td><p>The total amount of pixel movement in each frame relative to the template.</p></td>
+<td><p>High values mean the frame has shifted a lot relative to the template, while low values suggest stability.</p></td>
+<td><p>Tracks how much a frame shifts overall. If norms are high, it could mean misalignment or frame drift.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="batch_utilities.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title"><span class="section-number">2. </span>Batch-Utilities</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="segmentation.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title"><span class="section-number">4. </span>Segmentation</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">3.1. Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#registration-parameters">3.2. Registration Parameters</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gsig-filt-visualization">3.2.1. gSig_filt visualization</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#registration-results">3.3. Registration Results</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary-and-metrics">3.4. <strong>Summary and Metrics</strong></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">3.5. <strong>Summary and Metrics</strong></a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Author name not set
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, Elizabeth R. Miller Brain Observatory | The Rockefeller University. All Rights Reserved.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
