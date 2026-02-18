@@ -817,20 +817,17 @@ def _run_cnmf(movie, ops, output_dir, mmap_file=None):
     if gSiz is not None:
         cnmf_kwargs["gSiz"] = gSiz
 
-    # pass quality params so evaluate_components uses them
-    rval_thr = ops.get("rval_thr", 0.85)
-    cnmf_kwargs["rval_thr"] = rval_thr
-    cnmf_kwargs["min_cnn_thr"] = ops.get("min_cnn_thr", 0.99)
-    cnmf_kwargs["use_cnn"] = ops.get("use_cnn", False)
-
     cnmf = CNMF(**cnmf_kwargs)
+
+    # set quality params after construction (not valid as constructor kwargs)
+    cnmf.params.quality['rval_thr'] = ops.get("rval_thr", 0.85)
+    cnmf.params.quality['min_cnn_thr'] = ops.get("min_cnn_thr", 0.99)
+    cnmf.params.quality['use_cnn'] = ops.get("use_cnn", False)
 
     # fit and evaluate using the memmap view (avoids caiman axis-order bug)
     cnmf.fit(images)
 
     try:
-        # disable cnn by default (requires caimanmanager install for model files)
-        cnmf.params.quality['use_cnn'] = ops.get("use_cnn", False)
         cnmf.estimates.evaluate_components(
             images, cnmf.params, dview=None,
         )
