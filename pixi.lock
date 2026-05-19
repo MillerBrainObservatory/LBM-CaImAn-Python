@@ -451,6 +451,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/49/7e/bc668ee301350964b7be980db7d527a54a61b89a749d09bb430b4598ed3b/intel_cmplr_lib_ur-2025.3.2-py2.py3-none-manylinux_2_28_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/91/99/5ee1e9ae85ed3d10517d17d5a3a924fecc15b116385045a0a89eb2d5bc82/intel_openmp-2025.3.2-py2.py3-none-manylinux_2_28_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/32/71/706ba64f41c4bfe5fbbba32dc2302e99fb1e6b3218cfe5f6294b1641a481/jupyter_rfb-0.5.4-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/23/d5/e152dc6eb93a27cf026be36d4cb3186384ada54fee89753165351984dd1c/lbm_suite2p_python-2.5.3-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/aa/85/4890a7c14b4fa54400945cb52ac3cd88545bbdb973c440f98ca41591cdc5/llvmlite-0.46.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/db/bc/83e112abc66cd466c6b83f99118035867cecd41802f8d044638aa78a106e/locket-1.0.0-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/d3/e3/6d559cf03942af1931e00120e4b4dd68bac6ff8c03f33d04111bdf253579/mbo_fastplotlib-0.7.3-py3-none-any.whl
@@ -847,6 +848,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/b5/ef/a6de04eb38a359004e9b6d8fd8bbbaedbc5fce1379e16bd26374aade67db/intel_cmplr_lib_ur-2025.3.2-py2.py3-none-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/52/e7/31d84b2c547a9319c2ad5dc744ca0b45e23ddf5a6959e96718d3c93d963a/intel_openmp-2025.3.2-py2.py3-none-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/32/71/706ba64f41c4bfe5fbbba32dc2302e99fb1e6b3218cfe5f6294b1641a481/jupyter_rfb-0.5.4-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/23/d5/e152dc6eb93a27cf026be36d4cb3186384ada54fee89753165351984dd1c/lbm_suite2p_python-2.5.3-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/2a/6b/d139535d7590a1bba1ceb68751bef22fadaa5b815bbdf0e858e3875726b2/llvmlite-0.46.0-cp312-cp312-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/db/bc/83e112abc66cd466c6b83f99118035867cecd41802f8d044638aa78a106e/locket-1.0.0-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/d3/e3/6d559cf03942af1931e00120e4b4dd68bac6ff8c03f33d04111bdf253579/mbo_fastplotlib-0.7.3-py3-none-any.whl
@@ -1330,6 +1332,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/32/71/706ba64f41c4bfe5fbbba32dc2302e99fb1e6b3218cfe5f6294b1641a481/jupyter_rfb-0.5.4-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/16/5a/736dd2f4535dbf3bf26523f9158c011389ef88dd06ec2eef67fd744f1c7b/jupytext-1.19.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/b5/40/23569737873cc9637fd488606347e9dd92b9fa37ba4fcda1f98ee5219a97/latexcodec-3.0.1-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/23/d5/e152dc6eb93a27cf026be36d4cb3186384ada54fee89753165351984dd1c/lbm_suite2p_python-2.5.3-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/aa/85/4890a7c14b4fa54400945cb52ac3cd88545bbdb973c440f98ca41591cdc5/llvmlite-0.46.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/db/bc/83e112abc66cd466c6b83f99118035867cecd41802f8d044638aa78a106e/locket-1.0.0-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/d3/e3/6d559cf03942af1931e00120e4b4dd68bac6ff8c03f33d04111bdf253579/mbo_fastplotlib-0.7.3-py3-none-any.whl
@@ -1760,6 +1763,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/32/71/706ba64f41c4bfe5fbbba32dc2302e99fb1e6b3218cfe5f6294b1641a481/jupyter_rfb-0.5.4-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/16/5a/736dd2f4535dbf3bf26523f9158c011389ef88dd06ec2eef67fd744f1c7b/jupytext-1.19.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/b5/40/23569737873cc9637fd488606347e9dd92b9fa37ba4fcda1f98ee5219a97/latexcodec-3.0.1-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/23/d5/e152dc6eb93a27cf026be36d4cb3186384ada54fee89753165351984dd1c/lbm_suite2p_python-2.5.3-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/2a/6b/d139535d7590a1bba1ceb68751bef22fadaa5b815bbdf0e858e3875726b2/llvmlite-0.46.0-cp312-cp312-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/db/bc/83e112abc66cd466c6b83f99118035867cecd41802f8d044638aa78a106e/locket-1.0.0-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/d3/e3/6d559cf03942af1931e00120e4b4dd68bac6ff8c03f33d04111bdf253579/mbo_fastplotlib-0.7.3-py3-none-any.whl
@@ -5025,7 +5029,7 @@ packages:
 - pypi: ./
   name: lbm-caiman-python
   version: 0.1.0
-  sha256: 371bb23e912bbb1d95b4901cfbfa15d690e0a338e2a681cb5e05d7fa1bcc9e5c
+  sha256: 55143d348c72b9fd93f1fda2918afce1fc7f98a32424659959e914de2cb0a72b
   requires_dist:
   - numpy
   - scipy>=1.10
@@ -5040,6 +5044,20 @@ packages:
   - dask
   - pandas
   - mbo-utilities>=2.5.3
+  - lbm-suite2p-python
+  requires_python: '>=3.12.7,<3.12.10'
+- pypi: https://files.pythonhosted.org/packages/23/d5/e152dc6eb93a27cf026be36d4cb3186384ada54fee89753165351984dd1c/lbm_suite2p_python-2.5.3-py3-none-any.whl
+  name: lbm-suite2p-python
+  version: 2.5.3
+  sha256: 85970c5ea0eb5d41f16363a54379aa270fe839111d25584311602e158baab7d2
+  requires_dist:
+  - mbo-utilities>=2.5.1
+  - suite2p-mbo>=2.0.1 ; extra == 'suite2p'
+  - rastermap ; extra == 'rastermap'
+  - cellpose>=4.0.6 ; extra == 'cellpose'
+  - torch>=2.7.0 ; extra == 'torch'
+  - torchvision>=0.22.0 ; extra == 'torch'
+  - lbm-suite2p-python[cellpose,rastermap,suite2p,torch] ; extra == 'all'
   requires_python: '>=3.12.7,<3.12.10'
 - conda: https://conda.anaconda.org/conda-forge/linux-64/lcms2-2.18-h0c24ade_0.conda
   sha256: 836ec4b895352110335b9fdcfa83a8dcdbe6c5fb7c06c4929130600caea91c0a
