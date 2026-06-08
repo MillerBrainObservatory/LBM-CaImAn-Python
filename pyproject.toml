@@ -28,7 +28,7 @@ dependencies = [
 	"zarr",
 	"dask",
 	"pandas",
-	"mbo_utilities>=2.5.3",
+	"mbo_utilities>=3.1.0",
 	"lbm_suite2p_python",
 ]
 # caiman is installed via pixi (conda-forge) - see pixi.toml
