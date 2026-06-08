@@ -6,12 +6,15 @@ platforms = ["win-64", "linux-64"]
 [dependencies]
 python = ">=3.12.7,<3.12.10"
 caiman = "*"
+# mbo_utilities>=3.1.0 caps these; pin so the conda solve doesn't pull versions it forbids
+numpy = ">=2.2.5,<2.4"
+setuptools = "<81"
 pip = "*"
 
 [pypi-dependencies]
 lbm-caiman-python = { path = ".", editable = true }
-mbo-utilities = ">=2.5.3"
-lbm-suite2p-python = "*"
+mbo-utilities = ">=3.1.0"
+lbm-suite2p-python = ">=3.1.0"
 suite2p = ">=1.0.0.1"
 
 [tasks]
