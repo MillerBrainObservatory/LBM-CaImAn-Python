@@ -569,19 +569,27 @@ def run_plane(
 
     metadata = dict(getattr(input_arr, "metadata", {}) or {})
 
-    if "fs" in metadata and ops.get("fs", ops.get("fr")) in (None, 30.0):
-        ops["fs"] = float(metadata["fs"])
+    def _meta(key):
+        v = metadata.get(key)
+        return v if v is not None else None
+
+    # Metadata only fills in values the user didn't supply. None-valued
+    # metadata entries are ignored (mbo_utilities arrays sometimes carry
+    # a `dz=None` placeholder, and float(None) crashes).
+    if _meta("fs") is not None and ops_user.get("fs") is None and ops_user.get("fr") is None:
+        ops["fs"] = float(_meta("fs"))
         ops["fr"] = ops["fs"]
-    if "fr" in ops and "fs" not in ops:
+    elif "fr" in ops and "fs" not in ops:
         ops["fs"] = ops["fr"]
-    if "dx" in metadata:
-        ops["dx"] = float(metadata["dx"])
-        ops.setdefault("dxy", (metadata.get("dy", 1.0), metadata["dx"]))
-    if "dy" in metadata:
-        ops["dy"] = float(metadata["dy"])
-    if "dz" in metadata:
-        ops["dz"] = float(metadata["dz"])
-        ops.setdefault("z_step", float(metadata["dz"]))
+    if _meta("dx") is not None and ops_user.get("dx") is None:
+        ops["dx"] = float(_meta("dx"))
+    if _meta("dy") is not None and ops_user.get("dy") is None:
+        ops["dy"] = float(_meta("dy"))
+    if "dxy" not in ops_user and (_meta("dx") is not None or _meta("dy") is not None):
+        ops["dxy"] = (float(_meta("dy") or 1.0), float(_meta("dx") or 1.0))
+    if _meta("dz") is not None and ops_user.get("dz") is None:
+        ops["dz"] = float(_meta("dz"))
+        ops.setdefault("z_step", ops["dz"])
 
     is_volumetric_source = _get_num_planes(input_arr) > 1
 
@@ -610,7 +618,19 @@ def run_plane(
 
     raw_bin = plane_dir / "data_raw.bin"
     reg_bin = plane_dir / "data.bin"
-    needs_raw = force_reg or not raw_bin.exists()
+    stat_file = plane_dir / "stat.npy"
+
+    # Skip rules (mirrors lsp):
+    #   - motion correction reruns only when forced or data.bin is missing
+    #   - CNMF reruns only when forced or stat.npy is missing
+    #   - data_raw.bin is rewritten only when motion correction will actually
+    #     consume it; otherwise a prior `keep_raw=False` would waste a full
+    #     binary write on every rerun even though we already have data.bin.
+    do_reg = ops.get("do_motion_correction", ops.get("do_registration", 1))
+    do_detect = ops.get("do_cnmf", ops.get("roidetect", 1))
+    needs_reg = bool(do_reg) and (force_reg or not reg_bin.exists())
+    needs_detect = bool(do_detect) and (force_detect or not stat_file.exists())
+    needs_raw = needs_reg and (force_reg or not raw_bin.exists())
 
     if needs_raw and isinstance(input_arr, np.ndarray):
         # in-memory arrays can't be staged through mbo_utilities — fall back
@@ -680,10 +700,7 @@ def run_plane(
                 "ensure mbo_utilities.imwrite populated ops with Lx/Ly/nframes."
             )
 
-    needs_reg = force_reg or not reg_bin.exists()
-    do_reg = ops.get("do_motion_correction", ops.get("do_registration", 1))
-
-    if do_reg and needs_reg:
+    if needs_reg:
         print("  Running motion correction...")
         mc_start = time.time()
         try:
@@ -708,7 +725,7 @@ def run_plane(
             traceback.print_exc()
             ops["mcorr_error"] = str(e)
     elif do_reg and reg_bin.exists():
-        print("  Motion correction already done.")
+        print("  Motion correction cached, skipping.")
 
     # frame counts after registration
     T = int(ops.get("nframes", T_raw))
@@ -720,11 +737,7 @@ def run_plane(
     ops.setdefault("xrange", np.array([0, Lx], dtype=np.int32))
     ops.setdefault("badframes", np.zeros(T, dtype=bool))
 
-    stat_file = plane_dir / "stat.npy"
-    needs_detect = force_detect or not stat_file.exists()
-    do_detect = ops.get("do_cnmf", ops.get("roidetect", 1))
-
-    if do_detect and needs_detect and reg_bin.exists():
+    if needs_detect and reg_bin.exists():
         print("  Running CNMF...")
         cnmf_start = time.time()
         try:
@@ -745,7 +758,7 @@ def run_plane(
             traceback.print_exc()
             ops["cnmf_error"] = str(e)
     elif do_detect and stat_file.exists():
-        print("  CNMF already done.")
+        print("  CNMF cached, skipping.")
 
     # post-processing: dff, roi stats, figures
     F_file = plane_dir / "F.npy"
@@ -840,8 +853,13 @@ def _run_motion_correction(raw_bin, T, Ly, Lx, ops, output_dir):
     """
     from caiman.motion_correction import MotionCorrect
 
-    # stage a CaImAn-format mmap CaImAn can read directly
-    in_mmap = output_dir / f"Yr_d1_{Ly}_d2_{Lx}_d3_1_order_C_frames_{T}_raw.mmap"
+    # Stage a CaImAn-format mmap CaImAn can read directly. The basename
+    # prefix is distinct from the CNMF mmap (``Yr_…``) so motion-correction
+    # input and CNMF input don't collide, and the filename ends in a
+    # trailing underscore so caiman.paths.decode_mmap_filename_dict skips
+    # its `int(fpart[-1])` step — any non-int / non-empty trailing token
+    # crashes the parser.
+    in_mmap = output_dir / f"mcinput_d1_{Ly}_d2_{Lx}_d3_1_order_C_frames_{T}_.mmap"
     if not in_mmap.exists():
         src = np.memmap(str(raw_bin), dtype=np.int16, mode="r", shape=(T, Ly, Lx))
         fp = np.memmap(str(in_mmap), mode="w+", dtype=np.float32,
