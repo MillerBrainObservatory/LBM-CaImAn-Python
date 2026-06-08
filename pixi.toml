@@ -11,6 +11,8 @@ pip = "*"
 [pypi-dependencies]
 lbm-caiman-python = { path = ".", editable = true }
 mbo-utilities = ">=2.5.3"
+lbm-suite2p-python = "*"
+suite2p = ">=1.0.0.1"
 
 [tasks]
 test = "pytest"
