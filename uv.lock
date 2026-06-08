@@ -1445,7 +1445,7 @@ wheels = [
 
 [[package]]
 name = "lbm-caiman-python"
-version = "1.2.0"
+version = "1.2.1"
 source = { editable = "." }
 dependencies = [
     { name = "dask" },
@@ -1491,7 +1491,7 @@ requires-dist = [
     { name = "dask" },
     { name = "h5py" },
     { name = "joblib" },
-    { name = "lbm-suite2p-python" },
+    { name = "lbm-suite2p-python", specifier = ">=3.1.0" },
     { name = "matplotlib" },
     { name = "mbo-utilities", specifier = ">=3.1.0" },
     { name = "numpy" },
