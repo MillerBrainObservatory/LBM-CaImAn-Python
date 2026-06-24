@@ -210,6 +210,10 @@ def build_ops_from_args(args) -> dict:
 
 def main():
     """main cli entry point."""
+    if len(sys.argv) > 1 and sys.argv[1] == "setup":
+        from lbm_caiman_python.setup_caiman import setup_caiman
+        sys.exit(setup_caiman(sys.argv[2:]))
+
     print("\n")
     print("--- LBM-CaImAn Pipeline ---")
     print("\n")

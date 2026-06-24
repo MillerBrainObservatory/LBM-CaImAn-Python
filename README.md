@@ -36,7 +36,30 @@ but is not guarenteed to work with Jupyter Notebook or Visual Studio Code notebo
 
 ## Installation
 
-Install [pixi](https://pixi.sh) (`pip install pixi` or see https://pixi.sh for other methods), then:
+Pixi is the only tool you need — it pulls CaImAn from conda-forge for you, so there is no
+separate conda install, no clone, and no C++ compiler. Install [pixi](https://pixi.sh)
+(`pip install pixi` or see https://pixi.sh for other methods).
+
+### Install (no clone)
+
+```bash
+pixi init my-lcp && cd my-lcp
+pixi add "python>=3.12.7,<3.12.10" "numpy>=2.0,<2.4"   # interpreter (3.12) + numpy cap
+pixi add caiman                                        # CaImAn from conda-forge
+pixi add --pypi lbm-caiman-python                      # the lcp pipeline + python deps
+pixi run caimanmanager install                         # set up caiman_data
+pixi run lcp <input> <output>
+```
+
+A bare `pixi add python` pulls 3.14, which CaImAn and `lbm-caiman-python`
+(`requires-python <3.12.10`) do not support — pin it to 3.12. The `numpy<2.4` cap is
+required because CaImAn pulls the latest numpy while `mbo_utilities` needs `<2.4`.
+
+Once a release containing it is published, `pixi run lcp setup` runs the
+`pixi add caiman` + `caimanmanager install` steps for you (`--force` to reinstall,
+`--no-data` to skip the data setup).
+
+### Install for development (clone)
 
 ```bash
 git clone https://github.com/MillerBrainObservatory/LBM-CaImAn-Python.git
