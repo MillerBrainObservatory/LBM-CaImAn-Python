@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "lbm_caiman_python"
-version = "1.2.1"
+version = "1.2.2"
 description = "Light Beads Microscopy Pipeline using CaImAn"
 readme = "README.md"
 license = "BSD-3-Clause"
