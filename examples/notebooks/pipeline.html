@@ -1,0 +1,1086 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>LBM-CaImAn full pipeline &#8212; LBM-CaImAn-Python</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=475cc00c" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../_static/documentation_options.js?v=a1637f0b"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js?v=b8b12719"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
+    <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
+    <script defer="defer" src="../../_static/tippy/examples/notebooks/pipeline.b7b6924a-6182-41ef-8db0-2b1c9bd2584c.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'examples/notebooks/pipeline';</script>
+    <link rel="icon" href="../../_static/icon_caiman_python.svg"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/lcp_logo.svg" class="logo__image only-light" alt="LBM-CaImAn-Python - Home"/>
+    <img src="../../_static/lcp_logo.svg" class="logo__image only-dark pst-js-only" alt="LBM-CaImAn-Python - Home"/>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://millerbrainobservatory.github.io/" title="MBO User Hub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../../icon_mbo_home.png" class="icon-link-image" alt="MBO User Hub"/></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/MillerBrainObservatory/" title="MBO Github" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">MBO Github</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://mbo.rockefeller.edu/contact/" title="Connect with MBO" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-regular fa-address-card fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Connect with MBO</span></a>
+        </li>
+</ul></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../user_guide/index.html">User Guide</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/assembly.html">1. Image Assembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/batch_utilities.html">2. Batch Utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/registration.html">3. Registration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/segmentation.html">4. Segmentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/collation.html">5. Z-Plane Collation</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../index.html">Tutorial</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="assembly.html">1. Image Assembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batch_helpers.html">2. Batch Helpers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="motion_correction.html">3. Registration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="segmentation.html">4. Segmentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="collation.html">5. Collate Planes</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../glossary.html">Glossary</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/MillerBrainObservatory/LBM-CaImAn-Python/blob/master/docs/examples/notebooks/pipeline.ipynb?plain=1" target="_blank"
+   class="btn btn-sm btn-source-file-button dropdown-item"
+   title="Show source"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-code"></i>
+  </span>
+<span class="btn__text-container">Show source</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/MillerBrainObservatory/LBM-CaImAn-Python/edit/master/docs/examples/notebooks/pipeline.ipynb" target="_blank"
+   class="btn btn-sm btn-source-edit-button dropdown-item"
+   title="Suggest edit"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-pencil-alt"></i>
+  </span>
+<span class="btn__text-container">Suggest edit</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/MillerBrainObservatory/LBM-CaImAn-Python/issues/new?title=Issue%20on%20page%20%2Fexamples/notebooks/pipeline.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/examples/notebooks/pipeline.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>LBM-CaImAn full pipeline</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#paths">1. Paths</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inspect-input">2. Inspect input</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pick-every-other-z-plane">3. Pick every-other z-plane</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#caiman-parameters">4. CaImAn parameters</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#run-the-pipeline">5. Run the pipeline</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inspect-results">6. Inspect results</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="lbm-caiman-full-pipeline">
+<h1>LBM-CaImAn full pipeline<a class="headerlink" href="#lbm-caiman-full-pipeline" title="Link to this heading">#</a></h1>
+<p>Runs the CaImAn pipeline on every-other z-plane of <code class="docutils literal notranslate"><span class="pre">D:/demo/raw</span></code> and writes suite2p-compatible outputs to <code class="docutils literal notranslate"><span class="pre">D:/demo/caiman-python/</span></code>.</p>
+<p>Output layout per plane (mirrors <code class="docutils literal notranslate"><span class="pre">lbm_suite2p_python.pipeline()</span></code>):
+<code class="docutils literal notranslate"><span class="pre">data_raw.bin</span></code>, <code class="docutils literal notranslate"><span class="pre">data.bin</span></code>, <code class="docutils literal notranslate"><span class="pre">ops.npy</span></code>, <code class="docutils literal notranslate"><span class="pre">stat.npy</span></code>, <code class="docutils literal notranslate"><span class="pre">iscell.npy</span></code>, <code class="docutils literal notranslate"><span class="pre">F.npy</span></code>, <code class="docutils literal notranslate"><span class="pre">Fneu.npy</span></code>, <code class="docutils literal notranslate"><span class="pre">spks.npy</span></code>, <code class="docutils literal notranslate"><span class="pre">dff.npy</span></code>, <code class="docutils literal notranslate"><span class="pre">roi_stats.npy</span></code>, plus diagnostic figures (<code class="docutils literal notranslate"><span class="pre">01_…15_*.png</span></code>).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># uv pip install jupyterlab-vim</span>
+<span class="o">!</span>uv<span class="w"> </span>pip<span class="w"> </span>sync<span class="w"> </span>--all-extras
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Bold -Color-Bold-Red">error:</span> the following required arguments were not provided:
+  <span class=" -Color -Color-Green">&lt;SRC_FILE&gt;...</span>
+
+<span class=" -Color -Color-Bold -Color-Bold-Green">Usage:</span> <span class=" -Color -Color-Bold -Color-Bold-Cyan">uv pip sync</span> <span class=" -Color -Color-Bold -Color-Bold-Cyan">--all-extras</span> <span class=" -Color -Color-Cyan">&lt;SRC_FILE&gt;...</span>
+
+For more information, try &#39;<span class=" -Color -Color-Bold -Color-Bold-Cyan">--help</span>&#39;.
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">mbo_utilities</span> <span class="kn">import</span> <span class="n">imread</span>
+
+<span class="kn">import</span> <span class="nn">lbm_caiman_python</span> <span class="k">as</span> <span class="nn">lcp</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;lbm_caiman_python: </span><span class="si">{</span><span class="n">lcp</span><span class="o">.</span><span class="n">__version__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>lbm_caiman_python: 0.1.0
+</pre></div>
+</div>
+</div>
+</div>
+<section id="paths">
+<h2>1. Paths<a class="headerlink" href="#paths" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">input_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;D:/demo/raw&quot;</span><span class="p">)</span>
+<span class="n">output_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;D:/demo/caiman-python&quot;</span><span class="p">)</span>
+<span class="n">output_path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Input:  </span><span class="si">{</span><span class="n">input_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Output: </span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Input:  D:\demo\raw
+Output: D:\demo\caiman-python
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="inspect-input">
+<h2>2. Inspect input<a class="headerlink" href="#inspect-input" title="Link to this heading">#</a></h2>
+<p>Open the raw volume lazily and read its metadata so we know how many z-planes are available before launching the pipeline.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">imread</span><span class="p">(</span><span class="n">input_path</span><span class="p">)</span>
+<span class="n">meta</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">metadata</span> <span class="ow">or</span> <span class="p">{})</span>
+
+<span class="n">num_planes</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s2">&quot;num_planes&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">num_planes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">num_planes</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape5d</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s2">&quot;shape5d&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="mi">1</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Shape: </span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">, dtype: </span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Num planes: </span><span class="si">{</span><span class="n">num_planes</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Frame rate: </span><span class="si">{</span><span class="n">meta</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;fs&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">meta</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;fr&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;N/A&#39;</span><span class="p">))</span><span class="si">}</span><span class="s2"> Hz&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Pixel size: dx=</span><span class="si">{</span><span class="n">meta</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;dx&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;N/A&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> um, dy=</span><span class="si">{</span><span class="n">meta</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;dy&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;N/A&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> um&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "7acffb89ef4445b589248e15d951c640", "version_major": 2, "version_minor": 0}</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Shape: (1574, 14, 550, 448), dtype: int16
+Num planes: 14
+Frame rate: 14.0 Hz
+Pixel size: dx=2.0 um, dy=2.0 um
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="pick-every-other-z-plane">
+<h2>3. Pick every-other z-plane<a class="headerlink" href="#pick-every-other-z-plane" title="Link to this heading">#</a></h2>
+<p>1-based indexing matches <code class="docutils literal notranslate"><span class="pre">lbm_caiman_python</span></code> / <code class="docutils literal notranslate"><span class="pre">lbm_suite2p_python</span></code>: <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">3,</span> <span class="pre">5,</span> <span class="pre">...]</span></code> picks every odd plane. Flip to <code class="docutils literal notranslate"><span class="pre">[2,</span> <span class="pre">4,</span> <span class="pre">6,</span> <span class="pre">...]</span></code> for the even subset.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">planes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">num_planes</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Processing </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">planes</span><span class="p">)</span><span class="si">}</span><span class="s2"> planes (of </span><span class="si">{</span><span class="n">num_planes</span><span class="si">}</span><span class="s2">): </span><span class="si">{</span><span class="n">planes</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing 7 planes (of 14): [1, 3, 5, 7, 9, 11, 13]
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="caiman-parameters">
+<h2>4. CaImAn parameters<a class="headerlink" href="#caiman-parameters" title="Link to this heading">#</a></h2>
+<p>Start from <code class="docutils literal notranslate"><span class="pre">lcp.default_ops()</span></code> and tune for the LBM acquisition. Pixel size sets <code class="docutils literal notranslate"><span class="pre">gSig</span></code> / <code class="docutils literal notranslate"><span class="pre">gSiz</span></code>; patch grid is sized for ~10% cell density per patch.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ops</span> <span class="o">=</span> <span class="n">lcp</span><span class="o">.</span><span class="n">default_ops</span><span class="p">()</span>
+
+<span class="n">fs</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">meta</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;fs&quot;</span><span class="p">,</span> <span class="n">meta</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;fr&quot;</span><span class="p">,</span> <span class="mf">17.0</span><span class="p">)))</span>
+<span class="n">dx</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">meta</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dx&quot;</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">))</span>
+<span class="n">dy</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">meta</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dy&quot;</span><span class="p">,</span> <span class="n">dx</span><span class="p">))</span>
+
+<span class="n">ops</span><span class="p">[</span><span class="s2">&quot;fs&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fs</span>
+<span class="n">ops</span><span class="p">[</span><span class="s2">&quot;fr&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fs</span>
+<span class="n">ops</span><span class="p">[</span><span class="s2">&quot;dxy&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">dy</span><span class="p">,</span> <span class="n">dx</span><span class="p">)</span>
+<span class="n">ops</span><span class="p">[</span><span class="s2">&quot;decay_time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.7</span>
+<span class="n">ops</span><span class="p">[</span><span class="s2">&quot;dz&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">17</span>
+
+<span class="c1"># neuron size from 10-20 um target</span>
+<span class="n">neuron_min_um</span><span class="p">,</span> <span class="n">neuron_max_um</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span>
+<span class="n">half_neuron_px</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">((</span><span class="n">neuron_min_um</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">dx</span><span class="p">)))</span>
+<span class="n">gSiz_px</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">neuron_max_um</span> <span class="o">/</span> <span class="n">dx</span><span class="p">))</span> <span class="o">+</span> <span class="mi">1</span>
+<span class="n">ops</span><span class="p">[</span><span class="s2">&quot;gSig&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">half_neuron_px</span><span class="p">,</span> <span class="n">half_neuron_px</span><span class="p">)</span>
+<span class="n">ops</span><span class="p">[</span><span class="s2">&quot;gSiz&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">gSiz_px</span><span class="p">,</span> <span class="n">gSiz_px</span><span class="p">)</span>
+
+<span class="c1"># patch grid</span>
+<span class="n">patch_side</span> <span class="o">=</span> <span class="mi">80</span>
+<span class="n">patch_area_mm2</span> <span class="o">=</span> <span class="p">(</span><span class="n">patch_side</span> <span class="o">*</span> <span class="n">dx</span> <span class="o">*</span> <span class="mf">1e-3</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+<span class="n">neurons_per_patch</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mi">92000</span> <span class="o">*</span> <span class="n">patch_area_mm2</span> <span class="o">*</span> <span class="mf">0.05</span><span class="p">)</span>
+<span class="n">ops</span><span class="p">[</span><span class="s2">&quot;rf&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">patch_side</span> <span class="o">//</span> <span class="mi">2</span>
+<span class="n">ops</span><span class="p">[</span><span class="s2">&quot;stride&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">patch_side</span> <span class="o">//</span> <span class="mi">4</span>
+<span class="n">ops</span><span class="p">[</span><span class="s2">&quot;K&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">neurons_per_patch</span> <span class="o">+</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">30</span><span class="p">)</span>
+
+<span class="c1"># motion correction + quality</span>
+<span class="n">ops</span><span class="p">[</span><span class="s2">&quot;do_motion_correction&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">ops</span><span class="p">[</span><span class="s2">&quot;pw_rigid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">ops</span><span class="p">[</span><span class="s2">&quot;merge_thresh&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.85</span>
+<span class="n">ops</span><span class="p">[</span><span class="s2">&quot;min_SNR&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">2.5</span>
+<span class="n">ops</span><span class="p">[</span><span class="s2">&quot;rval_thr&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.8</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;fs=</span><span class="si">{</span><span class="n">fs</span><span class="si">}</span><span class="s2"> Hz, dx=</span><span class="si">{</span><span class="n">dx</span><span class="si">}</span><span class="s2"> um, dy=</span><span class="si">{</span><span class="n">dy</span><span class="si">}</span><span class="s2"> um&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;gSig=</span><span class="si">{</span><span class="n">ops</span><span class="p">[</span><span class="s1">&#39;gSig&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">, gSiz=</span><span class="si">{</span><span class="n">ops</span><span class="p">[</span><span class="s1">&#39;gSiz&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">, K=</span><span class="si">{</span><span class="n">ops</span><span class="p">[</span><span class="s1">&#39;K&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;rf=</span><span class="si">{</span><span class="n">ops</span><span class="p">[</span><span class="s1">&#39;rf&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">, stride=</span><span class="si">{</span><span class="n">ops</span><span class="p">[</span><span class="s1">&#39;stride&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>fs=14.0 Hz, dx=2.0 um, dy=2.0 um
+gSig=(2, 2), gSiz=(11, 11), K=127
+rf=40, stride=20
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="run-the-pipeline">
+<h2>5. Run the pipeline<a class="headerlink" href="#run-the-pipeline" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">lcp.pipeline()</span></code> writes <code class="docutils literal notranslate"><span class="pre">data_raw.bin</span></code>, runs CaImAn motion correction into <code class="docutils literal notranslate"><span class="pre">data.bin</span></code>, runs CNMF, synthesizes <code class="docutils literal notranslate"><span class="pre">stat.npy</span></code> / <code class="docutils literal notranslate"><span class="pre">iscell.npy</span></code> / <code class="docutils literal notranslate"><span class="pre">F.npy</span></code> / <code class="docutils literal notranslate"><span class="pre">Fneu.npy</span></code> / <code class="docutils literal notranslate"><span class="pre">spks.npy</span></code> / <code class="docutils literal notranslate"><span class="pre">dff.npy</span></code> / <code class="docutils literal notranslate"><span class="pre">roi_stats.npy</span></code>, and renders the lsp figure set. <code class="docutils literal notranslate"><span class="pre">force_reg=True</span></code> / <code class="docutils literal notranslate"><span class="pre">force_detect=True</span></code> ignore any cached outputs.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ops_files</span> <span class="o">=</span> <span class="n">lcp</span><span class="o">.</span><span class="n">pipeline</span><span class="p">(</span>
+    <span class="n">input_data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+    <span class="n">save_path</span><span class="o">=</span><span class="n">output_path</span><span class="p">,</span>
+    <span class="n">ops</span><span class="o">=</span><span class="n">ops</span><span class="p">,</span>
+    <span class="n">planes</span><span class="o">=</span><span class="n">planes</span><span class="p">,</span>
+    <span class="n">keep_raw</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">keep_reg</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">force_reg</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">force_detect</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Processed </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">ops_files</span><span class="p">)</span><span class="si">}</span><span class="s2"> planes&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">ops_files</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Detected 4D input, delegating to run_volume...
+Processing 7 planes (total: 14)
+Output: D:\demo\caiman-python
+
+--- Plane 1/14 ---
+  Output: D:\demo\caiman-python\zplane01_tp00001-01574
+  Writing data_raw.bin...
+  Running motion correction...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Running CNMF...
+    CNMF input: shape=(1574, 550, 448)
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Component 29 is only active jointly with neighboring components. Space correlation calculation might be unreliable.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>    CNMF: 7119 components, 340 accepted
+  Computing dF/F...
+Plotting results for 340 accepted / 6779 rejected ROIs
+  Failed to plot meanImg: No module named &#39;suite2p&#39;
+  Failed to plot max_proj: No module named &#39;suite2p&#39;
+  Failed to plot meanImgE: No module named &#39;suite2p&#39;
+
+--- Plane 3/14 ---
+  Output: D:\demo\caiman-python\zplane03_tp00001-01574
+  Writing data_raw.bin...
+  Running motion correction...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+Movie average is negative. Removing 1st percentile.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Running CNMF...
+    CNMF input: shape=(1574, 550, 448)
+</pre></div>
+</div>
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">KeyboardInterrupt</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">9</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">ops_files</span> <span class="o">=</span> <span class="n">lcp</span><span class="o">.</span><span class="n">pipeline</span><span class="p">(</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span>     <span class="n">input_data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span>     <span class="n">save_path</span><span class="o">=</span><span class="n">output_path</span><span class="p">,</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span>     <span class="n">ops</span><span class="o">=</span><span class="n">ops</span><span class="p">,</span>
+<span class="g g-Whitespace">      </span><span class="mi">5</span>     <span class="n">planes</span><span class="o">=</span><span class="n">planes</span><span class="p">,</span>
+<span class="g g-Whitespace">      </span><span class="mi">6</span>     <span class="n">keep_raw</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="g g-Whitespace">      </span><span class="mi">7</span>     <span class="n">keep_reg</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="g g-Whitespace">      </span><span class="mi">8</span>     <span class="n">force_reg</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="g g-Whitespace">      </span><span class="mi">9</span>     <span class="n">force_detect</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">10</span> <span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">12</span> <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Processed </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">ops_files</span><span class="p">)</span><span class="si">}</span><span class="s2"> planes&quot;</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">13</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">ops_files</span><span class="p">:</span>
+
+<span class="nn">File ~\repos\LBM-CaImAn-Python\lbm_caiman_python\run_lcp.py:371,</span> in <span class="ni">pipeline</span><span class="nt">(input_data, save_path, ops, planes, roi_mode, keep_reg, keep_raw, force_reg, force_detect, num_timepoints, frame_indices, dff_window_size, dff_percentile, dff_smooth_window, correct_neuropil, accept_all_cells, save_json, reader_kwargs, writer_kwargs, rastermap_kwargs, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">369</span> <span class="k">if</span> <span class="n">is_volumetric</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">370</span>     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Detected 4D input, delegating to run_volume...&quot;</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">371</span>     <span class="k">return</span> <span class="n">run_volume</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">372</span>         <span class="n">input_data</span><span class="o">=</span><span class="n">arr</span> <span class="k">if</span> <span class="n">arr</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">input_data</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">373</span>         <span class="n">planes</span><span class="o">=</span><span class="n">planes</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">374</span>         <span class="o">**</span><span class="n">common</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">375</span>     <span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">376</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Detected 3D input, delegating to run_plane...&quot;</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">377</span> <span class="n">ops_file</span> <span class="o">=</span> <span class="n">run_plane</span><span class="p">(</span><span class="n">input_data</span><span class="o">=</span><span class="n">arr</span><span class="p">,</span> <span class="o">**</span><span class="n">common</span><span class="p">)</span>
+
+<span class="nn">File ~\repos\LBM-CaImAn-Python\lbm_caiman_python\run_lcp.py:473,</span> in <span class="ni">run_volume</span><span class="nt">(input_data, save_path, ops, planes, keep_reg, keep_raw, force_reg, force_detect, frame_indices, dff_window_size, dff_percentile, dff_smooth_window, correct_neuropil, accept_all_cells, save_json, rastermap_kwargs, reader_kwargs, writer_kwargs, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">471</span> <span class="k">try</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">472</span>     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- Plane </span><span class="si">{</span><span class="n">plane_num</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">num_planes</span><span class="si">}</span><span class="s2"> ---&quot;</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">473</span>     <span class="n">ops_file</span> <span class="o">=</span> <span class="n">run_plane</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">474</span>         <span class="n">input_data</span><span class="o">=</span><span class="n">current_input</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">475</span>         <span class="n">save_path</span><span class="o">=</span><span class="n">save_path</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">476</span>         <span class="n">ops</span><span class="o">=</span><span class="n">current_ops</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">477</span>         <span class="n">keep_reg</span><span class="o">=</span><span class="n">keep_reg</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">478</span>         <span class="n">keep_raw</span><span class="o">=</span><span class="n">keep_raw</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">479</span>         <span class="n">force_reg</span><span class="o">=</span><span class="n">force_reg</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">480</span>         <span class="n">force_detect</span><span class="o">=</span><span class="n">force_detect</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">481</span>         <span class="n">frame_indices</span><span class="o">=</span><span class="n">frame_indices</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">482</span>         <span class="n">dff_window_size</span><span class="o">=</span><span class="n">dff_window_size</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">483</span>         <span class="n">dff_percentile</span><span class="o">=</span><span class="n">dff_percentile</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">484</span>         <span class="n">dff_smooth_window</span><span class="o">=</span><span class="n">dff_smooth_window</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">485</span>         <span class="n">correct_neuropil</span><span class="o">=</span><span class="n">correct_neuropil</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">486</span>         <span class="n">accept_all_cells</span><span class="o">=</span><span class="n">accept_all_cells</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">487</span>         <span class="n">save_json</span><span class="o">=</span><span class="n">save_json</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">488</span>         <span class="n">rastermap_kwargs</span><span class="o">=</span><span class="n">rastermap_kwargs</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">489</span>         <span class="n">reader_kwargs</span><span class="o">=</span><span class="n">reader_kwargs</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">490</span>         <span class="n">writer_kwargs</span><span class="o">=</span><span class="n">writer_kwargs</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">491</span>         <span class="n">_volume_plane_idx</span><span class="o">=</span><span class="n">plane_idx</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">492</span>     <span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">493</span>     <span class="n">ops_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ops_file</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">494</span> <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+
+<span class="nn">File ~\repos\LBM-CaImAn-Python\lbm_caiman_python\run_lcp.py:745,</span> in <span class="ni">run_plane</span><span class="nt">(input_data, save_path, ops, keep_reg, keep_raw, force_reg, force_detect, frame_indices, dff_window_size, dff_percentile, dff_smooth_window, correct_neuropil, accept_all_cells, save_json, rastermap_kwargs, plane_name, reader_kwargs, writer_kwargs, _volume_plane_idx, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">743</span> <span class="k">try</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">744</span>     <span class="n">mmap_file</span> <span class="o">=</span> <span class="n">_ensure_caiman_mmap</span><span class="p">(</span><span class="n">plane_dir</span><span class="p">,</span> <span class="n">reg_bin</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">Ly</span><span class="p">,</span> <span class="n">Lx</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">745</span>     <span class="n">cnmf_result</span> <span class="o">=</span> <span class="n">_run_cnmf</span><span class="p">(</span><span class="n">mmap_file</span><span class="p">,</span> <span class="n">ops</span><span class="p">,</span> <span class="n">plane_dir</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">Ly</span><span class="p">,</span> <span class="n">Lx</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">746</span>     <span class="n">ops</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">cnmf_result</span><span class="p">[</span><span class="s2">&quot;ops&quot;</span><span class="p">])</span>
+<span class="g g-Whitespace">    </span><span class="mi">747</span>     <span class="n">add_processing_step</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">748</span>         <span class="n">ops</span><span class="p">,</span> <span class="s2">&quot;cnmf&quot;</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">749</span>         <span class="n">duration_seconds</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">cnmf_start</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">750</span>         <span class="n">extra</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;n_cells&quot;</span><span class="p">:</span> <span class="n">cnmf_result</span><span class="p">[</span><span class="s2">&quot;n_cells&quot;</span><span class="p">]},</span>
+<span class="g g-Whitespace">    </span><span class="mi">751</span>     <span class="p">)</span>
+
+<span class="nn">File ~\repos\LBM-CaImAn-Python\lbm_caiman_python\run_lcp.py:973,</span> in <span class="ni">_run_cnmf</span><span class="nt">(mmap_file, ops, output_dir, T, Ly, Lx)</span>
+<span class="g g-Whitespace">    </span><span class="mi">970</span> <span class="n">cnmf</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">quality</span><span class="p">[</span><span class="s2">&quot;min_cnn_thr&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ops</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;min_cnn_thr&quot;</span><span class="p">,</span> <span class="mf">0.99</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">971</span> <span class="n">cnmf</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">quality</span><span class="p">[</span><span class="s2">&quot;use_cnn&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ops</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;use_cnn&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">973</span> <span class="n">cnmf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">images</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">974</span> <span class="k">try</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">975</span>     <span class="n">cnmf</span><span class="o">.</span><span class="n">estimates</span><span class="o">.</span><span class="n">evaluate_components</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">cnmf</span><span class="o">.</span><span class="n">params</span><span class="p">,</span> <span class="n">dview</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+<span class="nn">File ~\repos\LBM-CaImAn-Python\.venv\Lib\site-packages\caiman\source_extraction\cnmf\cnmf.py:458,</span> in <span class="ni">CNMF.fit</span><span class="nt">(self, images, indices)</span>
+<span class="g g-Whitespace">    </span><span class="mi">448</span>     <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">449</span>         <span class="s1">&#39;You need to provide a memory mapped file as input if you use patches!!&#39;</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">451</span> <span class="c1"># We sometimes need to investigate what changes between before run_CNMF_patches and after that/before we update</span>
+<span class="g g-Whitespace">    </span><span class="mi">452</span> <span class="c1"># components. This code block here is ready to uncomment for such debugging.</span>
+<span class="g g-Whitespace">    </span><span class="mi">453</span> <span class="c1">#print(&quot;D: About to run run_CNMF_patches(), entering a shell. Will open a shell again afterwards&quot;)</span>
+<span class="g g-Whitespace">    </span><span class="mi">454</span> <span class="c1">#import code</span>
+<span class="g g-Whitespace">    </span><span class="mi">455</span> <span class="c1">#code.interact(local=dict(globals(), **locals()) )</span>
+<span class="g g-Whitespace">    </span><span class="mi">457</span> <span class="bp">self</span><span class="o">.</span><span class="n">estimates</span><span class="o">.</span><span class="n">A</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">estimates</span><span class="o">.</span><span class="n">C</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">estimates</span><span class="o">.</span><span class="n">YrA</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">estimates</span><span class="o">.</span><span class="n">b</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">estimates</span><span class="o">.</span><span class="n">f</span><span class="p">,</span> \
+<span class="ne">--&gt; </span><span class="mi">458</span>     <span class="bp">self</span><span class="o">.</span><span class="n">estimates</span><span class="o">.</span><span class="n">sn</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">estimates</span><span class="o">.</span><span class="n">optional_outputs</span> <span class="o">=</span> <span class="n">run_CNMF_patches</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">459</span>         <span class="n">images</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dims</span> <span class="o">+</span> <span class="p">(</span><span class="n">T</span><span class="p">,),</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">460</span>         <span class="n">dview</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dview</span><span class="p">,</span> <span class="n">memory_fact</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;patch&#39;</span><span class="p">,</span> <span class="s1">&#39;memory_fact&#39;</span><span class="p">),</span>
+<span class="g g-Whitespace">    </span><span class="mi">461</span>         <span class="n">gnb</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;init&#39;</span><span class="p">,</span> <span class="s1">&#39;nb&#39;</span><span class="p">),</span> <span class="n">border_pix</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;patch&#39;</span><span class="p">,</span> <span class="s1">&#39;border_pix&#39;</span><span class="p">),</span>
+<span class="g g-Whitespace">    </span><span class="mi">462</span>         <span class="n">low_rank_background</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;patch&#39;</span><span class="p">,</span> <span class="s1">&#39;low_rank_background&#39;</span><span class="p">),</span>
+<span class="g g-Whitespace">    </span><span class="mi">463</span>         <span class="n">del_duplicates</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;patch&#39;</span><span class="p">,</span> <span class="s1">&#39;del_duplicates&#39;</span><span class="p">),</span>
+<span class="g g-Whitespace">    </span><span class="mi">464</span>         <span class="n">indices</span><span class="o">=</span><span class="n">indices</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">466</span> <span class="c1">#print(&quot;D: Finished with run_CNMF_patches(), self.estimates.* are populated. Next step would be update_temporal() but first: Entering a shell.&quot;)</span>
+<span class="g g-Whitespace">    </span><span class="mi">467</span> <span class="c1">#code.interact(local=dict(globals(), **locals()) )</span>
+<span class="g g-Whitespace">    </span><span class="mi">469</span> <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">estimates</span><span class="o">.</span><span class="n">b</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="o">~</span><span class="bp">self</span><span class="o">.</span><span class="n">estimates</span><span class="o">.</span><span class="n">b</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))[</span><span class="mi">0</span><span class="p">]))</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span> <span class="c1"># If any of the background ended up completely empty</span>
+
+<span class="nn">File ~\repos\LBM-CaImAn-Python\.venv\Lib\site-packages\caiman\source_extraction\cnmf\map_reduce.py:243,</span> in <span class="ni">run_CNMF_patches</span><span class="nt">(file_name, shape, params, gnb, dview, memory_fact, border_pix, low_rank_background, del_duplicates, indices)</span>
+<span class="g g-Whitespace">    </span><span class="mi">240</span>             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Patch processing complete&#39;</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">242</span> <span class="k">else</span><span class="p">:</span>
+<span class="ne">--&gt; </span><span class="mi">243</span>     <span class="n">file_res</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">cnmf_patches</span><span class="p">,</span> <span class="n">args_in</span><span class="p">))</span>
+<span class="g g-Whitespace">    </span><span class="mi">245</span> <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Elapsed time for processing patches: </span><span class="se">\</span>
+<span class="g g-Whitespace">    </span><span class="mi">246</span><span class="s1">              </span><span class="si">{0}</span><span class="s1">s&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">st</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]))</span>
+<span class="g g-Whitespace">    </span><span class="mi">247</span> <span class="c1"># count components</span>
+
+<span class="nn">File ~\repos\LBM-CaImAn-Python\.venv\Lib\site-packages\caiman\source_extraction\cnmf\map_reduce.py:112,</span> in <span class="ni">cnmf_patches</span><span class="nt">(args_in)</span>
+<span class="g g-Whitespace">    </span><span class="mi">108</span>         <span class="n">opts</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">group</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;p&#39;</span><span class="p">:</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;patch&#39;</span><span class="p">,</span> <span class="s1">&#39;p_patch&#39;</span><span class="p">)})</span>
+<span class="g g-Whitespace">    </span><span class="mi">110</span>     <span class="n">cnm</span> <span class="o">=</span> <span class="n">CNMF</span><span class="p">(</span><span class="n">n_processes</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">opts</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">112</span>     <span class="n">cnm</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">images</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">113</span>     <span class="k">return</span> <span class="p">[</span><span class="n">idx_</span><span class="p">,</span> <span class="n">shapes</span><span class="p">,</span> <span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">coo_matrix</span><span class="p">(</span><span class="n">cnm</span><span class="o">.</span><span class="n">estimates</span><span class="o">.</span><span class="n">A</span><span class="p">),</span>
+<span class="g g-Whitespace">    </span><span class="mi">114</span>             <span class="n">cnm</span><span class="o">.</span><span class="n">estimates</span><span class="o">.</span><span class="n">b</span><span class="p">,</span> <span class="n">cnm</span><span class="o">.</span><span class="n">estimates</span><span class="o">.</span><span class="n">C</span><span class="p">,</span> <span class="n">cnm</span><span class="o">.</span><span class="n">estimates</span><span class="o">.</span><span class="n">f</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">115</span>             <span class="n">cnm</span><span class="o">.</span><span class="n">estimates</span><span class="o">.</span><span class="n">S</span><span class="p">,</span> <span class="n">cnm</span><span class="o">.</span><span class="n">estimates</span><span class="o">.</span><span class="n">bl</span><span class="p">,</span> <span class="n">cnm</span><span class="o">.</span><span class="n">estimates</span><span class="o">.</span><span class="n">c1</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">116</span>             <span class="n">cnm</span><span class="o">.</span><span class="n">estimates</span><span class="o">.</span><span class="n">neurons_sn</span><span class="p">,</span> <span class="n">cnm</span><span class="o">.</span><span class="n">estimates</span><span class="o">.</span><span class="n">g</span><span class="p">,</span> <span class="n">cnm</span><span class="o">.</span><span class="n">estimates</span><span class="o">.</span><span class="n">sn</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">117</span>             <span class="n">cnm</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span> <span class="n">cnm</span><span class="o">.</span><span class="n">estimates</span><span class="o">.</span><span class="n">YrA</span><span class="p">]</span>
+<span class="g g-Whitespace">    </span><span class="mi">118</span> <span class="k">else</span><span class="p">:</span>
+
+<span class="nn">File ~\repos\LBM-CaImAn-Python\.venv\Lib\site-packages\caiman\source_extraction\cnmf\cnmf.py:418,</span> in <span class="ni">CNMF.fit</span><span class="nt">(self, images, indices)</span>
+<span class="g g-Whitespace">    </span><span class="mi">414</span>     <span class="bp">self</span><span class="o">.</span><span class="n">merge_comps</span><span class="p">(</span><span class="n">Yr</span><span class="p">,</span> <span class="n">mx</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">fast_merge</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">416</span> <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Updating spatial ...&#39;</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">418</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_spatial</span><span class="p">(</span><span class="n">Yr</span><span class="p">,</span> <span class="n">use_init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">419</span> <span class="c1"># set it back to original value to perform full deconvolution</span>
+<span class="g g-Whitespace">    </span><span class="mi">420</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;temporal&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;p&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;preprocess&#39;</span><span class="p">,</span> <span class="s1">&#39;p&#39;</span><span class="p">)})</span>
+
+<span class="nn">File ~\repos\LBM-CaImAn-Python\.venv\Lib\site-packages\caiman\source_extraction\cnmf\cnmf.py:687,</span> in <span class="ni">CNMF.update_spatial</span><span class="nt">(self, Y, use_init, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">682</span>         <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">kwargs_new</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+<span class="g g-Whitespace">    </span><span class="mi">684</span> <span class="bp">self</span><span class="o">.</span><span class="n">provenance</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s1">&#39;event&#39;</span><span class="p">:</span> <span class="s1">&#39;update_spatial&#39;</span><span class="p">,</span> <span class="s1">&#39;time&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()),</span> <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;Updated spatial components based on provided Y&#39;</span><span class="p">})</span>
+<span class="g g-Whitespace">    </span><span class="mi">686</span> <span class="bp">self</span><span class="o">.</span><span class="n">estimates</span><span class="o">.</span><span class="n">A</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">estimates</span><span class="o">.</span><span class="n">b</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">estimates</span><span class="o">.</span><span class="n">C</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">estimates</span><span class="o">.</span><span class="n">f</span> <span class="o">=</span>\
+<span class="ne">--&gt; </span><span class="mi">687</span>     <span class="n">update_spatial_components</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">C</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">estimates</span><span class="o">.</span><span class="n">C</span><span class="p">,</span> <span class="n">f</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">estimates</span><span class="o">.</span><span class="n">f</span><span class="p">,</span> <span class="n">A_in</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">estimates</span><span class="o">.</span><span class="n">A</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">688</span>                               <span class="n">b_in</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">estimates</span><span class="o">.</span><span class="n">b</span><span class="p">,</span> <span class="n">dview</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dview</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">689</span>                               <span class="n">sn</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">estimates</span><span class="o">.</span><span class="n">sn</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dims</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">get_group</span><span class="p">(</span><span class="s1">&#39;spatial&#39;</span><span class="p">))</span>
+
+<span class="nn">File ~\repos\LBM-CaImAn-Python\.venv\Lib\site-packages\caiman\source_extraction\cnmf\spatial.py:195,</span> in <span class="ni">update_spatial_components</span><span class="nt">(Y, C, f, A_in, sn, dims, min_size, max_size, dist, normalize_yyt_one, method_exp, expandCore, dview, n_pixels_per_process, medw, thr_method, maxthr, nrgthr, extract_cc, b_in, se, ss, nb, method_ls, update_background_components, low_rank_background, num_blocks_per_run_spat)</span>
+<span class="g g-Whitespace">    </span><span class="mi">193</span>         <span class="n">dview</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+<span class="g g-Whitespace">    </span><span class="mi">194</span> <span class="k">else</span><span class="p">:</span>
+<span class="ne">--&gt; </span><span class="mi">195</span>     <span class="n">parallel_result</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">regression_ipyparallel</span><span class="p">,</span> <span class="n">pixel_groups</span><span class="p">))</span>
+<span class="g g-Whitespace">    </span><span class="mi">196</span> <span class="n">data</span><span class="p">:</span><span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="g g-Whitespace">    </span><span class="mi">197</span> <span class="n">rows</span><span class="p">:</span><span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="nn">File ~\repos\LBM-CaImAn-Python\.venv\Lib\site-packages\caiman\source_extraction\cnmf\spatial.py:362,</span> in <span class="ni">regression_ipyparallel</span><span class="nt">(pars)</span>
+<span class="g g-Whitespace">    </span><span class="mi">355</span>     <span class="n">lambda_lasso</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">cct_</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> \
+<span class="g g-Whitespace">    </span><span class="mi">356</span>         <span class="mf">.5</span> <span class="o">*</span> <span class="n">noise_sn</span><span class="p">[</span><span class="n">px</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">cct_</span><span class="p">))</span> <span class="o">/</span> <span class="n">T</span>
+<span class="g g-Whitespace">    </span><span class="mi">357</span>     <span class="n">model</span> <span class="o">=</span> <span class="n">make_pipeline</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">358</span>         <span class="n">StandardScaler</span><span class="p">(</span><span class="n">with_mean</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+<span class="g g-Whitespace">    </span><span class="mi">359</span>         <span class="n">linear_model</span><span class="o">.</span><span class="n">LassoLars</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="n">lambda_lasso</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">360</span>                                      <span class="n">fit_intercept</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">361</span>         <span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">362</span>     <span class="n">a</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">T</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">y</span><span class="p">))[</span><span class="s1">&#39;lassolars&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">coef_</span>
+<span class="g g-Whitespace">    </span><span class="mi">364</span> <span class="k">else</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">365</span>     <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">366</span>         <span class="s1">&#39;Least Square Method not found!&#39;</span> <span class="o">+</span> <span class="n">method_least_square</span><span class="p">)</span>
+
+<span class="nn">File ~\repos\LBM-CaImAn-Python\.venv\Lib\site-packages\sklearn\base.py:1336,</span> in <span class="ni">_fit_context.&lt;locals&gt;.decorator.&lt;locals&gt;.wrapper</span><span class="nt">(estimator, *args, **kwargs)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1329</span>     <span class="n">estimator</span><span class="o">.</span><span class="n">_validate_params</span><span class="p">()</span>
+<span class="g g-Whitespace">   </span><span class="mi">1331</span> <span class="k">with</span> <span class="n">config_context</span><span class="p">(</span>
+<span class="g g-Whitespace">   </span><span class="mi">1332</span>     <span class="n">skip_parameter_validation</span><span class="o">=</span><span class="p">(</span>
+<span class="g g-Whitespace">   </span><span class="mi">1333</span>         <span class="n">prefer_skip_nested_validation</span> <span class="ow">or</span> <span class="n">global_skip_validation</span>
+<span class="g g-Whitespace">   </span><span class="mi">1334</span>     <span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1335</span> <span class="p">):</span>
+<span class="ne">-&gt; </span><span class="mi">1336</span>     <span class="k">return</span> <span class="n">fit_method</span><span class="p">(</span><span class="n">estimator</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<span class="nn">File ~\repos\LBM-CaImAn-Python\.venv\Lib\site-packages\sklearn\pipeline.py:613,</span> in <span class="ni">Pipeline.fit</span><span class="nt">(self, X, y, **params)</span>
+<span class="g g-Whitespace">    </span><span class="mi">606</span>     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">607</span>         <span class="s2">&quot;The `transform_input` parameter can only be set if metadata &quot;</span>
+<span class="g g-Whitespace">    </span><span class="mi">608</span>         <span class="s2">&quot;routing is enabled. You can enable metadata routing using &quot;</span>
+<span class="g g-Whitespace">    </span><span class="mi">609</span>         <span class="s2">&quot;`sklearn.set_config(enable_metadata_routing=True)`.&quot;</span>
+<span class="g g-Whitespace">    </span><span class="mi">610</span>     <span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">612</span> <span class="n">routed_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_method_params</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;fit&quot;</span><span class="p">,</span> <span class="n">props</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">613</span> <span class="n">Xt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">routed_params</span><span class="p">,</span> <span class="n">raw_params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">614</span> <span class="k">with</span> <span class="n">_print_elapsed_time</span><span class="p">(</span><span class="s2">&quot;Pipeline&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_message</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">steps</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)):</span>
+<span class="g g-Whitespace">    </span><span class="mi">615</span>     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_final_estimator</span> <span class="o">!=</span> <span class="s2">&quot;passthrough&quot;</span><span class="p">:</span>
+
+<span class="nn">File ~\repos\LBM-CaImAn-Python\.venv\Lib\site-packages\sklearn\pipeline.py:547,</span> in <span class="ni">Pipeline._fit</span><span class="nt">(self, X, y, routed_params, raw_params)</span>
+<span class="g g-Whitespace">    </span><span class="mi">540</span> <span class="c1"># Fit or load from cache the current transformer</span>
+<span class="g g-Whitespace">    </span><span class="mi">541</span> <span class="n">step_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_metadata_for_step</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">542</span>     <span class="n">step_idx</span><span class="o">=</span><span class="n">step_idx</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">543</span>     <span class="n">step_params</span><span class="o">=</span><span class="n">routed_params</span><span class="p">[</span><span class="n">name</span><span class="p">],</span>
+<span class="g g-Whitespace">    </span><span class="mi">544</span>     <span class="n">all_params</span><span class="o">=</span><span class="n">raw_params</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">545</span> <span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">547</span> <span class="n">X</span><span class="p">,</span> <span class="n">fitted_transformer</span> <span class="o">=</span> <span class="n">fit_transform_one_cached</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">548</span>     <span class="n">cloned_transformer</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">549</span>     <span class="n">X</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">550</span>     <span class="n">y</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">551</span>     <span class="n">weight</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">552</span>     <span class="n">message_clsname</span><span class="o">=</span><span class="s2">&quot;Pipeline&quot;</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">553</span>     <span class="n">message</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_log_message</span><span class="p">(</span><span class="n">step_idx</span><span class="p">),</span>
+<span class="g g-Whitespace">    </span><span class="mi">554</span>     <span class="n">params</span><span class="o">=</span><span class="n">step_params</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">555</span> <span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">556</span> <span class="c1"># Replace the transformer of the step with the fitted</span>
+<span class="g g-Whitespace">    </span><span class="mi">557</span> <span class="c1"># transformer. This is necessary when loading the transformer</span>
+<span class="g g-Whitespace">    </span><span class="mi">558</span> <span class="c1"># from the cache.</span>
+<span class="g g-Whitespace">    </span><span class="mi">559</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps</span><span class="p">[</span><span class="n">step_idx</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">fitted_transformer</span><span class="p">)</span>
+
+<span class="nn">File ~\repos\LBM-CaImAn-Python\.venv\Lib\site-packages\joblib\memory.py:326,</span> in <span class="ni">NotMemorizedFunc.__call__</span><span class="nt">(self, *args, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">325</span> <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="ne">--&gt; </span><span class="mi">326</span>     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<span class="nn">File ~\repos\LBM-CaImAn-Python\.venv\Lib\site-packages\sklearn\pipeline.py:1484,</span> in <span class="ni">_fit_transform_one</span><span class="nt">(transformer, X, y, weight, message_clsname, message, params)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1482</span> <span class="k">with</span> <span class="n">_print_elapsed_time</span><span class="p">(</span><span class="n">message_clsname</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+<span class="g g-Whitespace">   </span><span class="mi">1483</span>     <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">transformer</span><span class="p">,</span> <span class="s2">&quot;fit_transform&quot;</span><span class="p">):</span>
+<span class="ne">-&gt; </span><span class="mi">1484</span>         <span class="n">res</span> <span class="o">=</span> <span class="n">transformer</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;fit_transform&quot;</span><span class="p">,</span> <span class="p">{}))</span>
+<span class="g g-Whitespace">   </span><span class="mi">1485</span>     <span class="k">else</span><span class="p">:</span>
+<span class="g g-Whitespace">   </span><span class="mi">1486</span>         <span class="n">res</span> <span class="o">=</span> <span class="n">transformer</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;fit&quot;</span><span class="p">,</span> <span class="p">{}))</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span>
+<span class="g g-Whitespace">   </span><span class="mi">1487</span>             <span class="n">X</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;transform&quot;</span><span class="p">,</span> <span class="p">{})</span>
+<span class="g g-Whitespace">   </span><span class="mi">1488</span>         <span class="p">)</span>
+
+<span class="nn">File ~\repos\LBM-CaImAn-Python\.venv\Lib\site-packages\sklearn\utils\_set_output.py:316,</span> in <span class="ni">_wrap_method_output.&lt;locals&gt;.wrapped</span><span class="nt">(self, X, *args, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">314</span> <span class="nd">@wraps</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">315</span> <span class="k">def</span> <span class="nf">wrapped</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="ne">--&gt; </span><span class="mi">316</span>     <span class="n">data_to_wrap</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">317</span>     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data_to_wrap</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+<span class="g g-Whitespace">    </span><span class="mi">318</span>         <span class="c1"># only wrap the first output for cross decomposition</span>
+<span class="g g-Whitespace">    </span><span class="mi">319</span>         <span class="n">return_tuple</span> <span class="o">=</span> <span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">320</span>             <span class="n">_wrap_data_with_container</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">data_to_wrap</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">X</span><span class="p">,</span> <span class="bp">self</span><span class="p">),</span>
+<span class="g g-Whitespace">    </span><span class="mi">321</span>             <span class="o">*</span><span class="n">data_to_wrap</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span>
+<span class="g g-Whitespace">    </span><span class="mi">322</span>         <span class="p">)</span>
+
+<span class="nn">File ~\repos\LBM-CaImAn-Python\.venv\Lib\site-packages\sklearn\base.py:910,</span> in <span class="ni">TransformerMixin.fit_transform</span><span class="nt">(self, X, y, **fit_params)</span>
+<span class="g g-Whitespace">    </span><span class="mi">907</span>     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="o">**</span><span class="n">fit_params</span><span class="p">)</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">908</span> <span class="k">else</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">909</span>     <span class="c1"># fit method of arity 2 (supervised transformation)</span>
+<span class="ne">--&gt; </span><span class="mi">910</span>     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">fit_params</span><span class="p">)</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+
+<span class="nn">File ~\repos\LBM-CaImAn-Python\.venv\Lib\site-packages\sklearn\preprocessing\_data.py:924,</span> in <span class="ni">StandardScaler.fit</span><span class="nt">(self, X, y, sample_weight)</span>
+<span class="g g-Whitespace">    </span><span class="mi">922</span> <span class="c1"># Reset internal state before fitting</span>
+<span class="g g-Whitespace">    </span><span class="mi">923</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reset</span><span class="p">()</span>
+<span class="ne">--&gt; </span><span class="mi">924</span> <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">partial_fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">sample_weight</span><span class="p">)</span>
+
+<span class="nn">File ~\repos\LBM-CaImAn-Python\.venv\Lib\site-packages\sklearn\base.py:1336,</span> in <span class="ni">_fit_context.&lt;locals&gt;.decorator.&lt;locals&gt;.wrapper</span><span class="nt">(estimator, *args, **kwargs)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1329</span>     <span class="n">estimator</span><span class="o">.</span><span class="n">_validate_params</span><span class="p">()</span>
+<span class="g g-Whitespace">   </span><span class="mi">1331</span> <span class="k">with</span> <span class="n">config_context</span><span class="p">(</span>
+<span class="g g-Whitespace">   </span><span class="mi">1332</span>     <span class="n">skip_parameter_validation</span><span class="o">=</span><span class="p">(</span>
+<span class="g g-Whitespace">   </span><span class="mi">1333</span>         <span class="n">prefer_skip_nested_validation</span> <span class="ow">or</span> <span class="n">global_skip_validation</span>
+<span class="g g-Whitespace">   </span><span class="mi">1334</span>     <span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1335</span> <span class="p">):</span>
+<span class="ne">-&gt; </span><span class="mi">1336</span>     <span class="k">return</span> <span class="n">fit_method</span><span class="p">(</span><span class="n">estimator</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<span class="nn">File ~\repos\LBM-CaImAn-Python\.venv\Lib\site-packages\sklearn\preprocessing\_data.py:1047,</span> in <span class="ni">StandardScaler.partial_fit</span><span class="nt">(self, X, y, sample_weight)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1044</span>         <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_seen_</span> <span class="o">+=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">xp</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1046</span>     <span class="k">else</span><span class="p">:</span>
+<span class="ne">-&gt; </span><span class="mi">1047</span>         <span class="bp">self</span><span class="o">.</span><span class="n">mean_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">var_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_seen_</span> <span class="o">=</span> <span class="n">_incremental_mean_and_var</span><span class="p">(</span>
+<span class="g g-Whitespace">   </span><span class="mi">1048</span>             <span class="n">X</span><span class="p">,</span>
+<span class="g g-Whitespace">   </span><span class="mi">1049</span>             <span class="bp">self</span><span class="o">.</span><span class="n">mean_</span><span class="p">,</span>
+<span class="g g-Whitespace">   </span><span class="mi">1050</span>             <span class="bp">self</span><span class="o">.</span><span class="n">var_</span><span class="p">,</span>
+<span class="g g-Whitespace">   </span><span class="mi">1051</span>             <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_seen_</span><span class="p">,</span>
+<span class="g g-Whitespace">   </span><span class="mi">1052</span>             <span class="n">sample_weight</span><span class="o">=</span><span class="n">sample_weight</span><span class="p">,</span>
+<span class="g g-Whitespace">   </span><span class="mi">1053</span>         <span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1055</span> <span class="c1"># for backward-compatibility, reduce n_samples_seen_ to an integer</span>
+<span class="g g-Whitespace">   </span><span class="mi">1056</span> <span class="c1"># if the number of samples is the same for each feature (i.e. no</span>
+<span class="g g-Whitespace">   </span><span class="mi">1057</span> <span class="c1"># missing values)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1058</span> <span class="k">if</span> <span class="n">xp</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_samples_seen_</span><span class="p">)</span> <span class="o">==</span> <span class="n">xp</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_samples_seen_</span><span class="p">):</span>
+
+<span class="nn">File ~\repos\LBM-CaImAn-Python\.venv\Lib\site-packages\sklearn\utils\extmath.py:1229,</span> in <span class="ni">_incremental_mean_and_var</span><span class="nt">(X, last_mean, last_variance, last_sample_count, sample_weight)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1223</span>     <span class="n">new_unnormalized_variance</span> <span class="o">=</span> <span class="n">_safe_accumulator_op</span><span class="p">(</span>
+<span class="g g-Whitespace">   </span><span class="mi">1224</span>         <span class="n">xp</span><span class="o">.</span><span class="n">matmul</span><span class="p">,</span>
+<span class="g g-Whitespace">   </span><span class="mi">1225</span>         <span class="n">sample_weight</span><span class="p">,</span>
+<span class="g g-Whitespace">   </span><span class="mi">1226</span>         <span class="n">xp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">X_nan_mask</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">temp</span><span class="p">),</span>
+<span class="g g-Whitespace">   </span><span class="mi">1227</span>     <span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1228</span> <span class="k">else</span><span class="p">:</span>
+<span class="ne">-&gt; </span><span class="mi">1229</span>     <span class="n">correction</span> <span class="o">=</span> <span class="n">_safe_accumulator_op</span><span class="p">(</span><span class="n">sum_op</span><span class="p">,</span> <span class="n">temp</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1230</span>     <span class="n">temp</span> <span class="o">**=</span> <span class="mi">2</span>
+<span class="g g-Whitespace">   </span><span class="mi">1231</span>     <span class="n">new_unnormalized_variance</span> <span class="o">=</span> <span class="n">_safe_accumulator_op</span><span class="p">(</span><span class="n">sum_op</span><span class="p">,</span> <span class="n">temp</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="nn">File ~\repos\LBM-CaImAn-Python\.venv\Lib\site-packages\sklearn\utils\extmath.py:1059,</span> in <span class="ni">_safe_accumulator_op</span><span class="nt">(op, x, *args, **kwargs)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1053</span>     <span class="k">return</span> <span class="n">X</span>
+<span class="g g-Whitespace">   </span><span class="mi">1056</span> <span class="c1"># Use at least float64 for the accumulating functions to avoid precision issue</span>
+<span class="g g-Whitespace">   </span><span class="mi">1057</span> <span class="c1"># see https://github.com/numpy/numpy/issues/9393. The float64 is also retained</span>
+<span class="g g-Whitespace">   </span><span class="mi">1058</span> <span class="c1"># as it is in case the float overflows</span>
+<span class="ne">-&gt; </span><span class="mi">1059</span> <span class="k">def</span> <span class="nf">_safe_accumulator_op</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="g g-Whitespace">   </span><span class="mi">1060</span><span class="w">     </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="g g-Whitespace">   </span><span class="mi">1061</span><span class="sd">     This function provides array accumulator functions with a maximum floating</span>
+<span class="g g-Whitespace">   </span><span class="mi">1062</span><span class="sd">     precision dtype, usually float64, when used on a floating point input. This</span>
+<span class="sd">   (...)   1086     This is usually float64, but may be float32 for some namespace/device pairs.</span>
+<span class="g g-Whitespace">   </span><span class="mi">1087</span><span class="sd">     &quot;&quot;&quot;</span>
+<span class="g g-Whitespace">   </span><span class="mi">1088</span>     <span class="n">xp</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">x_device</span> <span class="o">=</span> <span class="n">get_namespace_and_device</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+<span class="ne">KeyboardInterrupt</span>: 
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="inspect-results">
+<h2>6. Inspect results<a class="headerlink" href="#inspect-results" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">summary</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">ops_file</span> <span class="ow">in</span> <span class="n">ops_files</span><span class="p">:</span>
+    <span class="n">plane_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">ops_file</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span>
+    <span class="n">o</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">ops_file</span><span class="p">,</span> <span class="n">allow_pickle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+    <span class="n">iscell</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">plane_dir</span> <span class="o">/</span> <span class="s2">&quot;iscell.npy&quot;</span><span class="p">,</span> <span class="n">allow_pickle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">n_total</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">iscell</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">n_accepted</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">iscell</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+    <span class="n">summary</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">o</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;plane&quot;</span><span class="p">),</span> <span class="n">n_accepted</span><span class="p">,</span> <span class="n">n_total</span><span class="p">,</span> <span class="n">plane_dir</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+
+<span class="k">for</span> <span class="n">plane</span><span class="p">,</span> <span class="n">n_acc</span><span class="p">,</span> <span class="n">n_tot</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">summary</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;plane </span><span class="si">{</span><span class="n">plane</span><span class="si">:</span><span class="s2">2d</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">n_acc</span><span class="si">:</span><span class="s2">5d</span><span class="si">}</span><span class="s2"> accepted / </span><span class="si">{</span><span class="n">n_tot</span><span class="si">:</span><span class="s2">5d</span><span class="si">}</span><span class="s2"> total  (</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+
+<span class="n">zstats_file</span> <span class="o">=</span> <span class="n">output_path</span> <span class="o">/</span> <span class="s2">&quot;zstats.npy&quot;</span>
+<span class="k">if</span> <span class="n">zstats_file</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">zstats_file</span><span class="p">,</span> <span class="n">allow_pickle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Volume stats saved: </span><span class="si">{</span><span class="n">zstats_file</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  total accepted across volume: </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">z</span><span class="p">[</span><span class="s1">&#39;accepted&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">first_plane</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">ops_files</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">parent</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Files in </span><span class="si">{</span><span class="n">first_plane</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">:&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">first_plane</span><span class="o">.</span><span class="n">iterdir</span><span class="p">()):</span>
+    <span class="n">size_mb</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_size</span> <span class="o">/</span> <span class="mi">1024</span> <span class="o">/</span> <span class="mi">1024</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="si">:</span><span class="s2">&lt;40s</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">size_mb</span><span class="si">:</span><span class="s2">8.2f</span><span class="si">}</span><span class="s2"> MB&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#paths">1. Paths</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inspect-input">2. Inspect input</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pick-every-other-z-plane">3. Pick every-other z-plane</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#caiman-parameters">4. CaImAn parameters</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#run-the-pipeline">5. Run the pipeline</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inspect-results">6. Inspect results</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Author name not set
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, Elizabeth R. Miller Brain Observatory | The Rockefeller University. All Rights Reserved.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

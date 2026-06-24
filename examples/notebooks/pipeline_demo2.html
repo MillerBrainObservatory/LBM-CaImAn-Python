@@ -1,0 +1,1490 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>LBM-CaImAn Pipeline Demo &#8212; LBM-CaImAn-Python</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=475cc00c" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../_static/documentation_options.js?v=a1637f0b"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js?v=b8b12719"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script defer="defer" src="https://unpkg.com/@popperjs/core@2"></script>
+    <script defer="defer" src="https://unpkg.com/tippy.js@6"></script>
+    <script defer="defer" src="../../_static/tippy/examples/notebooks/pipeline_demo2.6a2d97aa-fd03-4d63-8d23-86f54e18995b.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'examples/notebooks/pipeline_demo2';</script>
+    <link rel="icon" href="../../_static/icon_caiman_python.svg"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/lcp_logo.svg" class="logo__image only-light" alt="LBM-CaImAn-Python - Home"/>
+    <img src="../../_static/lcp_logo.svg" class="logo__image only-dark pst-js-only" alt="LBM-CaImAn-Python - Home"/>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://millerbrainobservatory.github.io/" title="MBO User Hub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><img src="../../icon_mbo_home.png" class="icon-link-image" alt="MBO User Hub"/></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/MillerBrainObservatory/" title="MBO Github" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">MBO Github</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://mbo.rockefeller.edu/contact/" title="Connect with MBO" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-regular fa-address-card fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Connect with MBO</span></a>
+        </li>
+</ul></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../user_guide/index.html">User Guide</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/assembly.html">1. Image Assembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/batch_utilities.html">2. Batch Utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/registration.html">3. Registration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/segmentation.html">4. Segmentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/collation.html">5. Z-Plane Collation</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../index.html">Tutorial</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="assembly.html">1. Image Assembly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="batch_helpers.html">2. Batch Helpers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="motion_correction.html">3. Registration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="segmentation.html">4. Segmentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="collation.html">5. Collate Planes</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../glossary.html">Glossary</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/MillerBrainObservatory/LBM-CaImAn-Python/blob/master/docs/examples/notebooks/pipeline_demo2.ipynb?plain=1" target="_blank"
+   class="btn btn-sm btn-source-file-button dropdown-item"
+   title="Show source"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-code"></i>
+  </span>
+<span class="btn__text-container">Show source</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/MillerBrainObservatory/LBM-CaImAn-Python/edit/master/docs/examples/notebooks/pipeline_demo2.ipynb" target="_blank"
+   class="btn btn-sm btn-source-edit-button dropdown-item"
+   title="Suggest edit"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-pencil-alt"></i>
+  </span>
+<span class="btn__text-container">Suggest edit</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/MillerBrainObservatory/LBM-CaImAn-Python/issues/new?title=Issue%20on%20page%20%2Fexamples/notebooks/pipeline_demo2.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/examples/notebooks/pipeline_demo2.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>LBM-CaImAn Pipeline Demo</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#load-data">1. Load data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configure-parameters">2. Configure parameters</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#run-pipeline">3. Run pipeline</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#component-evaluation-on-existing-results">4. Component evaluation on existing results</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#filter-and-visualize">5. Filter and visualize</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="lbm-caiman-pipeline-demo">
+<h1>LBM-CaImAn Pipeline Demo<a class="headerlink" href="#lbm-caiman-pipeline-demo" title="Link to this heading">#</a></h1>
+<p>calcium imaging segmentation pipeline using CaImAn CNMF on light-beads microscopy data.</p>
+<p>sections:</p>
+<ol class="arabic simple">
+<li><p>load data and inspect metadata</p></li>
+<li><p>configure CNMF parameters (neuron size, patch grid, quality thresholds)</p></li>
+<li><p>run pipeline</p></li>
+<li><p>run component evaluation on existing results</p></li>
+<li><p>filter and visualize accepted neurons</p></li>
+</ol>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">lbm_caiman_python</span> <span class="k">as</span> <span class="nn">lcp</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mbo_utilities</span> <span class="kn">import</span> <span class="n">imread</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;lbm_caiman_python version: </span><span class="si">{</span><span class="n">lcp</span><span class="o">.</span><span class="n">__version__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>lbm_caiman_python version: 0.1.0
+</pre></div>
+</div>
+</div>
+</div>
+<section id="load-data">
+<h2>1. Load data<a class="headerlink" href="#load-data" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">input_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;D:\GCamp_dTomato_tests\corrected&quot;</span><span class="p">)</span>
+<span class="n">output_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;D:\GCamp_dTomato_tests\caiman&quot;</span><span class="p">)</span>
+
+<span class="n">data</span> <span class="o">=</span> <span class="n">imread</span><span class="p">(</span><span class="n">input_path</span><span class="p">)</span>
+<span class="n">meta</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">metadata</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Shape: </span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">, dtype: </span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Frame rate: </span><span class="si">{</span><span class="n">meta</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;fr&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;N/A&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> Hz&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Pixel size: dx=</span><span class="si">{</span><span class="n">meta</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;dx&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;N/A&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> µm, dy=</span><span class="si">{</span><span class="n">meta</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;dy&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;N/A&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> µm&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Num planes: </span><span class="si">{</span><span class="n">meta</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;num_planes&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;N/A&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Shape: (1000, 1, 448, 448), dtype: int16
+Frame rate: 17.07 Hz
+Pixel size: dx=2.0 µm, dy=2.0 µm
+Num planes: 1
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="configure-parameters">
+<h2>2. Configure parameters<a class="headerlink" href="#configure-parameters" title="Link to this heading">#</a></h2>
+<p>key parameters:</p>
+<ul class="simple">
+<li><p><strong>gSig, gSiz</strong>: neuron half-width and bounding box in pixels, derived from 10-20 µm target and pixel size</p></li>
+<li><p><strong>rf, stride, K</strong>: patch grid. rf=half-patch-size, stride=overlap step, K=components per patch.
+K is computed from assumed neuron density (92k/mm³) scaled to a single z-slice.</p></li>
+<li><p><strong>merge_thresh</strong>: spatial correlation threshold for merging duplicate components across patches.
+note: the caiman parameter name is <code class="docutils literal notranslate"><span class="pre">merge_thresh</span></code>, not <code class="docutils literal notranslate"><span class="pre">merge_thr</span></code>.</p></li>
+<li><p><strong>min_SNR, rval_thr</strong>: quality thresholds for evaluate_components (run automatically after CNMF)</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ops</span> <span class="o">=</span> <span class="n">lcp</span><span class="o">.</span><span class="n">default_ops</span><span class="p">()</span>
+
+<span class="c1"># data metadata</span>
+<span class="n">ops</span><span class="p">[</span><span class="s2">&quot;fr&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">meta</span><span class="p">[</span><span class="s2">&quot;frame_rate&quot;</span><span class="p">]</span>
+<span class="n">ops</span><span class="p">[</span><span class="s2">&quot;dxy&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">meta</span><span class="p">[</span><span class="s2">&quot;dx&quot;</span><span class="p">],</span> <span class="n">meta</span><span class="p">[</span><span class="s2">&quot;dy&quot;</span><span class="p">])</span>
+<span class="n">ops</span><span class="p">[</span><span class="s2">&quot;decay_time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.7</span>
+
+<span class="c1"># neuron size from 10-20 µm target</span>
+<span class="n">dx</span> <span class="o">=</span> <span class="n">meta</span><span class="p">[</span><span class="s2">&quot;dx&quot;</span><span class="p">]</span>
+<span class="n">neuron_min_um</span><span class="p">,</span> <span class="n">neuron_max_um</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span>
+<span class="n">half_neuron_px</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">((</span><span class="n">neuron_min_um</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">dx</span><span class="p">))</span>
+<span class="n">gSiz_px</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">neuron_max_um</span> <span class="o">/</span> <span class="n">dx</span><span class="p">))</span> <span class="o">+</span> <span class="mi">1</span>
+<span class="n">ops</span><span class="p">[</span><span class="s2">&quot;gSig&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">half_neuron_px</span><span class="p">,</span> <span class="n">half_neuron_px</span><span class="p">)</span>
+<span class="n">ops</span><span class="p">[</span><span class="s2">&quot;gSiz&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">gSiz_px</span><span class="p">,</span> <span class="n">gSiz_px</span><span class="p">)</span>
+
+<span class="c1"># patch grid — K derived from density</span>
+<span class="n">patch_side</span> <span class="o">=</span> <span class="mi">80</span>  <span class="c1"># pixels per patch side (rf = patch_side // 2)</span>
+<span class="n">patch_area_mm2</span> <span class="o">=</span> <span class="p">(</span><span class="n">patch_side</span> <span class="o">*</span> <span class="n">dx</span> <span class="o">*</span> <span class="mf">1e-3</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+<span class="n">neurons_per_patch</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mi">92000</span> <span class="o">*</span> <span class="n">patch_area_mm2</span> <span class="o">*</span> <span class="mf">0.05</span><span class="p">)</span>  <span class="c1"># 92k/mm³, ~50 µm z-slice</span>
+<span class="n">ops</span><span class="p">[</span><span class="s2">&quot;rf&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">patch_side</span> <span class="o">//</span> <span class="mi">2</span>
+<span class="n">ops</span><span class="p">[</span><span class="s2">&quot;stride&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">patch_side</span> <span class="o">//</span> <span class="mi">4</span>
+<span class="n">ops</span><span class="p">[</span><span class="s2">&quot;K&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">neurons_per_patch</span> <span class="o">+</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">30</span><span class="p">)</span>
+<span class="n">ops</span><span class="p">[</span><span class="s2">&quot;nb&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="c1"># merging and quality</span>
+<span class="n">ops</span><span class="p">[</span><span class="s2">&quot;merge_thresh&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.85</span>
+<span class="n">ops</span><span class="p">[</span><span class="s2">&quot;min_SNR&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">3.0</span>
+<span class="n">ops</span><span class="p">[</span><span class="s2">&quot;rval_thr&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.8</span>
+<span class="n">ops</span><span class="p">[</span><span class="s2">&quot;p&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">ops</span><span class="p">[</span><span class="s2">&quot;ssub&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">ops</span><span class="p">[</span><span class="s2">&quot;tsub&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">ops</span><span class="p">[</span><span class="s2">&quot;do_motion_correction&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Pixel size: </span><span class="si">{</span><span class="n">dx</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> µm/px&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;gSig=</span><span class="si">{</span><span class="n">ops</span><span class="p">[</span><span class="s1">&#39;gSig&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> px, gSiz=</span><span class="si">{</span><span class="n">ops</span><span class="p">[</span><span class="s1">&#39;gSiz&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> px&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Patch: </span><span class="si">{</span><span class="n">patch_side</span><span class="si">}</span><span class="s2">x</span><span class="si">{</span><span class="n">patch_side</span><span class="si">}</span><span class="s2"> px, stride=</span><span class="si">{</span><span class="n">ops</span><span class="p">[</span><span class="s1">&#39;stride&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">, K=</span><span class="si">{</span><span class="n">ops</span><span class="p">[</span><span class="s1">&#39;K&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected ~</span><span class="si">{</span><span class="n">neurons_per_patch</span><span class="si">}</span><span class="s2"> neurons/patch&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Quality: min_SNR=</span><span class="si">{</span><span class="n">ops</span><span class="p">[</span><span class="s1">&#39;min_SNR&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">, rval_thr=</span><span class="si">{</span><span class="n">ops</span><span class="p">[</span><span class="s1">&#39;rval_thr&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Pixel size: 2.00 µm/px
+gSig=(2, 2) px, gSiz=(11, 11) px
+Patch: 80x80 px, stride=20, K=127
+Expected ~117 neurons/patch
+Quality: min_SNR=3.0, rval_thr=0.8
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="run-pipeline">
+<h2>3. Run pipeline<a class="headerlink" href="#run-pipeline" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">results</span> <span class="o">=</span> <span class="n">lcp</span><span class="o">.</span><span class="n">pipeline</span><span class="p">(</span>
+    <span class="n">input_data</span><span class="o">=</span><span class="n">input_path</span><span class="p">,</span>
+    <span class="n">save_path</span><span class="o">=</span><span class="n">output_path</span><span class="p">,</span>
+    <span class="n">ops</span><span class="o">=</span><span class="n">ops</span><span class="p">,</span>
+    <span class="n">planes</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+    <span class="n">force_mcorr</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">force_cnmf</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Processed </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span><span class="si">}</span><span class="s2"> plane(s)&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">r</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Loading input: D:\GCamp_dTomato_tests\corrected
+Detected 4D input, delegating to run_volume...
+Processing 1 planes (total: 1)
+Output: D:\GCamp_dTomato_tests\caiman
+
+--- Plane 1/1 ---
+  Output: D:\GCamp_dTomato_tests\caiman\zplane01_tp00001-01000
+  Running CNMF...
+    Creating mmap for CNMF (1000, 448, 448)...
+    CNMF input: shape=(1000, 448, 448), type=memmap
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Component 11 is only active jointly with neighboring components. Space correlation calculation might be unreliable.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>    Component evaluation: 2 accepted, 6957 rejected
+  Diagnostic plots saved to D:\GCamp_dTomato_tests\caiman\zplane01_tp00001-01000
+
+Generating volume statistics...
+  Volume stats: 2 cells across 1 planes
+
+Processed 1 plane(s)
+  D:\GCamp_dTomato_tests\caiman\zplane01_tp00001-01000\ops.npy
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># inspect results</span>
+<span class="k">if</span> <span class="n">results</span><span class="p">:</span>
+    <span class="n">plane_dir</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">parent</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">lcp</span><span class="o">.</span><span class="n">load_planar_results</span><span class="p">(</span><span class="n">plane_dir</span><span class="p">)</span>
+    <span class="n">ops_saved</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;ops&quot;</span><span class="p">]</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Plane: </span><span class="si">{</span><span class="n">ops_saved</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;plane&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;?&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total components: </span><span class="si">{</span><span class="n">ops_saved</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;n_cells_total&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">ops_saved</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;n_cells&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;?&#39;</span><span class="p">))</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Accepted components: </span><span class="si">{</span><span class="n">ops_saved</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;n_cells&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;?&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;FOV: </span><span class="si">{</span><span class="n">ops_saved</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Ly&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;?&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> x </span><span class="si">{</span><span class="n">ops_saved</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Lx&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;?&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Frames: </span><span class="si">{</span><span class="n">ops_saved</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;nframes&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;?&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Plane: 1
+Total components: 6959
+Accepted components: 2
+FOV: 448 x 448
+Frames: 1000
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="component-evaluation-on-existing-results">
+<h2>4. Component evaluation on existing results<a class="headerlink" href="#component-evaluation-on-existing-results" title="Link to this heading">#</a></h2>
+<p>if the pipeline already ran, load saved estimates and run CaImAn’s
+<code class="docutils literal notranslate"><span class="pre">evaluate_components</span></code> to compute r_values (spatial correlation) and
+SNR_comp (signal-to-noise) for each component.</p>
+<p>important: CaImAn’s evaluate_components has a bug in its non-memmap
+code path (assumes d1,d2,T axis order but movie is T,d1,d2). we
+always load through a CaImAn-format mmap file to avoid this.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> inline
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">sparse</span>
+<span class="kn">import</span> <span class="nn">caiman</span> <span class="k">as</span> <span class="nn">cm</span>
+<span class="kn">from</span> <span class="nn">caiman.source_extraction.cnmf.estimates</span> <span class="kn">import</span> <span class="n">Estimates</span>
+<span class="kn">from</span> <span class="nn">caiman.source_extraction.cnmf.params</span> <span class="kn">import</span> <span class="n">CNMFParams</span>
+
+<span class="c1"># load saved estimates</span>
+<span class="n">plane_dir</span> <span class="o">=</span> <span class="n">output_path</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">lcp</span><span class="o">.</span><span class="n">load_planar_results</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;D:\GCamp_dTomato_tests\caiman\zplane01_tp00001-01000&quot;</span><span class="p">)</span>
+<span class="n">data</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;ops&#39;: {&#39;do_motion_correction&#39;: False,
+  &#39;max_shifts&#39;: (6, 6),
+  &#39;strides&#39;: (48, 48),
+  &#39;overlaps&#39;: (24, 24),
+  &#39;max_deviation_rigid&#39;: 3,
+  &#39;pw_rigid&#39;: True,
+  &#39;gSig_filt&#39;: (2, 2),
+  &#39;border_nan&#39;: &#39;copy&#39;,
+  &#39;niter_rig&#39;: 1,
+  &#39;splits_rig&#39;: 14,
+  &#39;num_splits_to_process_rig&#39;: None,
+  &#39;splits_els&#39;: 14,
+  &#39;num_splits_to_process_els&#39;: None,
+  &#39;upsample_factor_grid&#39;: 4,
+  &#39;use_cuda&#39;: False,
+  &#39;do_cnmf&#39;: True,
+  &#39;K&#39;: 127,
+  &#39;gSig&#39;: (2, 2),
+  &#39;gSiz&#39;: (11, 11),
+  &#39;p&#39;: 1,
+  &#39;merge_thresh&#39;: 0.85,
+  &#39;min_SNR&#39;: 3.0,
+  &#39;rval_thr&#39;: 0.8,
+  &#39;decay_time&#39;: 0.7,
+  &#39;method_init&#39;: &#39;greedy_roi&#39;,
+  &#39;ssub&#39;: 1,
+  &#39;tsub&#39;: 1,
+  &#39;rf&#39;: 40,
+  &#39;stride&#39;: 20,
+  &#39;nb&#39;: 1,
+  &#39;gnb&#39;: 1,
+  &#39;low_rank_background&#39;: True,
+  &#39;update_background_components&#39;: True,
+  &#39;rolling_sum&#39;: True,
+  &#39;only_init&#39;: False,
+  &#39;normalize_init&#39;: True,
+  &#39;ring_size_factor&#39;: 1.5,
+  &#39;min_cnn_thr&#39;: 0.9,
+  &#39;cnn_lowest&#39;: 0.1,
+  &#39;use_cnn&#39;: False,
+  &#39;fr&#39;: 17.07,
+  &#39;n_processes&#39;: None,
+  &#39;dxy&#39;: (2.0, 2.0),
+  &#39;plane&#39;: 1,
+  &#39;num_zplanes&#39;: 1,
+  &#39;save_path&#39;: &#39;D:\\GCamp_dTomato_tests\\caiman\\zplane01_tp00001-01000&#39;,
+  &#39;data_path&#39;: &#39;array_input.tif&#39;,
+  &#39;n_cells&#39;: 2,
+  &#39;n_cells_total&#39;: 6959,
+  &#39;Ly&#39;: 448,
+  &#39;Lx&#39;: 448,
+  &#39;nframes&#39;: 1000,
+  &#39;processing_history&#39;: [{&#39;step&#39;: &#39;cnmf&#39;,
+    &#39;timestamp&#39;: &#39;2026-04-23T15:57:58.709151&#39;,
+    &#39;lbm_caiman_python_version&#39;: &#39;0.1.0&#39;,
+    &#39;caiman_version&#39;: &#39;1.13.1&#39;,
+    &#39;duration_seconds&#39;: 977.34,
+    &#39;n_cells&#39;: 2}]},
+ &#39;estimates&#39;: {&#39;A&#39;: &lt;Compressed Sparse Column sparse matrix of dtype &#39;float64&#39;
+  	with 980941 stored elements and shape (200704, 6959)&gt;,
+  &#39;C&#39;: array([[ -218.84537401,  -223.24450217,  -118.73662399, ...,
+           -298.04955847,  -298.50158478,  -298.93108913],
+         [ -322.21144956,  -322.21144956,  -322.21144956, ...,
+           -321.48122504,  -321.51787665,  -321.5526972 ],
+         [  826.12704164,   727.78184992,   888.302574  , ...,
+            913.80623082,   808.9067067 ,   711.84885649],
+         ...,
+         [ -360.05908203,  -163.8645315 ,  -232.80517616, ...,
+          -1787.73535156, -1788.84106445, -1789.90063477],
+         [ 1300.05639648,  1161.56692092,  1028.87378752, ...,
+          -1956.79003906, -1958.96191406, -1961.04284668],
+         [  235.36621094,   121.40516663,    12.1980438 , ...,
+          -2459.61621094, -2461.16088867, -2462.64111328]],
+        shape=(6959, 1000)),
+  &#39;S&#39;: array([[ 0.00000000e+00,  0.00000000e+00,  1.08687786e+02, ...,
+           0.00000000e+00,  0.00000000e+00,  0.00000000e+00],
+         [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00, ...,
+           0.00000000e+00,  0.00000000e+00,  0.00000000e+00],
+         [ 0.00000000e+00,  0.00000000e+00,  2.51514253e+02, ...,
+          -1.22070299e-04,  0.00000000e+00,  0.00000000e+00],
+         ...,
+         [ 0.00000000e+00,  2.56939453e+02,  0.00000000e+00, ...,
+           0.00000000e+00, -1.90734863e-06,  1.90734863e-06],
+         [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00, ...,
+           0.00000000e+00, -3.81469727e-06,  3.81469727e-06],
+         [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00, ...,
+          -3.81469727e-06,  0.00000000e+00,  3.81469727e-06]],
+        shape=(6959, 1000)),
+  &#39;b&#39;: array([[1.97226977e-05],
+         [8.91316798e-06],
+         [8.50961340e-06],
+         ...,
+         [3.34161620e-03],
+         [3.07282606e-03],
+         [2.54407914e-03]], shape=(200704, 1)),
+  &#39;f&#39;: array([[303349.23059802, 297684.52325683, 293956.74196793,
+          291200.84992474, 288532.8068227 , 290049.53331868,
+          290151.36366785, 291634.69437402, 292983.70581192,
+          292663.20610536, 291608.87092801, 289854.19812242,
+          288129.53148149, 288946.25066152, 290255.67570414,
+          291717.61416134, 293048.05467488, 293216.07387522,
+          291805.28809963, 290542.91018478, 288774.4261895 ,
+          290158.64543698, 290810.82937853, 293233.11907285,
+          293867.84849455, 295456.6805999 , 292376.54786961,
+          291866.1338717 , 289142.56973281, 291049.37077288,
+          290387.29154317, 292598.74885296, 295266.78597968,
+          293918.27682221, 292029.24970772, 292647.61615607,
+          291091.43166727, 291937.37303975, 291401.22611852,
+          292920.58224639, 295155.47411912, 295129.67825863,
+          293878.42758238, 292123.49035931, 289996.7632815 ,
+          291888.99060159, 291313.54798834, 292389.44870169,
+          295517.48292489, 293203.10805673, 293342.92335961,
+          292371.19667913, 289275.78240396, 290074.63581909,
+          291584.61295012, 292388.8644561 , 294134.55056763,
+          293796.08271428, 292451.57651499, 291381.10841339,
+          289415.78078753, 290853.30420723, 290092.29780005,
+          291826.85465905, 294088.03005849, 293434.75897321,
+          291040.84724226, 290367.06475907, 289289.26450884,
+          290256.63429592, 290038.66594144, 290605.86237801,
+          291494.27569624, 291911.86745331, 290786.55576181,
+          289036.46975439, 287759.96432123, 286324.22575094,
+          287095.14308195, 288010.8270036 , 291043.28871356,
+          289265.84833361, 289124.60358429, 287074.32822547,
+          286012.62383338, 285927.32443939, 286677.2348599 ,
+          286108.87752294, 289530.29623105, 288005.99055234,
+          287149.08435736, 286115.9706121 , 283942.00131446,
+          284513.24061165, 284698.09431451, 284165.80304897,
+          286784.74086024, 285836.23186282, 285311.86597382,
+          282449.31465866, 281340.650179  , 281719.65807027,
+          281300.11250042, 282568.20747097, 284598.4067924 ,
+          283879.67646836, 283912.09677162, 281529.59634121,
+          279398.29086598, 279068.6906439 , 278668.91210112,
+          280189.00796173, 281603.14261818, 280743.86378629,
+          279451.0401151 , 278111.27385714, 275255.1459523 ,
+          276069.26098169, 275692.4007851 , 277550.08341526,
+          278836.84209185, 277621.56791092, 276787.42690329,
+          275095.64989399, 273480.90717993, 271734.79380698,
+          272541.25212128, 275218.12893594, 275428.9262234 ,
+          275742.05542723, 274173.78657106, 272200.18908658,
+          270287.28631249, 270263.28630592, 270500.79508242,
+          271177.69519066, 273747.29307135, 273043.79505992,
+          271988.43825365, 270287.73688832, 269139.63846892,
+          269282.16890463, 268180.54498365, 270553.24459706,
+          272151.5739516 , 270004.58955748, 269923.55162764,
+          268356.47377783, 266329.49188885, 266316.39298339,
+          266601.82415621, 266292.31450416, 268133.97578648,
+          266873.93529563, 266540.54347656, 264062.56032831,
+          261524.90828611, 263341.53290361, 262636.27001665,
+          263891.31428053, 264448.49628275, 264344.10843583,
+          263659.04319851, 261978.89070048, 259338.6466347 ,
+          259402.36358955, 259940.2107223 , 261435.65792493,
+          262893.54205936, 261575.31835736, 260464.60242479,
+          259115.15246213, 257741.33474479, 257877.00073173,
+          257895.75779686, 259993.33547592, 260602.00800078,
+          260149.10296641, 257212.3580542 , 257631.61383194,
+          254286.11152494, 255092.39072531, 254545.8067804 ,
+          255151.83171143, 257499.98656586, 256611.53536911,
+          255683.13534195, 254736.73236757, 252190.21072993,
+          253970.26059462, 252269.61825319, 252800.14070753,
+          255611.66613366, 254355.65167621, 254129.68477998,
+          250953.31118058, 250108.17058051, 249943.99401738,
+          251147.67109741, 251257.99096285, 253297.0812552 ,
+          253108.22634668, 250681.95107762, 249524.86239119,
+          248429.76695664, 248210.74077153, 248241.56396983,
+          248715.34518952, 250756.62618179, 249638.517099  ,
+          249769.76157451, 247981.81168785, 246988.34235658,
+          246853.08183452, 246955.35894361, 246910.69948259,
+          249840.27039229, 249491.68417722, 248644.55307821,
+          246056.12818751, 244409.22734769, 243992.86105374,
+          246432.01309452, 247195.11886423, 248046.84257923,
+          246693.85420083, 245903.30772069, 244959.24984366,
+          243437.84384335, 242898.33643052, 243132.1851069 ,
+          243643.67159255, 247744.76994072, 245741.70098326,
+          244091.19488679, 242491.37297925, 241629.19362183,
+          241265.48146469, 241787.38187571, 242513.47110216,
+          244453.96602343, 244231.61159529, 243510.84604629,
+          241528.29040965, 240977.41983366, 241917.49394816,
+          240922.14766327, 242147.57766516, 245270.51706842,
+          245276.8029714 , 242714.34540421, 241917.77986436,
+          240240.35535652, 238624.88106518, 240549.76186244,
+          241380.48735165, 243841.0512303 , 243352.28953409,
+          243288.93563075, 240847.27017885, 240620.86266035,
+          240009.10393566, 240625.2894558 , 241633.13582095,
+          243398.44758381, 243655.8532318 , 240739.1091669 ,
+          240531.78089976, 240779.55805864, 239616.41530674,
+          239499.10915154, 240852.12127252, 243405.74156604,
+          242724.18032668, 242671.39063991, 241012.90457806,
+          240697.69882611, 241060.87466106, 241834.31413499,
+          243143.4719871 , 244361.99801852, 245069.6032021 ,
+          244039.19839036, 242473.74678213, 241336.59959346,
+          241544.51408729, 242356.72870413, 243861.60266395,
+          245451.23037308, 245805.17964938, 246329.62614738,
+          244938.06202062, 243618.32991723, 243917.62554731,
+          243453.61967728, 245363.22941554, 248117.69500671,
+          247081.43724886, 247246.10217055, 245058.95158808,
+          243866.7473607 , 243732.90473621, 245368.38307611,
+          245587.3344492 , 247485.57219837, 248150.55597776,
+          246604.99980105, 247144.29725676, 245447.50343438,
+          247050.25107995, 246186.1413453 , 247580.89340794,
+          250338.62559314, 250133.34556851, 250322.520337  ,
+          248713.18948622, 246894.32434261, 247791.62754018,
+          248092.08880347, 249008.0511977 , 251821.64735005,
+          251725.8414893 , 251095.67049703, 250962.23975693,
+          249979.24365598, 250134.49806769, 251320.16153551,
+          253198.67490779, 254513.94929598, 253674.39668258,
+          253667.51135291, 252786.68899132, 251903.6554603 ,
+          251584.04520816, 252297.58822368, 254352.1447094 ,
+          255598.70463486, 255557.01208959, 255408.50669765,
+          254976.63897891, 252521.77464402, 253721.37759062,
+          253972.21619024, 256107.81430472, 257671.71755818,
+          258488.35059138, 257169.72699457, 256934.99991321,
+          256356.2609489 , 255816.53979393, 256590.48675309,
+          258142.32405848, 260861.7603182 , 260386.04141856,
+          261810.12367574, 258178.13300615, 258533.65288898,
+          259883.34873375, 259605.07129174, 260991.53467383,
+          263437.26215921, 263806.14187896, 262557.95956616,
+          261986.74153491, 262175.76170003, 260492.18387095,
+          260622.06232685, 262455.32710839, 267465.66430802,
+          265750.54498298, 265191.99133896, 264004.41789785,
+          263911.68257302, 262595.57792245, 263154.28348971,
+          265399.30390355, 267564.99036928, 267537.63493277,
+          268186.48871512, 265808.32563075, 265203.46927005,
+          266238.12565805, 267089.88222562, 267978.07923736,
+          271035.08545128, 269751.48276549, 270717.86481134,
+          267917.39193864, 268773.9996838 , 266927.09475687,
+          269417.31659982, 270822.07433464, 273763.61995584,
+          273752.94815457, 273120.36100157, 272765.46521474,
+          272196.17693119, 272376.84389063, 272831.17180831,
+          274914.75401238, 277055.92170185, 276736.29075044,
+          276250.99072785, 275965.7884337 , 274509.52621634,
+          273553.97092077, 275755.53085985, 277593.47346009,
+          279414.03742292, 279310.69586866, 278678.45419096,
+          277843.00078033, 277432.92024172, 276583.09281106,
+          278964.92212449, 279059.61130982, 281778.42161192,
+          280704.42101034, 280195.75080109, 278772.24512985,
+          278182.17534239, 277772.07221106, 279504.04285722,
+          280748.65297043, 284102.04580949, 283651.99861963,
+          282682.60967707, 281938.93913819, 280970.02237627,
+          281467.81168751, 283411.99285152, 282784.41114065,
+          285595.58690887, 285604.89678316, 285767.08614135,
+          285031.50094367, 283700.00295316, 283257.91194131,
+          285835.07548464, 286751.02990084, 288784.88041826,
+          287597.12919324, 287929.94867827, 286472.18562365,
+          285792.94908667, 286286.34225063, 286062.13914327,
+          286904.66609774, 291042.29590434, 291164.12552024,
+          289231.0598465 , 288453.83995373, 287433.48405995,
+          288006.91815132, 288917.62232376, 291219.13108602,
+          293760.90630173, 291666.15259281, 292103.92881621,
+          290177.99259723, 289040.81890049, 289035.93858812,
+          289642.26254702, 291846.61393391, 293829.95723338,
+          293135.47439149, 292160.12488183, 290394.62701279,
+          290522.18667657, 289956.74743331, 289923.9446107 ,
+          291062.59285451, 295023.48427908, 294387.10258232,
+          293052.69521577, 292064.87333803, 291075.25262563,
+          291290.04772477, 291187.45586492, 293159.53684168,
+          295559.36131772, 293286.64547499, 293335.0680913 ,
+          291676.83341001, 292295.9259384 , 292523.14296266,
+          292686.94208271, 293968.25675905, 297240.98792118,
+          296927.18880582, 294950.2039196 , 292854.2243298 ,
+          292022.34960072, 290618.2534411 , 293467.2120376 ,
+          293124.25787572, 294994.86089255, 293725.83429614,
+          294488.06858321, 292532.56981107, 290427.9814947 ,
+          291230.71912288, 291054.50844136, 294246.16386224,
+          296198.58428897, 295539.44296609, 293885.06769207,
+          292416.25862718, 291329.31776194, 292191.59159469,
+          291078.86240716, 292827.65288742, 294594.04186547,
+          294328.95711104, 293718.32006387, 292033.92178309,
+          291180.15892168, 289363.83881288, 290884.88438331,
+          291985.72125929, 294266.03120481, 292479.33494781,
+          292362.41972492, 289941.08579483, 288936.28146081,
+          289446.92780505, 288138.90776298, 289968.13609151,
+          292159.4581403 , 290443.51752021, 289698.74299817,
+          286420.97431123, 285617.44271904, 286460.2850585 ,
+          286492.20222478, 290419.95773804, 291551.48187118,
+          289470.30773532, 288715.26334657, 288107.54593133,
+          285018.55407197, 283799.26688353, 285679.00416837,
+          285352.96851352, 287458.70437404, 285775.50371869,
+          284434.0593735 , 284423.38832749, 282708.24667825,
+          282686.58857325, 283018.91012811, 284335.61791166,
+          285893.71952187, 284733.21734947, 284230.15215263,
+          281313.05516751, 279758.07986802, 278929.0148887 ,
+          279249.34020891, 280021.47106144, 281083.11488798,
+          281916.97060932, 279970.48823719, 279024.95861389,
+          277185.73986392, 277330.68387115, 277087.5297984 ,
+          277532.21271622, 278973.85504943, 278009.73566197,
+          277687.12236116, 275117.42554033, 273889.14449959,
+          273509.17686167, 273425.01831437, 274148.10622371,
+          276437.85699741, 274280.2485004 , 275102.1239981 ,
+          272675.37135827, 271919.38720197, 271877.63833798,
+          271603.42031563, 272483.84334348, 274247.30764739,
+          273235.91911943, 272204.73415214, 271080.31504627,
+          268810.55164283, 268749.96415729, 268246.06199848,
+          268543.43348847, 271792.8941029 , 269294.20344001,
+          269808.83952668, 268013.75193934, 266140.41522495,
+          265633.56763515, 266177.60156114, 267059.61932874,
+          268934.46089885, 266675.11613618, 266153.14919628,
+          264998.97251063, 264731.07474361, 263532.61760334,
+          264063.95462923, 264956.12627868, 266769.02255909,
+          265419.59137015, 264377.27571727, 261563.08659527,
+          260339.06200851, 260583.41682111, 260425.17243184,
+          261204.99488979, 263485.74374812, 261366.2958551 ,
+          262655.80023075, 259870.83678302, 258940.90863138,
+          257744.60062489, 257940.9902248 , 257539.06648204,
+          260973.48974831, 259384.92883566, 257737.03308868,
+          256503.02734672, 256194.52265393, 254871.24168421,
+          254785.31250939, 257101.9807366 , 257634.17937242,
+          256460.16970901, 255560.31917192, 253174.76886535,
+          252686.51086461, 252728.30754237, 252737.80954628,
+          253472.54262117, 256207.73149374, 254173.15847353,
+          254047.4601617 , 253194.27394945, 250577.01831354,
+          251006.00792443, 251750.65800976, 251331.10855463,
+          253136.55137475, 253435.50051688, 252061.71570294,
+          249725.82630754, 248678.03567284, 247261.01477883,
+          248789.17714194, 249328.37152164, 252281.96865662,
+          251140.31869904, 250670.1133578 , 248192.44428885,
+          247715.34296674, 246892.13074892, 246222.46142567,
+          246535.79136699, 249368.96636651, 248293.14224987,
+          248696.72686178, 246533.01505594, 245428.79915315,
+          244918.00745978, 244735.80231393, 246094.84951265,
+          247947.21693722, 245973.84459688, 246958.1507594 ,
+          244357.71355147, 243620.12672625, 242554.2225732 ,
+          243429.21472675, 244602.02173722, 247115.38792202,
+          245442.63569644, 245339.82267754, 244161.31594453,
+          242421.63889045, 241149.58976352, 241463.96935636,
+          243257.63307983, 245451.3790353 , 244396.49401421,
+          244970.68354822, 242491.47032382, 241169.91646101,
+          240600.9514851 , 241727.23297734, 242437.84731572,
+          245095.34849019, 243583.32202141, 243495.94251747,
+          240559.16227374, 242582.63898513, 239065.82704565,
+          241326.35277414, 242386.28227322, 243854.93611121,
+          242012.98927839, 243018.43992149, 240644.20138817,
+          240170.82594419, 240491.25661301, 241796.90502712,
+          242356.23442275, 243926.15079265, 243196.07435095,
+          243167.48958368, 240885.55287784, 240120.41031793,
+          240046.72097692, 241671.06251082, 241641.0469251 ,
+          243924.03948109, 243396.94775814, 243614.52239065,
+          241429.47136863, 241066.27980953, 239520.6743201 ,
+          241235.62235804, 241617.90152491, 244534.57025769,
+          243635.46489483, 243206.87443035, 241429.11190512,
+          241636.17611237, 241005.29847715, 243356.94904322,
+          243309.23606079, 247437.38961429, 245235.56232617,
+          244165.52786515, 243275.66398492, 242418.51317098,
+          242691.89752567, 243717.96008922, 243382.47203185,
+          247090.01853844, 245732.77906028, 246042.65418614,
+          244842.13994946, 243658.47610828, 244040.10493811,
+          244746.09332796, 245286.43405118, 248391.96019516,
+          247547.13074787, 247064.5100411 , 246009.54394524,
+          246487.07480116, 244678.88320614, 246659.01465861,
+          246427.07528689, 250440.86116621, 249092.06236547,
+          250028.54110102, 248279.62202686, 248777.87810549,
+          248053.75194827, 247726.19676985, 247847.47955814,
+          251031.44551959, 251334.0051085 , 251779.00411997,
+          249431.93236402, 250267.80373176, 250020.58165351,
+          251367.36748776, 251356.73522123, 254342.08764185,
+          253500.839158  , 253088.93116451, 251971.54325305,
+          252033.33470653, 250489.03472968, 252299.84904864,
+          253210.57903586, 255378.18844283, 253990.55492595,
+          256639.25211077, 253765.66182512, 253022.74264621,
+          253584.41636433, 255442.37382261, 255662.87758336,
+          259645.41597879, 257970.38535088, 258014.13307152,
+          255023.77583075, 256300.15488142, 255819.10901299,
+          256661.1963135 , 258341.65215897, 260909.24931523,
+          260205.93544597, 260132.75784092, 259613.66457117,
+          259921.69889144, 259129.85961841, 260473.98418478,
+          260557.33014765, 262758.61023466, 264300.28993981,
+          263285.71295367, 261989.31033238, 261306.02377256,
+          260761.27669978, 261638.06606846, 262428.96351746,
+          265007.73111039, 266206.04131212, 264978.45478644,
+          263091.62535131, 263717.61315192, 264304.35584207,
+          265299.81575527, 265181.47307926, 268145.21845182,
+          267716.6972019 , 267175.41503076, 264849.43982842,
+          265294.60590035, 266827.60090962, 266728.79008353,
+          268255.80792282, 271435.13269593, 270669.1173105 ,
+          270590.13139375, 267997.93235569, 268913.2459071 ,
+          267954.42009631, 269100.44071822, 270946.030485  ,
+          273329.5720528 , 273234.37987023, 272382.62939431,
+          271290.64618464, 270020.3629355 , 271132.8634253 ,
+          274505.05785385, 273769.83693461, 276336.12614714,
+          275401.56546624, 275230.81631871, 273230.33472441,
+          274217.02977796, 272883.81233902, 274689.90755842,
+          275844.59203167, 277715.55851912, 277820.8523315 ,
+          277628.53291514, 276902.66207827, 275812.49844136,
+          276158.52587364, 278289.15395676, 278425.18140535,
+          281234.46966056, 280596.32305808, 280050.08051567,
+          278353.74069715, 279073.37921596, 278476.59077304,
+          279141.70010757, 281007.73517473, 284588.77010888,
+          283155.94106208, 282289.74464365, 280596.50578612,
+          280988.98274373, 281268.48832398, 282065.37997258,
+          281703.27915282, 285678.56351725, 283933.14262591,
+          285253.34429522, 282628.68847717, 283303.69521888,
+          281649.4478328 , 284338.9748832 , 285228.51675817,
+          287836.5274525 , 287048.70290557, 287189.46122819,
+          285118.89818728, 285546.4080832 , 283960.9802132 ,
+          285664.60477122, 287299.48492888, 290499.30865506,
+          288584.31518067, 289560.1580368 , 287739.49753298,
+          287358.4110785 , 286244.21594282, 288881.10695601,
+          289140.61536198, 292661.11049206, 291734.52619803,
+          291621.77562542, 290741.97907516, 288645.27383494,
+          288908.91525194, 289279.00299694, 290230.33050849,
+          293355.75789239, 291402.585151  , 291874.57862463,
+          289881.22532755, 289438.27230504, 291191.44533081,
+          290810.1272351 , 290999.76538094, 293821.185648  ,
+          292900.53004046, 291376.13674137, 291486.65838436,
+          290749.70877949, 290410.70235417, 291693.05441766,
+          292150.01404296, 295374.01692112, 293645.64836072,
+          293301.79870492, 291977.26220339, 291646.93261128,
+          291226.47289634, 292062.07254144, 292418.20966752,
+          295005.47974132, 294465.23309499, 293639.32226168,
+          292398.23877407, 291136.06323196, 291261.30448125,
+          292008.33400807, 292824.61747927, 294705.22941787,
+          294664.09386429, 293754.79354534, 290403.27451552,
+          291638.01516317, 290408.22615178, 292354.95667083,
+          292874.11671383, 295531.56519585, 295003.87467268,
+          293173.84123536, 290654.4392937 , 291280.44693668,
+          290715.55968787, 291449.63024639, 292283.360461  ,
+          295152.44345853, 293872.81750374, 292557.91241535,
+          291570.64823638, 288489.93799099, 289764.52734863,
+          289693.45436042, 290549.05896141, 292671.3215029 ,
+          291350.50081661, 290633.87435919, 288517.91363164,
+          288405.490873  , 287413.64004913, 288859.17623576,
+          288360.61267906, 290557.51258854, 290294.0583253 ,
+          288153.0677041 , 286752.23905925, 285916.50191868,
+          285867.51299468, 286600.09704445, 285868.14455146,
+          290400.62771941, 287391.55580874, 287648.42382255,
+          286639.99937731, 285161.73284011, 284088.4281241 ,
+          285966.90587525, 285561.26211984, 288548.11393314,
+          288156.84822197, 287329.15410969, 286702.33200801,
+          286807.91800535, 287745.59936371, 291675.86540977,
+          294609.96557675]]),
+  &#39;YrA&#39;: array([[ 4.28236334e+02, -1.96119384e+02,  3.97484320e+02, ...,
+          -1.83309797e+02, -5.66984917e+02, -1.01001493e+03],
+         [ 2.80412095e+01, -6.74601130e+02, -1.25757994e+02, ...,
+           2.22218954e+00,  1.77253758e+03, -3.67446602e+02],
+         [ 6.27686998e+02, -4.32215061e+02,  1.17634686e+02, ...,
+           1.21671695e+02,  1.05557423e+03,  1.68419622e+02],
+         ...,
+         [-5.75367872e+02,  2.13559406e+02,  8.13255123e+02, ...,
+          -5.55057452e+02, -1.27847917e+03, -7.44649231e+02],
+         [ 3.43928162e+01, -1.16346670e+03, -6.25418700e+02, ...,
+          -8.70077094e+02, -1.70777994e+03, -9.88608843e+02],
+         [-5.13444303e+02, -6.10381435e+02, -5.92469499e+02, ...,
+          -1.67226931e+03, -1.33673630e+03, -2.35727838e+03]],
+        shape=(6959, 1000)),
+  &#39;idx_components&#39;: array([6950, 6954]),
+  &#39;idx_components_bad&#39;: array([   0,    1,    2, ..., 6956, 6957, 6958], shape=(6957,)),
+  &#39;SNR_comp&#39;: array([0.96702493, 0.96589984, 0.86006258, ..., 1.45690474, 1.65440808,
+         1.63032267], shape=(6959,)),
+  &#39;r_values&#39;: array([0.27034503, 0.34674267, 0.41940096, ..., 0.27580924, 0.27092627,
+         0.27802669], shape=(6959,))},
+ &#39;F&#39;: array([[ -218.84537401,  -223.24450217,  -118.73662399, ...,
+          -298.04955847,  -298.50158478,  -298.93108913],
+        [ -322.21144956,  -322.21144956,  -322.21144956, ...,
+          -321.48122504,  -321.51787665,  -321.5526972 ],
+        [  826.12704164,   727.78184992,   888.302574  , ...,
+           913.80623082,   808.9067067 ,   711.84885649],
+        ...,
+        [ -360.05908203,  -163.8645315 ,  -232.80517616, ...,
+         -1787.73535156, -1788.84106445, -1789.90063477],
+        [ 1300.05639648,  1161.56692092,  1028.87378752, ...,
+         -1956.79003906, -1958.96191406, -1961.04284668],
+        [  235.36621094,   121.40516663,    12.1980438 , ...,
+         -2459.61621094, -2461.16088867, -2462.64111328]],
+       shape=(6959, 1000)),
+ &#39;dff&#39;: array([[-2.18845375e+08, -2.23244503e+08, -1.18736625e+08, ...,
+         -2.98049559e+08, -2.98501586e+08, -2.98931090e+08],
+        [-3.22211451e+08, -3.22211451e+08, -3.22211451e+08, ...,
+         -3.21481226e+08, -3.21517878e+08, -3.21552698e+08],
+        [ 2.41214443e+00,  2.00595025e+00,  2.66894742e+00, ...,
+          1.17115817e+00,  9.21922112e-01,  6.91317486e-01],
+        ...,
+        [-3.60059083e+08, -1.63864533e+08, -2.32805177e+08, ...,
+         -1.78773535e+09, -1.78884107e+09, -1.78990064e+09],
+        [ 1.30005640e+09,  1.16156692e+09,  1.02887379e+09, ...,
+         -1.95679004e+09, -1.95896192e+09, -1.96104285e+09],
+        [ 2.35366210e+08,  1.21405166e+08,  1.21980428e+07, ...,
+         -2.45961621e+09, -2.46116089e+09, -2.46264111e+09]],
+       shape=(6959, 1000)),
+ &#39;spks&#39;: array([[ 0.00000000e+00,  0.00000000e+00,  1.08687786e+02, ...,
+          0.00000000e+00,  0.00000000e+00,  0.00000000e+00],
+        [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00, ...,
+          0.00000000e+00,  0.00000000e+00,  0.00000000e+00],
+        [ 0.00000000e+00,  0.00000000e+00,  2.51514253e+02, ...,
+         -1.22070299e-04,  0.00000000e+00,  0.00000000e+00],
+        ...,
+        [ 0.00000000e+00,  2.56939453e+02,  0.00000000e+00, ...,
+          0.00000000e+00, -1.90734863e-06,  1.90734863e-06],
+        [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00, ...,
+          0.00000000e+00, -3.81469727e-06,  3.81469727e-06],
+        [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00, ...,
+         -3.81469727e-06,  0.00000000e+00,  3.81469727e-06]],
+       shape=(6959, 1000))}
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ops_data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;ops&quot;</span><span class="p">]</span>
+<span class="n">estimates_dict</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;estimates&quot;</span><span class="p">]</span>
+
+<span class="n">A</span> <span class="o">=</span> <span class="n">estimates_dict</span><span class="p">[</span><span class="s2">&quot;A&quot;</span><span class="p">]</span>
+<span class="n">C</span> <span class="o">=</span> <span class="n">estimates_dict</span><span class="p">[</span><span class="s2">&quot;C&quot;</span><span class="p">]</span>
+<span class="n">Ly</span> <span class="o">=</span> <span class="n">ops_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Ly&quot;</span><span class="p">,</span> <span class="mi">1002</span><span class="p">)</span>
+<span class="n">Lx</span> <span class="o">=</span> <span class="n">ops_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Lx&quot;</span><span class="p">,</span> <span class="mi">725</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Raw components: </span><span class="si">{</span><span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;FOV: </span><span class="si">{</span><span class="n">Ly</span><span class="si">}</span><span class="s2"> x </span><span class="si">{</span><span class="n">Lx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># reconstruct caiman Estimates object</span>
+<span class="n">est</span> <span class="o">=</span> <span class="n">Estimates</span><span class="p">(</span><span class="n">A</span><span class="o">=</span><span class="n">A</span><span class="p">,</span> <span class="n">C</span><span class="o">=</span><span class="n">C</span><span class="p">,</span>
+                <span class="n">b</span><span class="o">=</span><span class="n">estimates_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;b&quot;</span><span class="p">),</span>
+                <span class="n">f</span><span class="o">=</span><span class="n">estimates_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;f&quot;</span><span class="p">))</span>
+<span class="k">if</span> <span class="n">estimates_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;S&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">est</span><span class="o">.</span><span class="n">S</span> <span class="o">=</span> <span class="n">estimates_dict</span><span class="p">[</span><span class="s2">&quot;S&quot;</span><span class="p">]</span>
+<span class="k">if</span> <span class="n">estimates_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;YrA&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">est</span><span class="o">.</span><span class="n">YrA</span> <span class="o">=</span> <span class="n">estimates_dict</span><span class="p">[</span><span class="s2">&quot;YrA&quot;</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Estimates object reconstructed.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Raw components: 6959
+FOV: 448 x 448
+Estimates object reconstructed.
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># create or reuse caiman-format mmap from movie</span>
+<span class="n">raw</span> <span class="o">=</span> <span class="n">imread</span><span class="p">(</span><span class="n">input_path</span><span class="p">)</span>
+<span class="n">movie</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">raw</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:])</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+<span class="n">T</span><span class="p">,</span> <span class="n">d1</span><span class="p">,</span> <span class="n">d2</span> <span class="o">=</span> <span class="n">movie</span><span class="o">.</span><span class="n">shape</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Movie: </span><span class="si">{</span><span class="n">movie</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">mmap_path</span> <span class="o">=</span> <span class="n">plane_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;Yr_d1_</span><span class="si">{</span><span class="n">d1</span><span class="si">}</span><span class="s2">_d2_</span><span class="si">{</span><span class="n">d2</span><span class="si">}</span><span class="s2">_d3_1_order_C_frames_</span><span class="si">{</span><span class="n">T</span><span class="si">}</span><span class="s2">_.mmap&quot;</span>
+
+<span class="k">if</span> <span class="ow">not</span> <span class="n">mmap_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Writing mmap...&quot;</span><span class="p">)</span>
+    <span class="n">fp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">memmap</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">mmap_path</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w+&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+                   <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">d1</span> <span class="o">*</span> <span class="n">d2</span><span class="p">,</span> <span class="n">T</span><span class="p">),</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;F&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
+        <span class="n">fp</span><span class="p">[:,</span> <span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">movie</span><span class="p">[</span><span class="n">t</span><span class="p">]</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="s1">&#39;F&#39;</span><span class="p">)</span>
+    <span class="k">del</span> <span class="n">fp</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created: </span><span class="si">{</span><span class="n">mmap_path</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Reusing: </span><span class="si">{</span><span class="n">mmap_path</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">Yr</span><span class="p">,</span> <span class="n">dims</span><span class="p">,</span> <span class="n">T_mm</span> <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">load_memmap</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">mmap_path</span><span class="p">))</span>
+<span class="n">images</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">Yr</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="p">[</span><span class="n">T_mm</span><span class="p">]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">dims</span><span class="p">),</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;F&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Memmap: shape=</span><span class="si">{</span><span class="n">images</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">, type=</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">images</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Movie: (1000, 448, 448)
+Writing mmap...
+Created: Yr_d1_448_d2_448_d3_1_order_C_frames_1000_.mmap
+Memmap: shape=(1000, 448, 448), type=memmap
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># run evaluate_components to compute per-component metrics.</span>
+<span class="c1"># thresholds are kept low here — actual filtering uses AND logic below.</span>
+<span class="c1"># caiman&#39;s built-in uses OR logic (good rval OR good SNR → accept)</span>
+<span class="c1"># which is too permissive for dense data.</span>
+<span class="n">params</span> <span class="o">=</span> <span class="n">CNMFParams</span><span class="p">()</span>
+<span class="n">params</span><span class="o">.</span><span class="n">quality</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+    <span class="s1">&#39;use_cnn&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s1">&#39;min_SNR&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="s1">&#39;rval_thr&#39;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span>
+    <span class="s1">&#39;rval_lowest&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+    <span class="s1">&#39;min_SNR_reject&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+<span class="p">})</span>
+<span class="n">params</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;decay_time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.7</span>
+<span class="n">params</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;fr&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ops_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;fr&quot;</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">)</span>
+<span class="n">params</span><span class="o">.</span><span class="n">init</span><span class="p">[</span><span class="s1">&#39;gSig&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Running evaluate_components...&quot;</span><span class="p">)</span>
+<span class="n">est</span><span class="o">.</span><span class="n">evaluate_components</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">dview</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;r_values: median=</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">est</span><span class="o">.</span><span class="n">r_values</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">, &quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;range=[</span><span class="si">{</span><span class="n">est</span><span class="o">.</span><span class="n">r_values</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">est</span><span class="o">.</span><span class="n">r_values</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;SNR_comp: median=</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">est</span><span class="o">.</span><span class="n">SNR_comp</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">, &quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;range=[</span><span class="si">{</span><span class="n">est</span><span class="o">.</span><span class="n">SNR_comp</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">est</span><span class="o">.</span><span class="n">SNR_comp</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;CaImAn default (OR logic): </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">est</span><span class="o">.</span><span class="n">idx_components</span><span class="p">)</span><span class="si">}</span><span class="s2"> accepted&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="filter-and-visualize">
+<h2>5. Filter and visualize<a class="headerlink" href="#filter-and-visualize" title="Link to this heading">#</a></h2>
+<p>strict AND filtering: a component must pass ALL of:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">r_values</span> <span class="pre">&gt;=</span> <span class="pre">rval_min</span></code> (spatial correlation with movie)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SNR_comp</span> <span class="pre">&gt;=</span> <span class="pre">snr_min</span></code> (signal-to-noise ratio)</p></li>
+<li><p>pixel area within <code class="docutils literal notranslate"><span class="pre">mn_um</span></code> to <code class="docutils literal notranslate"><span class="pre">mx_um</span></code> µm diameter (converted via pixel size)</p></li>
+</ul>
+<p>adjust thresholds and re-run this cell to tune.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># --- thresholds (adjust and re-run this cell) ---</span>
+<span class="n">rval_min</span> <span class="o">=</span> <span class="mf">0.8</span>
+<span class="n">snr_min</span> <span class="o">=</span> <span class="mf">3.0</span>
+<span class="n">mn_um</span><span class="p">,</span> <span class="n">mx_um</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span>  <span class="c1"># neuron diameter range in µm</span>
+
+<span class="c1"># convert µm to pixel area</span>
+<span class="n">dx</span> <span class="o">=</span> <span class="n">meta</span><span class="p">[</span><span class="s2">&quot;dx&quot;</span><span class="p">]</span>
+<span class="n">mn_px</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="p">(</span><span class="n">mn_um</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">dx</span><span class="p">))</span> <span class="o">**</span> <span class="mi">2</span>
+<span class="n">mx_px</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="p">(</span><span class="n">mx_um</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">dx</span><span class="p">))</span> <span class="o">**</span> <span class="mi">2</span>
+
+<span class="c1"># component sizes from sparse A</span>
+<span class="n">sizes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">((</span><span class="n">A</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+
+<span class="n">good</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="p">(</span><span class="n">est</span><span class="o">.</span><span class="n">r_values</span> <span class="o">&gt;=</span> <span class="n">rval_min</span><span class="p">)</span> <span class="o">&amp;</span>
+    <span class="p">(</span><span class="n">est</span><span class="o">.</span><span class="n">SNR_comp</span> <span class="o">&gt;=</span> <span class="n">snr_min</span><span class="p">)</span> <span class="o">&amp;</span>
+    <span class="p">(</span><span class="n">sizes</span> <span class="o">&gt;=</span> <span class="n">mn_px</span><span class="p">)</span> <span class="o">&amp;</span>
+    <span class="p">(</span><span class="n">sizes</span> <span class="o">&lt;=</span> <span class="n">mx_px</span><span class="p">)</span>
+<span class="p">)</span>
+<span class="n">idx_good</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">good</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">n_pixels</span> <span class="o">=</span> <span class="n">Ly</span> <span class="o">*</span> <span class="n">Lx</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Pixel size: </span><span class="si">{</span><span class="n">dx</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> µm/px&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Size: </span><span class="si">{</span><span class="n">mn_um</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">mx_um</span><span class="si">}</span><span class="s2"> µm → </span><span class="si">{</span><span class="n">mn_px</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">mx_px</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> px&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;rval_min=</span><span class="si">{</span><span class="n">rval_min</span><span class="si">}</span><span class="s2">, snr_min=</span><span class="si">{</span><span class="n">snr_min</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;AND filtering: </span><span class="si">{</span><span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> → </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">idx_good</span><span class="p">)</span><span class="si">}</span><span class="s2"> components&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  rval &gt;= </span><span class="si">{</span><span class="n">rval_min</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="p">(</span><span class="n">est</span><span class="o">.</span><span class="n">r_values</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">rval_min</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  SNR  &gt;= </span><span class="si">{</span><span class="n">snr_min</span><span class="si">}</span><span class="s2">:  </span><span class="si">{</span><span class="p">(</span><span class="n">est</span><span class="o">.</span><span class="n">SNR_comp</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">snr_min</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  size </span><span class="si">{</span><span class="n">mn_px</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">mx_px</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> px: </span><span class="si">{</span><span class="p">((</span><span class="n">sizes</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">mn_px</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">sizes</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">mx_px</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  ALL:         </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">idx_good</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># spatial footprint maps</span>
+<span class="n">A_good</span> <span class="o">=</span> <span class="n">A</span><span class="p">[:,</span> <span class="n">idx_good</span><span class="p">]</span>
+<span class="n">footprint</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">A_good</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">todense</span><span class="p">())</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">Ly</span><span class="p">,</span> <span class="n">Lx</span><span class="p">),</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
+<span class="n">comp_ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">A_good</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">Ly</span><span class="p">,</span> <span class="n">Lx</span><span class="p">),</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
+<span class="n">mask</span> <span class="o">=</span> <span class="n">footprint</span> <span class="o">&gt;</span> <span class="mi">0</span>
+<span class="n">cell_map</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">comp_ids</span> <span class="o">%</span> <span class="mi">20</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">footprint</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;hot&quot;</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;max projection — </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">idx_good</span><span class="p">)</span><span class="si">}</span><span class="s2"> accepted&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;off&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">cell_map</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;tab20&quot;</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s2">&quot;nearest&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;cell map — </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">idx_good</span><span class="p">)</span><span class="si">}</span><span class="s2"> accepted&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;off&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Coverage: </span><span class="si">{</span><span class="n">mask</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">}</span><span class="s2"> / </span><span class="si">{</span><span class="n">n_pixels</span><span class="si">}</span><span class="s2"> pixels (</span><span class="si">{</span><span class="mi">100</span><span class="o">*</span><span class="n">mask</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">/</span><span class="n">n_pixels</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%)&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># metric distributions with threshold lines</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">est</span><span class="o">.</span><span class="n">r_values</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">rval_min</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;rval_min=</span><span class="si">{</span><span class="n">rval_min</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;r_values&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;spatial correlation&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">est</span><span class="o">.</span><span class="n">SNR_comp</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">30</span><span class="p">),</span> <span class="n">bins</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">snr_min</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;snr_min=</span><span class="si">{</span><span class="n">snr_min</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;SNR_comp&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;signal-to-noise&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">sizes</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">500</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">mn_px</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mn_um</span><span class="si">}</span><span class="s2">µm=</span><span class="si">{</span><span class="n">mn_px</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">px&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">mx_px</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mx_um</span><span class="si">}</span><span class="s2">µm=</span><span class="si">{</span><span class="n">mx_px</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">px&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;size (pixels)&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;component size&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># sample traces from top accepted components</span>
+<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">idx_good</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="n">snr_good</span> <span class="o">=</span> <span class="n">est</span><span class="o">.</span><span class="n">SNR_comp</span><span class="p">[</span><span class="n">idx_good</span><span class="p">]</span>
+    <span class="n">n_show</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">idx_good</span><span class="p">))</span>
+    <span class="n">top_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">snr_good</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">][:</span><span class="n">n_show</span><span class="p">]</span>
+
+    <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">n_show</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">n_show</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">n_show</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">axes</span> <span class="o">=</span> <span class="p">[</span><span class="n">axes</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ax</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">axes</span><span class="p">):</span>
+        <span class="n">ci</span> <span class="o">=</span> <span class="n">top_idx</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">gi</span> <span class="o">=</span> <span class="n">idx_good</span><span class="p">[</span><span class="n">ci</span><span class="p">]</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">C</span><span class="p">[</span><span class="n">gi</span><span class="p">],</span> <span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;SNR=</span><span class="si">{</span><span class="n">snr_good</span><span class="p">[</span><span class="n">ci</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="se">\n</span><span class="s2">r=</span><span class="si">{</span><span class="n">est</span><span class="o">.</span><span class="n">r_values</span><span class="p">[</span><span class="n">gi</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">spines</span><span class="p">[</span><span class="s2">&quot;top&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">spines</span><span class="p">[</span><span class="s2">&quot;right&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="n">axes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Frame&quot;</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Top </span><span class="si">{</span><span class="n">n_show</span><span class="si">}</span><span class="s2"> accepted components (by SNR)&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#load-data">1. Load data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configure-parameters">2. Configure parameters</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#run-pipeline">3. Run pipeline</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#component-evaluation-on-existing-results">4. Component evaluation on existing results</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#filter-and-visualize">5. Filter and visualize</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Author name not set
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, Elizabeth R. Miller Brain Observatory | The Rockefeller University. All Rights Reserved.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
