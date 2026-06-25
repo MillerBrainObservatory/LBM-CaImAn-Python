@@ -262,12 +262,26 @@ def _local_correlations(images):
 
 
 def _convert_mmap_to_bin(mmap_path: Path, bin_path: Path) -> tuple[int, int, int]:
-    """Convert a CaImAn (Lx*Ly, T) F-order float32 mmap to a suite2p
+    """Convert a CaImAn motion-correction output mmap to a suite2p
     ``(T, Ly, Lx)`` C-order int16 binary. Returns ``(T, Ly, Lx)``.
+
+    The motion-correction output filename is compound — our ``order_C`` input
+    prefix plus caiman's own ``_els_/_rig_ ... order_F`` suffix. caiman's
+    ``load_memmap`` keeps the *first* ``order`` tag it sees (our ``order_C``)
+    and returns a C-order view that scrambles the F-order data into static, so
+    parse the real (last) order tag ourselves and map the buffer accordingly.
     """
     import caiman as cm
-    Yr, dims, T = cm.load_memmap(str(mmap_path))
+    _, dims, T = cm.load_memmap(str(mmap_path))
     Ly, Lx = int(dims[0]), int(dims[1])
+    parts = mmap_path.stem.split("_")
+    order = "C"
+    for i in range(len(parts) - 1, -1, -1):
+        if parts[i] == "order" and i + 1 < len(parts):
+            order = parts[i + 1]
+            break
+    Yr = np.memmap(str(mmap_path), dtype=np.float32, mode="r",
+                   shape=(Ly * Lx, T), order=order)
     images = np.reshape(Yr.T, [T, Ly, Lx], order="F")
     out = np.clip(images, np.iinfo(np.int16).min, np.iinfo(np.int16).max)
     out.astype(np.int16).tofile(str(bin_path))
@@ -279,12 +293,16 @@ def _ensure_caiman_mmap(plane_dir: Path, data_bin: Path, T: int, Ly: int, Lx: in
     a registered ``data.bin``. The caller is responsible for deleting it
     after CNMF if storage matters.
     """
+    # caiman CNMF requires a C-order memmap, and load_memmap reinterprets the
+    # buffer using the order tag in the filename. The buffer layout, the tag,
+    # and CNMF's expectation must all be C; writing F bytes under an order_C
+    # tag (the original bug) reinterprets the buffer and scrambles every frame.
     mmap_path = plane_dir / f"Yr_d1_{Ly}_d2_{Lx}_d3_1_order_C_frames_{T}_.mmap"
     if mmap_path.exists():
         return mmap_path
     src = np.memmap(str(data_bin), dtype=np.int16, mode="r", shape=(T, Ly, Lx))
     fp = np.memmap(str(mmap_path), mode="w+", dtype=np.float32,
-                   shape=(Ly * Lx, T), order="F")
+                   shape=(Ly * Lx, T), order="C")
     for t in range(T):
         fp[:, t] = src[t].ravel(order="F").astype(np.float32)
     del fp
@@ -686,14 +704,23 @@ def run_plane(
     Ly = int(ops.get("Ly", 0))
     Lx = int(ops.get("Lx", 0))
     T_raw = int(ops.get("nframes", 0))
+    if not (Ly and Lx and T_raw) and ops_file.exists():
+        # re-run with cached registration (e.g. --force-cnmf): the fresh ops
+        # dict carries new params but not the dims, which live in the saved ops.
+        saved = np.load(ops_file, allow_pickle=True).item()
+        Ly = Ly or int(saved.get("Ly", 0))
+        Lx = Lx or int(saved.get("Lx", 0))
+        T_raw = T_raw or int(saved.get("nframes", 0))
+        ops["Ly"], ops["Lx"], ops["nframes"] = Ly, Lx, T_raw
     if not (Ly and Lx and T_raw):
         # ops written by mbo_utilities is the source of truth; fall back to
         # inferring from the binary size if the writer left them empty.
-        if raw_bin.exists():
-            nbytes = raw_bin.stat().st_size
-            if Ly and Lx:
-                T_raw = nbytes // (2 * Ly * Lx)
-                ops["nframes"] = T_raw
+        if Ly and Lx:
+            for b in (raw_bin, reg_bin):
+                if b.exists():
+                    T_raw = b.stat().st_size // (2 * Ly * Lx)
+                    ops["nframes"] = T_raw
+                    break
         if not (Ly and Lx and T_raw):
             raise RuntimeError(
                 "could not determine (T, Ly, Lx) for data.bin layout — "
@@ -744,6 +771,7 @@ def run_plane(
             mmap_file = _ensure_caiman_mmap(plane_dir, reg_bin, T, Ly, Lx)
             cnmf_result = _run_cnmf(mmap_file, ops, plane_dir, T, Ly, Lx)
             ops.update(cnmf_result["ops"])
+            ops["n_cells"] = cnmf_result["n_cells"]
             add_processing_step(
                 ops, "cnmf",
                 duration_seconds=time.time() - cnmf_start,
@@ -859,11 +887,13 @@ def _run_motion_correction(raw_bin, T, Ly, Lx, ops, output_dir):
     # trailing underscore so caiman.paths.decode_mmap_filename_dict skips
     # its `int(fpart[-1])` step — any non-int / non-empty trailing token
     # crashes the parser.
+    # C-order buffer under an order_C tag so caiman reads the frames back
+    # correctly; a tag/layout mismatch reinterprets the buffer into static.
     in_mmap = output_dir / f"mcinput_d1_{Ly}_d2_{Lx}_d3_1_order_C_frames_{T}_.mmap"
     if not in_mmap.exists():
         src = np.memmap(str(raw_bin), dtype=np.int16, mode="r", shape=(T, Ly, Lx))
         fp = np.memmap(str(in_mmap), mode="w+", dtype=np.float32,
-                       shape=(Ly * Lx, T), order="F")
+                       shape=(Ly * Lx, T), order="C")
         for t in range(T):
             fp[:, t] = src[t].ravel(order="F").astype(np.float32)
         del fp
@@ -1046,11 +1076,13 @@ def _generate_volume_outputs(ops_files, save_path, rastermap_kwargs=None):
         print(f"  get_volume_stats failed: {e}")
 
     print("Generating volume figures...")
+    # these helpers (except trace_figures) write to a file path, not a directory;
+    # filenames match lbm_suite2p_python.run_lsp conventions.
     for label, fn in (
-        ("volume_diagnostics", lambda: plot_volume_diagnostics(ops_files, save_path)),
+        ("volume_diagnostics", lambda: plot_volume_diagnostics(ops_files, save_path / "volume_quality_diagnostics.png")),
         ("orthoslices", lambda: plot_orthoslices(ops_files, save_path / "orthoslices.png")),
-        ("3d_roi_map", lambda: plot_3d_roi_map(ops_files, save_path)),
-        ("accepted_rejected", lambda: plot_volume_accepted_rejected_overlay(ops_files, save_path)),
+        ("3d_roi_map", lambda: plot_3d_roi_map(ops_files, save_path / "roi_map_3d.png")),
+        ("accepted_rejected", lambda: plot_volume_accepted_rejected_overlay(ops_files, save_path / "volume_segmentation_overlay.png")),
         ("trace_figures", lambda: plot_volume_trace_figures(ops_files, save_path)),
     ):
         try:

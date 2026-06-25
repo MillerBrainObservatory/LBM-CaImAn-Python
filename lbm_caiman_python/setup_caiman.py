@@ -20,10 +20,18 @@ from pathlib import Path
 
 print = partial(print, flush=True)
 
-# caiman (conda-forge) requires numpy>=2.0 with no upper bound, so it pulls the
-# latest numpy. mbo_utilities requires numpy<2.4; pin the conda numpy so it does
-# not override the pypi solve and cause an unsatisfiable conflict.
-NUMPY_SPEC = "numpy>=2.0,<2.4"
+# conda specs added alongside caiman. caiman is built for python 3.12 only and
+# pulls numpy and setuptools without an upper bound, so the conda solve grabs the
+# latest of each. mbo_utilities (a pypi dependency) caps numpy<2.4 and
+# setuptools<81; pixi pins conda-resolved versions into the pypi solve, so the
+# conda versions must already satisfy those caps or the solve is unsatisfiable.
+# pin the interpreter and both shared packages into mbo_utilities' ranges.
+CAIMAN_CONDA_SPECS = [
+    "caiman",
+    "python>=3.12.7,<3.12.10",
+    "numpy>=2.2.5,<2.4",
+    "setuptools<81",
+]
 
 
 def _caiman_installed() -> bool:
@@ -70,7 +78,7 @@ def _install_caiman() -> int:
             print("Inside a pixi project but the `pixi` executable was not found on PATH.")
             return 1
         print(f"Adding caiman to pixi project: {pixi_root}")
-        return _run([pixi, "add", "caiman", NUMPY_SPEC], cwd=pixi_root)
+        return _run([pixi, "add", *CAIMAN_CONDA_SPECS], cwd=pixi_root)
 
     conda = _find_conda()
     if conda is not None:
@@ -78,7 +86,7 @@ def _install_caiman() -> int:
             print("No active conda environment (CONDA_PREFIX unset); activate one first.")
             return 1
         print(f"Installing caiman with {Path(conda).name} into {os.environ['CONDA_PREFIX']}")
-        return _run([conda, "install", "-y", "-c", "conda-forge", "caiman", NUMPY_SPEC])
+        return _run([conda, "install", "-y", "-c", "conda-forge", *CAIMAN_CONDA_SPECS])
 
     print("No pixi or conda/mamba found. caiman is only distributed via conda-forge.")
     print("Install pixi (https://pixi.sh), then:")
@@ -90,7 +98,15 @@ def _install_caiman() -> int:
 
 
 def _setup_data() -> int:
-    """populate the caiman_data directory via caimanmanager."""
+    """populate the caiman_data directory via caimanmanager.
+
+    caimanmanager exits non-zero if the target already exists; treat an existing
+    caiman_data as done rather than overwriting it (which would drop user models).
+    """
+    data_dir = Path(os.environ.get("CAIMAN_DATA", Path.home() / "caiman_data"))
+    if data_dir.exists():
+        print(f"caiman_data already present: {data_dir}")
+        return 0
     exe = shutil.which("caimanmanager")
     cmd = [exe, "install"] if exe else [sys.executable, "-m", "caiman.caimanmanager", "install"]
     return _run(cmd)

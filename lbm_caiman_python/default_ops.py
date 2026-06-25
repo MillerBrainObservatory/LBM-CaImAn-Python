@@ -32,20 +32,23 @@ def default_ops() -> dict:
         "use_cuda": False,
 
         # cnmf parameters
+        # rf/stride enable patch-based CNMF; without them caiman fits the whole
+        # field of view as one patch capped at K components. patch values and
+        # eval thresholds match the lbm demo notebooks.
         "do_cnmf": True,
-        "K": 50,
+        "K": 20,
         "gSig": (4, 4),
-        "gSiz": None,
-        "p": 1,
-        "merge_thresh": 0.8,
-        "min_SNR": 2.5,
-        "rval_thr": 0.85,
+        "gSiz": (15, 15),
+        "p": 2,
+        "merge_thresh": 0.7,
+        "min_SNR": 1.5,
+        "rval_thr": 0.8,
         "decay_time": 0.4,
         "method_init": "greedy_roi",
         "ssub": 1,
         "tsub": 1,
-        "rf": None,
-        "stride": None,
+        "rf": 30,
+        "stride": 12,
         "nb": 1,
         "gnb": 1,
         "low_rank_background": True,
