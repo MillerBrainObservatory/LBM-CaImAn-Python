@@ -1,10 +1,8 @@
 # LBM-CaImAn-Python
 
-[**Installation**](https://github.com/MillerBrainObservatory/LBM-CaImAn-Python#installation) | [**Notebooks**](https://github.com/MillerBrainObservatory/LBM-CaImAn-Python/tree/master/demos/notebooks)
+[**Installation**](https://github.com/MillerBrainObservatory/LBM-CaImAn-Python#installation) | [**Usage**](https://github.com/MillerBrainObservatory/LBM-CaImAn-Python#usage)
 
-[![Documentation](https://img.shields.io/badge/Documentation-black?style=for-the-badge&logo=readthedocs&logoColor=white)](https://millerbrainobservatory.github.io/LBM-CaImAn-Python/)
- 
-Python implementation of the Light Beads Microscopy (LBM) computational pipeline. The documentation has examples of the rendered notebooks.
+Python implementation of the Light Beads Microscopy (LBM) computational pipeline.
 
 For the `MATLAB` implementation, see [here](https://github.com/MillerBrainObservatory/LBM-CaImAn-MATLAB/)
 
@@ -44,20 +42,23 @@ separate conda install, no clone, and no C++ compiler. Install [pixi](https://pi
 
 ```bash
 pixi init my-lcp && cd my-lcp
-pixi add "python>=3.12.7,<3.12.10" "numpy>=2.0,<2.4"   # interpreter (3.12) + numpy cap
-pixi add caiman                                        # CaImAn from conda-forge
-pixi add --pypi lbm-caiman-python                      # the lcp pipeline + python deps
-pixi run caimanmanager install                         # set up caiman_data
+pixi add caiman "python>=3.12.7,<3.12.10" "numpy>=2.2.5,<2.4" "setuptools<81"
+pixi add --pypi lbm-caiman-python
+pixi run caimanmanager install   # harmless error if ~/caiman_data already exists; skip it
 pixi run lcp <input> <output>
 ```
 
-A bare `pixi add python` pulls 3.14, which CaImAn and `lbm-caiman-python`
-(`requires-python <3.12.10`) do not support — pin it to 3.12. The `numpy<2.4` cap is
-required because CaImAn pulls the latest numpy while `mbo_utilities` needs `<2.4`.
+Add CaImAn (conda) **before** `--pypi lbm-caiman-python`: CaImAn supplies conda PyTorch,
+which then satisfies suite2p's `torch` requirement, so pip does not install a second copy
+over it (mixing the two breaks torch's DLLs on Windows). The pins are required too —
+CaImAn is built for python 3.12 only (a fresh project otherwise defaults to a newer one),
+and it pulls the latest numpy/setuptools, which exceed the `numpy<2.4` / `setuptools<81`
+caps that `mbo_utilities` sets.
 
-Once a release containing it is published, `pixi run lcp setup` runs the
-`pixi add caiman` + `caimanmanager install` steps for you (`--force` to reinstall,
-`--no-data` to skip the data setup).
+If you already installed `lbm-caiman-python` and only need CaImAn, run `pixi run lcp setup`
+(it runs the `pixi add caiman …` + `caimanmanager install` above; `--force` to reinstall,
+`--no-data` to skip the data setup). If a `torch`/DLL error appears, the env picked up a
+stray pip torch — delete `.pixi/envs/default` and re-run `pixi install`.
 
 ### Install for development (clone)
 
@@ -77,6 +78,32 @@ pixi run python -c "import lbm_caiman_python as lcp; print(lcp.__version__)"
 ```
 
 :exclamation: **Hardware requirements** The large CNMF visualizations with contours etc. usually require either a dedicated GPU or integrated GPU with access to at least 1GB of VRAM.
+
+---
+
+## Usage
+
+Run the pipeline (assembly → motion correction → CNMF → collation) on a raw ScanImage
+tiff file or directory:
+
+```bash
+pixi run lcp <input> <output>
+```
+
+4D/volumetric input is processed one z-plane at a time. Output is written per plane in
+suite2p format (`data.bin`, `ops.npy`, `stat.npy`, `iscell.npy`, `F.npy`, `dff.npy`, …)
+with per-plane and volume figures, so results load in mbo studio / lbm_suite2p_python.
+
+Common options:
+
+- `--planes 1 2 3` — process specific planes (1-based)
+- `--no-mcorr` / `--no-cnmf` — skip a stage
+- `--force-mcorr` / `--force-cnmf` — re-run a stage, ignoring cached results
+- `--num-frames N` — limit frames processed
+- `--K`, `--gSig`, `--min-SNR`, `--rval-thr`, `--max-shifts`, `--strides`, … — override defaults
+- `lcp setup` — install CaImAn into the active pixi/conda env (see [Installation](#installation))
+
+`lcp --help` lists every option with its default value.
 
 ---
 

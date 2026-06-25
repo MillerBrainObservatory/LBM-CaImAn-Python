@@ -6,12 +6,18 @@ platforms = ["win-64", "linux-64"]
 [dependencies]
 python = ">=3.12.7,<3.12.10"
 caiman = "*"
+# caiman pulls numpy/setuptools unbounded; cap them into mbo_utilities' ranges
+# (numpy<2.4, setuptools<81) so the conda solve does not override the pypi solve
+numpy = ">=2.2.5,<2.4"
+setuptools = "<81"
 pip = "*"
 
 [pypi-dependencies]
 lbm-caiman-python = { path = ".", editable = true }
-mbo-utilities = ">=2.5.3"
-lbm-suite2p-python = "*"
+mbo-utilities = ">=3.1.0"
+# lsp 3.2.1+ matches the mbo_utilities 3.x module layout; older lsp imports
+# the removed mbo_utilities.util and breaks figure generation
+lbm-suite2p-python = ">=3.2.1"
 suite2p = ">=1.0.0.1"
 
 [tasks]
@@ -24,26 +30,5 @@ setup-caiman = "caimanmanager install"
 ruff = "*"
 pytest = "*"
 
-[feature.docs.pypi-dependencies]
-docutils = ">=0.21.2"
-myst-nb = ">=1.2.0"
-sphinx = ">=8.1.3"
-sphinx-autodoc2 = ">=0.5.0"
-sphinx-copybutton = ">=0.5.2"
-sphinx-togglebutton = "*"
-sphinx-design = ">=0.6.1"
-sphinxcontrib-bibtex = "*"
-sphinx-tippy = "*"
-sphinx-book-theme = "*"
-numpydoc = "*"
-ipykernel = "*"
-sphinxcontrib-images = "*"
-sphinxcontrib-video = "*"
-jupytext = "*"
-
-[feature.docs.tasks]
-docs = "sphinx-build -b html docs docs/_build/html"
-
 [environments]
 default = { features = ["dev"], solve-group = "default" }
-docs = { features = ["docs"], solve-group = "default" }
